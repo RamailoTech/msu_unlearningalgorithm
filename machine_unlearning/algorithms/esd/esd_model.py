@@ -27,3 +27,11 @@ class ESDModel(UnlearningModel):
 
     def apply_model(self, z, conditioning):
         return self.model.apply_model(z, conditioning)
+    
+    def save_model(self, save_path):
+        torch.save(self.model.model.state_dict(), save_path)
+        print(f"Model saved to {save_path}.")
+
+    def load_model(self, model_path):
+        self.model.load_model(model_path)
+        print(f"Model loaded from {model_path}.")
