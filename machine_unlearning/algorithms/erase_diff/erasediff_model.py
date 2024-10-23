@@ -1,9 +1,11 @@
+# erasediff_model.py
+
 from algorithms.core.base_model import BaseModel
 from stable_diffusion.ldm.util import instantiate_from_config
 import torch
 from typing import Any
 
-class ESDModel(BaseModel):
+class EraseDiffModel(BaseModel):
     def __init__(self, config_path: str, ckpt_path: str, device: str):
         super().__init__()
         self.device = device
@@ -35,8 +37,11 @@ class ESDModel(BaseModel):
         # Implement the forward pass as needed
         pass
 
-    def get_learned_conditioning(self, prompts):
-        return self.model.get_learned_conditioning(prompts)
+    def get_input(self, batch, key):
+        return self.model.get_input(batch, key)
 
-    def apply_model(self, z, t, c):
-        return self.model.apply_model(z, t, c)
+    def apply_model(self, x_noisy, t, cond):
+        return self.model.apply_model(x_noisy, t, cond)
+
+    def shared_step(self, batch):
+        return self.model.shared_step(batch)
