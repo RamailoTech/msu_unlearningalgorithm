@@ -13,15 +13,6 @@ conda env create -f environment.yaml
 conda activate mu_esd
 ```
 
-### 2. Install Stable Diffusion and Dependencies
-
-After activating the environment, install Stable Diffusion and its dependencies:
-
-```bash
-conda install pytorch torchvision -c pytorch
-pip install transformers==4.19.2 diffusers invisible-watermark
-pip install -e .
-```
 
 ## Usage
 
@@ -30,11 +21,11 @@ To train the ESD algorithm to unlearn a specific concept or style from the Stabl
 ### Example Command
 
 ```bash
-python algorithms/esd/scripts/train.py \
+python -m algorithms.esd.scripts.train \
     --train_method xattn \
     --theme "Your_Theme" \
     --ckpt_path "path/to/your/model.ckpt" \
-    --config_path "configs/train_esd.yaml"
+    --config_path "path/to/your_config"
 ```
 
 **Replace the placeholders with your own values:**
@@ -76,3 +67,6 @@ python scripts/train.py \
 - `trainer.py`: Implementation of the ESDTrainer class.
 - `utils.py`: Utility functions used in the project.
 
+
+
+python -m algorithms.esd.scripts.train --train_method xattn --theme "Abstractionism" --ckpt_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" --config_path "esd/configs/train_esd.yaml"

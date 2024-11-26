@@ -1,5 +1,5 @@
-from algorithms.core.base_sampler import BaseSampler
-from latent_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+from core.base_sampler import BaseSampler
+from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 from algorithms.esd.utils import sample_model
 from algorithms.esd.algorithm import ESDModel
 

@@ -1,7 +1,7 @@
-from algorithms.core.base_algorithm import BaseAlgorithm
-from algorithms.esd.esd_model import ESDModel
-from algorithms.esd.esd_trainer import ESDTrainer
-from algorithms.esd.esd_sampler import ESDSampler
+from core.base_algorithm import BaseAlgorithm
+from algorithms.esd.model import ESDModel
+from algorithms.esd.trainer import ESDTrainer
+from algorithms.esd.sampler import ESDSampler
 import torch
 import wandb
 from typing import Dict
@@ -21,7 +21,8 @@ class ESDAlgorithm(BaseAlgorithm):
         self._setup_components()
 
     def _setup_components(self):
-        self.model = ESDModel(self.config, self.device)
+        print(self.config)
+        self.model = ESDModel(self.config.get('config_path'), self.config.get('ckpt_path'), self.device)
         self.trainer = ESDTrainer(self.model, self.config, self.device, self.device_orig)
         self.sampler = ESDSampler(self.model, self.config, self.device)
 

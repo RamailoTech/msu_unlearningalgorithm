@@ -14,27 +14,3 @@ class BaseTrainer(ABC):
     def train(self, *args, **kwargs):
         pass
 
-    @abstractmethod
-    def compute_loss(self, output: Any, target: Any) -> Any:
-        pass
-
-    @abstractmethod
-    def step_optimizer(self):
-        pass
-
-    @abstractmethod
-    def validate(self, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    def save_checkpoint(self, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    def get_model_params(self) -> Any:
-        pass
-
-    @abstractmethod
-    def set_model_params(self, params: Any):
-        pass
-

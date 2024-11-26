@@ -15,7 +15,7 @@ def main():
                         required=False, default=3)
     parser.add_argument('--negative_guidance', help='guidance of negative training used to train', type=float,
                         required=False, default=1)
-    parser.add_argument('--iterations', help='iterations used to train', type=int, required=False, default=1000)
+    parser.add_argument('--iterations', help='iterations used to train', type=int, required=False, default=2)
     parser.add_argument('--lr', help='learning rate used to train', type=float, required=False, default=1e-5)
     parser.add_argument('--config_path', help='config path for stable diffusion', type=str,
                         required=False, default='configs/train_esd.yaml')
