@@ -1,89 +1,101 @@
 from algorithms.core.base_trainer import BaseTrainer
+from algorithms.esd.model import ESDModel
 import torch
 from tqdm import tqdm
 import random
+from utils import load_model_from_config, sample_model
+from torch.nn import MSELoss
+import wandb
 
 class ESDTrainer(BaseTrainer):
-    def __init__(self, model, optimizer, criterion, config, sampler, model_orig, sampler_orig, wandb=None):
-        super().__init__(model, optimizer, criterion, config)
-        self.sampler = sampler
-        self.model_orig = model_orig
-        self.sampler_orig = sampler_orig
-        self.wandb = wandb
-        self.devices = config.get('devices', ['cuda:0', 'cuda:1'])
-        self.ddim_steps = config.get('ddim_steps', 50)
-        self.image_size = config.get('image_size', 512)
-        self.ddim_eta = 0
+    """Trainer for the ESD algorithm."""
 
-    def train(self, num_iterations, words, train_method, start_guidance, negative_guidance, seperator=None):
-        self.model.model.train()
-        parameters = self.select_parameters(train_method)
-        self.optimizer = torch.optim.Adam(parameters, lr=self.config['lr'])
-        criterion = self.criterion
+    def __init__(self, model: ESDModel, config: dict, device, device_orig, **kwargs):
+        super().__init__(model, config, **kwargs)
+        self.device = device
+        self.device_orig = device_orig
+        self.model_orig = None
+        self.sampler = None
+        self.sampler_orig = None
+        self.criteria = MSELoss()
+        self._setup_models()
+        self._setup_optimizer()
 
-        pbar = tqdm(range(num_iterations))
-        for _ in pbar:
-            word = random.choice(words)
-            # Prepare embeddings
-            emb_0 = self.model.get_learned_conditioning([''])
-            emb_p = self.model.get_learned_conditioning([word])
-            emb_n = self.model.get_learned_conditioning([f'{word}'])
+    def _setup_models(self):
+        # Load the original (frozen) model
+        config_path = self.config['config_path']
+        ckpt_path = self.config['ckpt_path']
+        self.model_orig = load_model_from_config(config_path, ckpt_path, device=self.device_orig)
+        self.model_orig.eval()
 
-            self.optimizer.zero_grad()
+        # Setup samplers
+        self.sampler = DDIMSampler(self.model.model)
+        self.sampler_orig = DDIMSampler(self.model_orig)
 
-            # Random timestep
-            t_enc = torch.randint(self.ddim_steps, (1,), device=self.devices[0])
-            og_num = round((int(t_enc) / self.ddim_steps) * 1000)
-            og_num_lim = round((int(t_enc + 1) / self.ddim_steps) * 1000)
-            t_enc_ddpm = torch.randint(og_num, og_num_lim, (1,), device=self.devices[0])
-
-            start_code = torch.randn((1, 4, 64, 64)).to(self.devices[0])
-
-            with torch.no_grad():
-                # Generate image with concept from original model
-                z = self.quick_sample_till_t(emb_p.to(self.devices[0]), start_guidance, start_code, int(t_enc))
-                # Get scores from original model
-                e_0 = self.model_orig.apply_model(z.to(self.devices[1]), t_enc_ddpm.to(self.devices[1]), emb_0.to(self.devices[1]))
-                e_p = self.model_orig.apply_model(z.to(self.devices[1]), t_enc_ddpm.to(self.devices[1]), emb_p.to(self.devices[1]))
-
-            # Get scores from finetuned model
-            e_n = self.model.apply_model(z.to(self.devices[0]), t_enc_ddpm.to(self.devices[0]), emb_n.to(self.devices[0]))
-            e_0.requires_grad = False
-            e_p.requires_grad = False
-
-            # Compute loss
-            loss = criterion(e_n.to(self.devices[0]), e_0.to(self.devices[0]) - (negative_guidance * (e_p.to(self.devices[0]) - e_0.to(self.devices[0]))))
-
-            # Backpropagation
-            loss.backward()
-            if self.wandb is not None:
-                self.wandb.log({"loss": loss.item()})
-            pbar.set_postfix({"loss": loss.item()})
-            self.optimizer.step()
-
-    def quick_sample_till_t(self, conditioning, scale, start_code, t_enc):
-        uc = None
-        if scale != 1.0:
-            uc = self.model.get_learned_conditioning([''])
-        shape = [4, self.image_size // 8, self.image_size // 8]
-        samples = self.sampler.sampler.sample(
-            S=self.ddim_steps,
-            conditioning=conditioning,
-            batch_size=1,
-            shape=shape,
-            verbose=False,
-            x_T=start_code,
-            unconditional_guidance_scale=scale,
-            unconditional_conditioning=uc,
-            eta=self.ddim_eta,
-            till_T=t_enc
-        )
-        return samples[0]
-
-    def select_parameters(self, train_method):
+    def _setup_optimizer(self):
+        # Select parameters to train based on train_method
+        train_method = self.config['train_method']
         parameters = []
         for name, param in self.model.model.model.diffusion_model.named_parameters():
-            # Implement parameter selection logic as per train_method
-            # ...
-            pass  # Same logic as before
-        return parameters
+            if train_method == 'full':
+                parameters.append(param)
+            elif train_method == 'xattn' and 'attn2' in name:
+                parameters.append(param)
+            elif train_method == 'selfattn' and 'attn1' in name:
+                parameters.append(param)
+            elif train_method == 'noxattn' and not ('attn2' in name or 'time_embed' in name):
+                parameters.append(param)
+            # Add other training methods as needed
+        self.optimizer = torch.optim.Adam(parameters, lr=self.config['lr'])
+
+    def train(self):
+        iterations = self.config['iterations']
+        ddim_steps = self.config['ddim_steps']
+        start_guidance = self.config['start_guidance']
+        negative_guidance = self.config['negative_guidance']
+        prompt = self.config['prompt']
+        seperator = self.config.get('seperator')
+
+        # Handle multiple words if separator is provided
+        if seperator:
+            words = [w.strip() for w in prompt.split(seperator)]
+        else:
+            words = [prompt]
+
+        self.model.model.train()
+        pbar = tqdm(range(iterations))
+        for i in pbar:
+            word = random.choice(words)
+            # Get text embeddings
+            emb_0 = self.model.model.get_learned_conditioning([''])
+            emb_p = self.model.model.get_learned_conditioning([word])
+            emb_n = self.model.model.get_learned_conditioning([f'{word}'])
+
+            self.optimizer.zero_grad()
+            t_enc = torch.randint(ddim_steps, (1,), device=self.device)
+            og_num = round((int(t_enc.item()) / ddim_steps) * 1000)
+            og_num_lim = round(((int(t_enc.item()) + 1) / ddim_steps) * 1000)
+            t_enc_ddpm = torch.randint(og_num, og_num_lim, (1,), device=self.device)
+            start_code = torch.randn((1, 4, 64, 64)).to(self.device)
+
+            with torch.no_grad():
+                # Generate an image with the concept from the ESD model
+                z = sample_model(self.model.model, self.sampler,
+                                 emb_p.to(self.device), 512, 512, ddim_steps, start_guidance, 0,
+                                 start_code=start_code, till_T=int(t_enc.item()), verbose=False)
+                # Get conditional and unconditional scores from the frozen model
+                e_0 = self.model_orig.apply_model(z.to(self.device_orig), t_enc_ddpm.to(self.device_orig), emb_0.to(self.device_orig))
+                e_p = self.model_orig.apply_model(z.to(self.device_orig), t_enc_ddpm.to(self.device_orig), emb_p.to(self.device_orig))
+
+            # Get conditional score from the ESD model
+            e_n = self.model.model.apply_model(z.to(self.device), t_enc_ddpm.to(self.device), emb_n.to(self.device))
+            e_0 = e_0.detach()
+            e_p = e_p.detach()
+            # Compute loss
+            loss = self.criteria(e_n, e_0 - (negative_guidance * (e_p - e_0)))
+            loss.backward()
+            self.optimizer.step()
+
+            # Logging
+            wandb.log({"loss": loss.item()})
+            pbar.set_postfix({"loss": loss.item()})
