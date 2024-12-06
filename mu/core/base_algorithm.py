@@ -18,6 +18,13 @@ class BaseAlgorithm(ABC):
         pass
 
     @abstractmethod
+    def _setup_components(self):
+        """
+        Set up the components of the unlearning algorithm, including the model, trainer, and sampler.
+        """
+        pass
+
+    @abstractmethod
     def run(self):
         """
         Run the unlearning algorithm.

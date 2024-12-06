@@ -5,7 +5,7 @@ class BaseSampler(ABC):
     """Abstract base class for sampling methods used in unlearning."""
 
     @abstractmethod
-    def sample(self, num_samples: int, **kwargs) -> Any:
+    def sample(self, **kwargs) -> Any:
         """Generate samples from the model.
 
         Args:

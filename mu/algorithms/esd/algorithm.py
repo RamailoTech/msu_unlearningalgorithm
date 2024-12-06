@@ -21,7 +21,6 @@ class ESDAlgorithm(BaseAlgorithm):
         self._setup_components()
 
     def _setup_components(self):
-        print(self.config)
         self.model = ESDModel(self.config.get('config_path'), self.config.get('ckpt_path'), self.device)
         self.trainer = ESDTrainer(self.model, self.config, self.device, self.device_orig)
         self.sampler = ESDSampler(self.model, self.config, self.device)

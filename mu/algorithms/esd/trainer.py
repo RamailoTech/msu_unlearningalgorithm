@@ -19,10 +19,10 @@ class ESDTrainer(BaseTrainer):
         self.sampler = None
         self.sampler_orig = None
         self.criteria = MSELoss()
-        self._setup_models()
-        self._setup_optimizer()
+        self.setup_models()
+        self.setup_optimizer()
 
-    def _setup_models(self):
+    def setup_models(self):
         # Load the original (frozen) model
         config_path = self.config['config_path']
         ckpt_path = self.config['ckpt_path']
@@ -33,7 +33,7 @@ class ESDTrainer(BaseTrainer):
         self.sampler = DDIMSampler(self.model.model)
         self.sampler_orig = DDIMSampler(self.model_orig)
 
-    def _setup_optimizer(self):
+    def setup_optimizer(self):
         # Select parameters to train based on train_method
         train_method = self.config['train_method']
         parameters = []
