@@ -25,7 +25,8 @@ python -m algorithms.esd.scripts.train \
     --train_method xattn \
     --theme "Your_Theme" \
     --ckpt_path "path/to/your/model.ckpt" \
-    --config_path "path/to/your_config"
+    --config_path "path/to/your_config" \
+    ----output_dir "path/to/your_output_dir"
 ```
 
 **Replace the placeholders with your own values:**
@@ -43,18 +44,6 @@ python -m algorithms.esd.scripts.train \
 - `--devices`: CUDA devices to use (default: `'0,0'`).
 - `--output_dir`: Directory to save the trained model (default: `'results'`).
 
-### Full Example
-
-```bash
-python scripts/train.py \
-    --train_method xattn \
-    --theme "Van_Gogh_Style" \
-    --ckpt_path "models/stable-diffusion-v1-4.ckpt" \
-    --config_path "configs/train_esd.yaml" \
-    --iterations 1500 \
-    --lr 1e-5 \
-    --output_dir "results/van_gogh_unlearned"
-```
 
 ## Directory Structure
 
@@ -68,5 +57,4 @@ python scripts/train.py \
 - `utils.py`: Utility functions used in the project.
 
 
-
-python -m algorithms.esd.scripts.train --train_method xattn --theme "Abstractionism" --ckpt_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" --config_path "esd/configs/train_esd.yaml"
+python -m algorithms.esd.scripts.train --train_method xattn --theme "Abstractionism" --ckpt_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" --config_path "algorithms/esd/configs/train_esd.yaml" --output_dir "/home/ubuntu/Projects/msu_unlearningalgorithm/data/results/esd/models"

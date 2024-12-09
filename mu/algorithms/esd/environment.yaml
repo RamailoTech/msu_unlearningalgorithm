@@ -1,4 +1,4 @@
-name: mu_esd
+name: unlearn_canvas
 channels:
   - pytorch
   - defaults
@@ -12,7 +12,7 @@ dependencies:
   - pip:
     - albumentations==0.4.3
     - datasets==2.8.0
-    - diffusers==0.12.1
+    - diffusers
     - opencv-python==4.1.2.30
     - pudb==2019.2
     - invisible-watermark
@@ -24,7 +24,7 @@ dependencies:
     - streamlit>=0.73.1
     - einops==0.3.0
     - torch-fidelity==0.3.0
-    - transformers==4.19.2
+    - transformers==4.36.0
     - torchmetrics==0.6.0
     - kornia==0.6
     - taming-transformers-rom1504
@@ -35,3 +35,18 @@ dependencies:
     - gradio
     - seaborn
     - git+https://github.com/crowsonkb/k-diffusion.git
+    - loguru # This is for style transfer: Style_Drop
+    - ml_collections # This is for style transfer: Style_Drop
+    - webdataset # This is for style transfer: Style_Drop
+    - ftfy # This is for style transfer: Style_Drop
+    - yacs # This is for style transfer: MAST
+    - controlnet_aux # This is for style transfer: BLIP
+    - fvcore # This is for ICL_Inpainting
+    - h5py # This is for ICL_Inpainting
+    - xtcocotools # This is for ICL_Inpainting
+    - natsort # This is for ICL_Inpainting
+    - timm==0.3.2 # This is for ICL_Inpainting
+    - git+https://github.com/cocodataset/panopticapi.git # This is for ICL_Inpainting
+    - fairscale # This is for ICL_Inpainting
+    - git+https://github.com/facebookresearch/detectron2.git # This is for ICL_Inpainting
+    - open_clip_torch # This is for ICL_Prompt_Diffusion

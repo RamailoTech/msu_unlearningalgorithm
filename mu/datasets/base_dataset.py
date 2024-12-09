@@ -6,16 +6,10 @@ class BaseDataset(Dataset, ABC):
     """
     Abstract base class for all datasets.
     """
-
     @abstractmethod
-    def __init__(self, data_path: str, prompt_path: str, transform: Any = None):
+    def __init__(self):
         """
         Initialize the dataset.
-
-        Args:
-            data_path (str): Path to the data file (e.g., images.txt).
-            prompt_path (str): Path to the prompt file (e.g., prompts.txt).
-            transform (Any, optional): Transformation to apply to the data. Defaults to None.
         """
         pass
 

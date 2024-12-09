@@ -1,125 +1,81 @@
-import os
-from torch.nn import MSELoss
-import torch
-from tqdm import tqdm
-import wandb
-import gc
+# erase_diff/trainer.py
 
-from .model import EraseDiffModel
-from .data_handler import setup_erase_diff_data
-from .utils import get_param, set_param
-from mu.core.base_trainer import BaseTrainer
+from core.base_trainer import BaseTrainer
+from algorithms.erase_diff.model import EraseDiffModel
+import torch
+import gc
+from tqdm import tqdm
+import random
+from algorithms.erase_diff.utils import load_model_from_config, sample_model
+from torch.nn import MSELoss
+import wandb
+from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+import logging
+from pathlib import Path
+from stable_diffusion.ldm.util import instantiate_from_config
+from omegaconf import OmegaConf
 from timm.utils import AverageMeter
-from mu.datasets.utils import get_logger
+
+
 
 class EraseDiffTrainer(BaseTrainer):
     """
-    Trainer class for the EraseDiff algorithm.
-    Encapsulates the training loop and related functionalities.
+    Trainer for the EraseDiff algorithm.
+    Handles the training loop, loss computation, and optimization.
     """
-    def __init__(
-        self,
-        config: dict,
-        device: str,
-        device_orig: str,
-        **kwargs
-    ):
-        super().__init__()
-        self.config = config
+
+    def __init__(self, model: EraseDiffModel, config: dict, device: str,  data_handler, **kwargs):
+        """
+        Initialize the EraseDiffTrainer.
+
+        Args:
+            model (EraseDiffModel): Instance of EraseDiffModel.
+            config (dict): Configuration dictionary.
+            device (str): Device to perform training on.
+            device_orig (str): Device for the original (frozen) model.
+            data_handler (EraseDiffDataHandler): Instance of EraseDiffDataHandler.
+            **kwargs: Additional keyword arguments.
+        """
+        super().__init__(model, config, **kwargs)
         self.device = device
-        self.device_orig = device_orig
-        self.logger = get_logger(self.__class__.__name__)
-        self.model = self.setup_model()
-        self.forget_dl, self.remain_dl = self.setup_data_loaders()
-        self.optimizer = self.setup_optimizer()
+        self.model = None
+        self.sampler = None
+        self.sampler_orig = None
         self.criteria = MSELoss()
-        self.logger.info("EraseDiffTrainer initialized.")
-    
-    def setup_model(self):
+        self.logger = logging.getLogger(__name__)
+        self.data_handler = data_handler
+        self.setup_models()
+        self.setup_optimizer()
+
+    def setup_models(self):
         """
-        Initialize the model using the configuration.
-
-        Returns:
-            EraseDiffModel: Initialized model.
+        Setup the original (frozen) model and samplers.
         """
-        config_path = self.config['config_path']
-        ckpt_path = self.config['ckpt_path']
-        model = EraseDiffModel(
-            config_path=config_path,
-            ckpt_path=ckpt_path,
-            device=self.device
-        )
-        self.logger.info("Model setup completed.")
-        return model
-    
-    def setup_data_loaders(self):
-        """
-        Setup forget and remain data loaders based on configuration.
+        # Load the original (frozen) model
+        config_path = self.config.get('config_path')
+        ckpt_path = self.config.get('ckpt_path')
+        self.model = load_model_from_config(config_path, ckpt_path, device=self.device)
 
-        Returns:
-            tuple: Data loaders for forget and remain datasets.
-        """
-        forget_data_dir = os.path.join(self.config['forget_data_dir'], self.config['theme'])
-        remain_data_dir = os.path.join(self.config['remain_data_dir'], 'Seed_Images')
-        batch_size = self.config['batch_size']
-        image_size = self.config['image_size']
-        interpolation = self.config.get('interpolation', 'bicubic')
-        num_workers = self.config.get('num_workers', 4)
-        pin_memory = self.config.get('pin_memory', True)
-        additional_param = self.config.get('additional_param', None)
-
-        self.logger.info(f"Setting up forget data loader from {forget_data_dir}")
-        forget_dl = setup_erase_diff_data(
-            data_dir=forget_data_dir,
-            batch_size=batch_size,
-            image_size=image_size,
-            interpolation=interpolation,
-            num_workers=num_workers,
-            pin_memory=pin_memory,
-            additional_param=additional_param
-        )
-
-        self.logger.info(f"Setting up remain data loader from {remain_data_dir}")
-        remain_dl = setup_erase_diff_data(
-            data_dir=remain_data_dir,
-            batch_size=batch_size,
-            image_size=image_size,
-            interpolation=interpolation,
-            num_workers=num_workers,
-            pin_memory=pin_memory,
-            additional_param=additional_param
-        )
-
-        self.logger.info(f"Forget DataLoader: {len(forget_dl)} batches")
-        self.logger.info(f"Remain DataLoader: {len(remain_dl)} batches")
-
-        return forget_dl, remain_dl
+        # # Setup samplers
+        # self.sampler = DDIMSampler(self.model.model)
+        # self.sampler_orig = DDIMSampler(self.model_orig)
 
     def setup_optimizer(self):
         """
-        Setup optimizer based on the training method.
-
-        Returns:
-            torch.optim.Optimizer: Configured optimizer.
+        Setup the optimizer based on the training method.
         """
-        train_method = self.config['train_method']
+        # Select parameters to train based on train_method
+        train_method = self.config.get('train_method', 'xattn')
         parameters = []
-        for name, param in self.model.model.diffusion_model.named_parameters():
-            if train_method == 'noxattn':
-                if name.startswith('out.') or 'attn2' in name or 'time_embed' in name:
-                    continue
-                else:
-                    parameters.append(param)
-            elif train_method == 'selfattn':
-                if 'attn1' in name:
-                    parameters.append(param)
-            elif train_method == 'xattn':
-                if 'attn2' in name:
-                    parameters.append(param)
-            elif train_method == 'full':
+        for name, param in self.model.model.named_parameters():
+            if train_method == 'full':
                 parameters.append(param)
-            elif train_method == 'notime':
-                if not (name.startswith('out.') or 'time_embed' in name):
+            elif train_method == 'xattn' and 'attn2' in name:
+                parameters.append(param)
+            elif train_method == 'selfattn' and 'attn1' in name:
+                parameters.append(param)
+            elif train_method == 'noxattn':
+                if not (name.startswith('out.') or 'attn2' in name or 'time_embed' in name):
                     parameters.append(param)
             elif train_method == 'xlayer':
                 if 'attn2' in name and ('output_blocks.6.' in name or 'output_blocks.8.' in name):
@@ -127,138 +83,196 @@ class EraseDiffTrainer(BaseTrainer):
             elif train_method == 'selflayer':
                 if 'attn1' in name and ('input_blocks.4.' in name or 'input_blocks.7.' in name):
                     parameters.append(param)
-        
-        optimizer = torch.optim.Adam(parameters, lr=self.config['lr'])
-        self.logger.info(f"Optimizer initialized with train_method={train_method}")
-        return optimizer
+
+        self.optimizer = torch.optim.Adam(parameters, lr=self.config.get('lr', 1e-5))
 
     def train(self):
         """
-        Execute the training loop for style removal.
+        Execute the training loop.
         """
-        epochs = self.config['epochs']
-        K_steps = self.config['K_steps']
-        alpha = self.config['alpha']
-        batch_size = self.config['batch_size']
-        device = self.device
-        image_size = self.config['image_size']
-        train_method = self.config['train_method']
+        epochs = self.config.get('epochs', 1)
+        K_steps = self.config.get('K_steps', 2)
+        alpha = self.config.get('alpha', 0.1)
+
+        # Retrieve data loaders
+        data_loaders = self.data_handler.get_data_loaders()
+        forget_dl = data_loaders.get('forget')
+        remain_dl = data_loaders.get('remain')
+
+        self.logger.info(f"Number of forget samples: {len(forget_dl.dataset)}")
+        self.logger.info(f"Number of remain samples: {len(remain_dl.dataset)}")
 
         for epoch in range(epochs):
-            self.model.model.train()
-            pbar = tqdm(range(len(self.forget_dl)), desc=f'Epoch {epoch+1}/{epochs}')
+            self.logger.info(f"Starting Epoch {epoch+1}/{epochs}")
+            with tqdm(total=len(forget_dl), desc=f'Epoch {epoch+1}/{epochs}') as pbar:
+                self.model.train()
+                param_i = self.get_param()
 
-            param_i = get_param(self.model.model)
+                for step in range(K_steps): 
+                    unl_losses = AverageMeter()
+                    for forget_batch in forget_dl:
+                        self.optimizer.zero_grad()
 
-            for j in range(K_steps):
-                unl_losses = AverageMeter()
-                for i, _ in enumerate(self.forget_dl):
-                    self.optimizer.zero_grad()
+                        forget_images, forget_prompts = forget_batch
+                        try:
+                            remain_batch = next(iter(remain_dl))
+                            remain_images, remain_prompts = remain_batch
+                        except StopIteration:
+                            remain_dl = iter(remain_dl)
+                            remain_batch = next(remain_dl)
+                            remain_images, remain_prompts = remain_batch
 
-                    try:
-                        forget_images, forget_prompts = next(iter(self.forget_dl))
-                        remain_images, remain_prompts = next(iter(self.remain_dl))
-                    except StopIteration:
-                        self.forget_dl, self.remain_dl = self.setup_data_loaders()
-                        forget_images, forget_prompts = next(iter(self.forget_dl))
-                        remain_images, remain_prompts = next(iter(self.remain_dl))
+                        pseudo_prompts = remain_prompts
 
-                    # Convert prompts to lists
-                    forget_prompts = list(forget_prompts)
-                    remain_prompts = list(remain_prompts)
-                    pseudo_prompts = remain_prompts
+                        # Forget stage
+                        forget_loss = self.compute_forget_loss(forget_images, forget_prompts, pseudo_prompts)
 
-                    # Forget stage
-                    forget_batch = {
-                        "edited": forget_images.to(device),
-                        "edit": {"c_crossattn": forget_prompts}
-                    }
+                        forget_loss.backward()
+                        self.optimizer.step()
 
-                    pseudo_batch = {
-                        "edited": forget_images.to(device),
-                        "edit": {"c_crossattn": pseudo_prompts}
-                    }
+                        unl_losses.update(forget_loss)
 
-                    forget_input, forget_emb = self.model.get_input(forget_batch, self.config['first_stage_key'])
-                    pseudo_input, pseudo_emb = self.model.get_input(pseudo_batch, self.config['first_stage_key'])
-
-                    t = torch.randint(0, self.model.model.num_timesteps, (forget_input.shape[0],), device=device).long()
-                    noise = torch.randn_like(forget_input, device=device)
-
-                    forget_noisy = self.model.q_sample(x_start=forget_input, t=t, noise=noise)
-                    pseudo_noisy = self.model.q_sample(x_start=pseudo_input, t=t, noise=noise)
-
-                    forget_out = self.model.apply_model(forget_noisy, t, forget_emb)
-                    pseudo_out = self.model.apply_model(pseudo_noisy, t, pseudo_emb).detach()
-
-                    forget_loss = self.criteria(forget_out, pseudo_out)
-                    forget_loss.backward()
-
-                    self.optimizer.step()
-                    unl_losses.update(forget_loss.item())
-                    torch.cuda.empty_cache()
-                    gc.collect()
-
-                self.model = set_param(self.model, param_i)  # Reset model parameters
-
-                # Remain stage
-                for i, _ in enumerate(self.forget_dl):
-                    self.model.model.train()
-                    self.optimizer.zero_grad()
-
-                    try:
-                        forget_images, forget_prompts = next(iter(self.forget_dl))
-                        remain_images, remain_prompts = next(iter(self.remain_dl))
-                    except StopIteration:
-                        self.forget_dl, self.remain_dl = self.setup_data_loaders()
-                        forget_images, forget_prompts = next(iter(self.forget_dl))
-                        remain_images, remain_prompts = next(iter(self.remain_dl))
-
-                    forget_prompts = list(forget_prompts)
-                    remain_prompts = list(remain_prompts)
-                    pseudo_prompts = remain_prompts
+                    self.set_param(param_i)  # Restore original parameters
 
                     # Remain stage
-                    remain_batch = {
-                        "edited": remain_images.to(device),
-                        "edit": {"c_crossattn": remain_prompts}
-                    }
-                    remain_loss = self.model.shared_step(remain_batch)[0]
+                    for remain_batch in remain_dl:
+                        self.model.train()
+                        self.optimizer.zero_grad()
 
-                    # Forget stage
-                    forget_batch = {
-                        "edited": forget_images.to(device),
-                        "edit": {"c_crossattn": forget_prompts}
-                    }
+                        remain_images, remain_prompts = remain_batch
+                        try:
+                            forget_batch = next(iter(forget_dl))
+                            forget_images, forget_prompts = forget_batch
+                        except StopIteration:
+                            forget_dl = iter(forget_dl)
+                            forget_batch = next(forget_dl)
+                            forget_images, forget_prompts = forget_batch
 
-                    pseudo_batch = {
-                        "edited": forget_images.to(device),
-                        "edit": {"c_crossattn": pseudo_prompts}
-                    }
+                        pseudo_prompts = remain_prompts
 
-                    forget_input, forget_emb = self.model.get_input(forget_batch, self.config['first_stage_key'])
-                    pseudo_input, pseudo_emb = self.model.get_input(pseudo_batch, self.config['first_stage_key'])
+                        remain_btch = {
+                            "edited": remain_images.to(self.device),
+                            "edit": {"c_crossattn": remain_prompts}
+                        }
+                        # Remain loss
+                        remain_loss = self.model.shared_step(remain_btch)[0]
 
-                    t = torch.randint(0, self.model.model.num_timesteps, (forget_input.shape[0],), device=device).long()
-                    noise = torch.randn_like(forget_input, device=device)
+                        # Forget loss within remain stage
+                        unlearn_loss = self.compute_unlearn_loss(forget_images, forget_prompts, pseudo_prompts)
 
-                    forget_noisy = self.model.q_sample(x_start=forget_input, t=t, noise=noise)
-                    pseudo_noisy = self.model.q_sample(x_start=pseudo_input, t=t, noise=noise)
+                        q_loss = unlearn_loss - unl_losses.avg.detach()
 
-                    forget_out = self.model.apply_model(forget_noisy, t, forget_emb)
-                    pseudo_out = self.model.apply_model(pseudo_noisy, t, pseudo_emb).detach()
+                        total_loss = remain_loss + alpha * q_loss
+                        total_loss.backward()
+                        self.optimizer.step()
 
-                    unlearn_loss = self.criteria(forget_out, pseudo_out)
-                    q_loss = unlearn_loss - torch.tensor(unl_losses.avg).detach()
-
-                    total_loss = remain_loss + alpha * q_loss
-                    total_loss.backward()
-                    self.optimizer.step()
-
-                    wandb.log({"total_loss": total_loss.item()})
-                    pbar.set_postfix({"loss": total_loss.item() / batch_size})
+                        # Logging
+                        wandb.log({"loss": total_loss.item()})
+                        pbar.set_postfix({"loss": total_loss.item() / self.config.get('batch_size', 4)})
+                        pbar.update(1)
 
             self.logger.info(f"Epoch {epoch+1}/{epochs} completed.")
 
         self.model.model.eval()
         self.logger.info("Training completed.")
+        return self.model.model
+
+    def get_param(self) -> list:
+        """
+        Clone model parameters.
+
+        Returns:
+            list: List of cloned parameters.
+        """
+        new_param = []
+        with torch.no_grad():
+            for name, param in self.model.model.named_parameters():
+                new_param.append(param.clone())
+        torch.cuda.empty_cache()
+        torch.manual_seed(0)
+        return new_param
+
+    def set_param(self, old_param: list):
+        """
+        Set model parameters from a cloned list.
+
+        Args:
+            old_param (list): List of cloned parameters.
+        """
+        with torch.no_grad():
+            for idx, (name, param) in enumerate(self.model.model.named_parameters()):
+                param.copy_(old_param[idx])
+        torch.cuda.empty_cache()
+        torch.manual_seed(0)
+
+    def compute_forget_loss(self, forget_images: torch.Tensor, forget_prompts: list, pseudo_prompts: list) -> torch.Tensor:
+        """
+        Compute the forget loss.
+
+        Args:
+            forget_images (torch.Tensor): Batch of forget images.
+            forget_prompts (list): Corresponding prompts for forget images.
+            pseudo_prompts (list): Pseudo prompts derived from remain prompts.
+
+        Returns:
+            torch.Tensor: Computed forget loss.
+        """
+        forget_batch = {
+            "edited": forget_images.to(self.device),
+            "edit": {"c_crossattn": forget_prompts}
+        }
+        pseudo_batch = {
+            "edited": forget_images.to(self.device),
+            "edit": {"c_crossattn": pseudo_prompts}
+        }
+
+        forget_input, forget_emb = self.model.get_input(forget_batch, self.model.first_stage_key)
+        pseudo_input, pseudo_emb = self.model.get_input(pseudo_batch, self.model.first_stage_key)
+
+        t = torch.randint(0, self.model.num_timesteps, (forget_input.shape[0],), device=self.device).long()
+        noise = torch.randn_like(forget_input, device=self.device)
+
+        forget_noisy = self.model.q_sample(x_start=forget_input, t=t, noise=noise)
+        pseudo_noisy = self.model.q_sample(x_start=pseudo_input, t=t, noise=noise)
+
+        forget_out = self.model.apply_model(forget_noisy, t, forget_emb)
+        pseudo_out = self.model.apply_model(pseudo_noisy, t, pseudo_emb).detach()
+
+        forget_loss = self.criteria(forget_out, pseudo_out)
+        return forget_loss
+
+    def compute_unlearn_loss(self, forget_images: torch.Tensor, forget_prompts: list, pseudo_prompts: list) -> torch.Tensor:
+        """
+        Compute the unlearn loss within the remain stage.
+
+        Args:
+            forget_images (torch.Tensor): Batch of forget images.
+            forget_prompts (list): Corresponding prompts for forget images.
+            pseudo_prompts (list): Pseudo prompts derived from remain prompts.
+
+        Returns:
+            torch.Tensor: Computed unlearn loss.
+        """
+        forget_batch = {
+            "edited": forget_images.to(self.device),
+            "edit": {"c_crossattn": forget_prompts}
+        }
+        pseudo_batch = {
+            "edited": forget_images.to(self.device),
+            "edit": {"c_crossattn": pseudo_prompts}
+        }
+
+        forget_input, forget_emb = self.model.get_input(forget_batch, self.model.first_stage_key)
+        pseudo_input, pseudo_emb = self.model.get_input(pseudo_batch, self.model.first_stage_key)
+
+        t = torch.randint(0, self.model.num_timesteps, (forget_input.shape[0],), device=self.device).long()
+        noise = torch.randn_like(forget_input, device=self.device)
+
+        forget_noisy = self.model.q_sample(x_start=forget_input, t=t, noise=noise)
+        pseudo_noisy = self.model.q_sample(x_start=pseudo_input, t=t, noise=noise)
+
+        forget_out = self.model.apply_model(forget_noisy, t, forget_emb)
+        pseudo_out = self.model.apply_model(pseudo_noisy, t, pseudo_emb).detach()
+
+        unlearn_loss = self.criteria(forget_out, pseudo_out)
+        return unlearn_loss

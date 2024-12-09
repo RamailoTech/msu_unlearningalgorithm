@@ -1,1 +1,14 @@
 data/*
+.vscode*
+logs/*
+!logs/.gitkeep
+
+**/__pycache__/
+*.pyc
+
+mu/wandb
+
+mu/.vscode 
+mu/cache
+results/*
+algorithms/erase_diff/data 

@@ -1,91 +1,102 @@
-from pathlib import Path
-import torch
-from omegaconf import OmegaConf
+# erase_diff/model.py
+
+from core.base_model import BaseModel
 from stable_diffusion.ldm.util import instantiate_from_config
-from mu.core.base_model import BaseModel
+from omegaconf import OmegaConf
+import torch
+from pathlib import Path
+from typing import Any
+
 
 class EraseDiffModel(BaseModel):
     """
-    Model class for the EraseDiff algorithm.
+    EraseDiffModel handles loading, saving, and interacting with the Stable Diffusion model.
     """
+
     def __init__(self, config_path: str, ckpt_path: str, device: str):
+        """
+        Initialize the EraseDiffModel.
+
+        Args:
+            config_path (str): Path to the model configuration file.
+            ckpt_path (str): Path to the model checkpoint.
+            device (str): Device to load the model on (e.g., 'cuda:0').
+        """
         super().__init__()
         self.device = device
         self.config_path = config_path
         self.ckpt_path = ckpt_path
-        self.model = self.setup_model(config_path, ckpt_path, device)
-    
-    def setup_model(self, config_path: str, ckpt_path: str, device: str):
+        self.model = self.load_model(config_path, ckpt_path, device)
+
+    def load_model(self, config_path: str, ckpt_path: str, device: str):
         """
-        Load the model from configuration and checkpoint.
+        Load the Stable Diffusion model from config and checkpoint.
 
         Args:
-            config_path (str): Path to the configuration file.
-            ckpt_path (str): Path to the checkpoint file.
+            config_path (str): Path to the model configuration file.
+            ckpt_path (str): Path to the model checkpoint.
             device (str): Device to load the model on.
 
         Returns:
-            torch.nn.Module: The loaded model.
+            torch.nn.Module: Loaded Stable Diffusion model.
         """
-        config = OmegaConf.load(config_path) if isinstance(config_path, (str, Path)) else config_path
+        if isinstance(config_path, (str, Path)):
+            config = OmegaConf.load(config_path)
+        else:
+            config = config_path  # If already a config object
+
         pl_sd = torch.load(ckpt_path, map_location="cpu")
         sd = pl_sd["state_dict"]
         model = instantiate_from_config(config.model)
-        missing, unexpected = model.load_state_dict(sd, strict=False)
-        if len(missing) > 0:
-            print(f"Missing keys in state_dict: {missing}")
-        if len(unexpected) > 0:
-            print(f"Unexpected keys in state_dict: {unexpected}")
+        model.load_state_dict(sd, strict=False)
         model.to(device)
         model.eval()
         model.cond_stage_model.device = device
         return model
 
-    def get_input(self, batch: dict, key: str):
+    def save_model(self, output_path: str):
         """
-        Process the input batch.
+        Save the trained model's state dictionary.
 
         Args:
-            batch (dict): Input batch.
-            key (str): Key to extract data.
+            output_path (str): Path to save the model checkpoint.
+        """
+        torch.save({"state_dict": self.model.state_dict()}, output_path)
+
+    def forward(self, input_data: Any) -> Any:
+        """
+        Define the forward pass (if needed).
+
+        Args:
+            input_data (Any): Input data for the model.
 
         Returns:
-            Tuple[torch.Tensor, torch.Tensor]: Processed input and conditioning.
+            Any: Model output.
         """
-        # Implement based on your model's requirements
-        # Example:
-        # x = batch[key]["x"]
-        # c = batch[key]["c"]
-        # return x.to(self.device), c.to(self.device)
-        pass
+        pass  # Implement if necessary
 
-    def shared_step(self, batch: dict):
+    def get_learned_conditioning(self, prompts: list) -> Any:
         """
-        Shared step for processing the batch.
+        Obtain learned conditioning for given prompts.
 
         Args:
-            batch (dict): Input batch.
+            prompts (list): List of prompt strings.
 
         Returns:
-            Tuple[torch.Tensor, ...]: Loss and other metrics.
+            Any: Learned conditioning tensors.
         """
-        # Implement based on your model's requirements
-        # Example:
-        # x, c = self.get_input(batch, self.first_stage_key)
-        # loss = some_loss_function(x, c)
-        # return loss, other_metrics
-        pass
+        return self.model.get_learned_conditioning(prompts)
 
-    def apply_model(self, x: torch.Tensor, t: torch.Tensor, c: torch.Tensor):
+    def apply_model(self, z: torch.Tensor, t: torch.Tensor, c: Any) -> torch.Tensor:
         """
-        Apply the model to the input.
+        Apply the model to generate outputs.
 
         Args:
-            x (torch.Tensor): Noisy input.
+            z (torch.Tensor): Noisy latent vectors.
             t (torch.Tensor): Timesteps.
-            c (torch.Tensor): Conditioning.
+            c (Any): Conditioning tensors.
 
         Returns:
-            torch.Tensor: Model output.
+            torch.Tensor: Model outputs.
         """
-        return self.model.apply_model(x, t, c)
+        return self.model.apply_model(z, t, c)
