@@ -1,58 +1,87 @@
-# saliency_unlearning_algorithm.py
+# algorithms/saliency_unlearning/algorithm.py
 
+from core.base_algorithm import BaseAlgorithm
+from algorithms.saliency_unlearning.model import SaliencyUnlearnModel
+from algorithms.saliency_unlearning.trainer import SaliencyUnlearnTrainer
+from algorithms.saliency_unlearning.data_handler import SaliencyUnlearnDataHandler
+import torch
+import wandb
 from typing import Dict
+import logging
 
-class SaliencyUnlearningAlgorithm(BaseAlgorithm):
+class SaliencyUnlearnAlgorithm(BaseAlgorithm):
+    """
+    SaliencyUnlearnAlgorithm orchestrates the training process for the SaliencyUnlearn method.
+    """
+
     def __init__(self, config: Dict):
-        self.config = config
+        """
+        Initialize the SaliencyUnlearnAlgorithm.
 
-        # Initialize DataHandler
-        self.data_handler = SaliencyDataHandler(
-            forget_data_dir=config['forget_data_dir'],
-            remain_data_dir=config['remain_data_dir'],
-            image_size=config.get('image_size', 512)
+        Args:
+            config (Dict): Configuration dictionary.
+        """
+        self.config = config
+        self.model = None
+        self.trainer = None
+        self.data_handler = None
+        self.device = torch.device(self.config.get('devices', ['cuda:0'])[0])
+        self.logger = logging.getLogger(__name__)
+        self._setup_components()
+
+    def _setup_components(self):
+        """
+        Setup model, data handler, and trainer components.
+        """
+        self.logger.info("Setting up SaliencyUnlearn components...")
+        
+        # Initialize Data Handler
+        self.data_handler = SaliencyUnlearnDataHandler(
+            original_data_dir=self.config.get('original_data_dir'),
+            new_data_dir=self.config.get('new_data_dir'),
+            mask_path=self.config.get('mask_path'),
+            selected_theme=self.config.get('theme'),
+            selected_class=self.config.get('class'), 
+            batch_size=self.config.get('batch_size', 4),
+            image_size=self.config.get('image_size', 512),
+            interpolation=self.config.get('interpolation', 'bicubic'),
+            use_sample=self.config.get('use_sample', False),
+            num_workers=self.config.get('num_workers', 4),
+            pin_memory=self.config.get('pin_memory', True)
         )
 
         # Initialize Model
-        self.model = SaliencyModel()
-        self.model.load_model(
-            config_path=config['config_path'],
-            ckpt_path=config['ckpt_path'],
-            device=config.get('device', 'cuda')
+        self.model = SaliencyUnlearnModel(
+            config_path=self.config.get('config_path'),
+            ckpt_path=self.config.get('ckpt_path'),
+            mask=self.data_handler.saliency_mask,  # Assuming mask is loaded here
+            device=str(self.device)
         )
 
         # Initialize Trainer
-        self.trainer = SaliencyTrainer(
+        self.trainer = SaliencyUnlearnTrainer(
             model=self.model,
-            config=config
+            config=self.config,
+            device=str(self.device),
+            data_handler=self.data_handler
         )
 
     def run(self):
-        batch_size = self.config.get('batch_size', 4)
-        forget_loader, remain_loader = self.data_handler.get_data_loaders(batch_size)
+        """
+        Execute the training process.
+        """
+        # Initialize WandB
+        wandb.init(project='quick-canvas-machine-unlearning', name=self.config.get('theme', 'SaliencyUnlearn'), config=self.config)
+        self.logger.info("Initialized WandB for logging.")
 
-        prompt = self.config['prompt']
-        c_guidance = self.config.get('c_guidance', 1.0)
-        num_timesteps = self.config.get('num_timesteps', 1000)
-        threshold = self.config.get('threshold', 0.5)
+        # Start training
+        trained_model = self.trainer.train()
 
-        # Compute the saliency mask
-        self.trainer.compute_saliency_mask(
-            forget_loader=forget_loader,
-            prompt=prompt,
-            c_guidance=c_guidance,
-            num_timesteps=num_timesteps,
-            threshold=threshold
-        )
+        # Save the trained model
+        output_name = self.config.get('output_name', 'saliency_unlearn_model.pth')
+        self.model.save_model(output_name)
+        self.logger.info(f"Trained model saved at {output_name}")
+        wandb.save(output_name)
 
-        epochs = self.config.get('epochs', 1)
-        alpha = self.config.get('alpha', 0.1)
-        self.trainer.train(
-            forget_loader=forget_loader,
-            remain_loader=remain_loader,
-            epochs=epochs,
-            alpha=alpha
-        )
-
-        output_path = self.config.get('output_path', 'output_model.ckpt')
-        self.trainer.save_checkpoint(output_path)
+        # Finish WandB run
+        wandb.finish()
