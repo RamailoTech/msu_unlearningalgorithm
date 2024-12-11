@@ -1,4 +1,4 @@
-name: mu_erase_diff
+name: mu_saliency_unlearning
 channels:
   - pytorch
   - defaults

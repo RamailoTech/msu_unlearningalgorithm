@@ -1,4 +1,4 @@
-name: unlearn_canvas
+name: mu_esd
 channels:
   - pytorch
   - defaults
