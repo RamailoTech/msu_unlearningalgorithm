@@ -7,9 +7,6 @@ from tqdm import tqdm
 import argparse
 import logging
 
-# Ensure the parent directory is in the path
-sys.path.append('.')
-
 from algorithms.saliency_unlearning.algorithm import SaliencyUnlearnAlgorithm
 from algorithms.saliency_unlearning.utils import load_model_from_config
 from datasets.constants import theme_available, class_available

@@ -48,5 +48,27 @@ python -m algorithms.saliency_unlearning.scripts.train \
 - `data_handler.py` : Implementation of DataHandler class
 
 
- python -m algorithms.saliency_unlearning.scripts.train --config_path "algorithms/erase_diff/config/train_config.yaml" --ckpt_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" --output_dir "/home/ubuntu/Projects/msu_unlearningalgorithm/data/results/erase_diff/models" --theme "Abstractionism" --class "Architectures" --use_sample 
+For running the masking script 
+
+ python -m algorithms.saliency_unlearning.scripts.generate_mask --config_path "algorithms/saliency_unlearning/config/train_config.yaml" --ckpt_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" --output_dir "/home/ubuntu/Projects/msu_unlearningalgorithm/data/results/saliency_unlearning/models" --theme "Abstractionism"   --forget_data_dir "data" --remain_data_dir "data/Seed_Images" --output_dir "data/masks" 
+
+
+ python -m algorithms.saliency_unlearning.scripts.train --config_path "algorithms/saliency_unlearning/config/train_config.yaml" --ckpt_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" --output_dir "/home/ubuntu/Projects/msu_unlearningalgorithm/data/results/saliency_unlearning/models" --theme "Abstractionism" --class "Architectures" --use_sample 
+
+Running generate_mask
+
+ python scripts/generate_mask.py \
+    --ckpt_path "path/to/checkpoint.ckpt" \
+    --config_path "configs/saliency_unlearn_config.yaml" \
+    --theme "Abstractionism" \
+    --forget_data_dir "data" \
+    --remain_data_dir "data/Seed_Images" \
+    --output_dir "output/masks" \
+    --threshold 0.4 \
+    --c_guidance 7.5 \
+    --batch_size 4 \
+    --image_size 512 \
+    --num_timesteps 1000 \
+    --lr 1e-5
+
 
