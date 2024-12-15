@@ -26,6 +26,7 @@ def main():
     parser.add_argument('--image_size', help='Image size for training', type=int, default=512)
     parser.add_argument('--lr', help='Learning rate for optimizer', type=float, default=1e-5)
     parser.add_argument('--device', help='Device to use for training', type=str, default='cuda:0')
+    parser.add_argument('--use_sample', action='store_true', help='Use the sample dataset for training')
 
     args = parser.parse_args()
 
@@ -44,7 +45,7 @@ def main():
         'new_data_dir': args.new_data_dir,
         'mask_path': None,
         'theme': args.theme,
-        'class': '',
+        'class': args.classes,
         'batch_size': args.batch_size,
         'image_size': args.image_size,
         'interpolation': 'bicubic',
@@ -60,7 +61,9 @@ def main():
         'c_guidance': args.c_guidance,
         'num_timesteps': args.num_timesteps,
         'threshold': args.threshold,
-        'prompt': prompt
+        'prompt': prompt,
+        'use_sample': args.use_sample
+
     }
 
     algorithm = MaskingAlgorithm(config)

@@ -1,41 +1,36 @@
-# algorithms/saliency_unlearning/datasets/saliency_unlearn_dataset.py
+# algorithms/erase_diff/datasets/erase_diff_dataset.py
 
 import os
-import torch 
 from typing import Any, Tuple, Dict
 from torch.utils.data import DataLoader
 from datasets.unlearn_canvas_dataset import UnlearnCanvasDataset
 from datasets.transforms import INTERPOLATIONS, get_transform
 
-class SaliencyUnlearnDataset(UnlearnCanvasDataset):
+class ScissorHandsDataset(UnlearnCanvasDataset):
     """
-    Dataset class for the SaliencyUnlearn algorithm.
+    Dataset class for the ScissorHands algorithm.
     Extends UnlearnCanvasDataset to handle specific requirements.
-    Manages both 'forget' and 'remain' datasets, with support for masks.
+    Manages both 'forget' and 'remain' datasets.
     """
 
     def __init__(
         self,
         forget_data_dir: str,
         remain_data_dir: str,
-        mask_path: str,
         selected_theme: str,
         selected_class: str,
         use_sample: bool = False,
         image_size: int = 512,
         interpolation: str = 'bicubic',
         batch_size: int = 4,
-        num_workers: int = 4,
-        pin_memory: bool = True,
-        use_mask:bool = False
+        num_workers: int = 4
     ):
         """
-        Initialize the SaliencyUnlearnDataset.
+        Initialize the ScissorHandsDataset.
 
         Args:
             forget_data_dir (str): Directory containing forget dataset.
             remain_data_dir (str): Directory containing remain dataset.
-            mask_path (str): Path to the mask file.
             selected_theme (str): Theme to filter images.
             selected_class (str): Class to filter images.
             use_sample (bool, optional): Whether to use sample constants. Defaults to False.
@@ -70,27 +65,17 @@ class SaliencyUnlearnDataset(UnlearnCanvasDataset):
             transform=transform
         )
 
-        if use_mask :
-            # Load mask
-            if not os.path.isfile(mask_path):
-                raise FileNotFoundError(f"Mask file not found at {mask_path}")
-            self.mask = torch.load(mask_path)
-
         # Initialize DataLoaders
         self.forget_loader = DataLoader(
             self.forget_dataset,
             batch_size=batch_size,
             shuffle=True,
-            num_workers=num_workers,
-            pin_memory=pin_memory
-        )
+         )
 
         self.remain_loader = DataLoader(
             self.remain_dataset,
             batch_size=batch_size,
-            shuffle=True,
-            num_workers=num_workers,
-            pin_memory=pin_memory
+            shuffle=True
         )
 
     def get_data_loaders(self) -> Dict[str, DataLoader]:
@@ -126,11 +111,3 @@ class SaliencyUnlearnDataset(UnlearnCanvasDataset):
         """
         return self.forget_dataset[idx]
 
-    def get_mask(self) -> Dict[str, torch.Tensor]:
-        """
-        Retrieve the mask associated with the forget dataset.
-
-        Returns:
-            Dict[str, torch.Tensor]: Mask dictionary.
-        """
-        return self.mask

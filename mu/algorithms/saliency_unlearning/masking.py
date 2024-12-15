@@ -17,10 +17,10 @@ def accumulate_gradients_for_mask(model, forget_loader, prompt, c_guidance, devi
     # Set model to train mode
     model.model.train()
     criteria = MSELoss()
-    optimizer = torch.optim.Adam(model.model.diffusion_model.parameters(), lr=lr)
+    optimizer = torch.optim.Adam(model.model.model.diffusion_model.parameters(), lr=lr)
 
     # Dictionary to accumulate gradients
-    gradients = {name: 0.0 for name, _ in model.model.diffusion_model.named_parameters()}
+    gradients = {name: 0.0 for name, _ in model.model.model.diffusion_model.named_parameters()}
 
     logger = logging.getLogger(__name__)
     logger.info("Starting gradient accumulation for mask generation...")
@@ -64,7 +64,7 @@ def accumulate_gradients_for_mask(model, forget_loader, prompt, c_guidance, devi
             optimizer.step()
 
             # Accumulate absolute gradients
-            for name, param in model.model.diffusion_model.named_parameters():
+            for name, param in model.model.model.diffusion_model.named_parameters():
                 if param.grad is not None:
                     gradients[name] += torch.abs(param.grad.data.cpu())
 
@@ -72,9 +72,24 @@ def accumulate_gradients_for_mask(model, forget_loader, prompt, c_guidance, devi
             pbar.update(1)
 
     # Now compute the mask based on threshold
-    mask = create_mask_from_gradients(gradients, threshold)
+    mask = create_mask_from_gradients_optimized(gradients, threshold)
     return mask
 
+def create_mask_from_gradients_optimized(gradients, threshold):
+    """
+    Given a dictionary of gradients (accumulated absolute gradients) and a threshold,
+    create a binary mask dictionary in a memory-efficient way.
+    """
+    # Compute the global threshold value without concatenating
+    all_abs_values = torch.cat([torch.abs(g).flatten() for g in gradients.values()])
+    threshold_value = torch.topk(all_abs_values, int(len(all_abs_values) * threshold)).values.min()
+
+    # Create binary masks without full concatenation
+    mask_dict = {}
+    for key, tensor in gradients.items():
+        mask_dict[key] = (torch.abs(tensor) >= threshold_value).to(tensor.dtype)
+
+    return mask_dict
 
 def create_mask_from_gradients(gradients, threshold):
     """

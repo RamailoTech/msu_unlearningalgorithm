@@ -1,3 +1,5 @@
+# scissorhands/logger.py
+
 import logging
 from pathlib import Path
 

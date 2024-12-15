@@ -1,66 +1,56 @@
-# algorithms/saliency_unlearning/data_handler.py
-
 import os
 from typing import Any, Dict, List
 from torch.utils.data import DataLoader
-from algorithms.saliency_unlearning.datasets.saliency_unlearn_dataset import SaliencyUnlearnDataset
-from algorithms.saliency_unlearning.logger import setup_logger
-from core.base_data_handler import BaseDataHandler
-from datasets.constants import *
+from algorithms.scissorhands.datasets.scissorhands_dataset import ScissorHandsDataset
 
-class SaliencyUnlearnDataHandler(BaseDataHandler):
+from algorithms.scissorhands.logger import setup_logger
+from core.base_data_handler import BaseDataHandler
+
+from datasets.constants import * 
+
+class ScissorHandsDataHandler(BaseDataHandler):
     """
-    Concrete data handler for the SaliencyUnlearn algorithm.
-    Manages forget and remain datasets through SaliencyUnlearnDataset.
-    Handles mask loading and application.
+    Concrete data handler for the ScissorHands algorithm.
+    Manages forget and remain datasets through ScissorHandsDataset.
     """
     
     def __init__(
         self,
         original_data_dir: str,
         new_data_dir: str,
-        mask_path: str,
         selected_theme: str,
         selected_class: str,
-        use_sample: bool = False,
         batch_size: int = 4,
         image_size: int = 512,
         interpolation: str = 'bicubic',
-        num_workers: int = 4,
-        pin_memory: bool = True,
-        use_mask: bool = False
+        use_sample: bool = False,
     ):
         """
-        Initialize the SaliencyUnlearnDataHandler.
+        Initialize the ScissorHandsDataHandler.
 
         Args:
             original_data_dir (str): Directory containing the original dataset organized by themes and classes.
             new_data_dir (str): Directory where the new datasets will be saved.
-            mask_path (str): Path to the mask file.
             selected_theme (str): Theme to filter images.
             selected_class (str): Class to filter images.
-            use_sample (bool, optional): Whether to use sample datasets. Defaults to False.
             batch_size (int, optional): Batch size for data loaders. Defaults to 4.
             image_size (int, optional): Size to resize images. Defaults to 512.
             interpolation (str, optional): Interpolation mode. Defaults to 'bicubic'.
+            use_sample (bool, optional): Whether to use sample datasets. Defaults to False.
             num_workers (int, optional): Number of worker threads for data loading. Defaults to 4.
             pin_memory (bool, optional): Whether to pin memory in DataLoader. Defaults to True.
         """
         self.original_data_dir = original_data_dir
         self.new_data_dir = new_data_dir
-        self.mask_path = mask_path
         self.selected_theme = selected_theme
         self.selected_class = selected_class
-        self.use_sample = use_sample
         self.batch_size = batch_size
         self.image_size = image_size
         self.interpolation = interpolation
-        self.num_workers = num_workers
-        self.pin_memory = pin_memory
-        self.use_mask = use_mask
+        self.use_sample = use_sample
 
         # Initialize logger
-        self.logger = setup_logger('SaliencyUnlearnDataHandler')
+        self.logger = setup_logger('ScissorHandsDataHandler')
 
         # Generate the dataset upon initialization
         self.generate_dataset()
@@ -151,7 +141,7 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
     def load_data(self, data_path: str) -> Any:
         """
         Load data from the specified path.
-        For SaliencyUnlearn, this involves loading image paths and prompts.
+        For ScissorHands, this involves loading image paths and prompts.
 
         Args:
             data_path (str): Path to the data.
@@ -174,7 +164,7 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
     def preprocess_data(self, data: Any) -> Any:
         """
         Preprocess the data.
-        For SaliencyUnlearn, this is handled by the Dataset class via transformations.
+        For ScissorHands, this is handled by the Dataset class via transformations.
 
         Args:
             data (Any): Raw data to preprocess.
@@ -205,24 +195,19 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
         else:
             forget_data_dir = os.path.join(self.new_data_dir, self.selected_theme)
             remain_data_dir = os.path.join(self.new_data_dir, "Seed_Images")
-        # Initialize SaliencyUnlearnDataset
-        saliency_unlearn_dataset = SaliencyUnlearnDataset(
+        # Initialize ScissorHandsDataset
+        scissorhands_dataset = ScissorHandsDataset(
             forget_data_dir=forget_data_dir,
             remain_data_dir=remain_data_dir,
-            mask_path=self.mask_path,
             selected_theme=self.selected_theme,
             selected_class=self.selected_class,
             use_sample=self.use_sample,
             image_size=self.image_size,
-            interpolation=self.interpolation,
-            batch_size=batch_size,
-            num_workers=self.num_workers,
-            pin_memory=self.pin_memory,
-            use_mask = self.use_mask
+            interpolation=self.interpolation
         )
 
         # Retrieve DataLoaders
-        data_loaders = saliency_unlearn_dataset.get_data_loaders()
+        data_loaders = scissorhands_dataset.get_data_loaders()
 
         return data_loaders
 

@@ -68,6 +68,10 @@ class SaliencyUnlearnTrainer(BaseTrainer):
 
         self.optimizer = torch.optim.Adam(parameters, lr=self.config.get('lr', 1e-5))
 
+    def setup_models(self, *args, **kwargs):
+        """Set up the models for training."""
+        pass
+    
     def train(self):
         """
         Execute the training loop.

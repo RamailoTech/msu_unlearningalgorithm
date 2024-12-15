@@ -50,10 +50,10 @@ python -m algorithms.saliency_unlearning.scripts.train \
 
 For running the masking script 
 
- python -m algorithms.saliency_unlearning.scripts.generate_mask --config_path "algorithms/saliency_unlearning/config/train_config.yaml" --ckpt_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" --output_dir "/home/ubuntu/Projects/msu_unlearningalgorithm/data/results/saliency_unlearning/models" --theme "Abstractionism"   --forget_data_dir "data" --remain_data_dir "data/Seed_Images" --output_dir "data/masks" 
+ python -m algorithms.saliency_unlearning.scripts.generate_mask --config_path "algorithms/saliency_unlearning/config/train_config.yaml" --ckpt_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" --theme "Abstractionism" --class "Architectures" --output_dir "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/saliency_unlearning/data/masks" 
 
 
- python -m algorithms.saliency_unlearning.scripts.train --config_path "algorithms/saliency_unlearning/config/train_config.yaml" --ckpt_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" --output_dir "/home/ubuntu/Projects/msu_unlearningalgorithm/data/results/saliency_unlearning/models" --theme "Abstractionism" --class "Architectures" --use_sample 
+ python -m algorithms.saliency_unlearning.scripts.train --config_path "algorithms/saliency_unlearning/config/train_config.yaml" --ckpt_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" --output_dir "/home/ubuntu/Projects/msu_unlearningalgorithm/data/results/saliency_unlearning/models" --theme "Abstractionism" --classes "Architectures" --mask_path "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/saliency_unlearning/data/masks/Abstractionism/0.5.pt" --use_sample 
 
 Running generate_mask
 

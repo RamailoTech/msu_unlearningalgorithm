@@ -48,14 +48,19 @@ class SaliencyUnlearnAlgorithm(BaseAlgorithm):
             interpolation=self.config.get('interpolation', 'bicubic'),
             use_sample=self.config.get('use_sample', False),
             num_workers=self.config.get('num_workers', 4),
-            pin_memory=self.config.get('pin_memory', True)
+            pin_memory=self.config.get('pin_memory', True),
+            use_mask=True
         )
+        
+        mask_path=self.config.get('mask_path')
 
+        if mask_path is not None:
+            mask = torch.load(mask_path)
         # Initialize Model
         self.model = SaliencyUnlearnModel(
             config_path=self.config.get('config_path'),
             ckpt_path=self.config.get('ckpt_path'),
-            mask={},  # Empty mask at initialization
+            mask=mask,
             device=str(self.device)
         )
 
