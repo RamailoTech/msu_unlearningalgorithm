@@ -1,0 +1,33 @@
+# unified_concept_editing/config/train_config.yaml
+
+# Training parameters
+train_method: "full"  # Options: full, partial
+alpha: 0.1
+epochs: 10
+lr: 5e-5
+
+# Model configuration
+config_path: "configs/model_config.yaml"
+ckpt_path: "path/to/checkpoint"
+
+# Output configurations
+output_dir: "results/unified_concept_editing/"
+theme: "desired_theme"
+classes: "desired_class"
+
+
+# Device configuration
+devices: 
+  - "cuda:0"
+
+# Additional flags
+use_sample: true
+
+# Editing specific parameters
+guided_concepts: null  # Comma-separated string if multiple concepts, e.g., "concept1,concept2"
+technique: "replace"  # Options: replace, tensor
+
+preserve_scale: null  # Float value, e.g., 0.1
+erase_scale: 1.0
+lamb: 0.5
+add_prompts: false

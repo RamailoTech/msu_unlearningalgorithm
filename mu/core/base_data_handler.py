@@ -12,7 +12,6 @@ class BaseDataHandler(ABC):
     Defines the interface for loading, preprocessing, and providing data loaders.
     """
 
-    @abstractmethod
     def load_data(self, data_path: str) -> Any:
         """
         Load data from the specified path.
@@ -25,7 +24,7 @@ class BaseDataHandler(ABC):
         """
         pass
 
-    @abstractmethod
+    
     def preprocess_data(self, data: Any) -> Any:
         """
         Preprocess the data (e.g., normalization, augmentation).
@@ -38,7 +37,6 @@ class BaseDataHandler(ABC):
         """
         pass
 
-    @abstractmethod
     def get_data_loaders(self, batch_size: int) -> Dict[str, DataLoader]:
         """
         Get data loaders for various data splits.
