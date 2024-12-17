@@ -46,5 +46,11 @@ python -m algorithms.unified_concept_editing.scripts.train \
 - `data_handler.py` : Implementation of DataHandler class
 
 
- python -m algorithms.unified_concept_editing.scripts.train --config_path "algorithms/unified_concept_editing/config/train_config.yaml" --ckpt_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" --output_dir "/home/ubuntu/Projects/msu_unlearningalgorithm/data/results/erase_diff/models" --theme "Abstractionism" --class "Architectures" --use_sample 
 
+ python -m algorithms.unified_concept_editing.scripts.train --config 
+"/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/unified_concept_editing/config/train_config.yaml"
+
+
+
+
+python3 train_erase.py --ckpt "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50" --theme Abstractionism --output_dir "results/style50/"  --erase_scale 0.01 --lamb 10.0 --guided_concepts "A Elephant image" --add_prompts

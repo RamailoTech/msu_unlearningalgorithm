@@ -5,8 +5,8 @@ import os
 import logging
 import yaml
 
-from unified_concept_editing.algorithm import UnifiedConceptEditingAlgorithm
-from unified_concept_editing.utils import setup_logger
+from algorithms.unified_concept_editing.algorithm import UnifiedConceptEditingAlgorithm
+from algorithms.unified_concept_editing.logger import setup_logger
 
 
 def main():

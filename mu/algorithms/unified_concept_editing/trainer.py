@@ -1,9 +1,9 @@
 # unified_concept_editing/trainer.py
 
 from core.base_trainer import BaseTrainer
-from unified_concept_editing.model import UnifiedConceptEditingModel
-from unified_concept_editing.data_handler import UnifiedConceptEditingDataHandler
-from unified_concept_editing.utils import setup_logger
+from algorithms.unified_concept_editing.model import UnifiedConceptEditingModel
+from algorithms.unified_concept_editing.data_handler import UnifiedConceptEditingDataHandler
+from algorithms.unified_concept_editing.logger import setup_logger
 import logging
 from typing import List, Optional
 
@@ -75,6 +75,6 @@ class UnifiedConceptEditingTrainer(BaseTrainer):
         )
 
         # Save the edited model
-        output_name = self.config.get('output_name', 'unified_concept_editing_model.pth')
+        output_name = self.config.get('output_dir', 'unified_concept_editing_model.pth')
         self.model.save_model(output_name)
         self.logger.info(f"Edited model saved at {output_name}")

@@ -30,6 +30,7 @@ class UnifiedConceptEditingModel(BaseModel):
         self.unet = self.model.unet  # Expose UNet for editing
         self.logger = logging.getLogger(__name__)
 
+
     def load_model(self, ckpt_path: str, device: str) -> StableDiffusionPipeline:
         """
         Load the Stable Diffusion model from the checkpoint.
@@ -41,13 +42,11 @@ class UnifiedConceptEditingModel(BaseModel):
         Returns:
             StableDiffusionPipeline: Loaded Stable Diffusion model.
         """
-        self.logger.info(f"Loading model from {ckpt_path} to device {device}...")
         model = StableDiffusionPipeline.from_pretrained(
             ckpt_path,
             torch_dtype=torch.float16 if device.startswith('cuda') else torch.float32
         ).to(device)
         model.enable_attention_slicing()  # Optimize memory usage
-        self.logger.info("Model loaded successfully.")
         return model
 
     def save_model(self, output_path: str):
@@ -88,7 +87,6 @@ class UnifiedConceptEditingModel(BaseModel):
         Returns:
             StableDiffusionPipeline: Edited Stable Diffusion model.
         """
-        self.logger.info("Starting model editing process...")
         sub_nets = self.unet.named_children()
         ca_layers = []
         for net in sub_nets:
@@ -212,11 +210,12 @@ class UnifiedConceptEditingModel(BaseModel):
 
                         for_mat1 = (value_vector @ context_vector_T).sum(dim=0)
                         for_mat2 = (context_vector @ context_vector_T).sum(dim=0)
+                        if preserve_scale is None:
+                            preserve_scale = max(0.1, 1 / len(retain_texts))
                         mat1 += preserve_scale * for_mat1
                         mat2 += preserve_scale * for_mat2
 
                         # Update projection matrix
-                        projection_matrices[layer_num].weight = nn.Parameter(mat1 @ torch.inverse(mat2))
+                        projection_matrices[layer_num].weight = torch.nn.Parameter(mat1 @ torch.inverse(mat2))
 
-        self.logger.info(f'Current model status: Edited "{old_texts}" into "{new_texts}" and Retained "{retain_texts}"')
         return self.model

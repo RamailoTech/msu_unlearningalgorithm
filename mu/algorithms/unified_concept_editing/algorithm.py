@@ -1,9 +1,9 @@
 # unified_concept_editing/algorithm.py
 
 from core.base_algorithm import BaseAlgorithm
-from unified_concept_editing.model import UnifiedConceptEditingModel
-from unified_concept_editing.trainer import UnifiedConceptEditingTrainer
-from unified_concept_editing.data_handler import UnifiedConceptEditingDataHandler
+from algorithms.unified_concept_editing.model import UnifiedConceptEditingModel
+from algorithms.unified_concept_editing.trainer import UnifiedConceptEditingTrainer
+from algorithms.unified_concept_editing.data_handler import UnifiedConceptEditingDataHandler
 import torch
 import wandb
 import logging
@@ -38,16 +38,11 @@ class UnifiedConceptEditingAlgorithm(BaseAlgorithm):
         
         # Initialize Data Handler
         self.data_handler = UnifiedConceptEditingDataHandler(
-            original_data_dir=self.config.get('original_data_dir'),
-            new_data_dir=self.config.get('new_data_dir'),
+
             selected_theme=self.config.get('theme'),
             selected_class=self.config.get('classes'),
-            batch_size=self.config.get('batch_size', 4),
-            image_size=self.config.get('image_size', 512),
-            interpolation=self.config.get('interpolation', 'bicubic'),
             use_sample=self.config.get('use_sample', False),
-            num_workers=self.config.get('num_workers', 4),
-            pin_memory=self.config.get('pin_memory', True)
+
         )
 
         # Initialize Model

@@ -10,18 +10,18 @@ class BaseTrainer(ABC):
         self.model = model
         self.config = config
 
-    @abstractmethod
+    # @abstractmethod
     def setup_models(self, *args, **kwargs):
         """Set up the models for training."""
         pass
 
 
-    @abstractmethod
+    # @abstractmethod
     def setup_optimizer(self, *args, **kwargs):
         """Set up the optimizers for training."""
         pass
 
-    @abstractmethod
+    # @abstractmethod
     def train(self, *args, **kwargs):
         """Train the model."""
         pass
