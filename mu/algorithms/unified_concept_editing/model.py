@@ -48,17 +48,6 @@ class UnifiedConceptEditingModel(BaseModel):
         model.enable_attention_slicing()  # Optimize memory usage
         return model
 
-    def save_model(self, output_path: str):
-        """
-        Save the model's state dictionary.
-
-        Args:
-            output_path (str): Path to save the model checkpoint.
-        """
-        self.logger.info(f"Saving model to {output_path}...")
-        torch.save({"state_dict": self.model.state_dict()}, output_path)
-        self.logger.info("Model saved successfully.")
-
     def edit_model(
         self,
         old_texts: List[str],

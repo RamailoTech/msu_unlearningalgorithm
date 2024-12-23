@@ -73,11 +73,6 @@ class SelectiveAmnesiaModel(BaseModel):
         """
         self.fim_dict = load_fim(self.fim_path)
 
-    def save_model(self, output_path: str):
-        self.logger.info(f"Saving model to {output_path}...")
-        torch.save({"state_dict": self.model.state_dict()}, output_path)
-        self.logger.info("Model saved successfully.")
-
     def forward(self, *args, **kwargs):
         # Implement forward pass if needed
         pass

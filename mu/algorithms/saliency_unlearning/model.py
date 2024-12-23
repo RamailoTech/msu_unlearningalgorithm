@@ -77,17 +77,6 @@ class SaliencyUnlearnModel(BaseModel):
                 param.data *= self.mask[name].to(self.device)
                 # Optionally, register hooks if dynamic masking is needed
 
-    def save_model(self, output_path: str):
-        """
-        Save the trained model's state dictionary.
-
-        Args:
-            output_path (str): Path to save the model checkpoint.
-        """
-        self.logger.info(f"Saving model to {output_path}...")
-        torch.save({"state_dict": self.model.state_dict()}, output_path)
-        self.logger.info("Model saved successfully.")
-
     def forward(self, input_data: Any) -> Any:
         """
         Define the forward pass (if needed).

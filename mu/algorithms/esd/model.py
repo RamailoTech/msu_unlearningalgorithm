@@ -14,7 +14,6 @@ class ESDModel(BaseModel):
         self.config_path = config_path
         self.ckpt_path = ckpt_path
         self.model = self.load_model(config_path, ckpt_path, device)
-        self.logger = logging.getLogger(__name__)
 
     def load_model(self, config_path: str, ckpt_path: str, device: str):
         # Load model from config and checkpoint
@@ -31,12 +30,6 @@ class ESDModel(BaseModel):
         model.eval()
         model.cond_stage_model.device = device
         return model
-
-    def save_model(self, output_path: str):
-        # Save the trained model
-        self.logger.info(f"Saving model to {output_path}...")
-        torch.save({"state_dict": self.model.state_dict()}, output_path)
-        self.logger.info("Model saved successfully.")
 
     def forward(self, input_data: Any) -> Any:
         pass
