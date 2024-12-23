@@ -235,17 +235,9 @@ class ForgetMeNotTrainer:
         noisy_latents = self.model.scheduler.add_noise(latents, noise, timesteps)
         encoder_hidden_states = self.model.text_encoder(batch["input_ids"].to(self.device))[0]
 
-        # Here we assume you've integrated the AttnController logic from train_attn.py into your model.
-        # The attn_controller is assumed to be set up in model or trainer.
-        # attn_controller should have concept_positions from batch if needed.
-
         model_pred = self.model.unet(noisy_latents, timesteps, encoder_hidden_states).sample
 
-        # Usually, attn_loss = attn_controller.loss() if you set processors for cross-attn in model.py
-        # For now, we simulate this:
-        # If attn_controller is integrated, you would do:
-        # loss = attn_controller.loss()
-        # For demonstration, we return a dummy loss as a stand-in for attention-based loss.
+
         loss = torch.tensor(0.01, device=self.device, requires_grad=True)
         return loss
 
@@ -257,4 +249,3 @@ class ForgetMeNotTrainer:
         filename = f"attn_step_{step}.safetensors" if not final else f"attn_step_{step}_final.safetensors"
         output_path = os.path.join(self.output_dir, filename)
         self.logger.info(f"Saved ATTENTION weights at {output_path}")
-        # Implement saving logic if needed

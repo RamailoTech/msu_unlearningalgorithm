@@ -27,8 +27,8 @@ class ForgetMeNotDataHandler(BaseDataHandler):
         Perform any setup required before loading/preprocessing data.
         """
         # If any special setup is needed before data loading, implement here.
-        pass
-
+        self.generate_dataset()
+                    
     def load_data(self, data_path: str) -> Any:
         """
         Load data from the specified path.
@@ -99,77 +99,34 @@ class ForgetMeNotDataHandler(BaseDataHandler):
         Generate datasets by organizing images into themes and classes.
         This method encapsulates the dataset generation logic.
         """
-        self.logger.info("Starting dataset generation...")
-        # For style unlearning
+        dataset_dir = self.original_data_dir
+
+        # Ensure the base data directory exists
+        os.makedirs(self.new_data_dir, exist_ok=True)
+
+        # Generate datasets for themes
         for theme in uc_sample_theme_available:
             theme_dir = os.path.join(self.new_data_dir, theme)
             os.makedirs(theme_dir, exist_ok=True)
-            prompt_list = []
-            path_list = []
-            for class_ in uc_sample_class_available:
-                for idx in [1, 2, 3]:
-                    prompt = f"A {class_} image in {theme.replace('_', ' ')} style."
-                    image_path = os.path.join(self.original_data_dir, theme, class_, f"{idx}.jpg")
-                    if os.path.exists(image_path):
-                        prompt_list.append(prompt)
-                        path_list.append(image_path)
-                    else:
-                        self.logger.warning(f"Image not found: {image_path}")
-            # Write prompts and images to text files
-            prompts_txt_path = os.path.join(theme_dir, 'prompts.txt')
-            images_txt_path = os.path.join(theme_dir, 'images.txt')
-            with open(prompts_txt_path, 'w') as f:
-                f.write('\n'.join(prompt_list))
-            with open(images_txt_path, 'w') as f:
-                f.write('\n'.join(path_list))
-            self.logger.info(f"Generated dataset for theme '{theme}' with {len(path_list)} samples.")
 
-        # For Seed Images
-        seed_theme = "Seed_Images"
-        seed_dir = os.path.join(self.new_data_dir, seed_theme)
-        os.makedirs(seed_dir, exist_ok=True)
-        prompt_list = []
-        path_list = []
-        for class_ in uc_sample_class_available:
-            for idx in [1, 2, 3]:
-                prompt = f"A {class_} image in Photo style."
-                image_path = os.path.join(self.original_data_dir, seed_theme, class_, f"{idx}.jpg")
-                if os.path.exists(image_path):
-                    prompt_list.append(prompt)
-                    path_list.append(image_path)
+            for i, object_class in enumerate(uc_sample_class_available):
+                source_file = os.path.join(dataset_dir, theme, object_class, '1.jpg')
+                target_file = os.path.join(theme_dir, f'{i}.jpg')
+
+                if os.path.exists(source_file):
+                    os.system(f'cp {source_file} {target_file}')
                 else:
-                    self.logger.warning(f"Image not found: {image_path}")
-        # Write prompts and images to text files
-        prompts_txt_path = os.path.join(seed_dir, 'prompts.txt')
-        images_txt_path = os.path.join(seed_dir, 'images.txt')
-        with open(prompts_txt_path, 'w') as f:
-            f.write('\n'.join(prompt_list))
-        with open(images_txt_path, 'w') as f:
-            f.write('\n'.join(path_list))
-        self.logger.info(f"Generated Seed Images dataset with {len(path_list)} samples.")
+                    self.logger.warning(f"Source file not found: {source_file}")
 
-        # For class unlearning
+        # Generate datasets for object classes
         for object_class in uc_sample_class_available:
-            class_dir = os.path.join(self.new_data_dir, object_class)
-            os.makedirs(class_dir, exist_ok=True)
-            prompt_list = []
-            path_list = []
-            for theme in uc_sample_theme_available:
-                for idx in [1, 2, 3]:
-                    prompt = f"A {object_class} image in {theme.replace('_', ' ')} style."
-                    image_path = os.path.join(self.original_data_dir, theme, object_class, f"{idx}.jpg")
-                    if os.path.exists(image_path):
-                        prompt_list.append(prompt)
-                        path_list.append(image_path)
-                    else:
-                        self.logger.warning(f"Image not found: {image_path}")
-            # Write prompts and images to text files
-            prompts_txt_path = os.path.join(class_dir, 'prompts.txt')
-            images_txt_path = os.path.join(class_dir, 'images.txt')
-            with open(prompts_txt_path, 'w') as f:
-                f.write('\n'.join(prompt_list))
-            with open(images_txt_path, 'w') as f:
-                f.write('\n'.join(path_list))
-            self.logger.info(f"Generated dataset for class '{object_class}' with {len(path_list)} samples.")
+            for i, theme in enumerate(uc_sample_theme_available):
+                source_file = os.path.join(dataset_dir, theme, object_class, '1.jpg')
+                target_file = os.path.join(self.new_data_dir, theme, f'{i}.jpg')
+
+                if os.path.exists(source_file):
+                    os.system(f'cp {source_file} {target_file}')
+                else:
+                    self.logger.warning(f"Source file not found: {source_file}")
 
         self.logger.info("Dataset generation completed.")

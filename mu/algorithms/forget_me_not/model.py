@@ -38,8 +38,6 @@ class ForgetMeNotModel:
         if self.ti_weight_path:
             self._load_ti_weights(self.ti_weight_path)
 
-        # If additional attention modifications (e.g., LoRA patches) are needed, implement them here.
-
     def _load_ti_weights(self, ti_weight_path: str):
         """
         Load and apply Textual Inversion (TI) weights from the given path.
@@ -49,9 +47,6 @@ class ForgetMeNotModel:
         safeloras = safe_open(ti_weight_path, framework="pt", device="cpu")
         tok_dict = parse_safeloras_embeds(safeloras)
 
-        # Apply learned embeddings to the text encoder
-        # By default, attempt to add these tokens directly;
-        # if conflicts arise, consider adding unique tokens.
         for token, embed in tok_dict.items():
             apply_learned_embed_in_clip(
                 {token: embed},
