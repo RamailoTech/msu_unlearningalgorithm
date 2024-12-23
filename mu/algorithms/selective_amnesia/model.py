@@ -10,6 +10,7 @@ from algorithms.selective_amnesia.utils import modify_weights, load_fim
 
 logger = logging.getLogger(__name__)
 
+
 class SelectiveAmnesiaModel(BaseModel):
     """
     Model class for Selective Amnesia.
@@ -25,6 +26,7 @@ class SelectiveAmnesiaModel(BaseModel):
         self.fim_dict = None
         self.model = self.load_model(config_path, ckpt_path, device)
         self.load_ewc_params()
+        self.logger = logging.getLogger(__name__)
 
     def load_model(self, config_path: str, ckpt_path: str, device: str):
         if isinstance(config_path, (str, Path)):
@@ -38,16 +40,24 @@ class SelectiveAmnesiaModel(BaseModel):
 
         model = instantiate_from_config(config.model)
         # If input channels differ, modify weights as needed (example)
-        in_filters_load = old_state.get("model.diffusion_model.input_blocks.0.0.weight", None)
+        in_filters_load = old_state.get(
+            "model.diffusion_model.input_blocks.0.0.weight", None
+        )
         if in_filters_load is not None:
-            curr_shape = model.state_dict()["model.diffusion_model.input_blocks.0.0.weight"].shape
+            curr_shape = model.state_dict()[
+                "model.diffusion_model.input_blocks.0.0.weight"
+            ].shape
             if in_filters_load.shape != curr_shape:
                 logger.info("Modifying weights to double input channels...")
-                old_state["model.diffusion_model.input_blocks.0.0.weight"] = modify_weights(
-                    in_filters_load, scale=1e-8, n=(curr_shape[1]//in_filters_load.shape[1] - 1)
+                old_state["model.diffusion_model.input_blocks.0.0.weight"] = (
+                    modify_weights(
+                        in_filters_load,
+                        scale=1e-8,
+                        n=(curr_shape[1] // in_filters_load.shape[1] - 1),
+                    )
                 )
 
-        m,u = model.load_state_dict(old_state, strict=False)
+        m, u = model.load_state_dict(old_state, strict=False)
         if len(m) > 0:
             logger.warning(f"Missing keys in state_dict load: {m}")
         if len(u) > 0:
@@ -64,7 +74,9 @@ class SelectiveAmnesiaModel(BaseModel):
         self.fim_dict = load_fim(self.fim_path)
 
     def save_model(self, output_path: str):
+        self.logger.info(f"Saving model to {output_path}...")
         torch.save({"state_dict": self.model.state_dict()}, output_path)
+        self.logger.info("Model saved successfully.")
 
     def forward(self, *args, **kwargs):
         # Implement forward pass if needed

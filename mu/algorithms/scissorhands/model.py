@@ -1,5 +1,6 @@
 # erase_diff/model.py
 
+import logging
 from core.base_model import BaseModel
 from stable_diffusion.ldm.util import instantiate_from_config
 from omegaconf import OmegaConf
@@ -27,6 +28,7 @@ class ScissorHandsModel(BaseModel):
         self.config_path = config_path
         self.ckpt_path = ckpt_path
         self.model = self.load_model(config_path, ckpt_path, device)
+        self.logger = logging.getLogger(__name__)
 
     def load_model(self, config_path: str, ckpt_path: str, device: str):
         """
@@ -61,7 +63,9 @@ class ScissorHandsModel(BaseModel):
         Args:
             output_path (str): Path to save the model checkpoint.
         """
+        self.logger.info(f"Saving model to {output_path}...")
         torch.save({"state_dict": self.model.state_dict()}, output_path)
+        self.logger.info("Model saved successfully.")
 
     def forward(self, input_data: Any) -> Any:
         """

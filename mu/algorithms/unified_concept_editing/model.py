@@ -30,7 +30,6 @@ class UnifiedConceptEditingModel(BaseModel):
         self.unet = self.model.unet  # Expose UNet for editing
         self.logger = logging.getLogger(__name__)
 
-
     def load_model(self, ckpt_path: str, device: str) -> StableDiffusionPipeline:
         """
         Load the Stable Diffusion model from the checkpoint.
@@ -44,7 +43,7 @@ class UnifiedConceptEditingModel(BaseModel):
         """
         model = StableDiffusionPipeline.from_pretrained(
             ckpt_path,
-            torch_dtype=torch.float16 if device.startswith('cuda') else torch.float32
+            torch_dtype=torch.float16 if device.startswith("cuda") else torch.float32,
         ).to(device)
         model.enable_attention_slicing()  # Optimize memory usage
         return model
@@ -57,7 +56,7 @@ class UnifiedConceptEditingModel(BaseModel):
             output_path (str): Path to save the model checkpoint.
         """
         self.logger.info(f"Saving model to {output_path}...")
-        self.model.save_pretrained(output_path)
+        torch.save({"state_dict": self.model.state_dict()}, output_path)
         self.logger.info("Model saved successfully.")
 
     def edit_model(
@@ -69,7 +68,7 @@ class UnifiedConceptEditingModel(BaseModel):
         erase_scale: float = 1.0,
         preserve_scale: float = 0.1,
         layers_to_edit: Optional[List[int]] = None,
-        technique: str = 'replace'
+        technique: str = "replace",
     ) -> StableDiffusionPipeline:
         """
         Edit the model by modifying cross-attention layers to erase or replace concepts.
@@ -90,13 +89,13 @@ class UnifiedConceptEditingModel(BaseModel):
         sub_nets = self.unet.named_children()
         ca_layers = []
         for net in sub_nets:
-            if 'up' in net[0] or 'down' in net[0]:
+            if "up" in net[0] or "down" in net[0]:
                 for block in net[1]:
-                    if 'Cross' in block.__class__.__name__:
+                    if "Cross" in block.__class__.__name__:
                         for attn in block.attentions:
                             for transformer in attn.transformer_blocks:
                                 ca_layers.append(transformer.attn2)
-            if 'mid' in net[0]:
+            if "mid" in net[0]:
                 for attn in net[1].attentions:
                     for transformer in attn.transformer_blocks:
                         ca_layers.append(transformer.attn2)
@@ -131,7 +130,7 @@ class UnifiedConceptEditingModel(BaseModel):
                     mat1 = lamb * projection_matrices[layer_num].weight
                     mat2 = lamb * torch.eye(
                         projection_matrices[layer_num].weight.shape[1],
-                        device=projection_matrices[layer_num].weight.device
+                        device=projection_matrices[layer_num].weight.device,
                     )
 
                     # Iterate over old and new texts to compute modifications
@@ -144,23 +143,35 @@ class UnifiedConceptEditingModel(BaseModel):
                             truncation=True,
                             return_tensors="pt",
                         )
-                        text_embeddings = self.model.text_encoder(text_input.input_ids.to(self.device))[0]
+                        text_embeddings = self.model.text_encoder(
+                            text_input.input_ids.to(self.device)
+                        )[0]
 
                         # Determine token indices
                         final_token_idx = text_input.attention_mask[0].sum().item() - 2
-                        final_token_idx_new = text_input.attention_mask[1].sum().item() - 2
+                        final_token_idx_new = (
+                            text_input.attention_mask[1].sum().item() - 2
+                        )
                         farthest = max(final_token_idx_new, final_token_idx)
 
                         # Extract embeddings
-                        old_emb = text_embeddings[0, final_token_idx : len(text_embeddings[0]) - max(0, farthest - final_token_idx)]
-                        new_emb = text_embeddings[1, final_token_idx_new : len(text_embeddings[1]) - max(0, farthest - final_token_idx_new)]
+                        old_emb = text_embeddings[
+                            0,
+                            final_token_idx : len(text_embeddings[0])
+                            - max(0, farthest - final_token_idx),
+                        ]
+                        new_emb = text_embeddings[
+                            1,
+                            final_token_idx_new : len(text_embeddings[1])
+                            - max(0, farthest - final_token_idx_new),
+                        ]
 
                         context = old_emb.detach()
 
                         values = []
                         with torch.no_grad():
                             for layer in projection_matrices:
-                                if technique == 'tensor':
+                                if technique == "tensor":
                                     o_embs = layer(old_emb).detach()
                                     u = o_embs / o_embs.norm()
 
@@ -169,15 +180,21 @@ class UnifiedConceptEditingModel(BaseModel):
 
                                     target = new_embs - (new_emb_proj) * u
                                     values.append(target.detach())
-                                elif technique == 'replace':
+                                elif technique == "replace":
                                     values.append(layer(new_emb).detach())
                                 else:
                                     values.append(layer(new_emb).detach())
 
                         # Compute context and value vectors
-                        context_vector = context.reshape(context.shape[0], context.shape[1], 1)
-                        context_vector_T = context.reshape(context.shape[0], 1, context.shape[1])
-                        value_vector = values[layer_num].reshape(values[layer_num].shape[0], values[layer_num].shape[1], 1)
+                        context_vector = context.reshape(
+                            context.shape[0], context.shape[1], 1
+                        )
+                        context_vector_T = context.reshape(
+                            context.shape[0], 1, context.shape[1]
+                        )
+                        value_vector = values[layer_num].reshape(
+                            values[layer_num].shape[0], values[layer_num].shape[1], 1
+                        )
 
                         # Update mat1 and mat2
                         for_mat1 = (value_vector @ context_vector_T).sum(dim=0)
@@ -195,7 +212,9 @@ class UnifiedConceptEditingModel(BaseModel):
                             truncation=True,
                             return_tensors="pt",
                         )
-                        text_embeddings = self.model.text_encoder(text_input.input_ids.to(self.device))[0]
+                        text_embeddings = self.model.text_encoder(
+                            text_input.input_ids.to(self.device)
+                        )[0]
                         old_emb, new_emb = text_embeddings
                         context = old_emb.detach()
 
@@ -204,9 +223,15 @@ class UnifiedConceptEditingModel(BaseModel):
                             for layer in projection_matrices:
                                 values.append(layer(new_emb).detach())
 
-                        context_vector = context.reshape(context.shape[0], context.shape[1], 1)
-                        context_vector_T = context.reshape(context.shape[0], 1, context.shape[1])
-                        value_vector = values[layer_num].reshape(values[layer_num].shape[0], values[layer_num].shape[1], 1)
+                        context_vector = context.reshape(
+                            context.shape[0], context.shape[1], 1
+                        )
+                        context_vector_T = context.reshape(
+                            context.shape[0], 1, context.shape[1]
+                        )
+                        value_vector = values[layer_num].reshape(
+                            values[layer_num].shape[0], values[layer_num].shape[1], 1
+                        )
 
                         for_mat1 = (value_vector @ context_vector_T).sum(dim=0)
                         for_mat2 = (context_vector @ context_vector_T).sum(dim=0)
@@ -216,6 +241,8 @@ class UnifiedConceptEditingModel(BaseModel):
                         mat2 += preserve_scale * for_mat2
 
                         # Update projection matrix
-                        projection_matrices[layer_num].weight = torch.nn.Parameter(mat1 @ torch.inverse(mat2))
+                        projection_matrices[layer_num].weight = torch.nn.Parameter(
+                            mat1 @ torch.inverse(mat2)
+                        )
 
         return self.model
