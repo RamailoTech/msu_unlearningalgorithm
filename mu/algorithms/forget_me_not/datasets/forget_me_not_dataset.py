@@ -7,7 +7,7 @@ from typing import Optional
 import cv2
 import numpy as np
 from PIL import Image, ImageFilter
-from core.datasets.base_dataset import BaseDataset
+from datasets.base_dataset import BaseDataset
 from torchvision import transforms
 
 # Templates for object and style prompts

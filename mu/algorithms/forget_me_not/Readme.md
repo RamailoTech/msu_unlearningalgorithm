@@ -47,7 +47,7 @@ python -m algorithms.forget_me_not.scripts.train \
 - `utils.py`: Utility functions used in the project.
 - `data_handler.py` : Implementation of DataHandler class
 
- python -m algorithms.forget_me_not.scripts.train_ti --config_path "algorithms/forget_me_not/config/train_config.yaml" --ckpt_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" --theme "Abstractionism" --class "Architectures" --output_dir "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/forget_me_not/data/masks" 
+ python -m algorithms.forget_me_not.scripts.train_ti  --pretrained_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50" --theme "Abstractionism" --output_dir "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/forget_me_not/data/masks" 
 
 
  python -m algorithms.forget_me_not.scripts.train_attn --config_path "algorithms/forget_me_not/config/train_config.yaml" --ckpt_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" --output_dir "/home/ubuntu/Projects/msu_unlearningalgorithm/data/results/forget_me_not/models" --theme "Abstractionism" --classes "Architectures" --mask_path "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/forget_me_not/data/masks/Abstractionism/0.5.pt" --use_sample 

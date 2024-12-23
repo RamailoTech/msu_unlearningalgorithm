@@ -5,9 +5,9 @@ import torch
 from typing import Dict
 import wandb
 
-from forget_me_not.data_handler import ForgetMeNotDataHandler
-from forget_me_not.model import ForgetMeNotModel
-from forget_me_not.trainer import ForgetMeNotTrainer
+from algorithms.forget_me_not.data_handler import ForgetMeNotDataHandler
+from algorithms.forget_me_not.model import ForgetMeNotModel
+from algorithms.forget_me_not.trainer import ForgetMeNotTrainer
 
 class ForgetMeNotAlgorithm:
     """

@@ -4,7 +4,7 @@ import logging
 import torch
 from diffusers import StableDiffusionPipeline, UNet2DConditionModel, AutoencoderKL, DDPMScheduler
 from transformers import CLIPTextModel, CLIPTokenizer
-from patch_lora import safe_open, parse_safeloras_embeds, apply_learned_embed_in_clip
+from lora_diffusion.patch_lora import safe_open, parse_safeloras_embeds, apply_learned_embed_in_clip
 
 class ForgetMeNotModel:
     """

@@ -9,7 +9,7 @@ import torch
 from torch.optim import AdamW
 
 from diffusers.optimization import get_scheduler
-from diffusers.utils import set_seed
+from accelerate.utils import set_seed
 import torch.nn.functional as F
 
 class ForgetMeNotTrainer:

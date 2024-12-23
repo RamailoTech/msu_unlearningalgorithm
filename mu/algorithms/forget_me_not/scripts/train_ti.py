@@ -3,7 +3,7 @@
 import argparse
 import os
 import yaml
-from forget_me_not.algorithm import ForgetMeNotAlgorithm
+from algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
 
 def main():
     parser = argparse.ArgumentParser(description='Forget Me Not - Train TI')
@@ -16,6 +16,13 @@ def main():
     parser.add_argument('--use_wandb', action='store_true', help='Use Weights & Biases for logging.')
     parser.add_argument('--wandb_project', type=str, default='forget_me_not', help='WandB project name.')
     parser.add_argument('--wandb_name', type=str, default='ti_run', help='WandB run name.')
+
+    # Dataset directories
+    parser.add_argument('--original_data_dir', type=str, required=False,default='/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/quick-canvas-benchmark',
+                        help='Directory containing the original dataset organized by themes and classes.')
+    parser.add_argument('--new_data_dir', type=str, required=False,default='/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/erase_diff/data',
+                        help='Directory where the new datasets will be saved.')
+    
 
     args = parser.parse_args()
 

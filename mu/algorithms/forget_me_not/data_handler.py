@@ -3,7 +3,7 @@
 from typing import Any, Dict
 from torch.utils.data import DataLoader
 from core.base_data_handler import BaseDataHandler
-from forget_me_not.datasets.forget_me_not_dataset import ForgetMeNotDataset
+from algorithms.forget_me_not.datasets.forget_me_not_dataset import ForgetMeNotDataset
 from datasets.constants import * 
 import os 
 
