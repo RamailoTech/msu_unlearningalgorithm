@@ -1,12 +1,12 @@
-from core.base_trainer import BaseTrainer
-from algorithms.esd.model import ESDModel
+from mu.core.base_trainer import BaseTrainer
+from mu.algorithms.esd.model import ESDModel
 import torch
 from tqdm import tqdm
 import random
-from algorithms.esd.utils import load_model_from_config, sample_model
+from mu.algorithms.esd.utils import load_model_from_config, sample_model
 from torch.nn import MSELoss
 import wandb
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+from mu.stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 
 class ESDTrainer(BaseTrainer):
     """Trainer for the ESD algorithm."""

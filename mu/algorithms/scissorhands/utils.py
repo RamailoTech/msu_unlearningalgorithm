@@ -4,8 +4,8 @@ from omegaconf import OmegaConf
 import torch
 from typing import Any
 from pathlib import Path
-from stable_diffusion.ldm.util import instantiate_from_config
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+from mu.stable_diffusion.ldm.util import instantiate_from_config
+from mu.stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 import gc
 import numpy as np
 from timm.models.layers import trunc_normal_

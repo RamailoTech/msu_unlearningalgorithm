@@ -9,10 +9,10 @@ import random
 from algorithms.saliency_unlearning.utils import load_model_from_config, sample_model
 from torch.nn import MSELoss
 import wandb
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+from mu.stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 import logging
 from pathlib import Path
-from stable_diffusion.ldm.util import instantiate_from_config
+from mu.stable_diffusion.ldm.util import instantiate_from_config
 from omegaconf import OmegaConf
 from timm.utils import AverageMeter
 from typing import Dict

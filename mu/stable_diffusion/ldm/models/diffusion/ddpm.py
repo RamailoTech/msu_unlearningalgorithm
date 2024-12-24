@@ -22,13 +22,13 @@ from omegaconf import ListConfig
 import sys
 sys.path.append('.')
 
-from stable_diffusion.ldm.util import log_txt_as_img, exists, default, ismap, isimage, mean_flat, count_params, instantiate_from_config
-from stable_diffusion.ldm.modules.ema import LitEma
-from stable_diffusion.ldm.modules.distributions.distributions import normal_kl, DiagonalGaussianDistribution
-from stable_diffusion.ldm.models.autoencoder import IdentityFirstStage, AutoencoderKL
-from stable_diffusion.ldm.modules.diffusionmodules.util import make_beta_schedule, extract_into_tensor, noise_like
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
-from stable_diffusion.ldm.modules.attention import CrossAttention
+from mu.stable_diffusion.ldm.util import log_txt_as_img, exists, default, ismap, isimage, mean_flat, count_params, instantiate_from_config
+from mu.stable_diffusion.ldm.modules.ema import LitEma
+from mu.stable_diffusion.ldm.modules.distributions.distributions import normal_kl, DiagonalGaussianDistribution
+from mu.stable_diffusion.ldm.models.autoencoder import IdentityFirstStage, AutoencoderKL
+from mu.stable_diffusion.ldm.modules.diffusionmodules.util import make_beta_schedule, extract_into_tensor, noise_like
+from mu.stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+from mu.stable_diffusion.ldm.modules.attention import CrossAttention
 
 
 __conditioning_keys__ = {'concat': 'c_concat',

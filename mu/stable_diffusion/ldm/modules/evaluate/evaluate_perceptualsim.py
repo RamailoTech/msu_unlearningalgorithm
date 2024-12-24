@@ -12,7 +12,7 @@ from PIL import Image
 
 import sys
 sys.path.append(".")
-from stable_diffusion.ldm.modules.evaluate.ssim import ssim
+from mu.stable_diffusion.ldm.modules.evaluate.ssim import ssim
 
 
 transform = transforms.Compose([transforms.ToTensor()])

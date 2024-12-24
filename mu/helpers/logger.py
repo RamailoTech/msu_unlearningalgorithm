@@ -2,7 +2,7 @@ import logging
 import os
 
 
-def setup_logger(name: str, log_file: str, level: int = logging.INFO) -> logging.Logger:
+def setup_logger(name: str, log_file: str="logs/test.log", level: int = logging.INFO) -> logging.Logger:
     """
     Set up a logger with the specified name and log file.
 

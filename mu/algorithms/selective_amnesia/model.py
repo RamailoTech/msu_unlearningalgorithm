@@ -1,6 +1,6 @@
 import torch
 from omegaconf import OmegaConf
-from stable_diffusion.ldm.util import instantiate_from_config
+from mu.stable_diffusion.ldm.util import instantiate_from_config
 from core.base_model import BaseModel
 from pathlib import Path
 from typing import Any

@@ -8,9 +8,9 @@ from einops import rearrange
 
 sys.path.append('.')
 
-from stable_diffusion.ldm.modules.diffusionmodules.util import make_ddim_sampling_parameters, make_ddim_timesteps, noise_like, \
+from mu.stable_diffusion.ldm.modules.diffusionmodules.util import make_ddim_sampling_parameters, make_ddim_timesteps, noise_like, \
     extract_into_tensor
-from stable_diffusion.ldm.models.diffusion.sampling_util import norm_thresholding
+from mu.stable_diffusion.ldm.models.diffusion.sampling_util import norm_thresholding
 
 
 class DDIMSampler(object):

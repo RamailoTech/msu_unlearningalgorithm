@@ -4,8 +4,8 @@ from omegaconf import OmegaConf
 import torch
 from typing import Any
 from pathlib import Path
-from stable_diffusion.ldm.util import instantiate_from_config
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+from mu.stable_diffusion.ldm.util import instantiate_from_config
+from mu.stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 
 
 def load_model_from_config(config_path: str, ckpt_path: str, device: str = "cpu") -> Any:

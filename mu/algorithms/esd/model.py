@@ -1,6 +1,6 @@
 import logging
-from core.base_model import BaseModel
-from stable_diffusion.ldm.util import instantiate_from_config
+from mu.core.base_model import BaseModel
+from mu.stable_diffusion.ldm.util import instantiate_from_config
 from omegaconf import OmegaConf
 import torch
 from typing import Any
