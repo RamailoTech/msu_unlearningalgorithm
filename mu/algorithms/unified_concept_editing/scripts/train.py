@@ -5,7 +5,9 @@ import os
 import logging
 import yaml
 
-from algorithms.unified_concept_editing.algorithm import UnifiedConceptEditingAlgorithm
+from mu.algorithms.unified_concept_editing.algorithm import (
+    UnifiedConceptEditingAlgorithm,
+)
 from mu.helpers.logger import setup_logger
 
 

@@ -1,12 +1,12 @@
 import os
 from typing import Any, Dict, List
 from torch.utils.data import DataLoader
-from algorithms.scissorhands.datasets.scissorhands_dataset import ScissorHandsDataset
+from mu.algorithms.scissorhands.datasets.scissorhands_dataset import ScissorHandsDataset
 
 from mu.helpers.logger import setup_logger
-from core.base_data_handler import BaseDataHandler
+from mu.core.base_data_handler import BaseDataHandler
 
-from datasets.constants import *
+from mu.datasets.constants import *
 
 
 class ScissorHandsDataHandler(BaseDataHandler):

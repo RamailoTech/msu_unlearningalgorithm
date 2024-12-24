@@ -6,27 +6,29 @@ import os
 import torch
 import numpy as np
 from einops import rearrange
-from datasets.base_dataset import BaseDataset
 from torchvision import transforms
-from datasets.constants import (
+from mu.datasets.base_dataset import BaseDataset
+from mu.datasets.constants import (
     uc_theme_available,
     uc_class_available,
     uc_sample_theme_available,
-    uc_sample_class_available
+    uc_sample_class_available,
 )
+
 
 class UnlearnCanvasDataset(BaseDataset):
     """
     Dataset for UnlearnCanvas algorithm.
     Allows selection of specific themes and classes.
     """
+
     def __init__(
         self,
         data_dir: str,
         selected_theme: str,
         selected_class: str,
         use_sample: bool = False,
-        transform: Any = None
+        transform: Any = None,
     ):
         """
         Initialize the UnlearnCanvasDataset.
@@ -39,21 +41,21 @@ class UnlearnCanvasDataset(BaseDataset):
             transform (Any, optional): Transformations to apply to the images.
         """
         super().__init__()
-        
+
         if use_sample:
-            assert selected_theme in uc_sample_theme_available, (
-                f"Selected theme '{selected_theme}' is not available in sample themes."
-            )
-            assert selected_class in uc_sample_class_available, (
-                f"Selected class '{selected_class}' is not available in sample classes."
-            )
+            assert (
+                selected_theme in uc_sample_theme_available
+            ), f"Selected theme '{selected_theme}' is not available in sample themes."
+            assert (
+                selected_class in uc_sample_class_available
+            ), f"Selected class '{selected_class}' is not available in sample classes."
         else:
-            assert selected_theme in uc_theme_available, (
-                f"Selected theme '{selected_theme}' is not available."
-            )
-            assert selected_class in uc_class_available, (
-                f"Selected class '{selected_class}' is not available."
-            )
+            assert (
+                selected_theme in uc_theme_available
+            ), f"Selected theme '{selected_theme}' is not available."
+            assert (
+                selected_class in uc_class_available
+            ), f"Selected class '{selected_class}' is not available."
 
         self.selected_theme = selected_theme
         self.selected_class = selected_class
@@ -62,8 +64,8 @@ class UnlearnCanvasDataset(BaseDataset):
         # Paths to images and prompts
         # self.images_txt = os.path.join(data_dir, selected_theme, selected_class, 'images.txt')
         # self.prompts_txt = os.path.join(data_dir, selected_theme, selected_class, 'prompts.txt')
-        self.images_txt = os.path.join(data_dir, 'images.txt')
-        self.prompts_txt = os.path.join(data_dir, 'prompts.txt')
+        self.images_txt = os.path.join(data_dir, "images.txt")
+        self.prompts_txt = os.path.join(data_dir, "prompts.txt")
 
         # Check if files exist
         if not os.path.exists(self.images_txt):
@@ -75,9 +77,9 @@ class UnlearnCanvasDataset(BaseDataset):
         self.image_paths = self.read_text_lines(self.images_txt)
         self.prompts = self.read_text_lines(self.prompts_txt)
 
-        assert len(self.image_paths) == len(self.prompts), (
-            "Number of images and prompts must be equal."
-        )
+        assert len(self.image_paths) == len(
+            self.prompts
+        ), "Number of images and prompts must be equal."
 
     def read_text_lines(self, path: str):
         """
@@ -118,8 +120,7 @@ class UnlearnCanvasDataset(BaseDataset):
 
         # Convert the image to tensor and normalize
         image = rearrange(
-            2 * torch.tensor(np.array(image)).float() / 255 - 1,
-            "h w c -> c h w"
+            2 * torch.tensor(np.array(image)).float() / 255 - 1, "h w c -> c h w"
         )
 
         return image, prompt

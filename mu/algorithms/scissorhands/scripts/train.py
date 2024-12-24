@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import logging
 
-from algorithms.scissorhands.algorithm import ScissorHandsAlgorithm
+from mu.algorithms.scissorhands.algorithm import ScissorHandsAlgorithm
 from mu.helpers.logger import setup_logger
 
 

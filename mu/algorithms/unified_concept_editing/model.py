@@ -1,6 +1,6 @@
 # unified_concept_editing/model.py
 
-from core.base_model import BaseModel
+from mu.core.base_model import BaseModel
 from diffusers import StableDiffusionPipeline
 import torch
 from typing import Any, List, Optional

@@ -5,7 +5,8 @@ from PIL import Image
 import random
 import shutil
 
-from mu.datasets.utils import get_logger
+from mu.helpers.logger import setup_logger
+
 
 def generate_dataset(
     original_data_dir: str,
@@ -13,7 +14,7 @@ def generate_dataset(
     theme_available: List[str],
     class_available: List[str],
     seed_images_theme: str,
-    num_images_per_class: int = 3
+    num_images_per_class: int = 3,
 ):
     """
     Generate datasets by organizing images into themes and classes.
@@ -26,7 +27,7 @@ def generate_dataset(
         seed_images_theme (str): Theme name for seed images.
         num_images_per_class (int, optional): Number of images per class. Defaults to 3.
     """
-    logger = get_logger('GenerateDataset')
+    logger = setup_logger("GenerateDataset")
     os.makedirs(new_dir, exist_ok=True)
     logger.info(f"Generating datasets in {new_dir}")
 
@@ -43,13 +44,16 @@ def generate_dataset(
             # Path to original class directory
             original_class_dir = os.path.join(original_data_dir, theme, class_name)
             if not os.path.isdir(original_class_dir):
-                logger.warning(f"Original class directory not found: {original_class_dir}")
+                logger.warning(
+                    f"Original class directory not found: {original_class_dir}"
+                )
                 continue
 
             # List all image files in the original class directory
             image_files = [
-                f for f in os.listdir(original_class_dir)
-                if f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif'))
+                f
+                for f in os.listdir(original_class_dir)
+                if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".gif"))
             ]
 
             if not image_files:
@@ -57,7 +61,9 @@ def generate_dataset(
                 continue
 
             # Randomly select images if necessary
-            selected_images = random.sample(image_files, min(num_images_per_class, len(image_files)))
+            selected_images = random.sample(
+                image_files, min(num_images_per_class, len(image_files))
+            )
 
             for img_file in selected_images:
                 src_path = os.path.join(original_class_dir, img_file)
@@ -72,19 +78,26 @@ def generate_dataset(
         logger.info(f"Processing seed images for theme: {seed_images_theme}")
 
         # Assuming seed images are under a specific class, e.g., 'Seed_Images'
-        seed_class_dir = os.path.join(original_data_dir, seed_images_theme, 'Seed_Images')
+        seed_class_dir = os.path.join(
+            original_data_dir, seed_images_theme, "Seed_Images"
+        )
         if not os.path.isdir(seed_class_dir):
-            logger.warning(f"Original seed images directory not found: {seed_class_dir}")
+            logger.warning(
+                f"Original seed images directory not found: {seed_class_dir}"
+            )
         else:
             seed_images = [
-                f for f in os.listdir(seed_class_dir)
-                if f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif'))
+                f
+                for f in os.listdir(seed_class_dir)
+                if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".gif"))
             ]
 
             if not seed_images:
                 logger.warning(f"No seed images found in {seed_class_dir}")
             else:
-                selected_seed_images = random.sample(seed_images, min(num_images_per_class, len(seed_images)))
+                selected_seed_images = random.sample(
+                    seed_images, min(num_images_per_class, len(seed_images))
+                )
 
                 for img_file in selected_seed_images:
                     src_path = os.path.join(seed_class_dir, img_file)

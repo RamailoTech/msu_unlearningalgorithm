@@ -1,8 +1,8 @@
 # unified_concept_editing/trainer.py
 
-from core.base_trainer import BaseTrainer
-from algorithms.unified_concept_editing.model import UnifiedConceptEditingModel
-from algorithms.unified_concept_editing.data_handler import (
+from mu.core.base_trainer import BaseTrainer
+from mu.algorithms.unified_concept_editing.model import UnifiedConceptEditingModel
+from mu.algorithms.unified_concept_editing.data_handler import (
     UnifiedConceptEditingDataHandler,
 )
 from mu.helpers.logger import setup_logger
