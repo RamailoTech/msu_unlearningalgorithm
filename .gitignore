@@ -12,4 +12,6 @@ mu/.vscode
 mu/cache
 results/*
 algorithms/erase_diff/data 
+venv/
+
 .venv

@@ -68,11 +68,11 @@ class EraseDiffAlgorithm(BaseAlgorithm):
         )
 
         # Initialize Sampler
-        # self.sampler = EraseDiffSampler(
-        #     model=self.model,
-        #     config=self.config,
-        #     device=str(self.device)
-        # )
+        self.sampler = EraseDiffSampler(
+            model=self.model,
+            config=self.config,
+            device=str(self.device)
+        )
 
     def run(self):
         """
