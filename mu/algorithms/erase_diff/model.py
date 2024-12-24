@@ -54,15 +54,6 @@ class EraseDiffModel(BaseModel):
         model.cond_stage_model.device = device
         return model
 
-    def save_model(self, output_path: str):
-        """
-        Save the trained model's state dictionary.
-
-        Args:
-            output_path (str): Path to save the model checkpoint.
-        """
-        torch.save({"state_dict": self.model.state_dict()}, output_path)
-
     def forward(self, input_data: Any) -> Any:
         """
         Define the forward pass (if needed).

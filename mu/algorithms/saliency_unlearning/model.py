@@ -1,5 +1,6 @@
 # algorithms/saliency_unlearning/model.py
 
+import logging
 from core.base_model import BaseModel
 from stable_diffusion.ldm.util import instantiate_from_config
 from omegaconf import OmegaConf
@@ -7,13 +8,20 @@ import torch
 from pathlib import Path
 from typing import Any, Dict
 
+
 class SaliencyUnlearnModel(BaseModel):
     """
     SaliencyUnlearnModel handles loading, saving, and interacting with the Stable Diffusion model.
     Incorporates mask application for saliency-based unlearning.
     """
 
-    def __init__(self, config_path: str, ckpt_path: str, mask: Dict[str, torch.Tensor], device: str):
+    def __init__(
+        self,
+        config_path: str,
+        ckpt_path: str,
+        mask: Dict[str, torch.Tensor],
+        device: str,
+    ):
         """
         Initialize the SaliencyUnlearnModel.
 
@@ -30,6 +38,7 @@ class SaliencyUnlearnModel(BaseModel):
         self.mask = mask
         self.model = self.load_model(config_path, ckpt_path, device)
         self.apply_mask()
+        self.logger = logging.getLogger(__name__)
 
     def load_model(self, config_path: str, ckpt_path: str, device: str):
         """
@@ -67,15 +76,6 @@ class SaliencyUnlearnModel(BaseModel):
                 param.requires_grad = False
                 param.data *= self.mask[name].to(self.device)
                 # Optionally, register hooks if dynamic masking is needed
-
-    def save_model(self, output_path: str):
-        """
-        Save the trained model's state dictionary.
-
-        Args:
-            output_path (str): Path to save the model checkpoint.
-        """
-        torch.save({"state_dict": self.model.state_dict()}, output_path)
 
     def forward(self, input_data: Any) -> Any:
         """
