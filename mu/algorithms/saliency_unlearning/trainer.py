@@ -42,6 +42,15 @@ class SaliencyUnlearnTrainer(BaseTrainer):
         self.data_handler = data_handler
         self.setup_optimizer()
 
+        mask_path = config.get('mask_path')
+        if mask_path:
+            try:
+                self.model.mask = torch.load(mask_path, map_location=self.device)
+                self.logger.info(f"Saliency mask loaded from {mask_path}")
+            except FileNotFoundError:
+                self.logger.error(f"Saliency mask file not found: {mask_path}")
+                raise
+
     def setup_optimizer(self):
         """
         Setup the optimizer based on the training method.
@@ -58,6 +67,9 @@ class SaliencyUnlearnTrainer(BaseTrainer):
                 parameters.append(param)
             elif train_method == 'noxattn':
                 if not (name.startswith('out.') or 'attn2' in name or 'time_embed' in name):
+                    parameters.append(param)
+            elif train_method == 'notime':
+                if not (name.startswith('out.') or 'time_embed' in name):
                     parameters.append(param)
             elif train_method == 'xlayer':
                 if 'attn2' in name and ('output_blocks.6.' in name or 'output_blocks.8.' in name):
@@ -114,6 +126,12 @@ class SaliencyUnlearnTrainer(BaseTrainer):
                         forget_loss = self.compute_forget_loss(forget_images, forget_prompts, pseudo_prompts)
 
                         forget_loss.backward()
+                        # Apply mask to gradients if necessary 
+                        if self.model.mask:
+                            for name, param in self.model.model.named_parameters():
+                                if param.grad is not None and name in self.model.mask:
+                                    param.grad *= self.model.mask[name].to(self.device)
+
                         self.optimizer.step()
 
                         unl_losses.update(forget_loss.item())
@@ -150,14 +168,13 @@ class SaliencyUnlearnTrainer(BaseTrainer):
 
                         total_loss = remain_loss + alpha * q_loss
                         total_loss.backward()
-                        self.optimizer.step()
 
                         # Apply mask to gradients if necessary
                         if self.model.mask:
                             for name, param in self.model.model.named_parameters():
                                 if param.grad is not None and name in self.model.mask:
                                     param.grad *= self.model.mask[name].to(self.device)
-
+                        self.optimizer.step()
                         # Logging
                         wandb.log({"loss": total_loss.item()})
                         pbar.set_postfix({"loss": total_loss.item() / self.config.get('batch_size', 4)})

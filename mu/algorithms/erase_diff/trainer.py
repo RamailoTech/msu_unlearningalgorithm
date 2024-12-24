@@ -77,6 +77,9 @@ class EraseDiffTrainer(BaseTrainer):
             elif train_method == 'noxattn':
                 if not (name.startswith('out.') or 'attn2' in name or 'time_embed' in name):
                     parameters.append(param)
+            elif train_method == 'notime':
+                if not (name.startswith('out.') or 'time_embed' in name):
+                    parameters.append(param)
             elif train_method == 'xlayer':
                 if 'attn2' in name and ('output_blocks.6.' in name or 'output_blocks.8.' in name):
                     parameters.append(param)
@@ -84,7 +87,7 @@ class EraseDiffTrainer(BaseTrainer):
                 if 'attn1' in name and ('input_blocks.4.' in name or 'input_blocks.7.' in name):
                     parameters.append(param)
 
-        self.optimizer = torch.optim.Adam(parameters, lr=self.config.get('lr', 1e-5))
+        self.optimizer = torch.optim.Adam(parameters, lr=self.config.get('lr', 5e-5))
 
     def train(self):
         """

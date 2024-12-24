@@ -47,7 +47,18 @@ class ESDTrainer(BaseTrainer):
             elif train_method == 'noxattn':
                 if not (name.startswith('out.') or 'attn2' in name or 'time_embed' in name):
                     parameters.append(param)
+            elif train_method == 'notime':
+                if not (name.startswith('out.') or 'time_embed' in name):
+                    parameters.append(param)
+            elif train_method == 'xlayer':
+                if 'attn2' in name and ('output_blocks.6.' in name or 'output_blocks.8.' in name):
+                    parameters.append(param)
+            elif train_method == 'selflayer':
+                if 'attn1' in name and ('input_blocks.4.' in name or 'input_blocks.7.' in name):
+                    parameters.append(param)
+
         self.optimizer = torch.optim.Adam(parameters, lr=self.config['lr'])
+
 
     def train(self):
         iterations = self.config['iterations']

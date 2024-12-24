@@ -20,7 +20,8 @@ def accumulate_gradients_for_mask(model, forget_loader, prompt, c_guidance, devi
     optimizer = torch.optim.Adam(model.model.model.diffusion_model.parameters(), lr=lr)
 
     # Dictionary to accumulate gradients
-    gradients = {name: 0.0 for name, _ in model.model.model.diffusion_model.named_parameters()}
+    gradients = {name: torch.zeros_like(param, device='cpu') for name, param in model.model.model.diffusion_model.named_parameters()}
+
 
     logger = logging.getLogger(__name__)
     logger.info("Starting gradient accumulation for mask generation...")
