@@ -1,3 +1,4 @@
+import wandb
 import torch
 import gc
 from tqdm import tqdm
@@ -70,6 +71,9 @@ class ScissorHandsTrainer:
         """
         Execute the training loop.
         """
+        wandb.init(
+            project=self.config.get("project_name", "ScissorHands"), config=self.config
+        )
         epochs = self.config.get("epochs", 2)
         sparsity = self.config.get("sparsity", 0.99)
         prune_num = self.config.get("prune_num", 1)
@@ -115,6 +119,8 @@ class ScissorHandsTrainer:
                         self.apply_projection(g_o)
 
                     self.optimizer.step()
+
+                    wandb.log({"loss": total_loss.item()})
                     pbar.set_postfix({"loss": total_loss.item()})
                     pbar.update(1)
 
