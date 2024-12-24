@@ -5,7 +5,7 @@ from algorithms.unified_concept_editing.model import UnifiedConceptEditingModel
 from algorithms.unified_concept_editing.data_handler import (
     UnifiedConceptEditingDataHandler,
 )
-from algorithms.unified_concept_editing.logger import setup_logger
+from mu.helpers.logger import setup_logger
 import logging
 from typing import List, Optional
 
