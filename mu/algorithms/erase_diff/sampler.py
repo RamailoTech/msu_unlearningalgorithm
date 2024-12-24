@@ -1,7 +1,7 @@
 # erase_diff/sampler.py
 
 from core.base_sampler import BaseSampler
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+from mu.stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 from algorithms.erase_diff.utils import sample_model
 from algorithms.erase_diff.model import EraseDiffModel
 

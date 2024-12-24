@@ -3,7 +3,7 @@ import torch
 from torch import nn
 import sys
 sys.path.append('.')
-from stable_diffusion.ldm.thirdp.psp.model_irse import Backbone
+from mu.stable_diffusion.ldm.thirdp.psp.model_irse import Backbone
 
 
 class IDFeatures(nn.Module):

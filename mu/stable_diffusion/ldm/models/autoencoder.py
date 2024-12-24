@@ -5,9 +5,9 @@ import torch.nn.functional as F
 import sys
 sys.path.append('.')
 
-from stable_diffusion.ldm.modules.diffusionmodules.model import Encoder, Decoder
-from stable_diffusion.ldm.modules.distributions.distributions import DiagonalGaussianDistribution
-from stable_diffusion.ldm.util import instantiate_from_config
+from mu.stable_diffusion.ldm.modules.diffusionmodules.model import Encoder, Decoder
+from mu.stable_diffusion.ldm.modules.distributions.distributions import DiagonalGaussianDistribution
+from mu.stable_diffusion.ldm.util import instantiate_from_config
 
 
 class AutoencoderKL(pl.LightningModule):

@@ -8,9 +8,9 @@ from einops import rearrange
 import sys
 sys.path.append('.')
 
-from stable_diffusion.ldm.util import instantiate_from_config
-from stable_diffusion.ldm.modules.attention import LinearAttention
-from stable_diffusion.ldm.modules.distributions.distributions import DiagonalGaussianDistribution
+from mu.stable_diffusion.ldm.util import instantiate_from_config
+from mu.stable_diffusion.ldm.modules.attention import LinearAttention
+from mu.stable_diffusion.ldm.modules.distributions.distributions import DiagonalGaussianDistribution
 
 
 def get_timestep_embedding(timesteps, embedding_dim):

@@ -12,8 +12,8 @@ from natsort import natsorted
 import sys
 sys.path.append('.')
 
-from stable_diffusion.ldm.modules.diffusionmodules.openaimodel import EncoderUNetModel, UNetModel
-from stable_diffusion.ldm.util import log_txt_as_img, default, ismap, instantiate_from_config
+from mu.stable_diffusion.ldm.modules.diffusionmodules.openaimodel import EncoderUNetModel, UNetModel
+from mu.stable_diffusion.ldm.util import log_txt_as_img, default, ismap, instantiate_from_config
 
 __models__ = {
     'class_label': EncoderUNetModel,

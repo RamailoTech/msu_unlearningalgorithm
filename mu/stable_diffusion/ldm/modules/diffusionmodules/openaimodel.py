@@ -9,7 +9,7 @@ import torch.nn.functional as F
 import sys
 sys.path.append('.')
 
-from stable_diffusion.ldm.modules.diffusionmodules.util import (
+from mu.stable_diffusion.ldm.modules.diffusionmodules.util import (
     checkpoint,
     conv_nd,  # nn.Conv2d
     linear,  # nn.Linear
@@ -18,8 +18,8 @@ from stable_diffusion.ldm.modules.diffusionmodules.util import (
     normalization,
     timestep_embedding,
 )
-from stable_diffusion.ldm.modules.attention import SpatialTransformer
-from stable_diffusion.ldm.util import exists
+from mu.stable_diffusion.ldm.modules.attention import SpatialTransformer
+from mu.stable_diffusion.ldm.util import exists
 
 # dummy replace
 def convert_module_to_f16(x):

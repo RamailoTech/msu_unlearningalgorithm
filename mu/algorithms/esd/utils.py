@@ -5,7 +5,7 @@ import torch
 from typing import Any
 from pathlib import Path
 
-from stable_diffusion.ldm.util import instantiate_from_config
+from mu.stable_diffusion.ldm.util import instantiate_from_config
 
 def load_model_from_config(config, ckpt, device="cpu", verbose=False):
     """Loads a model from config and a ckpt

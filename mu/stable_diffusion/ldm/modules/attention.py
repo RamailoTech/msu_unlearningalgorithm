@@ -10,7 +10,7 @@ from einops import rearrange, repeat
 import sys
 sys.path.append('.')
 
-from stable_diffusion.ldm.modules.diffusionmodules.util import checkpoint
+from mu.stable_diffusion.ldm.modules.diffusionmodules.util import checkpoint
 
 
 def exists(val):

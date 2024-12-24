@@ -1,7 +1,7 @@
-from core.base_algorithm import BaseAlgorithm
-from algorithms.esd.model import ESDModel
-from algorithms.esd.trainer import ESDTrainer
-from algorithms.esd.sampler import ESDSampler
+from mu.core.base_algorithm import BaseAlgorithm
+from mu.algorithms.esd.model import ESDModel
+from mu.algorithms.esd.trainer import ESDTrainer
+from mu.algorithms.esd.sampler import ESDSampler
 import torch
 import wandb
 from typing import Dict

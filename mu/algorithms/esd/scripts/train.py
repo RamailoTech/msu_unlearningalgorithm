@@ -3,7 +3,7 @@
 import argparse
 import os
 
-from algorithms.esd.algorithm import ESDAlgorithm
+from mu.algorithms.esd.algorithm import ESDAlgorithm
 from mu.helpers.logger import setup_logger
 
 logger = setup_logger(__name__)

@@ -7,11 +7,11 @@ import sys
 import clip
 sys.path.append(".")
 
-from stable_diffusion.ldm.util import instantiate_from_config
-from stable_diffusion.ldm.modules.diffusionmodules.util import make_beta_schedule, extract_into_tensor, noise_like
-from stable_diffusion.ldm.modules.x_transformer import Encoder, TransformerWrapper  # TODO: can we directly rely on lucidrains code and simply add this as a reuirement? --> test
-from stable_diffusion.ldm.util import default
-from stable_diffusion.ldm.thirdp.psp.id_loss import IDFeatures
+from mu.stable_diffusion.ldm.util import instantiate_from_config
+from mu.stable_diffusion.ldm.modules.diffusionmodules.util import make_beta_schedule, extract_into_tensor, noise_like
+from mu.stable_diffusion.ldm.modules.x_transformer import Encoder, TransformerWrapper  # TODO: can we directly rely on lucidrains code and simply add this as a reuirement? --> test
+from mu.stable_diffusion.ldm.util import default
+from mu.stable_diffusion.ldm.thirdp.psp.id_loss import IDFeatures
 import kornia.augmentation as K
 
 class AbstractEncoder(nn.Module):
@@ -407,7 +407,7 @@ class LowScaleEncoder(nn.Module):
 
 
 if __name__ == "__main__":
-    from stable_diffusion.ldm.util import count_params
+    from mu.stable_diffusion.ldm.util import count_params
     sentences = ["a hedgehog drinking a whiskey", "der mond ist aufgegangen", "Ein Satz mit vielen Sonderzeichen: äöü ß ?! : 'xx-y/@s'"]
     model = FrozenT5Embedder(version="google/t5-v1_1-xl").cuda()
     count_params(model, True)

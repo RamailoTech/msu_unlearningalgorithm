@@ -26,7 +26,7 @@ import albumentations
 import sys
 sys.path.append('.')
 
-import stable_diffusion.ldm.modules.image_degradation.utils_image as util
+import mu.stable_diffusion.ldm.modules.image_degradation.utils_image as util
 
 
 def modcrop_np(img, sf):
