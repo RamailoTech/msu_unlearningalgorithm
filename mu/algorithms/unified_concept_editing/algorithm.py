@@ -58,20 +58,36 @@ class UnifiedConceptEditingAlgorithm(BaseAlgorithm):
             data_handler=self.data_handler,
         )
 
-    def run(self):
-        """
-        Execute the training process.
-        """
-        # Initialize WandB
+    def run_erase(self):
         wandb.init(
             project="unified-concept-editing",
             name=self.config.get("theme", "UnifiedConceptEditing"),
             config=self.config,
         )
         self.logger.info("Initialized WandB for logging.")
-
-        # Start training
         self.trainer.train()
-
-        # Finish WandB run
         wandb.finish()
+
+    def run_debias(self):
+        wandb.init(
+            project="unified-concept-editing",
+            name=self.config.get("theme", "UnifiedConceptEditing"),
+            config=self.config,
+        )
+        self.logger.info("Initialized WandB for logging.")
+        self.trainer.train_debias()
+        wandb.finish()
+
+    def run(self, mode: str):
+        """
+        Execute the training process.
+
+        Args:
+            mode (str): Mode of operation. Can be either 'erase' or 'debias'.
+        """
+        if mode == "erase":
+            self.run_erase()
+        elif mode == "debias":
+            self.run_debias()
+        else:
+            raise NotImplementedError(f"Mode {mode} not implemented.")

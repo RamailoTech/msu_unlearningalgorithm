@@ -47,7 +47,7 @@ def main():
 
     # Initialize and run the UnifiedConceptEditing algorithm
     algorithm = UnifiedConceptEditingAlgorithm(config)
-    algorithm.run()
+    algorithm.run(mode="train")  # takes erase or debias
 
 
 if __name__ == "__main__":
