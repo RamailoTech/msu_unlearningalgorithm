@@ -6,10 +6,10 @@ import os
 import torch
 import numpy as np
 from einops import rearrange
-from datasets.base_dataset import BaseDataset
+from mu.datasets import BaseDataset
 from torchvision import transforms
 
-from datasets.constants import * 
+from mu.datasets.constants import * 
 
 class UnlearnCanvasDataset(BaseDataset):
     """

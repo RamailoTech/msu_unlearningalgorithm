@@ -13,35 +13,35 @@ class EraseDiffModel(BaseModel):
     EraseDiffModel handles loading, saving, and interacting with the Stable Diffusion model.
     """
 
-    def __init__(self, config_path: str, ckpt_path: str, device: str):
+    def __init__(self, model_config_path: str, ckpt_path: str, device: str):
         """
         Initialize the EraseDiffModel.
 
         Args:
-            config_path (str): Path to the model configuration file.
+            model_config_path (str): Path to the model configuration file.
             ckpt_path (str): Path to the model checkpoint.
             device (str): Device to load the model on (e.g., 'cuda:0').
         """
         super().__init__()
         self.device = device
-        self.config_path = config_path
+        self.model_config_path = model_config_path
         self.ckpt_path = ckpt_path
-        self.model = self.load_model(config_path, ckpt_path, device)
+        self.model = self.load_model(model_config_path, ckpt_path, device)
         self.logger = logging.getLogger(__name__)
 
-    def load_model(self, config_path: str, ckpt_path: str, device: str):
+    def load_model(self, model_config_path: str, ckpt_path: str, device: str):
         """
         Load the Stable Diffusion model from config and checkpoint.
 
         Args:
-            config_path (str): Path to the model configuration file.
+            model_config_path (str): Path to the model configuration file.
             ckpt_path (str): Path to the model checkpoint.
             device (str): Device to load the model on.
 
         Returns:
             torch.nn.Module: Loaded Stable Diffusion model.
         """
-        return load_model_from_config(config_path, ckpt_path, device)
+        return load_model_from_config(model_config_path, ckpt_path, device)
 
     def save_model(self, output_path: str):
         """

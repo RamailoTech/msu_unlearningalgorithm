@@ -7,7 +7,9 @@ import logging
 from pathlib import Path
 
 from mu.core import BaseAlgorithm
-from mu.algorithms.erase_diff import EraseDiffModel, EraseDiffTrainer, EraseDiffDataHandler
+from mu.algorithms.erase_diff.model import EraseDiffModel
+from mu.algorithms.erase_diff.trainer import EraseDiffTrainer
+from mu.algorithms.erase_diff.data_handler import EraseDiffDataHandler
 
 class EraseDiffAlgorithm(BaseAlgorithm):
     """
@@ -38,11 +40,11 @@ class EraseDiffAlgorithm(BaseAlgorithm):
         # Initialize Data Handler
 
         self.data_handler = EraseDiffDataHandler(
-            original_data_dir=self.config.get('raw_dataset_dir'),
-            new_data_dir=self.config.get('processed_dataset_dir'),
+            raw_dataset_dir=self.config.get('raw_dataset_dir'),
+            processed_dataset_dir=self.config.get('processed_dataset_dir'),
             dataset_type=self.config.get('dataset_type', 'unlearncanvas'),
-            selected_theme=self.config.get('template'),
-            selected_class=self.config.get('template_name'),
+            template=self.config.get('template'),
+            template_name=self.config.get('template_name'),
             batch_size=self.config.get('batch_size', 4),
             image_size=self.config.get('image_size', 512),
             interpolation=self.config.get('interpolation', 'bicubic'),
@@ -53,7 +55,7 @@ class EraseDiffAlgorithm(BaseAlgorithm):
 
         # Initialize Model
         self.model = EraseDiffModel(
-            config_path=self.config.get('config_path'),
+            model_config_path=self.config.get('model_config_path'),
             ckpt_path=self.config.get('ckpt_path'),
             device=str(self.device)
         )

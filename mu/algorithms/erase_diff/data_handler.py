@@ -2,11 +2,12 @@ import os
 import pandas as pd
 from typing import Any, Dict
 from torch.utils.data import DataLoader
+import logging
+
 
 from mu.algorithms.erase_diff.datasets.erase_diff_dataset import EraseDiffDataset
-from datasets.constants import *
+from mu.datasets.constants import *
 from mu.core import BaseDataHandler
-import logging
 
 
 class EraseDiffDataHandler(BaseDataHandler):
@@ -28,7 +29,6 @@ class EraseDiffDataHandler(BaseDataHandler):
         num_workers: int = 4,
         pin_memory: bool = True,
         dataset_type: str = 'unlearncanvas',
-        logger: logging.Logger = None
     ):
         """
         Initialize the EraseDiffDataHandler.
@@ -88,6 +88,8 @@ class EraseDiffDataHandler(BaseDataHandler):
         themes = uc_sample_theme_available if self.use_sample else uc_theme_available
         classes = uc_sample_class_available if self.use_sample else uc_class_available
 
+        classes_range = 3 if self.use_sample else 10
+
         for theme in themes:
             theme_dir = os.path.join(self.processed_dataset_dir, theme)
             os.makedirs(theme_dir, exist_ok=True)
@@ -95,7 +97,7 @@ class EraseDiffDataHandler(BaseDataHandler):
             path_list = []
 
             for class_ in classes:
-                for idx in classes[class_]:
+                for idx in range(1, classes_range + 1):
                     prompt = f"A {class_} image in {theme.replace('_', ' ')} style."
                     image_path = os.path.join(self.raw_dataset_dir, theme, class_, f"{idx}.jpg")
                     if os.path.exists(image_path):
@@ -114,6 +116,59 @@ class EraseDiffDataHandler(BaseDataHandler):
 
             self.logger.info(f"Generated dataset for theme '{theme}' with {len(path_list)} samples.")
 
+            # For Seed Images
+            seed_theme = "Seed_Images"
+            seed_dir = os.path.join(self.processed_dataset_dir, seed_theme)
+            os.makedirs(seed_dir, exist_ok=True)
+            prompt_list = []
+            path_list = []
+
+            for class_ in classes:
+                for idx in range(1, classes_range + 1):
+                    prompt = f"A {class_} image in Photo style."
+                    image_path = os.path.join(self.raw_dataset_dir, seed_theme, class_, f"{idx}.jpg")
+                    if os.path.exists(image_path):
+                        prompt_list.append(prompt)
+                        path_list.append(image_path)
+                    else:
+                        self.logger.warning(f"Image not found: {image_path}")
+
+            prompts_txt_path = os.path.join(seed_dir, 'prompts.txt')
+            images_txt_path = os.path.join(seed_dir, 'images.txt')
+
+            with open(prompts_txt_path, 'w') as f:
+                f.write('\n'.join(prompt_list))
+            with open(images_txt_path, 'w') as f:
+                f.write('\n'.join(path_list))
+
+            self.logger.info(f"Generated Seed Images dataset with {len(path_list)} samples.")
+
+            # For Class-based Organization
+            for object_class in classes:
+                class_dir = os.path.join(self.processed_dataset_dir, object_class)
+                os.makedirs(class_dir, exist_ok=True)
+                prompt_list = []
+                path_list = []
+
+                for theme in themes:
+                    for idx in range(1, classes_range + 1):
+                        prompt = f"A {object_class} image in {theme.replace('_', ' ')} style."
+                        image_path = os.path.join(self.raw_dataset_dir, theme, object_class, f"{idx}.jpg")
+                        if os.path.exists(image_path):
+                            prompt_list.append(prompt)
+                            path_list.append(image_path)
+                        else:
+                            self.logger.warning(f"Image not found: {image_path}")
+
+                prompts_txt_path = os.path.join(class_dir, 'prompts.txt')
+                images_txt_path = os.path.join(class_dir, 'images.txt')
+
+                with open(prompts_txt_path, 'w') as f:
+                    f.write('\n'.join(prompt_list))
+                with open(images_txt_path, 'w') as f:
+                    f.write('\n'.join(path_list))
+
+                self.logger.info(f"Generated dataset for class '{object_class}' with {len(path_list)} samples.")
         self.logger.info("Dataset generation (UC) completed.")
 
     def _generate_dataset_i2p(self):

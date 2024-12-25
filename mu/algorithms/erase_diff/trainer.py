@@ -13,7 +13,7 @@ from timm.utils import AverageMeter
 import logging 
 
 from mu.core import BaseTrainer
-from mu.algorithms.erase_diff import EraseDiffModel
+from mu.algorithms.erase_diff.model import EraseDiffModel
 
 class EraseDiffTrainer(BaseTrainer):
     """
@@ -67,7 +67,7 @@ class EraseDiffTrainer(BaseTrainer):
                 if 'attn1' in name and ('input_blocks.4.' in name or 'input_blocks.7.' in name):
                     parameters.append(param)
 
-        self.optimizer = torch.optim.Adam(parameters, lr=self.config.get('lr', 1e-5))
+        self.optimizer = torch.optim.Adam(parameters, lr=float(self.config.get('lr', 1e-5)))
 
     def train(self):
         """

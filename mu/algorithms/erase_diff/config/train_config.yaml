@@ -6,19 +6,19 @@ K_steps: 2  # Number of K steps
 lr: 5e-5  # Learning rate
 
 # Model configuration
-model_config_path: "configs/train_erase_diff.yaml"  # Config path for Stable Diffusion
-ckpt_path: "path/to/checkpoint.ckpt"  # Checkpoint path for Stable Diffusion
+model_config_path: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/erase_diff/config/model_config.yaml"  # Config path for Stable Diffusion
+ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
 
 # Dataset directories
-raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/quick-canvas-benchmark"  # Directory containing the original dataset organized by themes and classes
-processed_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/erase_diff/data"  # Directory where the new datasets will be saved
+raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
+processed_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/erase_diff/data"
 dataset_type : "unlearncanvas"
 template : "style"
 template_name : "Abstractionism"
 
 
 # Output configurations
-output_dir: "results"  # Output directory to save results
+output_dir: "outputs/erase_diff/finetuned_models"  # Output directory to save results
 separator: null  # Separator if you want to train multiple words separately
 
 # Sampling and image configurations

@@ -1,4 +1,5 @@
 model:
+
   base_learning_rate: 1.0e-04
   target: stable_diffusion.ldm.models.diffusion.ddpm.LatentDiffusion
   params:

@@ -4,8 +4,8 @@ from omegaconf import OmegaConf
 import torch
 from pathlib import Path
 
-from mu.stable_diffusion.ldm.util import instantiate_from_config
-from mu.stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+from stable_diffusion.ldm.util import instantiate_from_config
+from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 
 
 def read_text_lines(path: str) -> List[str]:

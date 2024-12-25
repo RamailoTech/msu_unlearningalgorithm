@@ -1,4 +1,5 @@
 data/*
+!data/.gitkeep
 .vscode*
 logs/*
 !logs/.gitkeep
@@ -6,10 +7,13 @@ logs/*
 **/__pycache__/
 *.pyc
 
-mu/wandb
+wandb 
+.vscode 
+cache
+output/*
+!output/.gitkeep
 
-mu/.vscode 
-mu/cache
-results/*
+models
+!models/.gitkeep
 
 !mu/algorithms/erase_diff/.gitignore
