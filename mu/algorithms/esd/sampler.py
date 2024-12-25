@@ -41,7 +41,7 @@ class ESDSampler(BaseSampler):
             torch.Tensor: Generated samples of shape (num_samples, channels, height, width)
         '''
 
-        samples = sample_model(self.model, self.sampler, c, h, w, self.ddim_steps, scale, self.ddim_eta,
+        samples = sample_model(self.model, self.samplers[0], c, h, w, self.ddim_steps, scale, self.ddim_eta,
                                start_code=start_code, num_samples=num_samples, t_start=t_start,
                                log_every_t=log_every_t, till_T=till_T, verbose=verbose)
         return samples
