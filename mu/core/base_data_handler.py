@@ -42,14 +42,3 @@ class BaseDataHandler(ABC):
         """
         pass
 
-    def get_data_loaders(self, batch_size: int) -> Dict[str, DataLoader]:
-        """
-        Get data loaders for various data splits.
-
-        Args:
-            batch_size (int): Batch size for data loaders.
-
-        Returns:
-            Dict[str, DataLoader]: Dictionary containing data loaders, e.g., {'train': train_loader, 'val': val_loader, ...}
-        """
-        pass

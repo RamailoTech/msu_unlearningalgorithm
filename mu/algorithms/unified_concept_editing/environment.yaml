@@ -50,3 +50,4 @@ dependencies:
     - fairscale # This is for ICL_Inpainting
     - git+https://github.com/facebookresearch/detectron2.git # This is for ICL_Inpainting
     - open_clip_torch # This is for ICL_Prompt_Diffusion
+    - wandb==0.18.7

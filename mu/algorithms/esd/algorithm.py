@@ -57,7 +57,7 @@ class ESDAlgorithm(BaseAlgorithm):
                 model = self.trainer.train()
 
                 # Save final model
-                output_name = output_dir / self.config.get("output_name", "erase_diff_model.pth")
+                output_name = output_dir / self.config.get("output_name", f"esd_{self.config.get('template_name')}_model.pth")
                 self.model.save_model(model,output_name)
                 self.logger.info(f"Trained model saved at {output_name}")
                 

@@ -45,7 +45,7 @@ class UnifiedConceptEditingDataHandler(BaseDataHandler):
         elif self.dataset_type == 'i2p':
             self.concepts_available = i2p_sample_categories if self.use_sample else i2p_categories
 
-    def prepare_prompts(
+    def generate_dataset(
         self,
         add_prompts: bool,
         guided_concepts: Optional[str],
@@ -124,3 +124,28 @@ class UnifiedConceptEditingDataHandler(BaseDataHandler):
         self.logger.info(f"Retain Texts: {retain_texts}")
 
         return old_texts, new_texts, retain_texts
+
+    def load_data(self, data_path: str):
+        """
+        Load data from the specified path.
+
+        Args:
+            data_path (str): Path to the data.
+
+        Returns:
+            Any: Loaded data.
+        """
+        pass
+
+    def preprocess_data(self, data):
+        """
+        Preprocess the data (e.g., normalization, augmentation).
+
+        Args:
+            data (Any): Raw data to preprocess.
+
+        Returns:
+            Any: Preprocessed data.
+        """
+        pass
+    

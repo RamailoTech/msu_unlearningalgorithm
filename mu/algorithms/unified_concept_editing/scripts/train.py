@@ -63,7 +63,7 @@ def main():
     config['devices'] = devices
 
     # Setup logger
-    log_file = os.path.join(logs_dir, f"erase_diff_training_{config.get('dataset_type')}_{config.get('template')}_{config.get('template_name')}.log")
+    log_file = os.path.join(logs_dir, f"uce_training_{config.get('dataset_type')}_{config.get('template')}_{config.get('template_name')}.log")
     logger = setup_logger(log_file=log_file, level=logging.INFO)
     logger.info("Starting EraseDiff Training")
 

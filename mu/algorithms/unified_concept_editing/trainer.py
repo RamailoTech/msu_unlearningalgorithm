@@ -54,7 +54,7 @@ class UnifiedConceptEditingTrainer(BaseTrainer):
         preserve_concepts = self.config.get('preserve_concepts')
 
         # Prepare prompts using data handler
-        old_texts, new_texts, retain_texts = self.data_handler.prepare_prompts(
+        old_texts, new_texts, retain_texts = self.data_handler.generate_dataset(
             add_prompts=add_prompts,
             guided_concepts=guided_concepts,
             preserve_concepts=preserve_concepts
