@@ -3,22 +3,21 @@
 # Training parameters
 train_method: "full"  # Options: full, partial
 alpha: 0.1
-epochs: 10
+epochs: 1
 lr: 5e-5
 
 # Model configuration
-config_path: "configs/model_config.yaml"
 ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
 
 # Output configurations
-output_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/results/uce/models"
-theme: "Abstractionism"
-classes: "Architectures"
+output_dir: "outputs/uce/finetuned_models"  # Output directory to save results
+dataset_type : "unlearncanvas"
+template : "style"
+template_name : "Abstractionism"
 
 
 # Device configuration
-devices: 
-  - "cuda:0"
+devices: "0"
 
 # Additional flags
 use_sample: true

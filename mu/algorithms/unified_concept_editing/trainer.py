@@ -1,11 +1,11 @@
-# unified_concept_editing/trainer.py
+# mu/algorithms/unified_concept_editing/trainer.py
 
-from core.base_trainer import BaseTrainer
-from algorithms.unified_concept_editing.model import UnifiedConceptEditingModel
-from algorithms.unified_concept_editing.data_handler import UnifiedConceptEditingDataHandler
-from algorithms.unified_concept_editing.logger import setup_logger
 import logging
-from typing import List, Optional
+from typing import Optional
+
+from mu.algorithms.unified_concept_editing.model import UnifiedConceptEditingModel
+from mu.algorithms.unified_concept_editing.data_handler import UnifiedConceptEditingDataHandler
+from mu.core import BaseTrainer
 
 
 class UnifiedConceptEditingTrainer(BaseTrainer):
@@ -36,7 +36,7 @@ class UnifiedConceptEditingTrainer(BaseTrainer):
         self.device = device
         self.model = model
         self.data_handler = data_handler
-        self.logger = logging.getLogger('UnifiedConceptEditingTrainer')
+        self.logger = logging.getLogger(__name__)
         self.technique = self.config.get('technique', 'replace')
         self.lamb = self.config.get('lamb', 0.5)
         self.erase_scale = self.config.get('erase_scale', 1.0)
@@ -49,8 +49,6 @@ class UnifiedConceptEditingTrainer(BaseTrainer):
         Execute the model editing process.
         """
         # Extract concepts and prompts from data handler
-        theme = self.config.get('theme')
-        classes = self.config.get('classes')
         add_prompts = self.config.get('add_prompts', False)
         guided_concepts = self.config.get('guided_concepts')
         preserve_concepts = self.config.get('preserve_concepts')
@@ -63,7 +61,7 @@ class UnifiedConceptEditingTrainer(BaseTrainer):
         )
 
         # Perform model editing using the edit_model method from model.py
-        self.model.edit_model(
+        pretrained_model = self.model.edit_model(
             old_texts=old_texts,
             new_texts=new_texts,
             retain_texts=retain_texts,
@@ -74,7 +72,4 @@ class UnifiedConceptEditingTrainer(BaseTrainer):
             technique=self.technique
         )
 
-        # Save the edited model
-        output_name = self.config.get('output_dir', 'unified_concept_editing_model.pth')
-        self.model.save_model(output_name)
-        self.logger.info(f"Edited model saved at {output_name}")
+        return pretrained_model

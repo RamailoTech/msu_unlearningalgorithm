@@ -1,14 +1,15 @@
-# unified_concept_editing/model.py
+# mu/algorithms/unified_concept_editing/model.py
 
-from core.base_model import BaseModel
-from diffusers import StableDiffusionPipeline
 import torch
 from typing import Any, List, Optional
 import logging
 import copy
 from tqdm import tqdm
 import ast
+from diffusers import StableDiffusionPipeline
 
+
+from mu.core import BaseModel
 
 class UnifiedConceptEditingModel(BaseModel):
     """
@@ -49,7 +50,7 @@ class UnifiedConceptEditingModel(BaseModel):
         model.enable_attention_slicing()  # Optimize memory usage
         return model
 
-    def save_model(self, output_path: str):
+    def save_model(self, model, output_path: str):
         """
         Save the model's state dictionary.
 
@@ -57,7 +58,7 @@ class UnifiedConceptEditingModel(BaseModel):
             output_path (str): Path to save the model checkpoint.
         """
         self.logger.info(f"Saving model to {output_path}...")
-        self.model.save_pretrained(output_path)
+        model.save_pretrained(output_path)
         self.logger.info("Model saved successfully.")
 
     def edit_model(
@@ -70,7 +71,7 @@ class UnifiedConceptEditingModel(BaseModel):
         preserve_scale: float = 0.1,
         layers_to_edit: Optional[List[int]] = None,
         technique: str = 'replace'
-    ) -> StableDiffusionPipeline:
+    ):
         """
         Edit the model by modifying cross-attention layers to erase or replace concepts.
 

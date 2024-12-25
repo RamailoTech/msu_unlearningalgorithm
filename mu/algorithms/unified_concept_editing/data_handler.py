@@ -1,10 +1,10 @@
 # unified_concept_editing/data_handler.py
 
-from core.base_data_handler import BaseDataHandler
 from typing import List, Optional, Tuple
 import logging
-from datasets.constants import *
 
+from mu.core import BaseDataHandler
+from mu.datasets.constants import *
 
 class UnifiedConceptEditingDataHandler(BaseDataHandler):
     """
@@ -14,36 +14,36 @@ class UnifiedConceptEditingDataHandler(BaseDataHandler):
 
     def __init__(
         self,
-        selected_theme: str,
-        selected_class: str,
+        dataset_type: str,
+        template: str,
+        template_name: str,
         use_sample: bool = False
     ):
         """
         Initialize the UnifiedConceptEditingDataHandler.
 
         Args:
-            original_data_dir (str): Directory containing the original dataset organized by themes and classes.
-            new_data_dir (str): Directory where the new datasets will be saved.
-            selected_theme (str): The specific theme to edit.
-            selected_class (str): The specific class to edit.
+            dataset_type (str, optional): Type of dataset to use. Defaults to 'unlearncanvas'.
+            template (str): Template type ('style' or 'object')
+            template_name (str): Name of the template to use
             use_sample (bool, optional): Flag to use a sample dataset. Defaults to False.
         """
         super().__init__()
-        self.selected_theme = selected_theme
-        self.selected_class = selected_class
+        self.dataset_type = dataset_type
+        self.template = template
+        self.template_name = template_name
         self.use_sample = use_sample
 
-        # Select available themes and classes based on use_sample flag
-        if self.use_sample:
-            self.theme_available = uc_sample_theme_available
-            self.class_available = uc_sample_class_available
-            self.logger = logging.getLogger('UnifiedConceptEditingDataHandler_Sample')
-            self.logger.info("Using sample themes and classes.")
-        else:
-            self.theme_available = uc_theme_available
-            self.class_available = uc_class_available
-            self.logger = logging.getLogger('UnifiedConceptEditingDataHandler_Full')
-            self.logger.info("Using full themes and classes.")
+        self.logger = logging.getLogger(__name__)
+
+        if self.dataset_type == 'unlearncanvas':
+            if template == 'style':
+                self.concepts_available = uc_sample_theme_available if self.use_sample else uc_theme_available
+            elif template == 'object' :
+                self.concepts_available = uc_sample_class_available if self.use_sample else uc_class_available
+
+        elif self.dataset_type == 'i2p':
+            self.concepts_available = i2p_sample_categories if self.use_sample else i2p_categories
 
     def prepare_prompts(
         self,
@@ -67,10 +67,8 @@ class UnifiedConceptEditingDataHandler(BaseDataHandler):
         retain_texts = []
 
         additional_prompts = []
-        theme = self.selected_theme
-
-        # Determine additional prompts based on the selected theme
-        if theme in self.theme_available:
+        concept = self.template_name
+        if self.template == 'style' and self.template_name in self.concepts_available:
             additional_prompts = [
                 'image in {concept} Style',
                 'art by {concept}',
@@ -78,7 +76,7 @@ class UnifiedConceptEditingDataHandler(BaseDataHandler):
                 'picture by {concept}',
                 'style of {concept}'
             ]
-        elif theme in self.class_available:
+        elif self.template == 'object' and self.template_name in self.concepts_available:
             additional_prompts = [
                 'image of {concept}',
                 'photo of {concept}',
@@ -89,12 +87,10 @@ class UnifiedConceptEditingDataHandler(BaseDataHandler):
 
         if not add_prompts:
             additional_prompts = []
-
-        concepts = [theme]
-        for concept in concepts:
-            old_texts.append(f'{concept}')
-            for prompt in additional_prompts:
-                old_texts.append(prompt.format(concept=concept))
+ 
+        old_texts.append(f'{concept}')
+        for prompt in additional_prompts:
+            old_texts.append(prompt.format(concept=concept))
 
         # Prepare new_texts based on guided_concepts
         if guided_concepts is None:
@@ -116,7 +112,7 @@ class UnifiedConceptEditingDataHandler(BaseDataHandler):
         else:
             preserve_concepts = [con.strip() for con in preserve_concepts.split(',')]
             for con in preserve_concepts:
-                for theme_item in self.theme_available:
+                for theme_item in self.concepts_available:
                     if theme_item == "Seed_Images":
                         adjusted_theme = "Photo"
                     else:
