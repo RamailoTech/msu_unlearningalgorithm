@@ -29,7 +29,7 @@ class ESDTrainer(BaseTrainer):
 
         train_method = self.config['train_method']
         parameters = []
-        for name, param in self.model.model.model.named_parameters():
+        for name, param in self.model.model.named_parameters():
             if train_method == 'full':
                 parameters.append(param)
             elif train_method == 'xattn' and 'attn2' in name:
@@ -39,7 +39,7 @@ class ESDTrainer(BaseTrainer):
             elif train_method == 'noxattn':
                 if not (name.startswith('out.') or 'attn2' in name or 'time_embed' in name):
                     parameters.append(param)
-        self.optimizer = torch.optim.Adam(parameters, lr=self.config['lr'])
+        self.optimizer = torch.optim.Adam(parameters, lr=float(self.config['lr']))
 
     def train(self):
         """
@@ -69,7 +69,7 @@ class ESDTrainer(BaseTrainer):
 
         image_size = self.config['image_size']
 
-        self.model.model.train()
+        self.model.train()
         pbar = tqdm(range(iterations))
         for i in pbar:
             word = random.choice(words)
@@ -87,7 +87,7 @@ class ESDTrainer(BaseTrainer):
 
             with torch.no_grad():
                 # Generate an image with the concept from the ESD model
-                z = sample_model(self.model.model, self.sampler,
+                z = sample_model(self.model, self.sampler,
                                  emb_p.to(self.device), image_size, image_size, ddim_steps, start_guidance, 0,
                                  start_code=start_code, till_T=int(t_enc.item()), verbose=False)
                 # Get conditional and unconditional scores from the frozen model
@@ -104,3 +104,4 @@ class ESDTrainer(BaseTrainer):
             self.optimizer.step()
 
             pbar.set_postfix({"loss": loss.item()})
+        return self.model

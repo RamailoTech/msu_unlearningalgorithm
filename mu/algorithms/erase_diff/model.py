@@ -43,14 +43,14 @@ class EraseDiffModel(BaseModel):
         """
         return load_model_from_config(model_config_path, ckpt_path, device)
 
-    def save_model(self, output_path: str):
+    def save_model(self,model, output_path: str):
         """
         Save the trained model's state dictionary.
 
         Args:
             output_path (str): Path to save the model checkpoint.
         """
-        torch.save({"state_dict": self.model.state_dict()}, output_path)
+        torch.save({"state_dict": model.state_dict()}, output_path)
 
 
     def get_learned_conditioning(self, prompts: list) -> Any:

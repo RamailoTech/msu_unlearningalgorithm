@@ -23,7 +23,7 @@ class ESDAlgorithm(BaseAlgorithm):
         self.device_orig = torch.device(self.config.get('devices', ['cuda:0'])[1])
         self.logger = logging.getLogger(__name__)
         self._setup_components()
-x
+
     def _setup_components(self):
         """
         Setup model, trainer, and sampler components.
@@ -31,8 +31,8 @@ x
         self.logger.info("Setting up components...")
 
         self.model = ESDModel(self.config.get('model_config_path'), self.config.get('ckpt_path'), self.device, self.device_orig)
-        self.trainer = ESDTrainer(self.model, self.config, self.device, self.device_orig)
-        self.sampler = ESDSampler(self.model, self.config, self.device, self.device_orig)
+        self.sampler = ESDSampler(self.model, self.config, self.device)
+        self.trainer = ESDTrainer(self.model,self.sampler, self.config, self.device, self.device_orig)
 
     def run(self):
         """
@@ -54,11 +54,11 @@ x
 
             try:
                 # Start training
-                self.trainer.train()
+                model = self.trainer.train()
 
                 # Save final model
                 output_name = output_dir / self.config.get("output_name", "erase_diff_model.pth")
-                self.model.save_model(output_name)
+                self.model.save_model(model,output_name)
                 self.logger.info(f"Trained model saved at {output_name}")
                 
                 # Save to WandB

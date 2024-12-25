@@ -57,9 +57,8 @@ def main():
     devices = (
         [f'cuda:{int(d.strip())}' for d in args.devices.split(',')]
         if args.devices
-        else [f'cuda:{int(d)}' for d in config.get('devices', ['0'])]
+        else [f'cuda:{int(d.strip())}' for d in config.get('devices').split(',')]
     )
-
     # Update configuration only if arguments are explicitly provided
     for key, value in vars(args).items():
         if value is not None:  # Update only if the argument is provided
@@ -68,6 +67,9 @@ def main():
     # Ensure devices are properly set
     config['devices'] = devices
 
+    prompt =  f"An image of {config.get('template_name')}."
+    config['prompt'] = prompt
+    
     # Setup logger
     log_file = os.path.join(logs_dir, f"erase_diff_training_{config.get('dataset_type')}_{config.get('template')}_{config.get('template_name')}.log")
     logger = setup_logger(log_file=log_file, level=logging.INFO)

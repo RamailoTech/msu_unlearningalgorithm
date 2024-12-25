@@ -89,11 +89,11 @@ class EraseDiffAlgorithm(BaseAlgorithm):
 
             try:
                 # Start training
-                self.trainer.train()
+                model = self.trainer.train()
 
                 # Save final model
                 output_name = output_dir / self.config.get("output_name", "erase_diff_model.pth")
-                self.model.save_model(output_name)
+                self.model.save_model(model,output_name)
                 self.logger.info(f"Trained model saved at {output_name}")
                 
                 # Save to WandB

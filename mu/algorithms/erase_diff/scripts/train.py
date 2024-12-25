@@ -71,7 +71,7 @@ def main():
     devices = (
         [f'cuda:{int(d.strip())}' for d in args.devices.split(',')]
         if args.devices
-        else [f'cuda:{int(d)}' for d in config.get('devices', ['0'])]
+        else [f'cuda:{int(d.strip())}' for d in config.get('devices').split(',')]
     )
 
     # Update configuration only if arguments are explicitly provided

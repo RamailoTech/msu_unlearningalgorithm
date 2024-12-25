@@ -26,9 +26,9 @@ class ESDModel(BaseModel):
         self.device_orig = device_orig
         self.config_path = model_config_path
         self.ckpt_path = ckpt_path
-        self.models = self.load_models(model_config_path, ckpt_path, device, device_orig)
+        self.models = self.load_model(model_config_path, ckpt_path, device, device_orig)
 
-    def load_models(self, model_config_path: str, ckpt_path: str, device: str, device_orig:str):
+    def load_model(self, model_config_path: str, ckpt_path: str, device: str, device_orig:str):
         """
         Load the Stable Diffusion model from config and checkpoint.
 
@@ -48,14 +48,14 @@ class ESDModel(BaseModel):
         return (model, model_orig)
 
 
-    def save_model(self, output_path: str):
+    def save_model(self, model,output_path: str):
         """
         Save the trained model's state dictionary.
 
         Args:
             output_path (str): Path to save the model checkpoint.
         """
-        torch.save({"state_dict": self.model.state_dict()}, output_path)
+        torch.save({"state_dict": model.state_dict()}, output_path)
 
     def get_learned_conditioning(self, prompts):
         """
@@ -70,7 +70,7 @@ class ESDModel(BaseModel):
         return self.model.get_learned_conditioning(prompts)
 
     def apply_model(self, z, t, c):
-       """
+        """
         Apply the model to generate outputs.
 
         Args:
@@ -81,4 +81,5 @@ class ESDModel(BaseModel):
         Returns:
             torch.Tensor: Model outputs.
         """
-        return self.model.apply_model(z, t, c)
+        model = self.models[0]
+        return model.apply_model(z, t, c)

@@ -156,9 +156,9 @@ class EraseDiffTrainer(BaseTrainer):
 
             self.logger.info(f"Epoch {epoch+1}/{epochs} completed.")
 
-        self.model.model.eval()
+        self.model.eval()
         self.logger.info("Training completed.")
-        return self.model.model
+        return self.model
 
     def get_param(self) -> list:
         """

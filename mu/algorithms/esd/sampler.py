@@ -1,6 +1,6 @@
 from mu.core import BaseSampler
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
-from algorithms.esd.algorithm import ESDModel
+from mu.algorithms.esd.algorithm import ESDModel
 from mu.helpers import sample_model
 
 class ESDSampler(BaseSampler):
