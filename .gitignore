@@ -10,8 +10,8 @@ logs/*
 wandb 
 .vscode 
 cache
-output/*
-!output/.gitkeep
+outputs/*
+!outputs/.gitkeep
 
 models
 !models/.gitkeep
