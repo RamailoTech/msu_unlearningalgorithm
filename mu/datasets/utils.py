@@ -3,7 +3,6 @@ from torchvision.transforms import InterpolationMode
 from torchvision.transforms import functional as F
 
 
-
 INTERPOLATIONS = {
     'bilinear': InterpolationMode.BILINEAR,
     'bicubic': InterpolationMode.BICUBIC,

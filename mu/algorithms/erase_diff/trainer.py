@@ -1,22 +1,19 @@
-# erase_diff/trainer.py
+# mu/algorithms/erase_diff/trainer.py
 
-from core.base_trainer import BaseTrainer
-from algorithms.erase_diff.model import EraseDiffModel
 import torch
 import gc
 from tqdm import tqdm
 import random
-from algorithms.erase_diff.utils import load_model_from_config, sample_model
 from torch.nn import MSELoss
 import wandb
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 import logging
 from pathlib import Path
-from stable_diffusion.ldm.util import instantiate_from_config
 from omegaconf import OmegaConf
 from timm.utils import AverageMeter
+import logging 
 
-
+from mu.core import BaseTrainer
+from mu.algorithms.erase_diff import EraseDiffModel
 
 class EraseDiffTrainer(BaseTrainer):
     """
@@ -38,27 +35,13 @@ class EraseDiffTrainer(BaseTrainer):
         """
         super().__init__(model, config, **kwargs)
         self.device = device
-        self.model = None
+        self.model = model.model
         self.sampler = None
         self.sampler_orig = None
         self.criteria = MSELoss()
         self.logger = logging.getLogger(__name__)
         self.data_handler = data_handler
-        self.setup_models()
         self.setup_optimizer()
-
-    def setup_models(self):
-        """
-        Setup the original (frozen) model and samplers.
-        """
-        # Load the original (frozen) model
-        config_path = self.config.get('config_path')
-        ckpt_path = self.config.get('ckpt_path')
-        self.model = load_model_from_config(config_path, ckpt_path, device=self.device)
-
-        # # Setup samplers
-        # self.sampler = DDIMSampler(self.model.model)
-        # self.sampler_orig = DDIMSampler(self.model_orig)
 
     def setup_optimizer(self):
         """

@@ -1,11 +1,19 @@
-# erase_diff/utils.py
+from typing import List,Any
 
 from omegaconf import OmegaConf
 import torch
-from typing import Any
 from pathlib import Path
-from stable_diffusion.ldm.util import instantiate_from_config
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+
+from mu.stable_diffusion.ldm.util import instantiate_from_config
+from mu.stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+
+
+def read_text_lines(path: str) -> List[str]:
+    """Read lines from a text file and strip whitespace."""
+    with open(path, "r", encoding='utf-8') as f:
+        lines = f.readlines()
+    lines = [line.strip() for line in lines]
+    return lines
 
 
 def load_model_from_config(config_path: str, ckpt_path: str, device: str = "cpu") -> Any:

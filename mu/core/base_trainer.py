@@ -1,4 +1,4 @@
-# base_trainer.py
+# mu/core/base_trainer.py
 
 from abc import ABC, abstractmethod
 from typing import Any
@@ -9,11 +9,6 @@ class BaseTrainer(ABC):
     def __init__(self, model: Any, config: dict, **kwargs):
         self.model = model
         self.config = config
-
-    # @abstractmethod
-    def setup_models(self, *args, **kwargs):
-        """Set up the models for training."""
-        pass
 
 
     # @abstractmethod

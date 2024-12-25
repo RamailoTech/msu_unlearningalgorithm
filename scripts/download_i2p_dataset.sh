@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Define URLs for datasets on Hugging Face
-SAMPLE_URL="https://huggingface.co/datasets/dipeshlav/sample_i2p_dataset/resolve/main/i2p.csv"
+SAMPLE_URL="https://huggingface.co/datasets/dipeshlav/sample_i2p_dataset/resolve/main/sample.zip"
 FULL_URL="https://huggingface.co/datasets/your-username/your-dataset-name/resolve/main/full-dataset.zip"
 
 # Define output filenames
-SAMPLE_FILE="i2p.csv"
+SAMPLE_FILE="sample_i2p_dataset.zip"
 FULL_FILE="full-dataset.zip"
 
 # Define target directories
@@ -17,12 +17,10 @@ FULL_DIR="$DATA_DIR/full"
 prepare_directories() {
   echo "Preparing directories..."
   mkdir -p "$DATA_DIR"
-  mkdir -p "$SAMPLE_DIR"
-  mkdir -p "$FULL_DIR"
 }
 
-# Function to download the dataset
-download() {
+# Function to download and extract a dataset
+download_and_extract() {
   local url=$1
   local output=$2
   local target_dir=$3
@@ -31,7 +29,19 @@ download() {
   curl -L -o "$output" "$url"
   if [ $? -eq 0 ]; then
     echo "Download complete: $output"
-    mv "$output" "$target_dir"
+    echo "Extracting $output to $target_dir..."
+    # Check if the file is a valid ZIP file
+    if file "$output" | grep -q 'Zip archive data'; then
+      unzip -o "$output" -d "$DATA_DIR"
+      if [ $? -eq 0 ]; then
+        echo "Extraction complete: $DATA_DIR"
+        rm "$output"  # Clean up the downloaded ZIP file
+      else
+        echo "Extraction failed."
+      fi
+    else
+      echo "$output is not a valid ZIP file."
+    fi
   else
     echo "Download failed: $output"
   fi
@@ -64,5 +74,5 @@ esac
 # Prepare directories
 prepare_directories
 
-# Download the selected dataset
-download "$URL" "$FILE" "$TARGET_DIR"
+# Download and extract the selected dataset
+download_and_extract "$URL" "$FILE" "$TARGET_DIR"

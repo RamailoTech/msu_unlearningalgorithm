@@ -11,4 +11,5 @@ mu/wandb
 mu/.vscode 
 mu/cache
 results/*
-algorithms/erase_diff/data 
+
+!mu/algorithms/erase_diff/.gitignore

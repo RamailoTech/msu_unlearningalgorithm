@@ -1,20 +1,10 @@
-from omegaconf import OmegaConf
-from typing import Any, List
+import yaml
+import os 
 
-def load_config(config_path: str, overrides: List[str] = None) -> Any:
-    """
-    Load configuration from a YAML file and apply overrides.
 
-    Args:
-        config_path (str): Path to the configuration file.
-        overrides (List[str], optional): List of overrides in key=value format. Defaults to None.
-
-    Returns:
-        Any: Loaded and overridden configuration.
-    """
-    config = OmegaConf.load(config_path)
-    if overrides:
-        for override in overrides:
-            key, value = override.split('=')
-            OmegaConf.update(config, key, value)
-    return config
+def load_config(yaml_path):
+    """Loads the configuration from a YAML file."""
+    if os.path.exists(yaml_path):
+        with open(yaml_path, 'r', encoding='utf-8') as file:
+            return yaml.safe_load(file)
+    return {}

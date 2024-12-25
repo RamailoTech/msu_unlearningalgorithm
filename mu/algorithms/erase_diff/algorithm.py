@@ -1,15 +1,13 @@
-# erase_diff/algorithm.py
+# mu/algorithms/erase_diff/algorithm.py
 
-from core.base_algorithm import BaseAlgorithm
-from algorithms.erase_diff.model import EraseDiffModel
-from algorithms.erase_diff.trainer import EraseDiffTrainer
-from algorithms.erase_diff.sampler import EraseDiffSampler
-from algorithms.erase_diff.data_handler import EraseDiffDataHandler
 import torch
 import wandb
 from typing import Dict
 import logging
+from pathlib import Path
 
+from mu.core import BaseAlgorithm
+from mu.algorithms.erase_diff import EraseDiffModel, EraseDiffTrainer, EraseDiffDataHandler
 
 class EraseDiffAlgorithm(BaseAlgorithm):
     """
@@ -40,10 +38,11 @@ class EraseDiffAlgorithm(BaseAlgorithm):
         # Initialize Data Handler
 
         self.data_handler = EraseDiffDataHandler(
-            original_data_dir=self.config.get('original_data_dir'),
-            new_data_dir=self.config.get('new_data_dir'),
-            selected_theme=self.config.get('theme'),
-            selected_class=self.config.get('class'), 
+            original_data_dir=self.config.get('raw_dataset_dir'),
+            new_data_dir=self.config.get('processed_dataset_dir'),
+            dataset_type=self.config.get('dataset_type', 'unlearncanvas'),
+            selected_theme=self.config.get('template'),
+            selected_class=self.config.get('template_name'),
             batch_size=self.config.get('batch_size', 4),
             image_size=self.config.get('image_size', 512),
             interpolation=self.config.get('interpolation', 'bicubic'),
@@ -67,29 +66,48 @@ class EraseDiffAlgorithm(BaseAlgorithm):
             data_handler=self.data_handler
         )
 
-        # Initialize Sampler
-        # self.sampler = EraseDiffSampler(
-        #     model=self.model,
-        #     config=self.config,
-        #     device=str(self.device)
-        # )
 
     def run(self):
         """
         Execute the training process.
         """
-        # Initialize WandB
-        wandb.init(project='quick-canvas-machine-unlearning', name=self.config.get('theme', 'EraseDiff'), config=self.config)
-        self.logger.info("Initialized WandB for logging.")
+        try:
+            # Initialize WandB with configurable project/run names
+            wandb_config = {
+                "project": self.config.get("wandb_project", "quick-canvas-machine-unlearning"),
+                "name": self.config.get("wandb_run", "EraseDiff"),
+                "config": self.config
+            }
+            wandb.init(**wandb_config)
+            self.logger.info("Initialized WandB for logging.")
 
-        # Start training
-        trained_model = self.trainer.train()
+            # Create output directory if it doesn't exist
+            output_dir = Path(self.config.get("output_dir", "./outputs"))
+            output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Save the trained model
-        output_name = self.config.get('output_name', 'erase_diff_model.pth')
-        self.model.save_model(output_name)
-        self.logger.info(f"Trained model saved at {output_name}")
-        wandb.save(output_name)
+            try:
+                # Start training
+                self.trainer.train()
 
-        # Finish WandB run
-        wandb.finish()
+                # Save final model
+                output_name = output_dir / self.config.get("output_name", "erase_diff_model.pth")
+                self.model.save_model(output_name)
+                self.logger.info(f"Trained model saved at {output_name}")
+                
+                # Save to WandB
+                wandb.save(str(output_name))
+                
+
+            except Exception as e:
+                self.logger.error(f"Error during training: {str(e)}")
+                raise
+                
+        except Exception as e:
+            self.logger.error(f"Failed to initialize training: {str(e)}")
+            raise
+
+        finally:
+            # Ensure WandB always finishes
+            if wandb.run is not None:
+                wandb.finish()
+            self.logger.info("Training complete. WandB logging finished.")

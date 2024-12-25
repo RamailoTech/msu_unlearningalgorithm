@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define URLs for datasets on Hugging Face
-SAMPLE_URL="https://huggingface.co/datasets/dipeshlav/sample-quick-unlearn-canvas/resolve/main/quick-canvas-benchmark-sample.zip"
+SAMPLE_URL="https://huggingface.co/datasets/dipeshlav/sample-quick-unlearn-canvas/resolve/main/sample-quick-unlearn-canvas.zip"
 FULL_URL="https://huggingface.co/datasets/your-username/your-dataset-name/resolve/main/full-dataset.zip"
 
 # Define output filenames
@@ -17,8 +17,6 @@ FULL_DIR="$DATA_DIR/full"
 prepare_directories() {
   echo "Preparing directories..."
   mkdir -p "$DATA_DIR"
-  mkdir -p "$SAMPLE_DIR"
-  mkdir -p "$FULL_DIR"
 }
 
 # Function to download and extract a dataset
@@ -34,9 +32,9 @@ download_and_extract() {
     echo "Extracting $output to $target_dir..."
     # Check if the file is a valid ZIP file
     if file "$output" | grep -q 'Zip archive data'; then
-      unzip -o "$output" -d "$target_dir"
+      unzip -o "$output" -d "$DATA_DIR"
       if [ $? -eq 0 ]; then
-        echo "Extraction complete: $target_dir"
+        echo "Extraction complete: $DATA_DIR"
         rm "$output"  # Clean up the downloaded ZIP file
       else
         echo "Extraction failed."

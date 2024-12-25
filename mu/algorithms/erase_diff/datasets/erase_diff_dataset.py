@@ -1,10 +1,9 @@
-# algorithms/erase_diff/datasets/erase_diff_dataset.py
-
 import os
 from typing import Any, Tuple, Dict
 from torch.utils.data import DataLoader
-from datasets.unlearn_canvas_dataset import UnlearnCanvasDataset
-from datasets.transforms import INTERPOLATIONS, get_transform
+
+from mu.datasets import UnlearnCanvasDataset, I2PDataset
+from mu.datasets.utils import INTERPOLATIONS, get_transform
 
 class EraseDiffDataset(UnlearnCanvasDataset):
     """
@@ -17,14 +16,15 @@ class EraseDiffDataset(UnlearnCanvasDataset):
         self,
         forget_data_dir: str,
         remain_data_dir: str,
-        selected_theme: str,
-        selected_class: str,
+        template: str,
+        template_name: str,
         use_sample: bool = False,
         image_size: int = 512,
         interpolation: str = 'bicubic',
         batch_size: int = 4,
         num_workers: int = 4,
-        pin_memory: bool = True
+        pin_memory: bool = True,
+        dataset_type: str = 'unlearncanvas'
     ):
         """
         Initialize the EraseDiffDataset.
@@ -32,8 +32,8 @@ class EraseDiffDataset(UnlearnCanvasDataset):
         Args:
             forget_data_dir (str): Directory containing forget dataset.
             remain_data_dir (str): Directory containing remain dataset.
-            selected_theme (str): Theme to filter images.
-            selected_class (str): Class to filter images.
+            template (str): Template type ('style', 'object', or 'i2p').
+            template_name (str): Name of the template to use (e.g., 'self-harm', 'Abstractionism').
             use_sample (bool, optional): Whether to use sample constants. Defaults to False.
             image_size (int, optional): Size to resize images. Defaults to 512.
             interpolation (str, optional): Interpolation mode for resizing. Defaults to 'bicubic'.
@@ -48,23 +48,38 @@ class EraseDiffDataset(UnlearnCanvasDataset):
         interpolation_mode = INTERPOLATIONS[interpolation]
         transform = get_transform(interpolation=interpolation_mode, size=image_size)
 
-        # Initialize forget dataset
-        self.forget_dataset = UnlearnCanvasDataset(
-            data_dir=forget_data_dir,
-            selected_theme=selected_theme,
-            selected_class=selected_class,
-            use_sample=use_sample,
-            transform=transform
-        )
+        if dataset_type == 'i2p':
+            self.forget_dataset = I2PDataset(
+                data_dir=forget_data_dir,
+                template_name=template_name,
+                use_sample=use_sample,
+                transform=transform
+            )
 
-        # Initialize remain dataset
-        self.remain_dataset = UnlearnCanvasDataset(
-            data_dir=remain_data_dir,
-            selected_theme=selected_theme,
-            selected_class=selected_class,
-            use_sample=use_sample,
-            transform=transform
-        )
+            self.remain_dataset = I2PDataset(
+                data_dir=remain_data_dir,
+                template_name=template_name,
+                use_sample=use_sample,
+                transform=transform
+            )
+        elif dataset_type == 'unlearncanvas':
+            # Initialize forget dataset
+            self.forget_dataset = UnlearnCanvasDataset(
+                data_dir=forget_data_dir,
+                template=template,
+                template_name=template_name,
+                use_sample=use_sample,
+                transform=transform
+            )
+
+            # Initialize remain dataset
+            self.remain_dataset = UnlearnCanvasDataset(
+                data_dir=remain_data_dir,
+                template=template,
+                template_name=template_name,
+                use_sample=use_sample,
+                transform=transform
+            )
 
         # Initialize DataLoaders
         self.forget_loader = DataLoader(
@@ -115,4 +130,3 @@ class EraseDiffDataset(UnlearnCanvasDataset):
             Tuple[Any, str]: A tuple containing the data sample and its corresponding prompt.
         """
         return self.forget_dataset[idx]
-

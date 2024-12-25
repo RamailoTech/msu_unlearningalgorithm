@@ -1,17 +1,22 @@
-# core/base_data_handler.py
+# mu/core/base_data_handler.py
 
 from abc import ABC, abstractmethod
-from typing import Any, Tuple, Dict, Optional
+from typing import Any, Tuple, Dict, Optional, List
 from torch.utils.data import DataLoader, Dataset
-import os
-import torch
 
 class BaseDataHandler(ABC):
     """
     Abstract base class for data handling and processing.
     Defines the interface for loading, preprocessing, and providing data loaders.
     """
+    @abstractmethod
+    def generate_dataset(self):
+        """
+        Generate the dataset.
+        """
+        pass
 
+    @abstractmethod
     def load_data(self, data_path: str) -> Any:
         """
         Load data from the specified path.
@@ -24,7 +29,7 @@ class BaseDataHandler(ABC):
         """
         pass
 
-    
+    @abstractmethod
     def preprocess_data(self, data: Any) -> Any:
         """
         Preprocess the data (e.g., normalization, augmentation).
@@ -46,12 +51,5 @@ class BaseDataHandler(ABC):
 
         Returns:
             Dict[str, DataLoader]: Dictionary containing data loaders, e.g., {'train': train_loader, 'val': val_loader, ...}
-        """
-        pass
-
-    def setup(self, **kwargs):
-        """
-        Optional setup method to initialize any additional configurations or resources.
-        Can be overridden by subclasses if needed.
         """
         pass

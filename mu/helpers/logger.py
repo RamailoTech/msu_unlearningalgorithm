@@ -1,38 +1,28 @@
 import logging
-import os
+from pathlib import Path
 
-def setup_logger(name: str, log_file: str, level: int = logging.INFO) -> logging.Logger:
+def setup_logger(log_file: str = "erase_diff_training.log", level: int = logging.INFO) -> logging.Logger:
     """
-    Set up a logger with the specified name and log file.
+    Setup a logger for the training process.
 
     Args:
-        name (str): Name of the logger.
-        log_file (str): Path to the log file.
+        log_file (str, optional): Path to the log file. Defaults to "erase_diff_training.log".
         level (int, optional): Logging level. Defaults to logging.INFO.
 
     Returns:
-        logging.Logger: Configured logger.
+        logging.Logger: Configured logger instance.
     """
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
+    # Ensure the log directory exists
+    log_path = Path(log_file)
+    log_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Prevent adding multiple handlers to the logger
-    if not logger.handlers:
-        # Create file handler
-        fh = logging.FileHandler(log_file)
-        fh.setLevel(level)
-
-        # Create console handler
-        ch = logging.StreamHandler()
-        ch.setLevel(level)
-
-        # Create formatter and add it to the handlers
-        formatter = logging.Formatter('[%(asctime)s] %(levelname)s - %(name)s - %(message)s')
-        fh.setFormatter(formatter)
-        ch.setFormatter(formatter)
-
-        # Add handlers to the logger
-        logger.addHandler(fh)
-        logger.addHandler(ch)
-
+    logging.basicConfig(
+        level=level,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler()
+        ]
+    )
+    logger = logging.getLogger(__name__)
     return logger

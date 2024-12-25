@@ -1,12 +1,12 @@
-# erase_diff/model.py
+# mu/algorithms/erase_diff/model.py
 
-from core.base_model import BaseModel
-from stable_diffusion.ldm.util import instantiate_from_config
-from omegaconf import OmegaConf
 import torch
 from pathlib import Path
 from typing import Any
+import logging 
 
+from mu.core import BaseModel
+from mu.helpers import load_model_from_config
 
 class EraseDiffModel(BaseModel):
     """
@@ -27,6 +27,7 @@ class EraseDiffModel(BaseModel):
         self.config_path = config_path
         self.ckpt_path = ckpt_path
         self.model = self.load_model(config_path, ckpt_path, device)
+        self.logger = logging.getLogger(__name__)
 
     def load_model(self, config_path: str, ckpt_path: str, device: str):
         """
@@ -40,19 +41,7 @@ class EraseDiffModel(BaseModel):
         Returns:
             torch.nn.Module: Loaded Stable Diffusion model.
         """
-        if isinstance(config_path, (str, Path)):
-            config = OmegaConf.load(config_path)
-        else:
-            config = config_path  # If already a config object
-
-        pl_sd = torch.load(ckpt_path, map_location="cpu")
-        sd = pl_sd["state_dict"]
-        model = instantiate_from_config(config.model)
-        model.load_state_dict(sd, strict=False)
-        model.to(device)
-        model.eval()
-        model.cond_stage_model.device = device
-        return model
+        return load_model_from_config(config_path, ckpt_path, device)
 
     def save_model(self, output_path: str):
         """

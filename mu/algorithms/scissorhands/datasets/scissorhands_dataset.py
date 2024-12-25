@@ -4,7 +4,7 @@ import os
 from typing import Any, Tuple, Dict
 from torch.utils.data import DataLoader
 from datasets.unlearn_canvas_dataset import UnlearnCanvasDataset
-from datasets.transforms import INTERPOLATIONS, get_transform
+from mu.datasets.utils import INTERPOLATIONS, get_transform
 
 class ScissorHandsDataset(UnlearnCanvasDataset):
     """

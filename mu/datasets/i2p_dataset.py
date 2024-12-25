@@ -1,4 +1,4 @@
-#datasets/unlearn_canvas_dataset.py
+# mu/datasets/unlearn_canvas_dataset.py
 
 from typing import Any, Tuple
 from PIL import Image
@@ -6,20 +6,18 @@ import os
 import torch
 import numpy as np
 from einops import rearrange
-from datasets.base_dataset import BaseDataset
-from torchvision import transforms
 
-from datasets.constants import * 
+from mu.datasets import BaseDataset
+from mu.datasets.constants import * 
 
-class UnlearnCanvasDataset(BaseDataset):
+class I2PDataset(BaseDataset):
     """
-    Dataset for UnlearnCanvas algorithm.
-    Allows selection of specific themes and classes.
+    I2P Dataset.
+    Allows selection of specific categories.
     """
     def __init__(
         self,
         data_dir: str,
-        template: str,
         template_name: str,
         use_sample: bool = False,
         transform: Any = None
@@ -29,25 +27,18 @@ class UnlearnCanvasDataset(BaseDataset):
 
         Args:
             data_dir (str): Root directory containing dataset.
-            template (str): Template type ('style', 'object', or 'i2p').
-            template_name (str): Name of the template to use, which can be a class name or a theme name depending on the template (e.g., 'self-harm', 'Abstractionism').
+            template_name (str): Name of the template to use, which can be a name of the category depending on the template (e.g., 'self-harm').
             use_sample (bool, optional): Whether to use sample constants. Defaults to False.
             transform (Any, optional): Transformations to apply to the images.
         """
         super().__init__()
 
-        if template == 'style':
-            available_options = uc_sample_theme_available if use_sample else uc_theme_available
-        elif template == 'object':
-            available_options = uc_sample_class_available if use_sample else uc_class_available
-        else:
-            raise ValueError(f"Unsupported template type: {template}")
+        available_options = i2p_sample_categories if use_sample else i2p_categories
 
         assert template_name in available_options, (
-            f"Selected template name '{template_name}' is not available for template type '{template}'."
+            f"Selected template name '{template_name}' is not available for template type."
         )
 
-        self.template = template
         self.template_name = template_name
         self.transform = transform
 

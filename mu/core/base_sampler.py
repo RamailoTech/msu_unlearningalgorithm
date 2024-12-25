@@ -1,3 +1,5 @@
+# mu/core/base_sampler.py
+
 from abc import ABC, abstractmethod
 from typing import Any
 
