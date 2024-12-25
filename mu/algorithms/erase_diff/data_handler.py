@@ -218,6 +218,23 @@ class EraseDiffDataHandler(BaseDataHandler):
 
             self.logger.info(f"Generated dataset for category '{category}' with {len(path_list)} samples.")
 
+            # Also need to generate Seed Images
+            seed_category = "Seed_Images"
+            seed_dir = os.path.join(self.processed_dataset_dir, seed_category)
+            os.makedirs(seed_dir, exist_ok=True)
+            prompt_list = []
+            path_list = []
+
+            for _, row in category_data.iterrows():
+                prompt = row['prompt']
+                image_path = os.path.join(images_dir, seed_category, f"{row['Unnamed: 0']}.jpg")
+
+                if os.path.exists(image_path):
+                    prompt_list.append(prompt)
+                    path_list.append(image_path)
+                else:
+                    self.logger.warning(f"Image not found: {image_path}")
+
         self.logger.info("Dataset generation (I2P) completed.")
 
     def load_data(self, data_path: str) -> Any:
