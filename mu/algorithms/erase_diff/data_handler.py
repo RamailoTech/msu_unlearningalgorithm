@@ -124,7 +124,7 @@ class EraseDiffDataHandler(BaseDataHandler):
             path_list = []
 
             for class_ in classes:
-                for idx in range(1, classes_range + 1):
+                for idx in range(1, 4):
                     prompt = f"A {class_} image in Photo style."
                     image_path = os.path.join(self.raw_dataset_dir, seed_theme, class_, f"{idx}.jpg")
                     if os.path.exists(image_path):

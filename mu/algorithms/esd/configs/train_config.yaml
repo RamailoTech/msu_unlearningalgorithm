@@ -1,0 +1,26 @@
+# Training parameters
+train_method: "xattn"  # Choices: ["noxattn", "selfattn", "xattn", "full", "notime", "xlayer", "selflayer"]
+start_guidance: 0.1  # Optional: guidance of start image (previously alpha)
+negative_guidance: 0.0  # Optional: guidance of negative training
+iterations: 1  # Optional: iterations used to train (previously epochs)
+lr: 5e-5  # Optional: learning rate
+image_size: 512  # Optional: image size used to train
+ddim_steps: 50  # Optional: DDIM steps of inference
+
+# Model configuration
+model_config_path: "mu/algorithms/esd/configs/model_config.yaml"
+ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
+
+# Dataset directories
+dataset_type: "unlearncanvas"  # Choices: ['unlearncanvas', 'i2p']
+template: "style"  # Choices: ['object', 'style', 'i2p']
+template_name: "Abstractionism"  # Choices: ['self-harm', 'Abstractionism']
+
+# Output configurations
+output_dir: "outputs/esd/finetuned_models"
+separator: null
+
+# Device configuration
+devices: "0,0"
+use_sample: True
+

@@ -52,17 +52,6 @@ class EraseDiffModel(BaseModel):
         """
         torch.save({"state_dict": self.model.state_dict()}, output_path)
 
-    def forward(self, input_data: Any) -> Any:
-        """
-        Define the forward pass (if needed).
-
-        Args:
-            input_data (Any): Input data for the model.
-
-        Returns:
-            Any: Model output.
-        """
-        pass  # Implement if necessary
 
     def get_learned_conditioning(self, prompts: list) -> Any:
         """

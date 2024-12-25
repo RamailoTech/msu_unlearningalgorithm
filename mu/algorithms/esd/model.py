@@ -1,43 +1,84 @@
-from core.base_model import BaseModel
-from stable_diffusion.ldm.util import instantiate_from_config
-from omegaconf import OmegaConf
 import torch
 from typing import Any
 from pathlib import Path
 
+from mu.core import BaseModel
+from mu.helpers import load_model_from_config
+
 class ESDModel(BaseModel):
-    def __init__(self, config_path: str, ckpt_path: str, device: str):
+    """
+    ESDModel handles loading, saving, and interacting with the Stable Diffusion model.
+    """
+    def __init__(self, model_config_path: str, ckpt_path: str, device: str, device_orig: str):
+        """
+        Initialize the ESDModel 
+        
+        Args:
+            model_config_path (str): Path to the model configuration file.
+            ckpt_path (str): Path to the model checkpoint.
+            device (str): Device to load the model on (e.g., 'cuda:0').
+            device_orig (str): Device to load the model on (e.g., 'cuda:0').
+
+        """
+
         super().__init__()
         self.device = device
-        self.config_path = config_path
+        self.device_orig = device_orig
+        self.config_path = model_config_path
         self.ckpt_path = ckpt_path
-        self.model = self.load_model(config_path, ckpt_path, device)
+        self.models = self.load_models(model_config_path, ckpt_path, device, device_orig)
 
-    def load_model(self, config_path: str, ckpt_path: str, device: str):
-        # Load model from config and checkpoint
-        if isinstance(config_path, (str, Path)):
-            config = OmegaConf.load(config_path)
-        else:
-            config = config_path  # If already a config object
+    def load_models(self, model_config_path: str, ckpt_path: str, device: str, device_orig:str):
+        """
+        Load the Stable Diffusion model from config and checkpoint.
 
-        pl_sd = torch.load(ckpt_path, map_location="cpu")
-        sd = pl_sd["state_dict"]
-        model = instantiate_from_config(config.model)
-        model.load_state_dict(sd, strict=False)
-        model.to(device)
-        model.eval()
-        model.cond_stage_model.device = device
-        return model
+        Args:
+            model_config_path (str): Path to the model configuration file.
+            ckpt_path (str): Path to the model checkpoint.
+            device (str): Device to load the model on.
+            device_orig (str): Device to load the model on.
+
+
+        Returns:
+            [torch.nn.Module]: Loaded Stable Diffusion model.
+        """
+        model = load_model_from_config(model_config_path, ckpt_path, device)
+        model_orig = load_model_from_config(model_config_path,ckpt_path, device_orig)
+
+        return (model, model_orig)
+
 
     def save_model(self, output_path: str):
-        # Save the trained model
+        """
+        Save the trained model's state dictionary.
+
+        Args:
+            output_path (str): Path to save the model checkpoint.
+        """
         torch.save({"state_dict": self.model.state_dict()}, output_path)
 
-    def forward(self, input_data: Any) -> Any:
-        pass
-
     def get_learned_conditioning(self, prompts):
+        """
+        Obtain learned conditioning for given prompts.
+
+        Args:
+            prompts (list): List of prompt strings.
+
+        Returns:
+            Any: Learned conditioning tensors.
+        """
         return self.model.get_learned_conditioning(prompts)
 
     def apply_model(self, z, t, c):
+       """
+        Apply the model to generate outputs.
+
+        Args:
+            z (torch.Tensor): Noisy latent vectors.
+            t (torch.Tensor): Timesteps.
+            c (Any): Conditioning tensors.
+
+        Returns:
+            torch.Tensor: Model outputs.
+        """
         return self.model.apply_model(z, t, c)

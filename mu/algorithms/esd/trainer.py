@@ -1,40 +1,32 @@
-from core.base_trainer import BaseTrainer
-from algorithms.esd.model import ESDModel
 import torch
 from tqdm import tqdm
 import random
-from algorithms.esd.utils import load_model_from_config, sample_model
 from torch.nn import MSELoss
-import wandb
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+
+
+from mu.helpers import load_model_from_config, sample_model
+from mu.core import BaseTrainer
+from mu.algorithms.esd.model import ESDModel
+from mu.algorithms.esd.sampler import ESDSampler
 
 class ESDTrainer(BaseTrainer):
     """Trainer for the ESD algorithm."""
 
-    def __init__(self, model: ESDModel, config: dict, device, device_orig, **kwargs):
+    def __init__(self, model: ESDModel, sampler: ESDSampler, config: dict, device, device_orig, **kwargs):
         super().__init__(model, config, **kwargs)
         self.device = device
         self.device_orig = device_orig
-        self.model_orig = None
-        self.sampler = None
-        self.sampler_orig = None
+        self.model, self.model_orig = model.models
+        self.sampler, self.sampler_orig = sampler.samplers
         self.criteria = MSELoss()
-        self.setup_models()
         self.setup_optimizer()
 
-    def setup_models(self):
-        # Load the original (frozen) model
-        config_path = self.config['config_path']
-        ckpt_path = self.config['ckpt_path']
-        self.model_orig = load_model_from_config(config_path, ckpt_path, device=self.device_orig)
-        self.model_orig.eval()
-
-        # Setup samplers
-        self.sampler = DDIMSampler(self.model.model)
-        self.sampler_orig = DDIMSampler(self.model_orig)
 
     def setup_optimizer(self):
-        # Select parameters to train based on train_method
+        """
+        Sets up the optimizer for training based on the specified training method.
+        """
+
         train_method = self.config['train_method']
         parameters = []
         for name, param in self.model.model.model.named_parameters():
@@ -50,6 +42,9 @@ class ESDTrainer(BaseTrainer):
         self.optimizer = torch.optim.Adam(parameters, lr=self.config['lr'])
 
     def train(self):
+        """
+        Execute the training loop.
+        """
         iterations = self.config['iterations']
         ddim_steps = self.config['ddim_steps']
         start_guidance = self.config['start_guidance']
@@ -108,6 +103,4 @@ class ESDTrainer(BaseTrainer):
             loss.backward()
             self.optimizer.step()
 
-            # Logging
-            wandb.log({"loss": loss.item()})
             pbar.set_postfix({"loss": loss.item()})
