@@ -1,5 +1,5 @@
 # mu/algorithms/unified_concept_editing/model.py
-import np
+import numpy as np
 from mu.algorithms.unified_concept_editing.utils import get_ratios
 import torch
 from typing import Any, List, Optional
