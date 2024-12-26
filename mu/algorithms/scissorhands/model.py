@@ -1,11 +1,13 @@
 # erase_diff/model.py
 
-from core.base_model import BaseModel
-from stable_diffusion.ldm.util import instantiate_from_config
-from omegaconf import OmegaConf
 import torch
 from pathlib import Path
 from typing import Any
+import logging 
+
+
+from mu.core import BaseModel
+from mu.helpers import load_model_from_config
 
 
 class ScissorHandsModel(BaseModel):
@@ -13,67 +15,46 @@ class ScissorHandsModel(BaseModel):
     ScissorHandsModel handles loading, saving, and interacting with the Stable Diffusion model.
     """
 
-    def __init__(self, config_path: str, ckpt_path: str, device: str):
+    def __init__(self, model_config_path: str, ckpt_path: str, device: str):
         """
         Initialize the ScissorHandsModel.
 
         Args:
-            config_path (str): Path to the model configuration file.
+            model_config_path (str): Path to the model configuration file.
             ckpt_path (str): Path to the model checkpoint.
             device (str): Device to load the model on (e.g., 'cuda:0').
         """
         super().__init__()
         self.device = device
-        self.config_path = config_path
+        self.config_path = model_config_path
         self.ckpt_path = ckpt_path
-        self.model = self.load_model(config_path, ckpt_path, device)
+        self.model = self.load_model(model_config_path, ckpt_path, device)
+        self.logger = logging.getLogger(__name__)
 
-    def load_model(self, config_path: str, ckpt_path: str, device: str):
+
+    def load_model(self, model_config_path: str, ckpt_path: str, device: str):
         """
         Load the Stable Diffusion model from config and checkpoint.
 
         Args:
-            config_path (str): Path to the model configuration file.
+            model_config_path (str): Path to the model configuration file.
             ckpt_path (str): Path to the model checkpoint.
             device (str): Device to load the model on.
 
         Returns:
             torch.nn.Module: Loaded Stable Diffusion model.
         """
-        if isinstance(config_path, (str, Path)):
-            config = OmegaConf.load(config_path)
-        else:
-            config = config_path  # If already a config object
+        return load_model_from_config(model_config_path, ckpt_path, device)
 
-        pl_sd = torch.load(ckpt_path, map_location="cpu")
-        sd = pl_sd["state_dict"]
-        model = instantiate_from_config(config.model)
-        model.load_state_dict(sd, strict=False)
-        model.to(device)
-        model.eval()
-        model.cond_stage_model.device = device
-        return model
 
-    def save_model(self, output_path: str):
+    def save_model(self,model, output_path: str):
         """
         Save the trained model's state dictionary.
 
         Args:
             output_path (str): Path to save the model checkpoint.
         """
-        torch.save({"state_dict": self.model.state_dict()}, output_path)
-
-    def forward(self, input_data: Any) -> Any:
-        """
-        Define the forward pass (if needed).
-
-        Args:
-            input_data (Any): Input data for the model.
-
-        Returns:
-            Any: Model output.
-        """
-        pass  # Implement if necessary
+        torch.save({"state_dict": model.state_dict()}, output_path)
 
     def get_learned_conditioning(self, prompts: list) -> Any:
         """

@@ -8,7 +8,6 @@ from torch.nn import MSELoss
 import wandb
 import logging
 from pathlib import Path
-from omegaconf import OmegaConf
 from timm.utils import AverageMeter
 import logging 
 
@@ -29,15 +28,12 @@ class EraseDiffTrainer(BaseTrainer):
             model (EraseDiffModel): Instance of EraseDiffModel.
             config (dict): Configuration dictionary.
             device (str): Device to perform training on.
-            device_orig (str): Device for the original (frozen) model.
             data_handler (EraseDiffDataHandler): Instance of EraseDiffDataHandler.
             **kwargs: Additional keyword arguments.
         """
         super().__init__(model, config, **kwargs)
         self.device = device
         self.model = model.model
-        self.sampler = None
-        self.sampler_orig = None
         self.criteria = MSELoss()
         self.logger = logging.getLogger(__name__)
         self.data_handler = data_handler

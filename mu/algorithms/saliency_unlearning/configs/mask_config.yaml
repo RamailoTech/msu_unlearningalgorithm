@@ -1,0 +1,22 @@
+# Model Configuration
+c_guidance: 7.5
+batch_size: 4
+ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
+model_config_path: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/saliency_unlearning/configs/model_config.yaml"  # Config path for Stable Diffusion
+num_timesteps: 1000
+image_size: 512
+
+raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
+processed_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/erase_diff/data"
+dataset_type : "unlearncanvas"
+template : "style"
+template_name : "Abstractionism"
+threshold : 0.5
+
+# Directory Configuration
+output_dir: "outputs/saliency_unlearning/masks"  # Output directory to save results
+
+# Training Configuration
+lr: 0.00001
+devices: "0"  # CUDA devices to train on (comma-separated)
+use_sample: false

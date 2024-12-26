@@ -1,21 +1,17 @@
-# algorithms/saliency_unlearning/trainer.py
+# mu/algorithms/saliency_unlearning/trainer.py
 
-from core.base_trainer import BaseTrainer
-from algorithms.saliency_unlearning.model import SaliencyUnlearnModel
+
 import torch
 import gc
 from tqdm import tqdm
 import random
-from algorithms.saliency_unlearning.utils import load_model_from_config, sample_model
 from torch.nn import MSELoss
 import wandb
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 import logging
 from pathlib import Path
-from stable_diffusion.ldm.util import instantiate_from_config
-from omegaconf import OmegaConf
-from timm.utils import AverageMeter
-from typing import Dict
+
+from mu.core import BaseTrainer
+from mu.algorithms.saliency_unlearning.model import SaliencyUnlearnModel
 
 class SaliencyUnlearnTrainer(BaseTrainer):
     """
@@ -36,7 +32,7 @@ class SaliencyUnlearnTrainer(BaseTrainer):
         """
         super().__init__(model, config, **kwargs)
         self.device = device
-        self.model = model
+        self.model = model.model
         self.criteria = MSELoss()
         self.logger = logging.getLogger(__name__)
         self.data_handler = data_handler
@@ -66,12 +62,8 @@ class SaliencyUnlearnTrainer(BaseTrainer):
                 if 'attn1' in name and ('input_blocks.4.' in name or 'input_blocks.7.' in name):
                     parameters.append(param)
 
-        self.optimizer = torch.optim.Adam(parameters, lr=self.config.get('lr', 1e-5))
+        self.optimizer = torch.optim.Adam(parameters, lr=float(self.config.get('lr', 1e-5)))
 
-    def setup_models(self, *args, **kwargs):
-        """Set up the models for training."""
-        pass
-    
     def train(self):
         """
         Execute the training loop.
@@ -91,7 +83,7 @@ class SaliencyUnlearnTrainer(BaseTrainer):
         for epoch in range(epochs):
             self.logger.info(f"Starting Epoch {epoch+1}/{epochs}")
             with tqdm(total=len(forget_dl), desc=f'Epoch {epoch+1}/{epochs}') as pbar:
-                self.model.model.train()
+                self.model.train()
                 param_i = self.get_param()
 
                 for step in range(K_steps): 
@@ -122,7 +114,7 @@ class SaliencyUnlearnTrainer(BaseTrainer):
 
                     # Remain stage
                     for remain_batch in remain_dl:
-                        self.model.model.train()
+                        self.model.train()
                         self.optimizer.zero_grad()
 
                         remain_images, remain_prompts = remain_batch
@@ -141,7 +133,7 @@ class SaliencyUnlearnTrainer(BaseTrainer):
                             "edit": {"c_crossattn": remain_prompts}
                         }
                         # Remain loss
-                        remain_loss = self.model.model.shared_step(remain_btch)[0]
+                        remain_loss = self.model.shared_step(remain_btch)[0]
 
                         # Forget loss within remain stage
                         unlearn_loss = self.compute_unlearn_loss(forget_images, forget_prompts, pseudo_prompts)
@@ -165,9 +157,9 @@ class SaliencyUnlearnTrainer(BaseTrainer):
 
             self.logger.info(f"Epoch {epoch+1}/{epochs} completed.")
 
-        self.model.model.eval()
+        self.model.eval()
         self.logger.info("Training completed.")
-        return self.model.model
+        return self.model
 
     def get_param(self) -> list:
         """
@@ -218,17 +210,17 @@ class SaliencyUnlearnTrainer(BaseTrainer):
             "edit": {"c_crossattn": pseudo_prompts}
         }
 
-        forget_input, forget_emb = self.model.model.get_input(forget_batch, self.model.model.first_stage_key)
-        pseudo_input, pseudo_emb = self.model.model.get_input(pseudo_batch, self.model.model.first_stage_key)
+        forget_input, forget_emb = self.model.get_input(forget_batch, self.model.first_stage_key)
+        pseudo_input, pseudo_emb = self.model.get_input(pseudo_batch, self.model.first_stage_key)
 
-        t = torch.randint(0, self.model.model.num_timesteps, (forget_input.shape[0],), device=self.device).long()
+        t = torch.randint(0, self.model.num_timesteps, (forget_input.shape[0],), device=self.device).long()
         noise = torch.randn_like(forget_input, device=self.device)
 
-        forget_noisy = self.model.model.q_sample(x_start=forget_input, t=t, noise=noise)
-        pseudo_noisy = self.model.model.q_sample(x_start=pseudo_input, t=t, noise=noise)
+        forget_noisy = self.model.q_sample(x_start=forget_input, t=t, noise=noise)
+        pseudo_noisy = self.model.q_sample(x_start=pseudo_input, t=t, noise=noise)
 
-        forget_out = self.model.model.apply_model(forget_noisy, t, forget_emb)
-        pseudo_out = self.model.model.apply_model(pseudo_noisy, t, pseudo_emb).detach()
+        forget_out = self.model.apply_model(forget_noisy, t, forget_emb)
+        pseudo_out = self.model.apply_model(pseudo_noisy, t, pseudo_emb).detach()
 
         forget_loss = self.criteria(forget_out, pseudo_out)
         return forget_loss
@@ -254,17 +246,17 @@ class SaliencyUnlearnTrainer(BaseTrainer):
             "edit": {"c_crossattn": pseudo_prompts}
         }
 
-        forget_input, forget_emb = self.model.model.get_input(forget_batch, self.model.model.first_stage_key)
-        pseudo_input, pseudo_emb = self.model.model.get_input(pseudo_batch, self.model.model.first_stage_key)
+        forget_input, forget_emb = self.model.get_input(forget_batch, self.model.first_stage_key)
+        pseudo_input, pseudo_emb = self.model.get_input(pseudo_batch, self.model.first_stage_key)
 
-        t = torch.randint(0, self.model.model.num_timesteps, (forget_input.shape[0],), device=self.device).long()
+        t = torch.randint(0, self.model.num_timesteps, (forget_input.shape[0],), device=self.device).long()
         noise = torch.randn_like(forget_input, device=self.device)
 
-        forget_noisy = self.model.model.q_sample(x_start=forget_input, t=t, noise=noise)
-        pseudo_noisy = self.model.model.q_sample(x_start=pseudo_input, t=t, noise=noise)
+        forget_noisy = self.model.q_sample(x_start=forget_input, t=t, noise=noise)
+        pseudo_noisy = self.model.q_sample(x_start=pseudo_input, t=t, noise=noise)
 
-        forget_out = self.model.model.apply_model(forget_noisy, t, forget_emb)
-        pseudo_out = self.model.model.apply_model(pseudo_noisy, t, pseudo_emb).detach()
+        forget_out = self.model.apply_model(forget_noisy, t, forget_emb)
+        pseudo_out = self.model.apply_model(pseudo_noisy, t, pseudo_emb).detach()
 
         unlearn_loss = self.criteria(forget_out, pseudo_out)
         return unlearn_loss

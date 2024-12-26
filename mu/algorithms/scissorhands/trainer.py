@@ -1,19 +1,23 @@
 import torch
-import gc
 from tqdm import tqdm
-from algorithms.scissorhands.utils import snip, project2cone2, load_model_from_config
 from torch.nn import MSELoss
 import logging
 import copy
 
+from mu.core import BaseTrainer
+from mu.algorithms.scissorhands.model import ScissorHandsModel
+from mu.algorithms.scissorhands.data_handler import ScissorHandsDataHandler
 
-class ScissorHandsTrainer:
+
+from mu.algorithms.scissorhands.utils import snip, project2cone2
+
+class ScissorHandsTrainer(BaseTrainer):
     """
     Trainer for the ScissorHands algorithm.
     Handles the training loop, loss computation, and optimization.
     """
 
-    def __init__(self, model, config, data_handler, device):
+    def __init__(self, model: ScissorHandsModel, config: dict, device: str,  data_handler: ScissorHandsDataHandler, **kwargs):
         """
         Initialize the ScissorHandsTrainer.
 
@@ -23,13 +27,12 @@ class ScissorHandsTrainer:
             data_handler: Instance of ScissorHandsDataHandler for data handling.
             device: Device to use for training (e.g., 'cuda:0').
         """
-        self.model = model
-        self.config = config
-        self.data_handler = data_handler
+        super().__init__(model, config, **kwargs)
         self.device = device
-        self.logger = logging.getLogger(__name__)
+        self.model = model.model
         self.criteria = MSELoss()
-        self.optimizer = None
+        self.logger = logging.getLogger(__name__)
+        self.data_handler = data_handler
         self.setup_optimizer()
 
 
@@ -38,7 +41,7 @@ class ScissorHandsTrainer:
         Setup the optimizer for the training process.
         """
         parameters = self.select_parameters()
-        self.optimizer = torch.optim.Adam(parameters, lr=self.config.get('lr', 1e-5))
+        self.optimizer = torch.optim.Adam(parameters, lr=float(self.config.get('lr', 1e-5)))
 
     def select_parameters(self):
         """
@@ -47,7 +50,7 @@ class ScissorHandsTrainer:
         train_method = self.config.get('train_method', 'xattn')
         parameters = []
 
-        for name, param in self.model.model.named_parameters():
+        for name, param in self.model.named_parameters():
             if train_method == 'full':
                 parameters.append(param)
             elif train_method == 'xattn' and 'attn2' in name:
@@ -132,17 +135,17 @@ class ScissorHandsTrainer:
         forget_batch = {"edited": forget_images.to(self.device), "edit": {"c_crossattn": forget_prompts}}
         pseudo_batch = {"edited": forget_images.to(self.device), "edit": {"c_crossattn": pseudo_prompts}}
 
-        forget_input, forget_emb = self.model.model.get_input(forget_batch, self.model.model.first_stage_key)
-        pseudo_input, pseudo_emb = self.model.model.get_input(pseudo_batch, self.model.model.first_stage_key)
+        forget_input, forget_emb = self.model.get_input(forget_batch, self.model.first_stage_key)
+        pseudo_input, pseudo_emb = self.model.get_input(pseudo_batch, self.model.model.first_stage_key)
 
-        t = torch.randint(0, self.model.model.num_timesteps, (forget_input.shape[0],), device=self.device).long()
+        t = torch.randint(0, self.model.num_timesteps, (forget_input.shape[0],), device=self.device).long()
         noise = torch.randn_like(forget_input, device=self.device)
 
-        forget_noisy = self.model.model.q_sample(x_start=forget_input, t=t, noise=noise)
-        pseudo_noisy = self.model.model.q_sample(x_start=pseudo_input, t=t, noise=noise)
+        forget_noisy = self.model.q_sample(x_start=forget_input, t=t, noise=noise)
+        pseudo_noisy = self.model.q_sample(x_start=pseudo_input, t=t, noise=noise)
 
-        forget_out = self.model.model.apply_model(forget_noisy, t, forget_emb)
-        pseudo_out = self.model.model.apply_model(pseudo_noisy, t, pseudo_emb).detach()
+        forget_out = self.model.apply_model(forget_noisy, t, forget_emb)
+        pseudo_out = self.model.apply_model(pseudo_noisy, t, pseudo_emb).detach()
 
         forget_loss = self.criteria(forget_out, pseudo_out)
         return forget_loss
@@ -159,7 +162,7 @@ class ScissorHandsTrainer:
             remain_loss: Loss for remaining images.
         """
         remain_batch = {"edited": remain_images.to(self.device), "edit": {"c_crossattn": remain_prompts}}
-        remain_loss = self.model.model.shared_step(remain_batch)[0]
+        remain_loss = self.model.shared_step(remain_batch)[0]
         return remain_loss
 
     def prepare_projection(self, forget_dl):

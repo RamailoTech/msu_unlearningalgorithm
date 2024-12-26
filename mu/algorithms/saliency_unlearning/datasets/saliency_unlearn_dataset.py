@@ -4,10 +4,11 @@ import os
 import torch 
 from typing import Any, Tuple, Dict
 from torch.utils.data import DataLoader
-from datasets.unlearn_canvas_dataset import UnlearnCanvasDataset
+
+from mu.datasets import UnlearnCanvasDataset, I2PDataset, BaseDataset
 from mu.datasets.utils import INTERPOLATIONS, get_transform
 
-class SaliencyUnlearnDataset(UnlearnCanvasDataset):
+class SaliencyUnlearnDataset(BaseDataset):
     """
     Dataset class for the SaliencyUnlearn algorithm.
     Extends UnlearnCanvasDataset to handle specific requirements.
@@ -18,16 +19,17 @@ class SaliencyUnlearnDataset(UnlearnCanvasDataset):
         self,
         forget_data_dir: str,
         remain_data_dir: str,
+        template: str,
+        template_name: str,
         mask_path: str,
-        selected_theme: str,
-        selected_class: str,
+        use_mask:bool = False,
         use_sample: bool = False,
         image_size: int = 512,
         interpolation: str = 'bicubic',
         batch_size: int = 4,
         num_workers: int = 4,
         pin_memory: bool = True,
-        use_mask:bool = False
+        dataset_type: str = 'unlearncanvas',
     ):
         """
         Initialize the SaliencyUnlearnDataset.
@@ -52,23 +54,39 @@ class SaliencyUnlearnDataset(UnlearnCanvasDataset):
         interpolation_mode = INTERPOLATIONS[interpolation]
         transform = get_transform(interpolation=interpolation_mode, size=image_size)
 
-        # Initialize forget dataset
-        self.forget_dataset = UnlearnCanvasDataset(
-            data_dir=forget_data_dir,
-            selected_theme=selected_theme,
-            selected_class=selected_class,
-            use_sample=use_sample,
-            transform=transform
-        )
+        if dataset_type == 'i2p':
+            self.forget_dataset = I2PDataset(
+                data_dir=forget_data_dir,
+                template_name=template_name,
+                use_sample=use_sample,
+                transform=transform
+            )
 
-        # Initialize remain dataset
-        self.remain_dataset = UnlearnCanvasDataset(
-            data_dir=remain_data_dir,
-            selected_theme=selected_theme,
-            selected_class=selected_class,
-            use_sample=use_sample,
-            transform=transform
-        )
+            self.remain_dataset = I2PDataset(
+                data_dir=remain_data_dir,
+                template_name=template_name,
+                use_sample=use_sample,
+                transform=transform
+            )
+        elif dataset_type == 'unlearncanvas':
+            # Initialize forget dataset
+            self.forget_dataset = UnlearnCanvasDataset(
+                data_dir=forget_data_dir,
+                template=template,
+                template_name=template_name,
+                use_sample=use_sample,
+                transform=transform
+            )
+
+            # Initialize remain dataset
+            self.remain_dataset = UnlearnCanvasDataset(
+                data_dir=remain_data_dir,
+                template=template,
+                template_name=template_name,
+                use_sample=use_sample,
+                transform=transform
+            )
+
 
         if use_mask :
             # Load mask
@@ -93,6 +111,7 @@ class SaliencyUnlearnDataset(UnlearnCanvasDataset):
             pin_memory=pin_memory
         )
 
+        
     def get_data_loaders(self) -> Dict[str, DataLoader]:
         """
         Retrieve the forget and remain data loaders.

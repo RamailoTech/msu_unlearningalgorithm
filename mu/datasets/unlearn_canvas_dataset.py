@@ -10,6 +10,7 @@ from mu.datasets import BaseDataset
 from torchvision import transforms
 
 from mu.datasets.constants import * 
+from mu.helpers import read_text_lines
 
 class UnlearnCanvasDataset(BaseDataset):
     """
@@ -62,8 +63,8 @@ class UnlearnCanvasDataset(BaseDataset):
             raise FileNotFoundError(f"prompts.txt not found at {self.prompts_txt}")
 
         # Load image paths and prompts
-        self.image_paths = self.read_text_lines(self.images_txt)
-        self.prompts = self.read_text_lines(self.prompts_txt)
+        self.image_paths = read_text_lines(self.images_txt)
+        self.prompts = read_text_lines(self.prompts_txt)
 
         assert len(self.image_paths) == len(self.prompts), (
             "Number of images and prompts must be equal."

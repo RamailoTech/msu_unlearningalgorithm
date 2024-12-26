@@ -8,6 +8,7 @@ import logging
 from mu.algorithms.erase_diff.datasets.erase_diff_dataset import EraseDiffDataset
 from mu.datasets.constants import *
 from mu.core import BaseDataHandler
+from mu.helpers import read_text_lines
 
 
 class EraseDiffDataHandler(BaseDataHandler):
@@ -97,7 +98,7 @@ class EraseDiffDataHandler(BaseDataHandler):
             path_list = []
 
             for class_ in classes:
-                for idx in range(1, classes_range + 1):
+                for idx in range(1, 4):
                     prompt = f"A {class_} image in {theme.replace('_', ' ')} style."
                     image_path = os.path.join(self.raw_dataset_dir, theme, class_, f"{idx}.jpg")
                     if os.path.exists(image_path):
@@ -151,7 +152,7 @@ class EraseDiffDataHandler(BaseDataHandler):
                 path_list = []
 
                 for theme in themes:
-                    for idx in range(1, classes_range + 1):
+                    for idx in range(1, 4):
                         prompt = f"A {object_class} image in {theme.replace('_', ' ')} style."
                         image_path = os.path.join(self.raw_dataset_dir, theme, object_class, f"{idx}.jpg")
                         if os.path.exists(image_path):
@@ -253,8 +254,8 @@ class EraseDiffDataHandler(BaseDataHandler):
         if not os.path.isfile(images_txt) or not os.path.isfile(prompts_txt):
             self.logger.error(f"Missing images.txt or prompts.txt in {data_path}")
             raise FileNotFoundError(f"Missing images.txt or prompts.txt in {data_path}")
-        image_paths = self.read_text_lines(images_txt)
-        prompts = self.read_text_lines(prompts_txt)
+        image_paths = read_text_lines(images_txt)
+        prompts = read_text_lines(prompts_txt)
         if len(image_paths) != len(prompts):
             self.logger.error(f"Mismatch between images and prompts in {data_path}")
             raise ValueError(f"Mismatch between images and prompts in {data_path}")

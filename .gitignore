@@ -6,14 +6,14 @@ logs/*
 
 **/__pycache__/
 *.pyc
-
+.venv
 wandb 
 .vscode 
 cache
 outputs/*
 !outputs/.gitkeep
 
-models
+models/*
 !models/.gitkeep
 
 !mu/algorithms/erase_diff/.gitignore
