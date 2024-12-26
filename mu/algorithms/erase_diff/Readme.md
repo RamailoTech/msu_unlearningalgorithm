@@ -27,7 +27,7 @@ To download [models](https://huggingface.co/nebulaanish/unlearn_models/tree/main
         `chmod +x scripts/download_models.sh`
 
     * Run the script:
-        ```scripts/download_models.sh --model=compvis```
+        ```scripts/download_models.sh compvis```
 
 2. Diffuser (24.1 GB): 
 
@@ -36,7 +36,7 @@ To download [models](https://huggingface.co/nebulaanish/unlearn_models/tree/main
         `chmod +x scripts/download_models.sh`
 
     * Run the script: 
-        ```scripts/download_models.sh --model=diffuser```
+        ```scripts/download_models.sh diffuser```
 
 **Notes:**
 
@@ -54,11 +54,25 @@ After downloading, you can verify the extracted files in their respective direct
 
 ### Download datasets
 
-1. Download quick canvas dataset:
+1. Download unlearn canvas dataset:
 
     * Make it executable:
 
         `chmod +x scripts/download_quick_canvas_dataset.sh`
+
+    * Download the sample dataset (smaller size):
+
+        `scripts/download_quick_canvas_dataset.sh sample`
+
+    * Download the full dataset:
+
+        `scripts/download_quick_canvas_dataset.sh full`
+
+2. Download the i2p dataset
+
+    * Make it executable:
+
+        `chmod +x scripts/download_i2p_dataset.sh`
 
     * Download the sample dataset (smaller size):
 
@@ -67,20 +81,6 @@ After downloading, you can verify the extracted files in their respective direct
     * Download the full dataset:
 
         `scripts/download_i2p_dataset.sh full`
-
-2. Download the Unlearn Canvas Dataset
-
-    * Make it executable:
-
-        `chmod +x scripts/download_unlearn_canvas_dataset.sh`
-
-    * Download the sample dataset (smaller size):
-
-        `scripts/download_unlearn_canvas_dataset.sh sample`
-
-    * Download the full dataset:
-
-        `scripts/download_unlearn_canvas_dataset.sh full`
 
 **Notes:**
 
@@ -232,7 +232,7 @@ After downloading, verify that the datasets have been correctly extracted:
 
 To train the erase_diff algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
 
-### Example Command
+**Example Command**
 
 ```bash
 python -m mu.algorithms.erase_diff.scripts.train \
@@ -284,14 +284,14 @@ python -m mu.algorithms.erase_diff.scripts.train \
 
 * Final Configuration: The script merges the YAML file and command-line arguments into a single configuration dictionary and uses it for training.
 
-## Directory Structure
 
-- `algorithm.py`: Implementation of the ESDAlgorithm class.
+### Directory Structure
+
+- `algorithm.py`: Implementation of the EraseDiffAlgorithm class.
 - `configs/`: Contains configuration files for training and generation.
-- `model.py`: Implementation of the ESDModel class.
-- `sampler.py`: Implementation of the ESDSampler class.
-- `scripts/train.py`: Script to train the ESD algorithm.
-- `trainer.py`: Implementation of the ESDTrainer class.
+- `model.py`: Implementation of the EraseDiffModel class.
+- `scripts/train.py`: Script to train the EraseDiff algorithm.
+- `trainer.py`: Implementation of the EraseDiffTrainer class.
 - `utils.py`: Utility functions used in the project.
 - `data_handler.py` : Implementation of DataHandler class
 
