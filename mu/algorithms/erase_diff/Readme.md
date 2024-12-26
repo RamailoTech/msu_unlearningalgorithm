@@ -9,7 +9,7 @@ This repository provides an implementation of the erase diff algorithm for machi
 First, create and activate the Conda environment using the provided `environment.yaml` file:
 
 ```bash
-conda env create -f environment.yaml
+conda env create -f mu/algorithms/erase_diff/environment.yaml -n mu_erase_diff
 conda activate mu_erase_diff
 ```
 
@@ -21,13 +21,36 @@ To train the erase_diff algorithm to unlearn a specific concept or style from th
 ### Example Command
 
 ```bash
-python -m algorithms.erase_diff.scripts.train \
-    --train_method xattn \
-    --theme "Your_Theme" \
-    --ckpt_path "path/to/your/model.ckpt" \
-    --config_path "path/to/your_config.yaml" \
-    --output_dir "path/to/your_output_dir"
+python -m mu.algorithms.erase_diff.scripts.train \
+--config_path mu/algorithms/erase_diff/configs/train_config.yaml
 ```
+
+**Running the Training Script in Offline Mode**
+
+```bash
+WANDB_MODE=offline python -m mu.algorithms.erase_diff.scripts.train \
+--config_path mu/algorithms/erase_diff/configs/train_config.yaml
+```
+
+
+### Script Arguments
+
+**Required Arguments:**
+
+* --config_path: Path to the YAML configuration file for Stable Diffusion. This argument is mandatory.
+
+**Training Parameters:**
+
+* --train_method: Specifies the training method. Choices include:
+  - noxattn
+selfattn
+xattn
+full
+notime
+xlayer
+selflayer
+
+
 
 **Replace the placeholders with your own values:**
 
