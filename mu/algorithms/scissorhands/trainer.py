@@ -1,19 +1,23 @@
 import torch
-import gc
 from tqdm import tqdm
-from algorithms.scissorhands.utils import snip, project2cone2, load_model_from_config
 from torch.nn import MSELoss
 import logging
 import copy
 
+from mu.core import BaseTrainer
+from mu.algorithms.scissorhands.model import ScissorHandsModel
+from mu.algorithms.scissorhands.data_handler import EraseDiffDataHandler
 
-class ScissorHandsTrainer:
+
+from mu.algorithms.scissorhands.utils import snip, project2cone2
+
+class ScissorHandsTrainer(BaseTrainer):
     """
     Trainer for the ScissorHands algorithm.
     Handles the training loop, loss computation, and optimization.
     """
 
-    def __init__(self, model, config, data_handler, device):
+    def __init__(self, model: ScissorHandsModel, config: dict, device: str,  data_handler: EraseDiffDataHandler, **kwargs):
         """
         Initialize the ScissorHandsTrainer.
 
@@ -23,13 +27,12 @@ class ScissorHandsTrainer:
             data_handler: Instance of ScissorHandsDataHandler for data handling.
             device: Device to use for training (e.g., 'cuda:0').
         """
-        self.model = model
-        self.config = config
-        self.data_handler = data_handler
+        super().__init__(model, config, **kwargs)
         self.device = device
-        self.logger = logging.getLogger(__name__)
+        self.model = model.model
         self.criteria = MSELoss()
-        self.optimizer = None
+        self.logger = logging.getLogger(__name__)
+        self.data_handler = data_handler
         self.setup_optimizer()
 
 
@@ -38,7 +41,7 @@ class ScissorHandsTrainer:
         Setup the optimizer for the training process.
         """
         parameters = self.select_parameters()
-        self.optimizer = torch.optim.Adam(parameters, lr=self.config.get('lr', 1e-5))
+        self.optimizer = torch.optim.Adam(parameters, lr=float(self.config.get('lr', 1e-5)))
 
     def select_parameters(self):
         """
@@ -47,7 +50,7 @@ class ScissorHandsTrainer:
         train_method = self.config.get('train_method', 'xattn')
         parameters = []
 
-        for name, param in self.model.model.named_parameters():
+        for name, param in self.model.named_parameters():
             if train_method == 'full':
                 parameters.append(param)
             elif train_method == 'xattn' and 'attn2' in name:

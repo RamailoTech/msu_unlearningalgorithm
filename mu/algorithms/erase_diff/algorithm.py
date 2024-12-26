@@ -26,7 +26,6 @@ class EraseDiffAlgorithm(BaseAlgorithm):
         self.config = config
         self.model = None
         self.trainer = None
-        self.sampler = None
         self.data_handler = None
         self.device = torch.device(self.config.get('devices', ['cuda:0'])[0])
         self.logger = logging.getLogger(__name__)

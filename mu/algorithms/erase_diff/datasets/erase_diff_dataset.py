@@ -2,13 +2,13 @@ import os
 from typing import Any, Tuple, Dict
 from torch.utils.data import DataLoader
 
-from mu.datasets import UnlearnCanvasDataset, I2PDataset
+from mu.datasets import UnlearnCanvasDataset, I2PDataset, BaseDataset
 from mu.datasets.utils import INTERPOLATIONS, get_transform
 
-class EraseDiffDataset(UnlearnCanvasDataset):
+class EraseDiffDataset(BaseDataset):
     """
     Dataset class for the EraseDiff algorithm.
-    Extends UnlearnCanvasDataset to handle specific requirements.
+    Extends BaseDataset to handle specific requirements.
     Manages both 'forget' and 'remain' datasets.
     """
 

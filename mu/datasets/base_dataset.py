@@ -32,17 +32,3 @@ class BaseDataset(Dataset, ABC):
             Tuple[Any, str]: A tuple containing the data sample and its corresponding prompt.
         """
         pass
-
-    def read_text_lines(self, path: str):
-        """
-        Read lines from a text file.
-
-        Args:
-            path (str): Path to the text file.
-
-        Returns:
-            List[str]: List of lines.
-        """
-        with open(path, "r", encoding='utf-8') as f:
-            lines = f.readlines()
-        return [line.strip() for line in lines]

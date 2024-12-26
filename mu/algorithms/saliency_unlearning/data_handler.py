@@ -8,6 +8,8 @@ from algorithms.saliency_unlearning.logger import setup_logger
 from core.base_data_handler import BaseDataHandler
 from datasets.constants import *
 
+from mu.helpers import read_text_lines
+
 class SaliencyUnlearnDataHandler(BaseDataHandler):
     """
     Concrete data handler for the SaliencyUnlearn algorithm.
@@ -164,8 +166,8 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
         if not os.path.isfile(images_txt) or not os.path.isfile(prompts_txt):
             self.logger.error(f"Missing images.txt or prompts.txt in {data_path}")
             raise FileNotFoundError(f"Missing images.txt or prompts.txt in {data_path}")
-        image_paths = self.read_text_lines(images_txt)
-        prompts = self.read_text_lines(prompts_txt)
+        image_paths = read_text_lines(images_txt)
+        prompts = read_text_lines(prompts_txt)
         if len(image_paths) != len(prompts):
             self.logger.error(f"Mismatch between images and prompts in {data_path}")
             raise ValueError(f"Mismatch between images and prompts in {data_path}")
