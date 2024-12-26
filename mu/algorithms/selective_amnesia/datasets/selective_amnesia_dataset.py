@@ -1,7 +1,9 @@
 import os
+from typing import Callable, List, Tuple
+
 from PIL import Image
 from torch.utils.data import Dataset
-from typing import List, Tuple, Callable
+
 
 class SelectiveAmnesiaDataset(Dataset):
     """
@@ -20,9 +22,13 @@ class SelectiveAmnesiaDataset(Dataset):
         # Assume images_dir has been populated by a prior generation step.
         # If you need prompts, store them similarly or generate a prompts.txt.
 
-        self.image_paths = sorted([os.path.join(self.images_dir, f) 
-                                   for f in os.listdir(self.images_dir)
-                                   if f.lower().endswith(('png', 'jpg', 'jpeg'))])
+        self.image_paths = sorted(
+            [
+                os.path.join(self.images_dir, f)
+                for f in os.listdir(self.images_dir)
+                if f.lower().endswith(("png", "jpg", "jpeg"))
+            ]
+        )
 
     def __len__(self):
         return len(self.image_paths)

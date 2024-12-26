@@ -1,10 +1,13 @@
-import os
 import logging
+import os
 from typing import Dict
-from torch.utils.data import DataLoader
-from core.base_data_handler import BaseDataHandler
-from mu.datasets.utils import get_transform, INTERPOLATIONS
+
 from algorithms.concept_ablation.datasets.dataset import ConceptAblationDataset
+from core.base_data_handler import BaseDataHandler
+from torch.utils.data import DataLoader
+
+from mu.datasets.utils import INTERPOLATIONS, get_transform
+
 
 class ConceptAblationDataHandler(BaseDataHandler):
     """
@@ -24,11 +27,11 @@ class ConceptAblationDataHandler(BaseDataHandler):
         train_size: int = 1000,
         n_samples: int = 10,
         image_size: int = 512,
-        interpolation: str = 'bicubic',
+        interpolation: str = "bicubic",
         batch_size: int = 4,
         num_workers: int = 4,
         pin_memory: bool = True,
-        use_regularization: bool = False
+        use_regularization: bool = False,
     ):
         """
         Initialize the ConceptAblationDataHandler.
@@ -79,10 +82,14 @@ class ConceptAblationDataHandler(BaseDataHandler):
             Dict[str, DataLoader]: Dictionary containing at least a 'train' DataLoader.
         """
         if self.interpolation not in INTERPOLATIONS:
-            raise ValueError(f"Unsupported interpolation mode: {self.interpolation}. "
-                             f"Supported modes: {list(INTERPOLATIONS.keys())}")
+            raise ValueError(
+                f"Unsupported interpolation mode: {self.interpolation}. "
+                f"Supported modes: {list(INTERPOLATIONS.keys())}"
+            )
 
-        transform = get_transform(interpolation=INTERPOLATIONS[self.interpolation], size=self.image_size)
+        transform = get_transform(
+            interpolation=INTERPOLATIONS[self.interpolation], size=self.image_size
+        )
 
         # Instantiate the dataset. This will handle generation and filtering internally.
         dataset = ConceptAblationDataset(
@@ -97,7 +104,7 @@ class ConceptAblationDataHandler(BaseDataHandler):
             n_samples=self.n_samples,
             image_size=self.image_size,
             transform=transform,
-            use_regularization=self.use_regularization
+            use_regularization=self.use_regularization,
         )
 
         train_loader = DataLoader(
@@ -105,7 +112,7 @@ class ConceptAblationDataHandler(BaseDataHandler):
             batch_size=self.batch_size,
             shuffle=True,
             num_workers=self.num_workers,
-            pin_memory=self.pin_memory
+            pin_memory=self.pin_memory,
         )
 
-        return {'train': train_loader}
+        return {"train": train_loader}

@@ -1,18 +1,23 @@
-import torch
-from typing import Any
 from pathlib import Path
+from typing import Any
+
+import torch
 
 from mu.core import BaseModel
 from mu.helpers import load_model_from_config
+
 
 class ESDModel(BaseModel):
     """
     ESDModel handles loading, saving, and interacting with the Stable Diffusion model.
     """
-    def __init__(self, model_config_path: str, ckpt_path: str, device: str, device_orig: str):
+
+    def __init__(
+        self, model_config_path: str, ckpt_path: str, device: str, device_orig: str
+    ):
         """
-        Initialize the ESDModel 
-        
+        Initialize the ESDModel
+
         Args:
             model_config_path (str): Path to the model configuration file.
             ckpt_path (str): Path to the model checkpoint.
@@ -28,7 +33,9 @@ class ESDModel(BaseModel):
         self.ckpt_path = ckpt_path
         self.models = self.load_model(model_config_path, ckpt_path, device, device_orig)
 
-    def load_model(self, model_config_path: str, ckpt_path: str, device: str, device_orig:str):
+    def load_model(
+        self, model_config_path: str, ckpt_path: str, device: str, device_orig: str
+    ):
         """
         Load the Stable Diffusion model from config and checkpoint.
 
@@ -43,12 +50,11 @@ class ESDModel(BaseModel):
             [torch.nn.Module]: Loaded Stable Diffusion model.
         """
         model = load_model_from_config(model_config_path, ckpt_path, device)
-        model_orig = load_model_from_config(model_config_path,ckpt_path, device_orig)
+        model_orig = load_model_from_config(model_config_path, ckpt_path, device_orig)
 
         return (model, model_orig)
 
-
-    def save_model(self, model,output_path: str):
+    def save_model(self, model, output_path: str):
         """
         Save the trained model's state dictionary.
 

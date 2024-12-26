@@ -1,24 +1,24 @@
 import argparse
 import glob
 import os
-from tqdm import tqdm
+import sys
 from collections import namedtuple
 
 import numpy as np
 import torch
 import torchvision.transforms as transforms
-from torchvision import models
 from PIL import Image
+from torchvision import models
+from tqdm import tqdm
 
-import sys
 sys.path.append(".")
 from stable_diffusion.ldm.modules.evaluate.ssim import ssim
 
-
 transform = transforms.Compose([transforms.ToTensor()])
 
+
 def normalize_tensor(in_feat, eps=1e-10):
-    norm_factor = torch.sqrt(torch.sum(in_feat ** 2, dim=1)).view(
+    norm_factor = torch.sqrt(torch.sum(in_feat**2, dim=1)).view(
         in_feat.size()[0], 1, in_feat.size()[2], in_feat.size()[3]
     )
     return in_feat / (norm_factor.expand_as(in_feat) + eps)
@@ -32,9 +32,9 @@ def cos_sim(in0, in1):
     Y = in0.size()[3]
 
     return torch.mean(
-        torch.mean(
-            torch.sum(in0_norm * in1_norm, dim=1).view(N, 1, X, Y), dim=2
-        ).view(N, 1, 1, Y),
+        torch.mean(torch.sum(in0_norm * in1_norm, dim=1).view(N, 1, X, Y), dim=2).view(
+            N, 1, 1, Y
+        ),
         dim=3,
     ).view(N)
 
@@ -42,9 +42,7 @@ def cos_sim(in0, in1):
 class squeezenet(torch.nn.Module):
     def __init__(self, requires_grad=False, pretrained=True):
         super(squeezenet, self).__init__()
-        pretrained_features = models.squeezenet1_1(
-            pretrained=pretrained
-        ).features
+        pretrained_features = models.squeezenet1_1(pretrained=pretrained).features
         self.slice1 = torch.nn.Sequential()
         self.slice2 = torch.nn.Sequential()
         self.slice3 = torch.nn.Sequential()
@@ -90,9 +88,7 @@ class squeezenet(torch.nn.Module):
             "SqueezeOutputs",
             ["relu1", "relu2", "relu3", "relu4", "relu5", "relu6", "relu7"],
         )
-        out = vgg_outputs(
-            h_relu1, h_relu2, h_relu3, h_relu4, h_relu5, h_relu6, h_relu7
-        )
+        out = vgg_outputs(h_relu1, h_relu2, h_relu3, h_relu4, h_relu5, h_relu6, h_relu7)
 
         return out
 
@@ -100,9 +96,7 @@ class squeezenet(torch.nn.Module):
 class alexnet(torch.nn.Module):
     def __init__(self, requires_grad=False, pretrained=True):
         super(alexnet, self).__init__()
-        alexnet_pretrained_features = models.alexnet(
-            pretrained=pretrained
-        ).features
+        alexnet_pretrained_features = models.alexnet(pretrained=pretrained).features
         self.slice1 = torch.nn.Sequential()
         self.slice2 = torch.nn.Sequential()
         self.slice3 = torch.nn.Sequential()
@@ -225,12 +219,11 @@ class resnet(torch.nn.Module):
         h = self.layer4(h)
         h_conv5 = h
 
-        outputs = namedtuple(
-            "Outputs", ["relu1", "conv2", "conv3", "conv4", "conv5"]
-        )
+        outputs = namedtuple("Outputs", ["relu1", "conv2", "conv3", "conv4", "conv5"])
         out = outputs(h_relu1, h_conv2, h_conv3, h_conv4, h_conv5)
 
         return out
+
 
 # Off-the-shelf deep network
 class PNet(torch.nn.Module):
@@ -250,9 +243,7 @@ class PNet(torch.nn.Module):
         if self.pnet_type in ["vgg", "vgg16"]:
             self.net = vgg16(pretrained=not self.pnet_rand, requires_grad=False)
         elif self.pnet_type == "alex":
-            self.net = alexnet(
-                pretrained=not self.pnet_rand, requires_grad=False
-            )
+            self.net = alexnet(pretrained=not self.pnet_rand, requires_grad=False)
         elif self.pnet_type[:-2] == "resnet":
             self.net = resnet(
                 pretrained=not self.pnet_rand,
@@ -260,9 +251,7 @@ class PNet(torch.nn.Module):
                 num=int(self.pnet_type[-2:]),
             )
         elif self.pnet_type == "squeeze":
-            self.net = squeezenet(
-                pretrained=not self.pnet_rand, requires_grad=False
-            )
+            self.net = squeezenet(pretrained=not self.pnet_rand, requires_grad=False)
 
         self.L = self.net.N_slices
 
@@ -280,7 +269,7 @@ class PNet(torch.nn.Module):
 
         if retPerLayer:
             all_scores = []
-        for (kk, out0) in enumerate(outs0):
+        for kk, out0 in enumerate(outs0):
             cur_score = 1.0 - cos_sim(outs0[kk], outs1[kk])
             if kk == 0:
                 val = 1.0 * cur_score
@@ -295,22 +284,20 @@ class PNet(torch.nn.Module):
             return val
 
 
-
-
 # The SSIM metric
 def ssim_metric(img1, img2, mask=None):
     return ssim(img1, img2, mask=mask, size_average=False)
 
 
 # The PSNR metric
-def psnr(img1, img2, mask=None,reshape=False):
+def psnr(img1, img2, mask=None, reshape=False):
     b = img1.size(0)
     if not (mask is None):
         b = img1.size(0)
         mse_err = (img1 - img2).pow(2) * mask
         if reshape:
             mse_err = mse_err.reshape(b, -1).sum(dim=1) / (
-                    3 * mask.reshape(b, -1).sum(dim=1).clamp(min=1)
+                3 * mask.reshape(b, -1).sum(dim=1).clamp(min=1)
             )
         else:
             mse_err = mse_err.view(b, -1).sum(dim=1) / (
@@ -332,6 +319,7 @@ def perceptual_sim(img1, img2, vgg16):
     dist = vgg16(img1 * 2 - 1, img2 * 2 - 1)
 
     return dist
+
 
 def load_img(img_name, size=None):
     try:
@@ -389,9 +377,7 @@ def compute_perceptual_similarity(folder, pred_img, tgt_img, take_every_other):
         n_valuesssim = []
         n_valuespsnr = []
         for i in range(0, len(values_percsim) // 2):
-            n_valuespercsim += [
-                min(values_percsim[2 * i], values_percsim[2 * i + 1])
-            ]
+            n_valuespercsim += [min(values_percsim[2 * i], values_percsim[2 * i + 1])]
             n_valuespsnr += [max(values_psnr[2 * i], values_psnr[2 * i + 1])]
             n_valuesssim += [max(values_ssim[2 * i], values_ssim[2 * i + 1])]
 
@@ -415,9 +401,9 @@ def compute_perceptual_similarity(folder, pred_img, tgt_img, take_every_other):
     }
 
 
-def compute_perceptual_similarity_from_list(pred_imgs_list, tgt_imgs_list,
-                                            take_every_other,
-                                            simple_format=True):
+def compute_perceptual_similarity_from_list(
+    pred_imgs_list, tgt_imgs_list, take_every_other, simple_format=True
+):
 
     # Load VGG16 for feature similarity
     vgg16 = PNet().to("cuda")
@@ -440,7 +426,7 @@ def compute_perceptual_similarity_from_list(pred_imgs_list, tgt_imgs_list,
         perc_sim = 10000
         ssim_sim = -10
         psnr_sim = -10
-        assert len(pred_imgs)>0
+        assert len(pred_imgs) > 0
         for p_img in pred_imgs:
             t_img = load_img(tgt_imgs[0])
             p_img = load_img(p_img, size=t_img.shape[2:])
@@ -467,9 +453,7 @@ def compute_perceptual_similarity_from_list(pred_imgs_list, tgt_imgs_list,
         n_valuesssim = []
         n_valuespsnr = []
         for i in range(0, len(values_percsim) // 2):
-            n_valuespercsim += [
-                min(values_percsim[2 * i], values_percsim[2 * i + 1])
-            ]
+            n_valuespercsim += [min(values_percsim[2 * i], values_percsim[2 * i + 1])]
             n_valuespsnr += [max(values_psnr[2 * i], values_psnr[2 * i + 1])]
             n_valuesssim += [max(values_ssim[2 * i], values_ssim[2 * i + 1])]
 
@@ -501,8 +485,9 @@ def compute_perceptual_similarity_from_list(pred_imgs_list, tgt_imgs_list,
         }
 
 
-def compute_perceptual_similarity_from_list_topk(pred_imgs_list, tgt_imgs_list,
-                                                 take_every_other, resize=False):
+def compute_perceptual_similarity_from_list_topk(
+    pred_imgs_list, tgt_imgs_list, take_every_other, resize=False
+):
 
     # Load VGG16 for feature similarity
     vgg16 = PNet().to("cuda")
@@ -532,7 +517,7 @@ def compute_perceptual_similarity_from_list_topk(pred_imgs_list, tgt_imgs_list,
         sample_psnr = list()
         for p_img in pred_imgs:
             if resize:
-                t_img = load_img(tgt_imgs[0], size=(256,256))
+                t_img = load_img(tgt_imgs[0], size=(256, 256))
             else:
                 t_img = load_img(tgt_imgs[0])
             p_img = load_img(p_img, size=t_img.shape[2:])
@@ -562,9 +547,7 @@ def compute_perceptual_similarity_from_list_topk(pred_imgs_list, tgt_imgs_list,
         n_valuesssim = []
         n_valuespsnr = []
         for i in range(0, len(values_percsim) // 2):
-            n_valuespercsim += [
-                min(values_percsim[2 * i], values_percsim[2 * i + 1])
-            ]
+            n_valuespercsim += [min(values_percsim[2 * i], values_percsim[2 * i + 1])]
             n_valuespsnr += [max(values_psnr[2 * i], values_psnr[2 * i + 1])]
             n_valuesssim += [max(values_ssim[2 * i], values_ssim[2 * i + 1])]
 
@@ -595,7 +578,7 @@ def compute_perceptual_similarity_from_list_topk(pred_imgs_list, tgt_imgs_list,
             "PSIM": individual_percsim,
             "PSNR": individual_psnr,
             "SSIM": individual_ssim,
-        }
+        },
     }
 
 
@@ -617,16 +600,12 @@ if __name__ == "__main__":
         folder, pred_img, tgt_img, opts.take_every_other
     )
 
-    f = open(opts.output_file, 'w')
+    f = open(opts.output_file, "w")
     for key in results:
         print("%s for %s: \n" % (key, opts.folder))
-        print(
-            "\t {:0.4f} | {:0.4f} \n".format(results[key][0], results[key][1])
-        )
+        print("\t {:0.4f} | {:0.4f} \n".format(results[key][0], results[key][1]))
 
         f.write("%s for %s: \n" % (key, opts.folder))
-        f.write(
-            "\t {:0.4f} | {:0.4f} \n".format(results[key][0], results[key][1])
-        )
+        f.write("\t {:0.4f} | {:0.4f} \n".format(results[key][0], results[key][1]))
 
     f.close()

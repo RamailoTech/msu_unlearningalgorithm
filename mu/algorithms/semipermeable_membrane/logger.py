@@ -2,6 +2,7 @@
 
 import logging
 
+
 def setup_logger(name: str, log_file: str = None, level=logging.INFO) -> logging.Logger:
     """
     Setup a logger for the module.
@@ -14,7 +15,9 @@ def setup_logger(name: str, log_file: str = None, level=logging.INFO) -> logging
     Returns:
         logging.Logger: Configured logger.
     """
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
 
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)

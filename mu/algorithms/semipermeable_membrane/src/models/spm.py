@@ -2,9 +2,9 @@
 # - https://github.com/cloneofsimo/lora/blob/master/lora_diffusion/lora.py
 # - https://github.com/kohya-ss/sd-scripts/blob/main/networks/lora.py
 
-import os
 import math
-from typing import Optional, List
+import os
+from typing import List, Optional
 
 import torch
 import torch.nn as nn
@@ -75,7 +75,7 @@ class SPMLayer(nn.Module):
             self.org_forward(x)
             + self.lora_up(self.lora_down(x)) * self.multiplier * self.scale
         )
-        
+
 
 class SPMNetwork(nn.Module):
     UNET_TARGET_REPLACE_MODULE_TRANSFORMER = [
@@ -87,7 +87,7 @@ class SPMNetwork(nn.Module):
         "Upsample2D",
     ]
 
-    SPM_PREFIX_UNET = "lora_unet"   # aligning with SD webui usage
+    SPM_PREFIX_UNET = "lora_unet"  # aligning with SD webui usage
     DEFAULT_TARGET_REPLACE = UNET_TARGET_REPLACE_MODULE_TRANSFORMER
 
     def __init__(
@@ -96,8 +96,8 @@ class SPMNetwork(nn.Module):
         rank: int = 4,
         multiplier: float = 1.0,
         alpha: float = 1.0,
-        module = SPMLayer,
-        module_kwargs = None,
+        module=SPMLayer,
+        module_kwargs=None,
     ) -> None:
         super().__init__()
 
@@ -154,7 +154,12 @@ class SPMNetwork(nn.Module):
                         spm_name = spm_name.replace(".", "_")
                         print(f"{spm_name}")
                         spm_layer = self.module(
-                            spm_name, child_module, multiplier, rank, self.alpha, **self.module_kwargs
+                            spm_name,
+                            child_module,
+                            multiplier,
+                            rank,
+                            self.alpha,
+                            **self.module_kwargs,
                         )
                         spm_layers.append(spm_layer)
 
@@ -165,7 +170,10 @@ class SPMNetwork(nn.Module):
 
         if self.unet_spm_layers:
             params = []
-            [params.extend(spm_layer.parameters()) for spm_layer in self.unet_spm_layers]
+            [
+                params.extend(spm_layer.parameters())
+                for spm_layer in self.unet_spm_layers
+            ]
             param_data = {"params": params}
             if default_lr is not None:
                 param_data["lr"] = default_lr

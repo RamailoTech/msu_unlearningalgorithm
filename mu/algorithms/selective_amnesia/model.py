@@ -1,14 +1,16 @@
-import torch
-from omegaconf import OmegaConf
-from stable_diffusion.ldm.util import instantiate_from_config
-from core.base_model import BaseModel
+import logging
 from pathlib import Path
 from typing import Any
-import logging
 
-from algorithms.selective_amnesia.utils import modify_weights, load_fim
+import torch
+from algorithms.selective_amnesia.utils import load_fim, modify_weights
+from core.base_model import BaseModel
+from omegaconf import OmegaConf
+
+from stable_diffusion.ldm.util import instantiate_from_config
 
 logger = logging.getLogger(__name__)
+
 
 class SelectiveAmnesiaModel(BaseModel):
     """
@@ -38,16 +40,24 @@ class SelectiveAmnesiaModel(BaseModel):
 
         model = instantiate_from_config(config.model)
         # If input channels differ, modify weights as needed (example)
-        in_filters_load = old_state.get("model.diffusion_model.input_blocks.0.0.weight", None)
+        in_filters_load = old_state.get(
+            "model.diffusion_model.input_blocks.0.0.weight", None
+        )
         if in_filters_load is not None:
-            curr_shape = model.state_dict()["model.diffusion_model.input_blocks.0.0.weight"].shape
+            curr_shape = model.state_dict()[
+                "model.diffusion_model.input_blocks.0.0.weight"
+            ].shape
             if in_filters_load.shape != curr_shape:
                 logger.info("Modifying weights to double input channels...")
-                old_state["model.diffusion_model.input_blocks.0.0.weight"] = modify_weights(
-                    in_filters_load, scale=1e-8, n=(curr_shape[1]//in_filters_load.shape[1] - 1)
+                old_state["model.diffusion_model.input_blocks.0.0.weight"] = (
+                    modify_weights(
+                        in_filters_load,
+                        scale=1e-8,
+                        n=(curr_shape[1] // in_filters_load.shape[1] - 1),
+                    )
                 )
 
-        m,u = model.load_state_dict(old_state, strict=False)
+        m, u = model.load_state_dict(old_state, strict=False)
         if len(m) > 0:
             logger.warning(f"Missing keys in state_dict load: {m}")
         if len(u) > 0:

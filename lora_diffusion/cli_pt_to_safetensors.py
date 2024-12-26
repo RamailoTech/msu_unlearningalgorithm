@@ -2,6 +2,7 @@ import os
 
 import fire
 import torch
+
 from lora_diffusion import (
     DEFAULT_TARGET_REPLACE,
     TEXT_ENCODER_DEFAULT_TARGET_REPLACE,
@@ -62,9 +63,11 @@ def convert(*paths, outpath, overwrite=False, **settings):
             }
 
             prefix = f"{name}."
-            
-            arg_settings = { k[len(prefix) :]: v for k, v in settings.items() if k.startswith(prefix) }
-            model_settings = { **model_settings, **arg_settings }
+
+            arg_settings = {
+                k[len(prefix) :]: v for k, v in settings.items() if k.startswith(prefix)
+            }
+            model_settings = {**model_settings, **arg_settings}
 
             print(f"Loading Lora for {name} from {path} with settings {model_settings}")
 

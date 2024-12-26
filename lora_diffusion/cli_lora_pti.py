@@ -10,12 +10,14 @@ import os
 import random
 import re
 from pathlib import Path
-from typing import Optional, List, Literal
+from typing import List, Literal, Optional
 
+import fire
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
 import torch.utils.checkpoint
+import wandb
 from diffusers import (
     AutoencoderKL,
     DDPMScheduler,
@@ -29,20 +31,18 @@ from torch.utils.data import Dataset
 from torchvision import transforms
 from tqdm.auto import tqdm
 from transformers import CLIPTextModel, CLIPTokenizer
-import wandb
-import fire
 
 from lora_diffusion import (
+    UNET_EXTENDED_TARGET_REPLACE,
     PivotalTuningDatasetCapation,
+    evaluate_pipe,
     extract_lora_ups_down,
     inject_trainable_lora,
     inject_trainable_lora_extended,
     inspect_lora,
-    save_lora_weight,
-    save_all,
     prepare_clip_model_sets,
-    evaluate_pipe,
-    UNET_EXTENDED_TARGET_REPLACE,
+    save_all,
+    save_lora_weight,
 )
 
 
@@ -474,9 +474,9 @@ def train_inversion(
                             .norm(dim=-1)
                         )
 
-                        text_encoder.get_input_embeddings().weight[
-                            index_no_updates
-                        ] = orig_embeds_params[index_no_updates]
+                        text_encoder.get_input_embeddings().weight[index_no_updates] = (
+                            orig_embeds_params[index_no_updates]
+                        )
 
                         print(f"Current Norm : {current_norm}")
 
@@ -965,9 +965,11 @@ def train(
         params_to_optimize += [
             {
                 "params": text_encoder.get_input_embeddings().parameters(),
-                "lr": continue_inversion_lr
-                if continue_inversion_lr is not None
-                else ti_lr,
+                "lr": (
+                    continue_inversion_lr
+                    if continue_inversion_lr is not None
+                    else ti_lr
+                ),
             }
         ]
         text_encoder.requires_grad_(True)

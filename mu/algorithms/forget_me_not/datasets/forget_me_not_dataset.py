@@ -6,18 +6,17 @@ from typing import Optional
 
 import cv2
 import numpy as np
-from PIL import Image, ImageFilter
 from datasets.base_dataset import BaseDataset
+from PIL import Image, ImageFilter
 from torchvision import transforms
 
 # Templates for object and style prompts
-OBJECT_TEMPLATE = [
-    "an image of {}"
-]
+OBJECT_TEMPLATE = ["an image of {}"]
 
 STYLE_TEMPLATE = [
     "an image in {} Style",
 ]
+
 
 class ForgetMeNotDataset(BaseDataset):
     """
@@ -38,7 +37,7 @@ class ForgetMeNotDataset(BaseDataset):
         color_jitter: bool = False,
         resize: bool = True,
         use_face_segmentation_condition: bool = False,
-        blur_amount: int = 70
+        blur_amount: int = 70,
     ):
         """
         Initialize the ForgetMeNotDataset.
@@ -97,19 +96,24 @@ class ForgetMeNotDataset(BaseDataset):
         transform_list = []
         if resize:
             transform_list.append(
-                transforms.Resize(size, interpolation=transforms.InterpolationMode.BILINEAR)
+                transforms.Resize(
+                    size, interpolation=transforms.InterpolationMode.BILINEAR
+                )
             )
         if color_jitter:
             transform_list.append(transforms.ColorJitter(0.1, 0.1))
-        transform_list.extend([
-            transforms.ToTensor(),
-            transforms.Normalize([0.5], [0.5]),
-        ])
+        transform_list.extend(
+            [
+                transforms.ToTensor(),
+                transforms.Normalize([0.5], [0.5]),
+            ]
+        )
         self.image_transforms = transforms.Compose(transform_list)
 
         # If using face segmentation, load mediapipe
         if self.use_face_segmentation_condition:
             import mediapipe as mp
+
             mp_face_detection = mp.solutions.face_detection
             self.face_detection = mp_face_detection.FaceDetection(
                 model_selection=1, min_detection_confidence=0.5
@@ -122,7 +126,9 @@ class ForgetMeNotDataset(BaseDataset):
         example = {}
 
         # Load instance image
-        instance_image_path = self.instance_images_path[index % self.num_instance_images]
+        instance_image_path = self.instance_images_path[
+            index % self.num_instance_images
+        ]
         instance_image = Image.open(instance_image_path).convert("RGB")
         example["instance_images"] = self.image_transforms(instance_image)
 
@@ -139,23 +145,39 @@ class ForgetMeNotDataset(BaseDataset):
         # Face segmentation conditioning if enabled
         if self.use_face_segmentation_condition:
             image = cv2.imread(str(instance_image_path))
-            results = self.face_detection.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+            results = self.face_detection.process(
+                cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            )
             black_image = np.zeros((image.shape[0], image.shape[1]), dtype=np.uint8)
 
             if results.detections:
                 for detection in results.detections:
-                    x_min = int(detection.location_data.relative_bounding_box.xmin * image.shape[1])
-                    y_min = int(detection.location_data.relative_bounding_box.ymin * image.shape[0])
-                    width = int(detection.location_data.relative_bounding_box.width * image.shape[1])
-                    height = int(detection.location_data.relative_bounding_box.height * image.shape[0])
-                    black_image[y_min: y_min + height, x_min: x_min + width] = 255
+                    x_min = int(
+                        detection.location_data.relative_bounding_box.xmin
+                        * image.shape[1]
+                    )
+                    y_min = int(
+                        detection.location_data.relative_bounding_box.ymin
+                        * image.shape[0]
+                    )
+                    width = int(
+                        detection.location_data.relative_bounding_box.width
+                        * image.shape[1]
+                    )
+                    height = int(
+                        detection.location_data.relative_bounding_box.height
+                        * image.shape[0]
+                    )
+                    black_image[y_min : y_min + height, x_min : x_min + width] = 255
 
             # Apply Gaussian blur to the mask
             black_mask = Image.fromarray(black_image, mode="L").filter(
                 ImageFilter.GaussianBlur(radius=self.blur_amount)
             )
             black_mask = transforms.ToTensor()(black_mask)
-            black_mask = transforms.Resize(self.size, interpolation=transforms.InterpolationMode.BILINEAR)(black_mask)
+            black_mask = transforms.Resize(
+                self.size, interpolation=transforms.InterpolationMode.BILINEAR
+            )(black_mask)
             example["mask"] = black_mask
 
         # Apply random horizontal flip

@@ -1,9 +1,11 @@
 import os
-from typing import Any, Tuple, Dict
+from typing import Any, Dict, Tuple
+
 from torch.utils.data import DataLoader
 
-from mu.datasets import UnlearnCanvasDataset, I2PDataset
+from mu.datasets import I2PDataset, UnlearnCanvasDataset
 from mu.datasets.utils import INTERPOLATIONS, get_transform
+
 
 class EraseDiffDataset(UnlearnCanvasDataset):
     """
@@ -20,11 +22,11 @@ class EraseDiffDataset(UnlearnCanvasDataset):
         template_name: str,
         use_sample: bool = False,
         image_size: int = 512,
-        interpolation: str = 'bicubic',
+        interpolation: str = "bicubic",
         batch_size: int = 4,
         num_workers: int = 4,
         pin_memory: bool = True,
-        dataset_type: str = 'unlearncanvas'
+        dataset_type: str = "unlearncanvas",
     ):
         """
         Initialize the EraseDiffDataset.
@@ -43,33 +45,35 @@ class EraseDiffDataset(UnlearnCanvasDataset):
         """
         # Initialize transformations
         if interpolation not in INTERPOLATIONS:
-            raise ValueError(f"Unsupported interpolation mode: {interpolation}. Supported modes: {list(INTERPOLATIONS.keys())}")
+            raise ValueError(
+                f"Unsupported interpolation mode: {interpolation}. Supported modes: {list(INTERPOLATIONS.keys())}"
+            )
 
         interpolation_mode = INTERPOLATIONS[interpolation]
         transform = get_transform(interpolation=interpolation_mode, size=image_size)
 
-        if dataset_type == 'i2p':
+        if dataset_type == "i2p":
             self.forget_dataset = I2PDataset(
                 data_dir=forget_data_dir,
                 template_name=template_name,
                 use_sample=use_sample,
-                transform=transform
+                transform=transform,
             )
 
             self.remain_dataset = I2PDataset(
                 data_dir=remain_data_dir,
                 template_name=template_name,
                 use_sample=use_sample,
-                transform=transform
+                transform=transform,
             )
-        elif dataset_type == 'unlearncanvas':
+        elif dataset_type == "unlearncanvas":
             # Initialize forget dataset
             self.forget_dataset = UnlearnCanvasDataset(
                 data_dir=forget_data_dir,
                 template=template,
                 template_name=template_name,
                 use_sample=use_sample,
-                transform=transform
+                transform=transform,
             )
 
             # Initialize remain dataset
@@ -78,7 +82,7 @@ class EraseDiffDataset(UnlearnCanvasDataset):
                 template=template,
                 template_name=template_name,
                 use_sample=use_sample,
-                transform=transform
+                transform=transform,
             )
 
         # Initialize DataLoaders
@@ -87,7 +91,7 @@ class EraseDiffDataset(UnlearnCanvasDataset):
             batch_size=batch_size,
             shuffle=True,
             num_workers=num_workers,
-            pin_memory=pin_memory
+            pin_memory=pin_memory,
         )
 
         self.remain_loader = DataLoader(
@@ -95,7 +99,7 @@ class EraseDiffDataset(UnlearnCanvasDataset):
             batch_size=batch_size,
             shuffle=True,
             num_workers=num_workers,
-            pin_memory=pin_memory
+            pin_memory=pin_memory,
         )
 
     def get_data_loaders(self) -> Dict[str, DataLoader]:
@@ -105,10 +109,7 @@ class EraseDiffDataset(UnlearnCanvasDataset):
         Returns:
             Dict[str, DataLoader]: Dictionary containing 'forget' and 'remain' DataLoaders.
         """
-        return {
-            'forget': self.forget_loader,
-            'remain': self.remain_loader
-        }
+        return {"forget": self.forget_loader, "remain": self.remain_loader}
 
     def __len__(self) -> int:
         """

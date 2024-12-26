@@ -1,13 +1,16 @@
 # semipermeable_membrane/algorithm.py
 
 import logging
-import torch
-import wandb
 from typing import Dict
 
+import torch
+import wandb
+from algorithms.semipermeable_membrane.data_handler import (
+    SemipermeableMembraneDataHandler,
+)
 from algorithms.semipermeable_membrane.model import SemipermeableMembraneModel
-from algorithms.semipermeable_membrane.data_handler import SemipermeableMembraneDataHandler
 from algorithms.semipermeable_membrane.trainer import SemipermeableMembraneTrainer
+
 
 class SemipermeableMembraneAlgorithm:
     """
@@ -37,9 +40,9 @@ class SemipermeableMembraneAlgorithm:
 
         # Initialize Data Handler
         self.data_handler = SemipermeableMembraneDataHandler(
-            selected_theme=self.config.get('theme', ''),
-            selected_class=self.config.get('classes', ''),
-            use_sample=self.config.get('use_sample', False)
+            selected_theme=self.config.get("theme", ""),
+            selected_class=self.config.get("classes", ""),
+            use_sample=self.config.get("use_sample", False),
         )
 
         # Initialize Model
@@ -50,7 +53,7 @@ class SemipermeableMembraneAlgorithm:
             model=self.model,
             config=self.config,
             device=str(self.device),
-            data_handler=self.data_handler
+            data_handler=self.data_handler,
         )
 
     def run(self):
@@ -59,9 +62,11 @@ class SemipermeableMembraneAlgorithm:
         """
         # Initialize WandB
         wandb.init(
-            project=self.config.get('wandb', {}).get('project', 'semipermeable_membrane_project'),
-            name=self.config.get('wandb', {}).get('name', 'spm_run'),
-            config=self.config
+            project=self.config.get("wandb", {}).get(
+                "project", "semipermeable_membrane_project"
+            ),
+            name=self.config.get("wandb", {}).get("name", "spm_run"),
+            config=self.config,
         )
         self.logger.info("Initialized WandB for logging.")
 

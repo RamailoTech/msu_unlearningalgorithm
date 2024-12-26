@@ -1,13 +1,14 @@
 # modify from:
 # - https://github.com/bmaltais/kohya_ss/blob/master/networks/merge_lora.py
 
-import math
 import argparse
+import math
 import os
-import torch
+
 import safetensors
-from safetensors.torch import load_file
+import torch
 from diffusers import DiffusionPipeline
+from safetensors.torch import load_file
 
 
 def load_state_dict(file_name, dtype):
@@ -102,7 +103,9 @@ def merge_lora_models(models, ratios, merge_dtype):
         merged_sd[key] = torch.tensor(alpha)
 
     print("merged model")
-    print(f"dim: {list(set(base_dims.values()))}, alpha: {list(set(base_alphas.values()))}")
+    print(
+        f"dim: {list(set(base_dims.values()))}, alpha: {list(set(base_alphas.values()))}"
+    )
 
     # check all dims are same
     dims_list = list(set(base_dims.values()))
@@ -125,7 +128,7 @@ def merge_lora_models(models, ratios, merge_dtype):
     return merged_sd
 
 
-def merge_to_sd_model(text_encoder, unet, models, ratios, merge_dtype='cuda'):
+def merge_to_sd_model(text_encoder, unet, models, ratios, merge_dtype="cuda"):
     text_encoder.to(merge_dtype)
     unet.to(merge_dtype)
 
@@ -133,18 +136,23 @@ def merge_to_sd_model(text_encoder, unet, models, ratios, merge_dtype='cuda'):
     name_to_module = {}
     for i, root_module in enumerate([text_encoder, unet]):
         if i == 0:
-            prefix = 'lora_te'
-            target_replace_modules = ['CLIPAttention', 'CLIPMLP']
+            prefix = "lora_te"
+            target_replace_modules = ["CLIPAttention", "CLIPMLP"]
         else:
-            prefix = 'lora_unet'
-            target_replace_modules = (
-                ['Transformer2DModel'] + ['ResnetBlock2D', 'Downsample2D', 'Upsample2D']
-            )
+            prefix = "lora_unet"
+            target_replace_modules = ["Transformer2DModel"] + [
+                "ResnetBlock2D",
+                "Downsample2D",
+                "Upsample2D",
+            ]
 
         for name, module in root_module.named_modules():
             if module.__class__.__name__ in target_replace_modules:
                 for child_name, child_module in module.named_modules():
-                    if child_module.__class__.__name__ == "Linear" or child_module.__class__.__name__ == "Conv2d":
+                    if (
+                        child_module.__class__.__name__ == "Linear"
+                        or child_module.__class__.__name__ == "Conv2d"
+                    ):
                         lora_name = prefix + "." + name + "." + child_name
                         lora_name = lora_name.replace(".", "_")
                         name_to_module[lora_name] = child_module
@@ -160,7 +168,9 @@ def merge_to_sd_model(text_encoder, unet, models, ratios, merge_dtype='cuda'):
                 alpha_key = key[: key.index("lora_down")] + "alpha"
 
                 # find original module for this layer
-                module_name = ".".join(key.split(".")[:-2])  # remove trailing ".lora_down.weight"
+                module_name = ".".join(
+                    key.split(".")[:-2]
+                )  # remove trailing ".lora_down.weight"
                 if module_name not in name_to_module:
                     print(f"no module found for weight: {key}")
                     continue
@@ -187,12 +197,19 @@ def merge_to_sd_model(text_encoder, unet, models, ratios, merge_dtype='cuda'):
                     weight = (
                         weight
                         + ratio
-                        * (up_weight.squeeze(3).squeeze(2) @ down_weight.squeeze(3).squeeze(2)).unsqueeze(2).unsqueeze(3)
+                        * (
+                            up_weight.squeeze(3).squeeze(2)
+                            @ down_weight.squeeze(3).squeeze(2)
+                        )
+                        .unsqueeze(2)
+                        .unsqueeze(3)
                         * scale
                     )
                 else:
                     # conv2d 3x3
-                    conved = torch.nn.functional.conv2d(down_weight.permute(1, 0, 2, 3), up_weight).permute(1, 0, 2, 3)
+                    conved = torch.nn.functional.conv2d(
+                        down_weight.permute(1, 0, 2, 3), up_weight
+                    ).permute(1, 0, 2, 3)
                     # print(conved.size(), weight.size(), module.stride, module.padding)
                     weight = weight + ratio * conved * scale
 
@@ -201,10 +218,10 @@ def merge_to_sd_model(text_encoder, unet, models, ratios, merge_dtype='cuda'):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--sd_path', type=str, default='CompVis/stable-diffusion-v1-4')
-    parser.add_argument('--loras', type=str, nargs='+')
-    parser.add_argument('--ratios', type=float, nargs='+')
-    parser.add_argument('--output_path', type=str, default=None)
+    parser.add_argument("--sd_path", type=str, default="CompVis/stable-diffusion-v1-4")
+    parser.add_argument("--loras", type=str, nargs="+")
+    parser.add_argument("--ratios", type=float, nargs="+")
+    parser.add_argument("--output_path", type=str, default=None)
 
     args = parser.parse_args()
 
@@ -214,6 +231,6 @@ if __name__ == "__main__":
         torch_dtype=torch.float16,
         local_files_only=True,
     )
-    pipe = pipe.to('cuda')
+    pipe = pipe.to("cuda")
 
-    merge_to_sd_model(pipe.text_encoder, pipe.unet, args.loras, args.ratios, 'cuda')
+    merge_to_sd_model(pipe.text_encoder, pipe.unet, args.loras, args.ratios, "cuda")

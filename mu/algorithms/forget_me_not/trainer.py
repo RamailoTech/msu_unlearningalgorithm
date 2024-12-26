@@ -1,16 +1,17 @@
 # forget_me_not/trainer.py
 
-import os
-import math
 import logging
+import math
+import os
 from typing import Dict
-from tqdm import tqdm
-import torch
-from torch.optim import AdamW
 
-from diffusers.optimization import get_scheduler
-from accelerate.utils import set_seed
+import torch
 import torch.nn.functional as F
+from accelerate.utils import set_seed
+from diffusers.optimization import get_scheduler
+from torch.optim import AdamW
+from tqdm import tqdm
+
 
 class ForgetMeNotTrainer:
     """
@@ -25,31 +26,30 @@ class ForgetMeNotTrainer:
         self.device = device
         self.logger = logging.getLogger(__name__)
 
-        self.output_dir = self.config.get('output_dir', 'results')
+        self.output_dir = self.config.get("output_dir", "results")
         os.makedirs(self.output_dir, exist_ok=True)
 
         # Set seed if provided
-        seed = self.config.get('seed', 42)
+        seed = self.config.get("seed", 42)
         set_seed(seed)
 
         # If the user has requested only optimizing cross-attention parameters, store that.
-        self.only_optimize_ca = self.config.get('only_optimize_ca', False)
+        self.only_optimize_ca = self.config.get("only_optimize_ca", False)
 
     def train_ti(self):
         """
         Train the model using Textual Inversion logic as per `train_ti.py`.
         """
-        batch_size = self.config.get('train_batch_size', 1)
-        max_steps = self.config.get('steps', 500)
-        lr = self.config.get('lr', 1e-4)
+        batch_size = self.config.get("train_batch_size", 1)
+        max_steps = self.config.get("steps", 500)
+        lr = self.config.get("lr", 1e-4)
 
         data_loaders = self.data_handler.get_data_loaders(batch_size)
-        train_loader = data_loaders['train']
+        train_loader = data_loaders["train"]
 
         # Only train text encoder embeddings
         optimizer = AdamW(
-            self.model.text_encoder.get_input_embeddings().parameters(),
-            lr=lr
+            self.model.text_encoder.get_input_embeddings().parameters(), lr=lr
         )
 
         # Simple constant scheduler
@@ -84,7 +84,7 @@ class ForgetMeNotTrainer:
                 global_step += 1
 
                 # Save at intervals
-                if global_step % self.config.get('save_steps', 500) == 0:
+                if global_step % self.config.get("save_steps", 500) == 0:
                     self._save_ti_weights(global_step)
 
             if global_step >= max_steps:
@@ -120,16 +120,22 @@ class ForgetMeNotTrainer:
         noisy_latents = self.model.scheduler.add_noise(latents, noise, timesteps)
 
         # Encode prompts
-        encoder_hidden_states = self.model.text_encoder(batch["input_ids"].to(self.device))[0]
+        encoder_hidden_states = self.model.text_encoder(
+            batch["input_ids"].to(self.device)
+        )[0]
 
-        model_pred = self.model.unet(noisy_latents, timesteps, encoder_hidden_states).sample
+        model_pred = self.model.unet(
+            noisy_latents, timesteps, encoder_hidden_states
+        ).sample
 
         if self.model.scheduler.config.prediction_type == "epsilon":
             target = noise
         elif self.model.scheduler.config.prediction_type == "v_prediction":
             target = self.model.scheduler.get_velocity(latents, noise, timesteps)
         else:
-            raise ValueError(f"Unknown prediction type {self.model.scheduler.config.prediction_type}")
+            raise ValueError(
+                f"Unknown prediction type {self.model.scheduler.config.prediction_type}"
+            )
 
         loss = F.mse_loss(model_pred.float(), target.float(), reduction="mean")
         return loss
@@ -139,7 +145,11 @@ class ForgetMeNotTrainer:
         Save TI weights at the specified step.
         Implement logic to save learned embeddings if needed.
         """
-        filename = f"step_inv_{step}.safetensors" if not final else f"step_inv_{step}_final.safetensors"
+        filename = (
+            f"step_inv_{step}.safetensors"
+            if not final
+            else f"step_inv_{step}_final.safetensors"
+        )
         output_path = os.path.join(self.output_dir, filename)
         # Extract embeddings from text_encoder and save them
         # Use patch_lora's `save_all` or a custom function if needed.
@@ -153,20 +163,22 @@ class ForgetMeNotTrainer:
         - Possibly modify attn modules to capture attention probabilities
         - Compute attn-based loss
         """
-        batch_size = self.config.get('train_batch_size', 1)
-        max_steps = self.config.get('max_steps', 100)
-        lr = self.config.get('lr', 2e-5)
+        batch_size = self.config.get("train_batch_size", 1)
+        max_steps = self.config.get("max_steps", 100)
+        lr = self.config.get("lr", 2e-5)
 
         data_loaders = self.data_handler.get_data_loaders(batch_size)
-        train_loader = data_loaders['train']
+        train_loader = data_loaders["train"]
 
         # Optimize both unet and text_encoder params or only cross-attention layers if requested
         if self.only_optimize_ca:
-            params = [p for n, p in self.model.unet.named_parameters() if 'attn2' in n]
-            if self.config.get('train_text_encoder', False):
+            params = [p for n, p in self.model.unet.named_parameters() if "attn2" in n]
+            if self.config.get("train_text_encoder", False):
                 params += list(self.model.text_encoder.parameters())
         else:
-            params = list(self.model.unet.parameters()) + list(self.model.text_encoder.parameters())
+            params = list(self.model.unet.parameters()) + list(
+                self.model.text_encoder.parameters()
+            )
 
         optimizer = AdamW(params, lr=lr)
 
@@ -199,7 +211,7 @@ class ForgetMeNotTrainer:
                 progress_bar.set_postfix(loss=loss.item())
                 global_step += 1
 
-                if global_step % self.config.get('save_steps', 200) == 0:
+                if global_step % self.config.get("save_steps", 200) == 0:
                     self._save_attn_weights(global_step)
 
             if global_step >= max_steps:
@@ -233,10 +245,13 @@ class ForgetMeNotTrainer:
         ).long()
 
         noisy_latents = self.model.scheduler.add_noise(latents, noise, timesteps)
-        encoder_hidden_states = self.model.text_encoder(batch["input_ids"].to(self.device))[0]
+        encoder_hidden_states = self.model.text_encoder(
+            batch["input_ids"].to(self.device)
+        )[0]
 
-        model_pred = self.model.unet(noisy_latents, timesteps, encoder_hidden_states).sample
-
+        model_pred = self.model.unet(
+            noisy_latents, timesteps, encoder_hidden_states
+        ).sample
 
         loss = torch.tensor(0.01, device=self.device, requires_grad=True)
         return loss
@@ -246,6 +261,10 @@ class ForgetMeNotTrainer:
         Save attention-based weights at specified step.
         Implement logic to save attention-modified parameters.
         """
-        filename = f"attn_step_{step}.safetensors" if not final else f"attn_step_{step}_final.safetensors"
+        filename = (
+            f"attn_step_{step}.safetensors"
+            if not final
+            else f"attn_step_{step}_final.safetensors"
+        )
         output_path = os.path.join(self.output_dir, filename)
         self.logger.info(f"Saved ATTENTION weights at {output_path}")

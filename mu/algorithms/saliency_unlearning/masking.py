@@ -1,10 +1,22 @@
+import logging
+import os
+
 import torch
 from torch.nn import MSELoss
 from tqdm import tqdm
-import os
-import logging
 
-def accumulate_gradients_for_mask(model, forget_loader, prompt, c_guidance, device, lr=1e-5, num_timesteps=1000, threshold=0.5, batch_size=4):
+
+def accumulate_gradients_for_mask(
+    model,
+    forget_loader,
+    prompt,
+    c_guidance,
+    device,
+    lr=1e-5,
+    num_timesteps=1000,
+    threshold=0.5,
+    batch_size=4,
+):
     """
     Run a single pass of gradient accumulation over the forget_loader to generate a saliency mask.
     This function:
@@ -20,36 +32,40 @@ def accumulate_gradients_for_mask(model, forget_loader, prompt, c_guidance, devi
     optimizer = torch.optim.Adam(model.model.model.diffusion_model.parameters(), lr=lr)
 
     # Dictionary to accumulate gradients
-    gradients = {name: 0.0 for name, _ in model.model.model.diffusion_model.named_parameters()}
+    gradients = {
+        name: 0.0 for name, _ in model.model.model.diffusion_model.named_parameters()
+    }
 
     logger = logging.getLogger(__name__)
     logger.info("Starting gradient accumulation for mask generation...")
 
     # Single epoch-like pass
-    with tqdm(total=len(forget_loader), desc='Accumulating Gradients for Mask') as pbar:
+    with tqdm(total=len(forget_loader), desc="Accumulating Gradients for Mask") as pbar:
         for images, _ in forget_loader:
             optimizer.zero_grad()
 
             images = images.to(device)
-            t = torch.randint(0, num_timesteps, (images.shape[0],), device=device).long()
+            t = torch.randint(
+                0, num_timesteps, (images.shape[0],), device=device
+            ).long()
 
             prompts = [prompt] * images.size(0)
             null_prompts = [""] * images.size(0)
 
             # Prepare batches
-            forget_batch = {
-                "edited": images,
-                "edit": {"c_crossattn": prompts}
-            }
-            null_batch = {
-                "edited": images,
-                "edit": {"c_crossattn": null_prompts}
-            }
+            forget_batch = {"edited": images, "edit": {"c_crossattn": prompts}}
+            null_batch = {"edited": images, "edit": {"c_crossattn": null_prompts}}
 
-            forget_input, forget_emb = model.model.get_input(forget_batch, model.model.first_stage_key)
-            null_input, null_emb = model.model.get_input(null_batch, model.model.first_stage_key)
+            forget_input, forget_emb = model.model.get_input(
+                forget_batch, model.model.first_stage_key
+            )
+            null_input, null_emb = model.model.get_input(
+                null_batch, model.model.first_stage_key
+            )
 
-            t = torch.randint(0, model.model.num_timesteps, (forget_input.shape[0],), device=device).long()
+            t = torch.randint(
+                0, model.model.num_timesteps, (forget_input.shape[0],), device=device
+            ).long()
             noise = torch.randn_like(forget_input, device=device)
 
             forget_noisy = model.model.q_sample(x_start=forget_input, t=t, noise=noise)
@@ -75,6 +91,7 @@ def accumulate_gradients_for_mask(model, forget_loader, prompt, c_guidance, devi
     mask = create_mask_from_gradients_optimized(gradients, threshold)
     return mask
 
+
 def create_mask_from_gradients_optimized(gradients, threshold):
     """
     Given a dictionary of gradients (accumulated absolute gradients) and a threshold,
@@ -82,7 +99,9 @@ def create_mask_from_gradients_optimized(gradients, threshold):
     """
     # Compute the global threshold value without concatenating
     all_abs_values = torch.cat([torch.abs(g).flatten() for g in gradients.values()])
-    threshold_value = torch.topk(all_abs_values, int(len(all_abs_values) * threshold)).values.min()
+    threshold_value = torch.topk(
+        all_abs_values, int(len(all_abs_values) * threshold)
+    ).values.min()
 
     # Create binary masks without full concatenation
     mask_dict = {}
@@ -90,6 +109,7 @@ def create_mask_from_gradients_optimized(gradients, threshold):
         mask_dict[key] = (torch.abs(tensor) >= threshold_value).to(tensor.dtype)
 
     return mask_dict
+
 
 def create_mask_from_gradients(gradients, threshold):
     """
@@ -107,7 +127,7 @@ def create_mask_from_gradients(gradients, threshold):
     start_index = 0
     for key, tensor in gradients.items():
         num_elements = tensor.numel()
-        tensor_ranks = ranks[start_index:start_index + num_elements]
+        tensor_ranks = ranks[start_index : start_index + num_elements]
 
         threshold_tensor = torch.zeros_like(tensor_ranks)
         threshold_tensor[tensor_ranks < threshold_index] = 1

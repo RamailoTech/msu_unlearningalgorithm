@@ -1,5 +1,6 @@
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, Union
+
 import torch
-from typing import Callable, Dict, List, Optional, Set, Tuple, Type, Union, Any
 
 try:
     from safetensors.torch import safe_open
@@ -22,6 +23,7 @@ except ImportError:
 
 EMBED_FLAG = "<embed>"
 
+
 def parse_safeloras_embeds(
     safeloras,
 ) -> Dict[str, torch.Tensor]:
@@ -40,6 +42,7 @@ def parse_safeloras_embeds(
         embeds[key] = safeloras.get_tensor(key)
 
     return embeds
+
 
 def apply_learned_embed_in_clip(
     learned_embeds,

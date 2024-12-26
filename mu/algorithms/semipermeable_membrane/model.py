@@ -1,12 +1,13 @@
 # semipermeable_membrane/model.py
 
 import logging
+
 import torch
+from algorithms.semipermeable_membrane.src.models import model_util
+from algorithms.semipermeable_membrane.src.models.spm import SPMLayer, SPMNetwork
 from diffusers import StableDiffusionPipeline
 from torch import nn
 
-from algorithms.semipermeable_membrane.src.models.spm import SPMNetwork, SPMLayer
-from algorithms.semipermeable_membrane.src.models import model_util
 
 class SemipermeableMembraneModel(nn.Module):
     """
@@ -19,7 +20,9 @@ class SemipermeableMembraneModel(nn.Module):
         self.config = config
 
         # Load precision
-        self.weight_dtype = self._parse_precision(self.config.get('train', {}).get('precision', 'fp16'))
+        self.weight_dtype = self._parse_precision(
+            self.config.get("train", {}).get("precision", "fp16")
+        )
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # Load stable diffusion models
@@ -28,21 +31,20 @@ class SemipermeableMembraneModel(nn.Module):
         # Load SPM network
         self.network = SPMNetwork(
             unet=self.pipeline.unet,
-            rank=self.config['network']['rank'],
-            alpha=self.config['network']['alpha'],
-            module=SPMLayer
+            rank=self.config["network"]["rank"],
+            alpha=self.config["network"]["alpha"],
+            module=SPMLayer,
         ).to(self.device, dtype=self.weight_dtype)
 
     def _load_pipeline(self):
-        ckpt_path = self.config.get('pretrained_model', {}).get('ckpt_path', '')
-        v2 = self.config.get('pretrained_model', {}).get('v2', False)
-        v_pred = self.config.get('pretrained_model', {}).get('v_pred', False)
+        ckpt_path = self.config.get("pretrained_model", {}).get("ckpt_path", "")
+        v2 = self.config.get("pretrained_model", {}).get("v2", False)
+        v_pred = self.config.get("pretrained_model", {}).get("v_pred", False)
 
         self.logger.info(f"Loading pipeline from {ckpt_path}")
         # Load Stable Diffusion pipeline
         pipeline = StableDiffusionPipeline.from_pretrained(
-            ckpt_path,
-            torch_dtype=self.weight_dtype
+            ckpt_path, torch_dtype=self.weight_dtype
         ).to(self.device)
         pipeline.enable_attention_slicing()
         pipeline.unet.requires_grad_(False)
@@ -69,8 +71,8 @@ class SemipermeableMembraneModel(nn.Module):
             dtype=self.weight_dtype,
             metadata={
                 "project": "semipermeable_membrane",
-                "rank": self.config['network']['rank'],
-                "alpha": self.config['network']['alpha']
-            }
+                "rank": self.config["network"]["rank"],
+                "alpha": self.config["network"]["alpha"],
+            },
         )
         self.logger.info("Model saved successfully.")

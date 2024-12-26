@@ -1,15 +1,17 @@
 # mu/algorithms/erase_diff/algorithm.py
 
-import torch
-import wandb
-from typing import Dict
 import logging
 from pathlib import Path
+from typing import Dict
 
-from mu.core import BaseAlgorithm
+import torch
+import wandb
+
+from mu.algorithms.erase_diff.data_handler import EraseDiffDataHandler
 from mu.algorithms.erase_diff.model import EraseDiffModel
 from mu.algorithms.erase_diff.trainer import EraseDiffTrainer
-from mu.algorithms.erase_diff.data_handler import EraseDiffDataHandler
+from mu.core import BaseAlgorithm
+
 
 class EraseDiffAlgorithm(BaseAlgorithm):
     """
@@ -28,7 +30,7 @@ class EraseDiffAlgorithm(BaseAlgorithm):
         self.trainer = None
         self.sampler = None
         self.data_handler = None
-        self.device = torch.device(self.config.get('devices', ['cuda:0'])[0])
+        self.device = torch.device(self.config.get("devices", ["cuda:0"])[0])
         self.logger = logging.getLogger(__name__)
         self._setup_components()
 
@@ -40,24 +42,24 @@ class EraseDiffAlgorithm(BaseAlgorithm):
         # Initialize Data Handler
 
         self.data_handler = EraseDiffDataHandler(
-            raw_dataset_dir=self.config.get('raw_dataset_dir'),
-            processed_dataset_dir=self.config.get('processed_dataset_dir'),
-            dataset_type=self.config.get('dataset_type', 'unlearncanvas'),
-            template=self.config.get('template'),
-            template_name=self.config.get('template_name'),
-            batch_size=self.config.get('batch_size', 4),
-            image_size=self.config.get('image_size', 512),
-            interpolation=self.config.get('interpolation', 'bicubic'),
-            use_sample=self.config.get('use_sample', False),
-            num_workers=self.config.get('num_workers', 4),
-            pin_memory=self.config.get('pin_memory', True)
+            raw_dataset_dir=self.config.get("raw_dataset_dir"),
+            processed_dataset_dir=self.config.get("processed_dataset_dir"),
+            dataset_type=self.config.get("dataset_type", "unlearncanvas"),
+            template=self.config.get("template"),
+            template_name=self.config.get("template_name"),
+            batch_size=self.config.get("batch_size", 4),
+            image_size=self.config.get("image_size", 512),
+            interpolation=self.config.get("interpolation", "bicubic"),
+            use_sample=self.config.get("use_sample", False),
+            num_workers=self.config.get("num_workers", 4),
+            pin_memory=self.config.get("pin_memory", True),
         )
 
         # Initialize Model
         self.model = EraseDiffModel(
-            model_config_path=self.config.get('model_config_path'),
-            ckpt_path=self.config.get('ckpt_path'),
-            device=str(self.device)
+            model_config_path=self.config.get("model_config_path"),
+            ckpt_path=self.config.get("ckpt_path"),
+            device=str(self.device),
         )
 
         # Initialize Trainer
@@ -65,9 +67,8 @@ class EraseDiffAlgorithm(BaseAlgorithm):
             model=self.model,
             config=self.config,
             device=str(self.device),
-            data_handler=self.data_handler
+            data_handler=self.data_handler,
         )
-
 
     def run(self):
         """
@@ -76,9 +77,11 @@ class EraseDiffAlgorithm(BaseAlgorithm):
         try:
             # Initialize WandB with configurable project/run names
             wandb_config = {
-                "project": self.config.get("wandb_project", "quick-canvas-machine-unlearning"),
+                "project": self.config.get(
+                    "wandb_project", "quick-canvas-machine-unlearning"
+                ),
                 "name": self.config.get("wandb_run", "EraseDiff"),
-                "config": self.config
+                "config": self.config,
             }
             wandb.init(**wandb_config)
             self.logger.info("Initialized WandB for logging.")
@@ -92,18 +95,20 @@ class EraseDiffAlgorithm(BaseAlgorithm):
                 model = self.trainer.train()
 
                 # Save final model
-                output_name = output_dir / self.config.get("output_name", f"erase_diff_{self.config.get('template_name')}_model.pth")
-                self.model.save_model(model,output_name)
+                output_name = output_dir / self.config.get(
+                    "output_name",
+                    f"erase_diff_{self.config.get('template_name')}_model.pth",
+                )
+                self.model.save_model(model, output_name)
                 self.logger.info(f"Trained model saved at {output_name}")
-                
+
                 # Save to WandB
                 wandb.save(str(output_name))
-                
 
             except Exception as e:
                 self.logger.error(f"Error during training: {str(e)}")
                 raise
-                
+
         except Exception as e:
             self.logger.error(f"Failed to initialize training: {str(e)}")
             raise

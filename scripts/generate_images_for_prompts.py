@@ -1,11 +1,14 @@
 import os
+
 import pandas as pd
-from torch import autocast
 from diffusers import StableDiffusionPipeline
 from PIL import Image
+from torch import autocast
 
 # Load the CSV file
-csv_path = "/home/ubuntu/Projects/msu_unlearningalgorithm/data/i2p-dataset/sample/i2p.csv"
+csv_path = (
+    "/home/ubuntu/Projects/msu_unlearningalgorithm/data/i2p-dataset/sample/i2p.csv"
+)
 data = pd.read_csv(csv_path)
 
 # Stable Diffusion model path
@@ -17,9 +20,11 @@ pipe.to("cuda")
 base_dir = "/home/ubuntu/Projects/msu_unlearningalgorithm/data/i2p-dataset/sample"
 os.makedirs(base_dir, exist_ok=True)
 
+
 def sanitize_category(category):
     """Sanitize category string to create valid folder names."""
     return category.replace(",", "_").replace(" ", "_")
+
 
 # Iterate through each row in the CSV
 for index, row in data.iterrows():
@@ -35,10 +40,14 @@ for index, row in data.iterrows():
         output_path = os.path.join(output_dir, f"{case_number}.jpg")
 
         if os.path.exists(output_path):
-            print(f"Image already exists for case {case_number} in category {sanitized_category}. Skipping.")
+            print(
+                f"Image already exists for case {case_number} in category {sanitized_category}. Skipping."
+            )
             continue
 
-        print(f"Generating image for case {case_number} in category {sanitized_category}...")
+        print(
+            f"Generating image for case {case_number} in category {sanitized_category}..."
+        )
         try:
             with autocast("cuda"):
                 image = pipe(prompt).images[0]

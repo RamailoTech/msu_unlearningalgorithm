@@ -1,26 +1,21 @@
 import inspect
 from typing import Callable, List, Optional, Union
 
-import torch
-
 import numpy as np
 import PIL
-
-from diffusers.utils import is_accelerate_available
-from transformers import CLIPFeatureExtractor, CLIPTextModel, CLIPTokenizer
-
+import torch
 from diffusers.configuration_utils import FrozenDict
 from diffusers.models import AutoencoderKL, UNet2DConditionModel
 from diffusers.pipeline_utils import DiffusionPipeline
-from diffusers.schedulers import (
-    DDIMScheduler,
-    LMSDiscreteScheduler,
-    PNDMScheduler,
+from diffusers.pipelines.stable_diffusion.safety_checker import (
+    StableDiffusionSafetyChecker,
 )
-from diffusers.utils import BaseOutput, deprecate, logging
-from diffusers.pipelines.stable_diffusion.safety_checker import StableDiffusionSafetyChecker
+from diffusers.schedulers import DDIMScheduler, LMSDiscreteScheduler, PNDMScheduler
+from diffusers.utils import BaseOutput, deprecate, is_accelerate_available, logging
+from transformers import CLIPFeatureExtractor, CLIPTextModel, CLIPTokenizer
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
+
 
 class SLDPipelineOutput(BaseOutput):
     """
@@ -39,6 +34,7 @@ class SLDPipelineOutput(BaseOutput):
     images: Union[List[PIL.Image.Image], np.ndarray]
     nsfw_content_detected: Optional[List[bool]]
     applied_safety_concept: Optional[str]
+
 
 class SLDPipeline(DiffusionPipeline):
     r"""
@@ -85,11 +81,16 @@ class SLDPipeline(DiffusionPipeline):
         feature_extractor: CLIPFeatureExtractor,
     ):
         super().__init__()
-        safety_concept: Optional[str] = 'hate, harassment, violence, suffering, humiliation, harm, suicide, ' \
-                                        'sexual, nudity, bodily fluids, blood, obscene gestures, illegal activity, ' \
-                                        'drug use, theft, vandalism, weapons, child abuse, brutality, cruelty'
+        safety_concept: Optional[str] = (
+            "hate, harassment, violence, suffering, humiliation, harm, suicide, "
+            "sexual, nudity, bodily fluids, blood, obscene gestures, illegal activity, "
+            "drug use, theft, vandalism, weapons, child abuse, brutality, cruelty"
+        )
 
-        if hasattr(scheduler.config, "steps_offset") and scheduler.config.steps_offset != 1:
+        if (
+            hasattr(scheduler.config, "steps_offset")
+            and scheduler.config.steps_offset != 1
+        ):
             deprecation_message = (
                 f"The configuration file of this scheduler: {scheduler} is outdated. `steps_offset`"
                 f" should be set to 1 instead of {scheduler.config.steps_offset}. Please make sure "
@@ -98,12 +99,17 @@ class SLDPipeline(DiffusionPipeline):
                 " it would be very nice if you could open a Pull request for the `scheduler/scheduler_config.json`"
                 " file"
             )
-            deprecate("steps_offset!=1", "1.0.0", deprecation_message, standard_warn=False)
+            deprecate(
+                "steps_offset!=1", "1.0.0", deprecation_message, standard_warn=False
+            )
             new_config = dict(scheduler.config)
             new_config["steps_offset"] = 1
             scheduler._internal_dict = FrozenDict(new_config)
 
-        if hasattr(scheduler.config, "clip_sample") and scheduler.config.clip_sample is True:
+        if (
+            hasattr(scheduler.config, "clip_sample")
+            and scheduler.config.clip_sample is True
+        ):
             deprecation_message = (
                 f"The configuration file of this scheduler: {scheduler} has not set the configuration `clip_sample`."
                 " `clip_sample` should be set to False in the configuration file. Please make sure to update the"
@@ -111,7 +117,9 @@ class SLDPipeline(DiffusionPipeline):
                 " future versions. If you have downloaded this checkpoint from the Hugging Face Hub, it would be very"
                 " nice if you could open a Pull request for the `scheduler/scheduler_config.json` file"
             )
-            deprecate("clip_sample not set", "1.0.0", deprecation_message, standard_warn=False)
+            deprecate(
+                "clip_sample not set", "1.0.0", deprecation_message, standard_warn=False
+            )
             new_config = dict(scheduler.config)
             new_config["clip_sample"] = False
             scheduler._internal_dict = FrozenDict(new_config)
@@ -217,7 +225,12 @@ class SLDPipeline(DiffusionPipeline):
 
         device = torch.device("cuda")
 
-        for cpu_offloaded_model in [self.unet, self.text_encoder, self.vae, self.safety_checker]:
+        for cpu_offloaded_model in [
+            self.unet,
+            self.text_encoder,
+            self.vae,
+            self.safety_checker,
+        ]:
             if cpu_offloaded_model is not None:
                 cpu_offload(cpu_offloaded_model, device)
 
@@ -318,13 +331,18 @@ class SLDPipeline(DiffusionPipeline):
         elif isinstance(prompt, list):
             batch_size = len(prompt)
         else:
-            raise ValueError(f"`prompt` has to be of type `str` or `list` but is {type(prompt)}")
+            raise ValueError(
+                f"`prompt` has to be of type `str` or `list` but is {type(prompt)}"
+            )
 
         if height % 8 != 0 or width % 8 != 0:
-            raise ValueError(f"`height` and `width` have to be divisible by 8 but are {height} and {width}.")
+            raise ValueError(
+                f"`height` and `width` have to be divisible by 8 but are {height} and {width}."
+            )
 
         if (callback_steps is None) or (
-            callback_steps is not None and (not isinstance(callback_steps, int) or callback_steps <= 0)
+            callback_steps is not None
+            and (not isinstance(callback_steps, int) or callback_steps <= 0)
         ):
             raise ValueError(
                 f"`callback_steps` has to be a positive integer but is {callback_steps} of type"
@@ -334,7 +352,7 @@ class SLDPipeline(DiffusionPipeline):
         enable_safety_guidance = True
         if sld_guidance_scale < 1:
             enable_safety_guidance = False
-            logger.warn('You have disabled safety guidance.')
+            logger.warn("You have disabled safety guidance.")
 
         # get prompt text embeddings
         text_inputs = self.tokenizer(
@@ -346,7 +364,9 @@ class SLDPipeline(DiffusionPipeline):
         text_input_ids = text_inputs.input_ids
 
         if text_input_ids.shape[-1] > self.tokenizer.model_max_length:
-            removed_text = self.tokenizer.batch_decode(text_input_ids[:, self.tokenizer.model_max_length :])
+            removed_text = self.tokenizer.batch_decode(
+                text_input_ids[:, self.tokenizer.model_max_length :]
+            )
             logger.warning(
                 "The following part of your input was truncated because CLIP can only handle sequences up to"
                 f" {self.tokenizer.model_max_length} tokens: {removed_text}"
@@ -357,7 +377,9 @@ class SLDPipeline(DiffusionPipeline):
         # duplicate text embeddings for each generation per prompt, using mps friendly method
         bs_embed, seq_len, _ = text_embeddings.shape
         text_embeddings = text_embeddings.repeat(1, num_images_per_prompt, 1)
-        text_embeddings = text_embeddings.view(bs_embed * num_images_per_prompt, seq_len, -1)
+        text_embeddings = text_embeddings.view(
+            bs_embed * num_images_per_prompt, seq_len, -1
+        )
 
         # here `guidance_scale` is defined analog to the guidance weight `w` of equation (2)
         # of the Imagen paper: https://arxiv.org/pdf/2205.11487.pdf . `guidance_scale = 1`
@@ -392,12 +414,16 @@ class SLDPipeline(DiffusionPipeline):
                 truncation=True,
                 return_tensors="pt",
             )
-            uncond_embeddings = self.text_encoder(uncond_input.input_ids.to(self.device))[0]
+            uncond_embeddings = self.text_encoder(
+                uncond_input.input_ids.to(self.device)
+            )[0]
 
             # duplicate unconditional embeddings for each generation per prompt, using mps friendly method
             seq_len = uncond_embeddings.shape[1]
             uncond_embeddings = uncond_embeddings.repeat(1, num_images_per_prompt, 1)
-            uncond_embeddings = uncond_embeddings.view(batch_size * num_images_per_prompt, seq_len, -1)
+            uncond_embeddings = uncond_embeddings.view(
+                batch_size * num_images_per_prompt, seq_len, -1
+            )
 
             # Encode the safety concept text
             if enable_safety_guidance:
@@ -408,17 +434,25 @@ class SLDPipeline(DiffusionPipeline):
                     truncation=True,
                     return_tensors="pt",
                 )
-                safety_embeddings = self.text_encoder(safety_concept_input.input_ids.to(self.device))[0]
+                safety_embeddings = self.text_encoder(
+                    safety_concept_input.input_ids.to(self.device)
+                )[0]
 
                 # duplicate safety embeddings for each generation per prompt, using mps friendly method
                 seq_len = safety_embeddings.shape[1]
-                safety_embeddings = safety_embeddings.repeat(batch_size, num_images_per_prompt, 1)
-                safety_embeddings = safety_embeddings.view(batch_size * num_images_per_prompt, seq_len, -1)
+                safety_embeddings = safety_embeddings.repeat(
+                    batch_size, num_images_per_prompt, 1
+                )
+                safety_embeddings = safety_embeddings.view(
+                    batch_size * num_images_per_prompt, seq_len, -1
+                )
 
                 # For classifier free guidance, we need to do two forward passes.
                 # Here we concatenate the unconditional and text embeddings into a single batch
                 # to avoid doing two forward passes
-                text_embeddings = torch.cat([uncond_embeddings, text_embeddings, safety_embeddings])
+                text_embeddings = torch.cat(
+                    [uncond_embeddings, text_embeddings, safety_embeddings]
+                )
 
             else:
                 text_embeddings = torch.cat([uncond_embeddings, text_embeddings])
@@ -428,19 +462,34 @@ class SLDPipeline(DiffusionPipeline):
         # Unlike in other pipelines, latents need to be generated in the target device
         # for 1-to-1 results reproducibility with the CompVis implementation.
         # However this currently doesn't work in `mps`.
-        latents_shape = (batch_size * num_images_per_prompt, self.unet.in_channels, height // 8, width // 8)
+        latents_shape = (
+            batch_size * num_images_per_prompt,
+            self.unet.in_channels,
+            height // 8,
+            width // 8,
+        )
         latents_dtype = text_embeddings.dtype
         if latents is None:
             if self.device.type == "mps":
                 # randn does not work reproducibly on mps
-                latents = torch.randn(latents_shape, generator=generator, device="cpu", dtype=latents_dtype).to(
-                    self.device
-                )
+                latents = torch.randn(
+                    latents_shape,
+                    generator=generator,
+                    device="cpu",
+                    dtype=latents_dtype,
+                ).to(self.device)
             else:
-                latents = torch.randn(latents_shape, generator=generator, device=self.device, dtype=latents_dtype)
+                latents = torch.randn(
+                    latents_shape,
+                    generator=generator,
+                    device=self.device,
+                    dtype=latents_dtype,
+                )
         else:
             if latents.shape != latents_shape:
-                raise ValueError(f"Unexpected latents shape, got {latents.shape}, expected {latents_shape}")
+                raise ValueError(
+                    f"Unexpected latents shape, got {latents.shape}, expected {latents_shape}"
+                )
             latents = latents.to(self.device)
 
         # set timesteps
@@ -458,13 +507,17 @@ class SLDPipeline(DiffusionPipeline):
         # eta (η) is only used with the DDIMScheduler, it will be ignored for other schedulers.
         # eta corresponds to η in DDIM paper: https://arxiv.org/abs/2010.02502
         # and should be between [0, 1]
-        accepts_eta = "eta" in set(inspect.signature(self.scheduler.step).parameters.keys())
+        accepts_eta = "eta" in set(
+            inspect.signature(self.scheduler.step).parameters.keys()
+        )
         extra_step_kwargs = {}
         if accepts_eta:
             extra_step_kwargs["eta"] = eta
 
         # check if the scheduler accepts generator
-        accepts_generator = "generator" in set(inspect.signature(self.scheduler.step).parameters.keys())
+        accepts_generator = "generator" in set(
+            inspect.signature(self.scheduler.step).parameters.keys()
+        )
         if accepts_generator:
             extra_step_kwargs["generator"] = generator
 
@@ -474,20 +527,32 @@ class SLDPipeline(DiffusionPipeline):
         with self.progress_bar(total=num_inference_steps) as progress_bar:
             for i, t in enumerate(timesteps):
                 # expand the latents if we are doing classifier free guidance
-                latent_model_input = torch.cat([latents] * (3 if enable_safety_guidance else 2)) \
-                    if do_classifier_free_guidance else latents
-                latent_model_input = self.scheduler.scale_model_input(latent_model_input, t)
+                latent_model_input = (
+                    torch.cat([latents] * (3 if enable_safety_guidance else 2))
+                    if do_classifier_free_guidance
+                    else latents
+                )
+                latent_model_input = self.scheduler.scale_model_input(
+                    latent_model_input, t
+                )
 
                 # predict the noise residual
-                noise_pred = self.unet(latent_model_input, t, encoder_hidden_states=text_embeddings).sample
+                noise_pred = self.unet(
+                    latent_model_input, t, encoder_hidden_states=text_embeddings
+                ).sample
 
                 # perform guidance
                 if do_classifier_free_guidance:
-                    noise_pred_out = noise_pred.chunk((3 if enable_safety_guidance else 2))
-                    noise_pred_uncond, noise_pred_text = noise_pred_out[0], noise_pred_out[1]
+                    noise_pred_out = noise_pred.chunk(
+                        (3 if enable_safety_guidance else 2)
+                    )
+                    noise_pred_uncond, noise_pred_text = (
+                        noise_pred_out[0],
+                        noise_pred_out[1],
+                    )
 
                     # default classifier free guidance
-                    noise_guidance = (noise_pred_text - noise_pred_uncond)
+                    noise_guidance = noise_pred_text - noise_pred_uncond
 
                     # Perform SLD guidance
                     if enable_safety_guidance:
@@ -497,34 +562,51 @@ class SLDPipeline(DiffusionPipeline):
 
                         # Equation 6
                         scale = torch.clamp(
-                            torch.abs((noise_pred_text - noise_pred_safety_concept)) * sld_guidance_scale, max=1.)
+                            torch.abs((noise_pred_text - noise_pred_safety_concept))
+                            * sld_guidance_scale,
+                            max=1.0,
+                        )
 
                         # Equation 6
                         safety_concept_scale = torch.where(
-                            (noise_pred_text - noise_pred_safety_concept) >= sld_threshold,
-                            torch.zeros_like(scale), scale)
+                            (noise_pred_text - noise_pred_safety_concept)
+                            >= sld_threshold,
+                            torch.zeros_like(scale),
+                            scale,
+                        )
 
                         # Equation 4
                         noise_guidance_safety = torch.mul(
-                            (noise_pred_safety_concept - noise_pred_uncond), safety_concept_scale)
+                            (noise_pred_safety_concept - noise_pred_uncond),
+                            safety_concept_scale,
+                        )
 
                         # Equation 7
-                        noise_guidance_safety = noise_guidance_safety + sld_momentum_scale * safety_momentum
+                        noise_guidance_safety = (
+                            noise_guidance_safety + sld_momentum_scale * safety_momentum
+                        )
 
                         # Equation 8
-                        safety_momentum = sld_mom_beta * safety_momentum + (1 - sld_mom_beta) * noise_guidance_safety
+                        safety_momentum = (
+                            sld_mom_beta * safety_momentum
+                            + (1 - sld_mom_beta) * noise_guidance_safety
+                        )
 
-                        if i >= sld_warmup_steps: # Warmup
+                        if i >= sld_warmup_steps:  # Warmup
                             # Equation 3
                             noise_guidance = noise_guidance - noise_guidance_safety
 
                     noise_pred = noise_pred_uncond + guidance_scale * noise_guidance
 
                     # compute the previous noisy sample x_t -> x_t-1
-                latents = self.scheduler.step(noise_pred, t, latents, **extra_step_kwargs).prev_sample
+                latents = self.scheduler.step(
+                    noise_pred, t, latents, **extra_step_kwargs
+                ).prev_sample
 
                 # call the callback, if provided
-                if i == len(timesteps) - 1 or ((i + 1) > num_warmup_steps and (i + 1) % self.scheduler.order == 0):
+                if i == len(timesteps) - 1 or (
+                    (i + 1) > num_warmup_steps and (i + 1) % self.scheduler.order == 0
+                ):
                     progress_bar.update()
                     if callback is not None and i % callback_steps == 0:
                         callback(i, t, latents)
@@ -538,11 +620,12 @@ class SLDPipeline(DiffusionPipeline):
         image = image.cpu().permute(0, 2, 3, 1).float().numpy()
 
         if self.safety_checker is not None:
-            safety_checker_input = self.feature_extractor(self.numpy_to_pil(image), return_tensors="pt").to(
-                self.device
-            )
+            safety_checker_input = self.feature_extractor(
+                self.numpy_to_pil(image), return_tensors="pt"
+            ).to(self.device)
             image, has_nsfw_concept = self.safety_checker(
-                images=image, clip_input=safety_checker_input.pixel_values.to(text_embeddings.dtype)
+                images=image,
+                clip_input=safety_checker_input.pixel_values.to(text_embeddings.dtype),
             )
         else:
             has_nsfw_concept = None
@@ -553,5 +636,10 @@ class SLDPipeline(DiffusionPipeline):
         if not return_dict:
             return (image, has_nsfw_concept)
 
-        return SLDPipelineOutput(images=image, nsfw_content_detected=has_nsfw_concept,
-                                 applied_safety_concept=self._safety_text_concept if enable_safety_guidance else None)
+        return SLDPipelineOutput(
+            images=image,
+            nsfw_content_detected=has_nsfw_concept,
+            applied_safety_concept=(
+                self._safety_text_concept if enable_safety_guidance else None
+            ),
+        )

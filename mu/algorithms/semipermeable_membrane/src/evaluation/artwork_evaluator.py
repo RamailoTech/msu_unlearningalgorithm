@@ -4,7 +4,6 @@ from argparse import ArgumentParser
 
 import pandas as pd
 from prettytable import PrettyTable
-
 from src.configs.generation_config import GenerationConfig
 
 from .eval_util import clip_score
@@ -106,7 +105,11 @@ class ArtworkEvaluator(Evaluator):
             for prompt, img_paths in data.items():
                 score += clip_score(
                     img_paths,
-                    [prompt] * len(img_paths) if self.eval_with_template else [dataset.replace("_", " ")] * len(img_paths),
+                    (
+                        [prompt] * len(img_paths)
+                        if self.eval_with_template
+                        else [dataset.replace("_", " ")] * len(img_paths)
+                    ),
                 ).mean().item() * len(img_paths)
                 num_images += len(img_paths)
             scores[dataset] = score / num_images

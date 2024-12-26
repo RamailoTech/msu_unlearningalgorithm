@@ -2,10 +2,10 @@ import json
 import os
 import random
 from argparse import ArgumentParser
-from prettytable import PrettyTable
-from tqdm import tqdm
 
+from prettytable import PrettyTable
 from src.configs.generation_config import GenerationConfig
+from tqdm import tqdm
 
 from ..misc.clip_templates import anchor_templates, imagenet_templates
 from .eval_util import clip_eval_by_image
@@ -20,7 +20,7 @@ class ClipTemplateDataset(GenerationDataset):
         base_cfg: GenerationConfig = GenerationConfig(),
         num_templates: int = 80,
         num_images_per_template: int = 10,
-        **kwargs
+        **kwargs,
     ):
         assert 1 <= num_templates <= 80, "num_templates should be in range(1, 81)."
         meta = {}
@@ -90,8 +90,14 @@ class ClipEvaluator(Evaluator):
             num_all_images = 0
             for template_idx, image_paths in tqdm(data.items()):
                 template_idx = int(template_idx)
-                target_prompt = imagenet_templates[template_idx].format(concept) if self.eval_with_template else concept
-                anchor_prompt = anchor_templates[template_idx] if self.eval_with_template else ""
+                target_prompt = (
+                    imagenet_templates[template_idx].format(concept)
+                    if self.eval_with_template
+                    else concept
+                )
+                anchor_prompt = (
+                    anchor_templates[template_idx] if self.eval_with_template else ""
+                )
                 num_images = len(image_paths)
                 score, acc = clip_eval_by_image(
                     image_paths,
@@ -112,7 +118,11 @@ class ClipEvaluator(Evaluator):
             table.add_row([concept, score, all_cers[concept]])
         print(table)
 
-        save_name = "evaluation_results.json" if self.eval_with_template else "evaluation_results(concept only).json"
+        save_name = (
+            "evaluation_results.json"
+            if self.eval_with_template
+            else "evaluation_results(concept only).json"
+        )
         with open(os.path.join(self.output_path, save_name), "w") as f:
             json.dump([all_scores, all_cers], f)
 

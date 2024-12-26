@@ -1,13 +1,14 @@
 # forget_me_not/algorithm.py
 
 import logging
-import torch
 from typing import Dict
-import wandb
 
+import torch
+import wandb
 from algorithms.forget_me_not.data_handler import ForgetMeNotDataHandler
 from algorithms.forget_me_not.model import ForgetMeNotModel
 from algorithms.forget_me_not.trainer import ForgetMeNotTrainer
+
 
 class ForgetMeNotAlgorithm:
     """
@@ -40,7 +41,12 @@ class ForgetMeNotAlgorithm:
         self.model = ForgetMeNotModel(self.config)
 
         # Initialize trainer
-        self.trainer = ForgetMeNotTrainer(config=self.config, data_handler=self.data_handler, model=self.model, device=self.device)
+        self.trainer = ForgetMeNotTrainer(
+            config=self.config,
+            data_handler=self.data_handler,
+            model=self.model,
+            device=self.device,
+        )
 
     def run_ti_training(self):
         """
@@ -48,12 +54,14 @@ class ForgetMeNotAlgorithm:
         Corresponds to the logic in `train_ti.py`.
         """
         self.logger.info("Starting TI Training...")
-        if self.config.get('use_wandb', False):
-            wandb.init(project=self.config.get('wandb_project', 'forget_me_not'),
-                       name=self.config.get('wandb_name', 'ti_run'),
-                       config=self.config)
+        if self.config.get("use_wandb", False):
+            wandb.init(
+                project=self.config.get("wandb_project", "forget_me_not"),
+                name=self.config.get("wandb_name", "ti_run"),
+                config=self.config,
+            )
         self.trainer.train_ti()
-        if self.config.get('use_wandb', False):
+        if self.config.get("use_wandb", False):
             wandb.finish()
 
     def run_attn_training(self):
@@ -62,10 +70,12 @@ class ForgetMeNotAlgorithm:
         Corresponds to the logic in `train_attn.py`.
         """
         self.logger.info("Starting Attention Training...")
-        if self.config.get('use_wandb', False):
-            wandb.init(project=self.config.get('wandb_project', 'forget_me_not'),
-                       name=self.config.get('wandb_name', 'attn_run'),
-                       config=self.config)
+        if self.config.get("use_wandb", False):
+            wandb.init(
+                project=self.config.get("wandb_project", "forget_me_not"),
+                name=self.config.get("wandb_name", "attn_run"),
+                config=self.config,
+            )
         self.trainer.train_attn()
-        if self.config.get('use_wandb', False):
+        if self.config.get("use_wandb", False):
             wandb.finish()

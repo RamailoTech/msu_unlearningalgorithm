@@ -1,11 +1,14 @@
 # algorithms/saliency_unlearning/model.py
 
-from core.base_model import BaseModel
-from stable_diffusion.ldm.util import instantiate_from_config
-from omegaconf import OmegaConf
-import torch
 from pathlib import Path
 from typing import Any, Dict
+
+import torch
+from core.base_model import BaseModel
+from omegaconf import OmegaConf
+
+from stable_diffusion.ldm.util import instantiate_from_config
+
 
 class SaliencyUnlearnModel(BaseModel):
     """
@@ -13,7 +16,13 @@ class SaliencyUnlearnModel(BaseModel):
     Incorporates mask application for saliency-based unlearning.
     """
 
-    def __init__(self, config_path: str, ckpt_path: str, mask: Dict[str, torch.Tensor], device: str):
+    def __init__(
+        self,
+        config_path: str,
+        ckpt_path: str,
+        mask: Dict[str, torch.Tensor],
+        device: str,
+    ):
         """
         Initialize the SaliencyUnlearnModel.
 

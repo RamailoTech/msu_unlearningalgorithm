@@ -1,3 +1,4 @@
+import glob
 import random
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
@@ -6,7 +7,7 @@ from PIL import Image
 from torch import zeros_like
 from torch.utils.data import Dataset
 from torchvision import transforms
-import glob
+
 from .preprocess_files import face_mask_google_mediapipe
 
 OBJECT_TEMPLATE = [
@@ -108,7 +109,7 @@ def _get_cutout_holes(
 def _generate_random_mask(image):
     mask = zeros_like(image[:1])
     holes = _get_cutout_holes(mask.shape[1], mask.shape[2])
-    for (x1, y1, x2, y2) in holes:
+    for x1, y1, x2, y2 in holes:
         mask[:, y1:y2, x1:x2] = 1.0
     if random.uniform(0, 1) < 0.25:
         mask.fill_(1.0)
@@ -237,14 +238,18 @@ class PivotalTuningDatasetCapation(Dataset):
         self.h_flip = h_flip
         self.image_transforms = transforms.Compose(
             [
-                transforms.Resize(
-                    size, interpolation=transforms.InterpolationMode.BILINEAR
-                )
-                if resize
-                else transforms.Lambda(lambda x: x),
-                transforms.ColorJitter(0.1, 0.1)
-                if color_jitter
-                else transforms.Lambda(lambda x: x),
+                (
+                    transforms.Resize(
+                        size, interpolation=transforms.InterpolationMode.BILINEAR
+                    )
+                    if resize
+                    else transforms.Lambda(lambda x: x)
+                ),
+                (
+                    transforms.ColorJitter(0.1, 0.1)
+                    if color_jitter
+                    else transforms.Lambda(lambda x: x)
+                ),
                 transforms.CenterCrop(size),
                 transforms.ToTensor(),
                 transforms.Normalize([0.5], [0.5]),

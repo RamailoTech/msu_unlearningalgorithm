@@ -1,26 +1,29 @@
 # mu/datasets/unlearn_canvas_dataset.py
 
-from typing import Any, Tuple
-from PIL import Image
 import os
-import torch
+from typing import Any, Tuple
+
 import numpy as np
+import torch
 from einops import rearrange
+from PIL import Image
 
 from mu.datasets import BaseDataset
-from mu.datasets.constants import * 
+from mu.datasets.constants import *
+
 
 class I2PDataset(BaseDataset):
     """
     I2P Dataset.
     Allows selection of specific categories.
     """
+
     def __init__(
         self,
         data_dir: str,
         template_name: str,
         use_sample: bool = False,
-        transform: Any = None
+        transform: Any = None,
     ):
         """
         Initialize the UnlearnCanvasDataset.
@@ -35,16 +38,16 @@ class I2PDataset(BaseDataset):
 
         available_options = i2p_sample_categories if use_sample else i2p_categories
 
-        assert template_name in available_options, (
-            f"Selected template name '{template_name}' is not available for template type."
-        )
+        assert (
+            template_name in available_options
+        ), f"Selected template name '{template_name}' is not available for template type."
 
         self.template_name = template_name
         self.transform = transform
 
         # Paths to images and prompts
-        self.images_txt = os.path.join(data_dir, 'images.txt')
-        self.prompts_txt = os.path.join(data_dir, 'prompts.txt')
+        self.images_txt = os.path.join(data_dir, "images.txt")
+        self.prompts_txt = os.path.join(data_dir, "prompts.txt")
 
         # Check if files exist
         if not os.path.exists(self.images_txt):
@@ -56,9 +59,9 @@ class I2PDataset(BaseDataset):
         self.image_paths = self.read_text_lines(self.images_txt)
         self.prompts = self.read_text_lines(self.prompts_txt)
 
-        assert len(self.image_paths) == len(self.prompts), (
-            "Number of images and prompts must be equal."
-        )
+        assert len(self.image_paths) == len(
+            self.prompts
+        ), "Number of images and prompts must be equal."
 
     def __len__(self) -> int:
         return len(self.prompts)
@@ -85,8 +88,7 @@ class I2PDataset(BaseDataset):
 
         # Convert the image to tensor and normalize
         image = rearrange(
-            2 * torch.tensor(np.array(image)).float() / 255 - 1,
-            "h w c -> c h w"
+            2 * torch.tensor(np.array(image)).float() / 255 - 1, "h w c -> c h w"
         )
 
         return image, prompt

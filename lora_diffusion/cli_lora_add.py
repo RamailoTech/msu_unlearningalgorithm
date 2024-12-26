@@ -1,17 +1,13 @@
-from typing import Literal, Union, Dict
 import os
 import shutil
+from typing import Dict, Literal, Union
+
 import fire
+import torch
 from diffusers import StableDiffusionPipeline
 from safetensors.torch import safe_open, save_file
 
-import torch
-from .lora import (
-    tune_lora_scale,
-    patch_pipe,
-    collapse_lora,
-    monkeypatch_remove_lora,
-)
+from .lora import collapse_lora, monkeypatch_remove_lora, patch_pipe, tune_lora_scale
 from .lora_manager import lora_join
 from .to_ckpt_v2 import convert_to_ckpt
 

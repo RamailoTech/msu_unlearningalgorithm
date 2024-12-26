@@ -1,8 +1,10 @@
-import torch
-import os
 import logging
+import os
+
+import torch
 
 logger = logging.getLogger(__name__)
+
 
 def load_fim(fim_path: str):
     """
@@ -10,9 +12,10 @@ def load_fim(fim_path: str):
     """
     if not os.path.exists(fim_path):
         raise FileNotFoundError(f"FIM file not found at {fim_path}")
-    fim_dict = torch.load(fim_path, map_location='cpu')
+    fim_dict = torch.load(fim_path, map_location="cpu")
     logger.info(f"Loaded FIM from {fim_path}")
     return fim_dict
+
 
 def modify_weights(w, scale=1e-6, n=2):
     """

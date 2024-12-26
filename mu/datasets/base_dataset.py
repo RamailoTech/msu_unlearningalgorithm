@@ -1,11 +1,14 @@
 from abc import ABC, abstractmethod
-from torch.utils.data import Dataset
 from typing import Any, Tuple
+
+from torch.utils.data import Dataset
+
 
 class BaseDataset(Dataset, ABC):
     """
     Abstract base class for all datasets.
     """
+
     @abstractmethod
     def __init__(self):
         """
@@ -43,6 +46,6 @@ class BaseDataset(Dataset, ABC):
         Returns:
             List[str]: List of lines.
         """
-        with open(path, "r", encoding='utf-8') as f:
+        with open(path, "r", encoding="utf-8") as f:
             lines = f.readlines()
         return [line.strip() for line in lines]

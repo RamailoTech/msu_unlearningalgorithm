@@ -1,13 +1,13 @@
-import os
-import pandas as pd
-from typing import Any, Dict
-from torch.utils.data import DataLoader
 import logging
+import os
+from typing import Any, Dict
 
+import pandas as pd
+from torch.utils.data import DataLoader
 
 from mu.algorithms.erase_diff.datasets.erase_diff_dataset import EraseDiffDataset
-from mu.datasets.constants import *
 from mu.core import BaseDataHandler
+from mu.datasets.constants import *
 
 
 class EraseDiffDataHandler(BaseDataHandler):
@@ -15,7 +15,7 @@ class EraseDiffDataHandler(BaseDataHandler):
     Concrete data handler for the EraseDiff algorithm.
     Manages forget and remain datasets through EraseDiffDataset.
     """
-    
+
     def __init__(
         self,
         raw_dataset_dir: str,
@@ -24,11 +24,11 @@ class EraseDiffDataHandler(BaseDataHandler):
         template_name: str,
         batch_size: int = 4,
         image_size: int = 512,
-        interpolation: str = 'bicubic',
+        interpolation: str = "bicubic",
         use_sample: bool = False,
         num_workers: int = 4,
         pin_memory: bool = True,
-        dataset_type: str = 'unlearncanvas',
+        dataset_type: str = "unlearncanvas",
     ):
         """
         Initialize the EraseDiffDataHandler.
@@ -71,13 +71,13 @@ class EraseDiffDataHandler(BaseDataHandler):
         """
         Generate dataset based on the dataset type
         """
-        if self.dataset_type == 'unlearncanvas':
+        if self.dataset_type == "unlearncanvas":
             self._generate_dataset_uc()
-        elif self.dataset_type == 'i2p':
+        elif self.dataset_type == "i2p":
             self._generate_dataset_i2p()
         else:
             raise ValueError(f"Unsupported dataset type: {self.dataset_type}")
-        
+
     def _generate_dataset_uc(self):
         """
         Generate datasets by organizing images into themes and classes.
@@ -99,22 +99,26 @@ class EraseDiffDataHandler(BaseDataHandler):
             for class_ in classes:
                 for idx in range(1, classes_range + 1):
                     prompt = f"A {class_} image in {theme.replace('_', ' ')} style."
-                    image_path = os.path.join(self.raw_dataset_dir, theme, class_, f"{idx}.jpg")
+                    image_path = os.path.join(
+                        self.raw_dataset_dir, theme, class_, f"{idx}.jpg"
+                    )
                     if os.path.exists(image_path):
                         prompt_list.append(prompt)
                         path_list.append(image_path)
                     else:
                         self.logger.warning(f"Image not found: {image_path}")
 
-            prompts_txt_path = os.path.join(theme_dir, 'prompts.txt')
-            images_txt_path = os.path.join(theme_dir, 'images.txt')
+            prompts_txt_path = os.path.join(theme_dir, "prompts.txt")
+            images_txt_path = os.path.join(theme_dir, "images.txt")
 
-            with open(prompts_txt_path, 'w') as f:
-                f.write('\n'.join(prompt_list))
-            with open(images_txt_path, 'w') as f:
-                f.write('\n'.join(path_list))
+            with open(prompts_txt_path, "w") as f:
+                f.write("\n".join(prompt_list))
+            with open(images_txt_path, "w") as f:
+                f.write("\n".join(path_list))
 
-            self.logger.info(f"Generated dataset for theme '{theme}' with {len(path_list)} samples.")
+            self.logger.info(
+                f"Generated dataset for theme '{theme}' with {len(path_list)} samples."
+            )
 
             # For Seed Images
             seed_theme = "Seed_Images"
@@ -126,22 +130,26 @@ class EraseDiffDataHandler(BaseDataHandler):
             for class_ in classes:
                 for idx in range(1, 4):
                     prompt = f"A {class_} image in Photo style."
-                    image_path = os.path.join(self.raw_dataset_dir, seed_theme, class_, f"{idx}.jpg")
+                    image_path = os.path.join(
+                        self.raw_dataset_dir, seed_theme, class_, f"{idx}.jpg"
+                    )
                     if os.path.exists(image_path):
                         prompt_list.append(prompt)
                         path_list.append(image_path)
                     else:
                         self.logger.warning(f"Image not found: {image_path}")
 
-            prompts_txt_path = os.path.join(seed_dir, 'prompts.txt')
-            images_txt_path = os.path.join(seed_dir, 'images.txt')
+            prompts_txt_path = os.path.join(seed_dir, "prompts.txt")
+            images_txt_path = os.path.join(seed_dir, "images.txt")
 
-            with open(prompts_txt_path, 'w') as f:
-                f.write('\n'.join(prompt_list))
-            with open(images_txt_path, 'w') as f:
-                f.write('\n'.join(path_list))
+            with open(prompts_txt_path, "w") as f:
+                f.write("\n".join(prompt_list))
+            with open(images_txt_path, "w") as f:
+                f.write("\n".join(path_list))
 
-            self.logger.info(f"Generated Seed Images dataset with {len(path_list)} samples.")
+            self.logger.info(
+                f"Generated Seed Images dataset with {len(path_list)} samples."
+            )
 
             # For Class-based Organization
             for object_class in classes:
@@ -153,22 +161,26 @@ class EraseDiffDataHandler(BaseDataHandler):
                 for theme in themes:
                     for idx in range(1, classes_range + 1):
                         prompt = f"A {object_class} image in {theme.replace('_', ' ')} style."
-                        image_path = os.path.join(self.raw_dataset_dir, theme, object_class, f"{idx}.jpg")
+                        image_path = os.path.join(
+                            self.raw_dataset_dir, theme, object_class, f"{idx}.jpg"
+                        )
                         if os.path.exists(image_path):
                             prompt_list.append(prompt)
                             path_list.append(image_path)
                         else:
                             self.logger.warning(f"Image not found: {image_path}")
 
-                prompts_txt_path = os.path.join(class_dir, 'prompts.txt')
-                images_txt_path = os.path.join(class_dir, 'images.txt')
+                prompts_txt_path = os.path.join(class_dir, "prompts.txt")
+                images_txt_path = os.path.join(class_dir, "images.txt")
 
-                with open(prompts_txt_path, 'w') as f:
-                    f.write('\n'.join(prompt_list))
-                with open(images_txt_path, 'w') as f:
-                    f.write('\n'.join(path_list))
+                with open(prompts_txt_path, "w") as f:
+                    f.write("\n".join(prompt_list))
+                with open(images_txt_path, "w") as f:
+                    f.write("\n".join(path_list))
 
-                self.logger.info(f"Generated dataset for class '{object_class}' with {len(path_list)} samples.")
+                self.logger.info(
+                    f"Generated dataset for class '{object_class}' with {len(path_list)} samples."
+                )
         self.logger.info("Dataset generation (UC) completed.")
 
     def _generate_dataset_i2p(self):
@@ -178,8 +190,8 @@ class EraseDiffDataHandler(BaseDataHandler):
         self.logger.info("Starting dataset generation (I2P)...")
 
         # Paths for images and prompts
-        images_dir = os.path.join(self.raw_dataset_dir, 'images')
-        prompts_file = os.path.join(self.raw_dataset_dir, 'prompts', 'i2p.csv')
+        images_dir = os.path.join(self.raw_dataset_dir, "images")
+        prompts_file = os.path.join(self.raw_dataset_dir, "prompts", "i2p.csv")
 
         if not os.path.exists(prompts_file):
             self.logger.error("Prompts file not found: {prompts_file}")
@@ -188,7 +200,7 @@ class EraseDiffDataHandler(BaseDataHandler):
         # Read the CSV file
         data = pd.read_csv(prompts_file)
 
-        categories = data['categories'].unique()
+        categories = data["categories"].unique()
 
         for category in categories:
             category_dir = os.path.join(self.processed_dataset_dir, category)
@@ -196,11 +208,13 @@ class EraseDiffDataHandler(BaseDataHandler):
             prompt_list = []
             path_list = []
 
-            category_data = data[data['categories'] == category]
+            category_data = data[data["categories"] == category]
 
             for _, row in category_data.iterrows():
-                prompt = row['prompt']
-                image_path = os.path.join(images_dir, category, f"{row['Unnamed: 0']}.jpg")
+                prompt = row["prompt"]
+                image_path = os.path.join(
+                    images_dir, category, f"{row['Unnamed: 0']}.jpg"
+                )
 
                 if os.path.exists(image_path):
                     prompt_list.append(prompt)
@@ -208,15 +222,17 @@ class EraseDiffDataHandler(BaseDataHandler):
                 else:
                     self.logger.warning(f"Image not found: {image_path}")
 
-            prompts_txt_path = os.path.join(category_dir, 'prompts.txt')
-            images_txt_path = os.path.join(category_dir, 'images.txt')
+            prompts_txt_path = os.path.join(category_dir, "prompts.txt")
+            images_txt_path = os.path.join(category_dir, "images.txt")
 
-            with open(prompts_txt_path, 'w') as f:
-                f.write('\n'.join(prompt_list))
-            with open(images_txt_path, 'w') as f:
-                f.write('\n'.join(path_list))
+            with open(prompts_txt_path, "w") as f:
+                f.write("\n".join(prompt_list))
+            with open(images_txt_path, "w") as f:
+                f.write("\n".join(path_list))
 
-            self.logger.info(f"Generated dataset for category '{category}' with {len(path_list)} samples.")
+            self.logger.info(
+                f"Generated dataset for category '{category}' with {len(path_list)} samples."
+            )
 
             # Also need to generate Seed Images
             seed_category = "Seed_Images"
@@ -226,8 +242,10 @@ class EraseDiffDataHandler(BaseDataHandler):
             path_list = []
 
             for _, row in category_data.iterrows():
-                prompt = row['prompt']
-                image_path = os.path.join(images_dir, seed_category, f"{row['Unnamed: 0']}.jpg")
+                prompt = row["prompt"]
+                image_path = os.path.join(
+                    images_dir, seed_category, f"{row['Unnamed: 0']}.jpg"
+                )
 
                 if os.path.exists(image_path):
                     prompt_list.append(prompt)
@@ -248,8 +266,8 @@ class EraseDiffDataHandler(BaseDataHandler):
         Returns:
             Any: Loaded data (e.g., dictionary containing image paths and prompts).
         """
-        images_txt = os.path.join(data_path, 'images.txt')
-        prompts_txt = os.path.join(data_path, 'prompts.txt')
+        images_txt = os.path.join(data_path, "images.txt")
+        prompts_txt = os.path.join(data_path, "prompts.txt")
         if not os.path.isfile(images_txt) or not os.path.isfile(prompts_txt):
             self.logger.error(f"Missing images.txt or prompts.txt in {data_path}")
             raise FileNotFoundError(f"Missing images.txt or prompts.txt in {data_path}")
@@ -258,7 +276,7 @@ class EraseDiffDataHandler(BaseDataHandler):
         if len(image_paths) != len(prompts):
             self.logger.error(f"Mismatch between images and prompts in {data_path}")
             raise ValueError(f"Mismatch between images and prompts in {data_path}")
-        return {'image_paths': image_paths, 'prompts': prompts}
+        return {"image_paths": image_paths, "prompts": prompts}
 
     def preprocess_data(self, data: Any) -> Any:
         """
@@ -288,11 +306,15 @@ class EraseDiffDataHandler(BaseDataHandler):
             batch_size = self.batch_size
 
         # Determine dataset directories based on dataset type and template name
-        if self.dataset_type == 'unlearncanvas':
-            forget_data_dir = os.path.join(self.processed_dataset_dir, self.template_name)
+        if self.dataset_type == "unlearncanvas":
+            forget_data_dir = os.path.join(
+                self.processed_dataset_dir, self.template_name
+            )
             remain_data_dir = os.path.join(self.processed_dataset_dir, "Seed_Images")
-        elif self.dataset_type == 'i2p':
-            forget_data_dir = os.path.join(self.processed_dataset_dir, self.template_name)
+        elif self.dataset_type == "i2p":
+            forget_data_dir = os.path.join(
+                self.processed_dataset_dir, self.template_name
+            )
             remain_data_dir = os.path.join(self.processed_dataset_dir, "Seed_Images")
         else:
             raise ValueError(f"Unsupported dataset type: {self.dataset_type}")

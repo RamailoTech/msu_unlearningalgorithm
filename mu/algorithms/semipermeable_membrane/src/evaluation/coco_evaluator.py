@@ -3,9 +3,8 @@ import os
 from argparse import ArgumentParser
 
 import pandas as pd
-from prettytable import PrettyTable
 from cleanfid import fid
-
+from prettytable import PrettyTable
 from src.configs.generation_config import GenerationConfig
 
 from .evaluator import Evaluator, GenerationDataset
@@ -15,6 +14,7 @@ class Coco30kGenerationDataset(GenerationDataset):
     """
     Dataset for COCO-30k Caption dataset.
     """
+
     def __init__(
         self,
         save_folder: str = "benchmark/generated_imgs/",
@@ -45,10 +45,12 @@ class CocoEvaluator(Evaluator):
     """
     Evaluator on COCO-30k Caption dataset.
     """
-    def __init__(self, 
-                 save_folder: str = "benchmark/generated_imgs/", 
-                 output_path: str = "benchmark/results/",
-                 data_path: str = "/jindofs_temp/users/406765/COCOCaption/30k",
+
+    def __init__(
+        self,
+        save_folder: str = "benchmark/generated_imgs/",
+        output_path: str = "benchmark/results/",
+        data_path: str = "/jindofs_temp/users/406765/COCOCaption/30k",
     ):
         super().__init__(save_folder=save_folder, output_path=output_path)
 
@@ -56,7 +58,9 @@ class CocoEvaluator(Evaluator):
 
     def evaluation(self):
         print("Evaluating on COCO-30k Caption dataset...")
-        fid_value = fid.compute_fid(os.path.join(self.save_folder, "coco30k"), self.data_path)
+        fid_value = fid.compute_fid(
+            os.path.join(self.save_folder, "coco30k"), self.data_path
+        )
         # metrics = torch_fidelity.calculate_metrics(
         #     input1=os.path.join(self.save_folder, "coco30k"),
         #     input2=self.data_path,

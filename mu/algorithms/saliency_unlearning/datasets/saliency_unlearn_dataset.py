@@ -1,11 +1,14 @@
 # algorithms/saliency_unlearning/datasets/saliency_unlearn_dataset.py
 
 import os
-import torch 
-from typing import Any, Tuple, Dict
-from torch.utils.data import DataLoader
+from typing import Any, Dict, Tuple
+
+import torch
 from datasets.unlearn_canvas_dataset import UnlearnCanvasDataset
+from torch.utils.data import DataLoader
+
 from mu.datasets.utils import INTERPOLATIONS, get_transform
+
 
 class SaliencyUnlearnDataset(UnlearnCanvasDataset):
     """
@@ -23,11 +26,11 @@ class SaliencyUnlearnDataset(UnlearnCanvasDataset):
         selected_class: str,
         use_sample: bool = False,
         image_size: int = 512,
-        interpolation: str = 'bicubic',
+        interpolation: str = "bicubic",
         batch_size: int = 4,
         num_workers: int = 4,
         pin_memory: bool = True,
-        use_mask:bool = False
+        use_mask: bool = False,
     ):
         """
         Initialize the SaliencyUnlearnDataset.
@@ -47,7 +50,9 @@ class SaliencyUnlearnDataset(UnlearnCanvasDataset):
         """
         # Initialize transformations
         if interpolation not in INTERPOLATIONS:
-            raise ValueError(f"Unsupported interpolation mode: {interpolation}. Supported modes: {list(INTERPOLATIONS.keys())}")
+            raise ValueError(
+                f"Unsupported interpolation mode: {interpolation}. Supported modes: {list(INTERPOLATIONS.keys())}"
+            )
 
         interpolation_mode = INTERPOLATIONS[interpolation]
         transform = get_transform(interpolation=interpolation_mode, size=image_size)
@@ -58,7 +63,7 @@ class SaliencyUnlearnDataset(UnlearnCanvasDataset):
             selected_theme=selected_theme,
             selected_class=selected_class,
             use_sample=use_sample,
-            transform=transform
+            transform=transform,
         )
 
         # Initialize remain dataset
@@ -67,10 +72,10 @@ class SaliencyUnlearnDataset(UnlearnCanvasDataset):
             selected_theme=selected_theme,
             selected_class=selected_class,
             use_sample=use_sample,
-            transform=transform
+            transform=transform,
         )
 
-        if use_mask :
+        if use_mask:
             # Load mask
             if not os.path.isfile(mask_path):
                 raise FileNotFoundError(f"Mask file not found at {mask_path}")
@@ -82,7 +87,7 @@ class SaliencyUnlearnDataset(UnlearnCanvasDataset):
             batch_size=batch_size,
             shuffle=True,
             num_workers=num_workers,
-            pin_memory=pin_memory
+            pin_memory=pin_memory,
         )
 
         self.remain_loader = DataLoader(
@@ -90,7 +95,7 @@ class SaliencyUnlearnDataset(UnlearnCanvasDataset):
             batch_size=batch_size,
             shuffle=True,
             num_workers=num_workers,
-            pin_memory=pin_memory
+            pin_memory=pin_memory,
         )
 
     def get_data_loaders(self) -> Dict[str, DataLoader]:
@@ -100,10 +105,7 @@ class SaliencyUnlearnDataset(UnlearnCanvasDataset):
         Returns:
             Dict[str, DataLoader]: Dictionary containing 'forget' and 'remain' DataLoaders.
         """
-        return {
-            'forget': self.forget_loader,
-            'remain': self.remain_loader
-        }
+        return {"forget": self.forget_loader, "remain": self.remain_loader}
 
     def __len__(self) -> int:
         """

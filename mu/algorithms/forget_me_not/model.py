@@ -1,10 +1,22 @@
 # forget_me_not/model.py
 
 import logging
+
 import torch
-from diffusers import StableDiffusionPipeline, UNet2DConditionModel, AutoencoderKL, DDPMScheduler
+from diffusers import (
+    AutoencoderKL,
+    DDPMScheduler,
+    StableDiffusionPipeline,
+    UNet2DConditionModel,
+)
 from transformers import CLIPTextModel, CLIPTokenizer
-from lora_diffusion.patch_lora import safe_open, parse_safeloras_embeds, apply_learned_embed_in_clip
+
+from lora_diffusion.patch_lora import (
+    apply_learned_embed_in_clip,
+    parse_safeloras_embeds,
+    safe_open,
+)
+
 
 class ForgetMeNotModel:
     """
@@ -18,21 +30,26 @@ class ForgetMeNotModel:
         self.logger = logging.getLogger(__name__)
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-        pretrained_model_path = self.config.get('pretrained_model_name_or_path', '')
-        self.ti_weight_path = self.config.get('ti_weight_path', None)
+        pretrained_model_path = self.config.get("pretrained_model_name_or_path", "")
+        self.ti_weight_path = self.config.get("ti_weight_path", None)
 
         # Load tokenizer, text encoder, UNet, and VAE
         self.tokenizer = CLIPTokenizer.from_pretrained(
-            pretrained_model_path,
-            subfolder="tokenizer"
+            pretrained_model_path, subfolder="tokenizer"
         )
         self.text_encoder = CLIPTextModel.from_pretrained(
             pretrained_model_path, subfolder="text_encoder"
         ).to(self.device)
 
-        self.vae = AutoencoderKL.from_pretrained(pretrained_model_path, subfolder="vae").to(self.device)
-        self.unet = UNet2DConditionModel.from_pretrained(pretrained_model_path, subfolder="unet").to(self.device)
-        self.scheduler = DDPMScheduler.from_pretrained(pretrained_model_path, subfolder="scheduler")
+        self.vae = AutoencoderKL.from_pretrained(
+            pretrained_model_path, subfolder="vae"
+        ).to(self.device)
+        self.unet = UNet2DConditionModel.from_pretrained(
+            pretrained_model_path, subfolder="unet"
+        ).to(self.device)
+        self.scheduler = DDPMScheduler.from_pretrained(
+            pretrained_model_path, subfolder="scheduler"
+        )
 
         # If TI weights are provided, apply them
         if self.ti_weight_path:
@@ -53,7 +70,7 @@ class ForgetMeNotModel:
                 self.text_encoder,
                 self.tokenizer,
                 token=token,
-                idempotent=True
+                idempotent=True,
             )
 
     def save_model(self, output_path: str):
@@ -69,7 +86,7 @@ class ForgetMeNotModel:
             unet=self.unet,
             scheduler=self.scheduler,
             safety_checker=None,
-            feature_extractor=None
+            feature_extractor=None,
         )
         pipeline.save_pretrained(output_path)
         self.logger.info("Model saved successfully.")

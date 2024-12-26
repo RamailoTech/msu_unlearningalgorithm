@@ -1,12 +1,12 @@
+import logging
+from typing import Dict
+
 import torch
 import wandb
+from core.base_trainer import BaseTrainer
 from torch.nn import MSELoss
 from torch.optim import Adam
 from tqdm import tqdm
-import logging
-
-from core.base_trainer import BaseTrainer
-from typing import Dict
 
 
 class ConceptAblationTrainer(BaseTrainer):
@@ -39,32 +39,32 @@ class ConceptAblationTrainer(BaseTrainer):
         Setup the optimizer based on the training configuration.
         Adjust parameter groups or other attributes as per concept ablation needs.
         """
-        train_method = self.config.get('train_method', 'full')
+        train_method = self.config.get("train_method", "full")
         parameters = []
         for name, param in self.model.model.named_parameters():
             # Example: fine-tuning cross-attn layers only
             # Adjust logic as needed for concept ablation specifics
-            if train_method == 'full':
+            if train_method == "full":
                 parameters.append(param)
-            elif train_method == 'xattn' and 'attn2' in name:
+            elif train_method == "xattn" and "attn2" in name:
                 parameters.append(param)
             # Add other conditions if needed
-        lr = self.config.get('lr', 1e-5)
+        lr = self.config.get("lr", 1e-5)
         self.optimizer = Adam(parameters, lr=lr)
 
     def train(self):
         """
         Execute the training loop.
         """
-        epochs = self.config.get('epochs', 1)
+        epochs = self.config.get("epochs", 1)
 
         # Get the train dataloader
         data_loaders = self.data_handler.get_data_loaders()
-        train_dl = data_loaders.get('train')
+        train_dl = data_loaders.get("train")
 
         # Initialize WandB logging if needed
-        project_name = self.config.get('project_name', 'concept_ablation_project')
-        run_name = self.config.get('run_name', 'concept_ablation_run')
+        project_name = self.config.get("project_name", "concept_ablation_project")
+        run_name = self.config.get("run_name", "concept_ablation_run")
         wandb.init(project=project_name, name=run_name, config=self.config)
         self.logger.info("WandB logging initialized.")
 
@@ -73,7 +73,7 @@ class ConceptAblationTrainer(BaseTrainer):
         for epoch in range(epochs):
             self.logger.info(f"Starting Epoch {epoch+1}/{epochs}")
             self.model.model.train()
-            with tqdm(total=len(train_dl), desc=f'Epoch {epoch+1}/{epochs}') as pbar:
+            with tqdm(total=len(train_dl), desc=f"Epoch {epoch+1}/{epochs}") as pbar:
                 for batch in train_dl:
                     self.optimizer.zero_grad()
 
@@ -87,7 +87,9 @@ class ConceptAblationTrainer(BaseTrainer):
                     self.optimizer.step()
 
                     # Logging
-                    wandb.log({"loss": loss.item(), "epoch": epoch+1, "step": global_step})
+                    wandb.log(
+                        {"loss": loss.item(), "epoch": epoch + 1, "step": global_step}
+                    )
                     pbar.set_postfix({"loss": loss.item()})
                     pbar.update(1)
                     global_step += 1
@@ -96,7 +98,7 @@ class ConceptAblationTrainer(BaseTrainer):
 
         self.logger.info("Training completed.")
         # Save the trained model
-        output_name = self.config.get('output_name', 'concept_ablation_model.pth')
+        output_name = self.config.get("output_name", "concept_ablation_model.pth")
         self.model.save_model(output_name)
         self.logger.info(f"Trained model saved at {output_name}")
         wandb.save(output_name)
@@ -128,7 +130,9 @@ class ConceptAblationTrainer(BaseTrainer):
         # For instance, you might sample latents from a prior distribution or use q_sample steps.
         b, c, h, w = images.shape
         noisy_latent = torch.randn((b, 4, h // 8, w // 8), device=self.device)
-        t = torch.randint(0, self.model.model.num_timesteps, (b,), device=self.device).long()
+        t = torch.randint(
+            0, self.model.model.num_timesteps, (b,), device=self.device
+        ).long()
         c = self.model.get_learned_conditioning(prompts)
 
         # Apply model forward pass on noisy_latent

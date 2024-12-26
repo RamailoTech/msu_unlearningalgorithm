@@ -1,22 +1,24 @@
-from typing import List,Any
-
-from omegaconf import OmegaConf
-import torch
 from pathlib import Path
+from typing import Any, List
 
-from stable_diffusion.ldm.util import instantiate_from_config
+import torch
+from omegaconf import OmegaConf
+
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+from stable_diffusion.ldm.util import instantiate_from_config
 
 
 def read_text_lines(path: str) -> List[str]:
     """Read lines from a text file and strip whitespace."""
-    with open(path, "r", encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         lines = f.readlines()
     lines = [line.strip() for line in lines]
     return lines
 
 
-def load_model_from_config(config_path: str, ckpt_path: str, device: str = "cpu") -> Any:
+def load_model_from_config(
+    config_path: str, ckpt_path: str, device: str = "cpu"
+) -> Any:
     """
     Load a model from a config file and checkpoint.
 
@@ -44,7 +46,22 @@ def load_model_from_config(config_path: str, ckpt_path: str, device: str = "cpu"
 
 
 @torch.no_grad()
-def sample_model(model, sampler, c, h, w, ddim_steps, scale, ddim_eta, start_code=None, num_samples=1, t_start=-1, log_every_t=None, till_T=None, verbose=True):
+def sample_model(
+    model,
+    sampler,
+    c,
+    h,
+    w,
+    ddim_steps,
+    scale,
+    ddim_eta,
+    start_code=None,
+    num_samples=1,
+    t_start=-1,
+    log_every_t=None,
+    till_T=None,
+    verbose=True,
+):
     """
     Generate samples using the sampler.
 
@@ -87,7 +104,7 @@ def sample_model(model, sampler, c, h, w, ddim_steps, scale, ddim_eta, start_cod
         verbose_iter=verbose,
         t_start=t_start,
         log_every_t=log_t,
-        till_T=till_T
+        till_T=till_T,
     )
     if log_every_t is not None:
         return samples_ddim, inters

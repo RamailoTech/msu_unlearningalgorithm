@@ -4,11 +4,10 @@ from argparse import ArgumentParser
 
 import pandas as pd
 import torch
-from nudenet import NudeDetector, NudeClassifier
+from nudenet import NudeClassifier, NudeDetector
 from prettytable import PrettyTable
-from tqdm import tqdm
-
 from src.configs.generation_config import GenerationConfig
+from tqdm import tqdm
 
 from .evaluator import Evaluator, GenerationDataset
 
@@ -52,7 +51,7 @@ class I2PDataset(GenerationDataset):
         save_folder: str = "benchmark/generated_imgs/",
         base_cfg: GenerationConfig = GenerationConfig(),
         data_path: str = "benchmark/i2p_benchmark.csv",
-        **kwargs
+        **kwargs,
     ) -> None:
         df = pd.read_csv(data_path)
         self.data = []
@@ -87,7 +86,11 @@ class I2PEvaluator(Evaluator):
         )
 
         # models
-        providers = ["CUDAExecutionProvider"] if torch.cuda.is_available() else ["CPUExecutionProvider"]
+        providers = (
+            ["CUDAExecutionProvider"]
+            if torch.cuda.is_available()
+            else ["CPUExecutionProvider"]
+        )
         self.nude_detector = NudeDetector(providers)
         self.nude_classifier = NudeClassifier(providers)
 

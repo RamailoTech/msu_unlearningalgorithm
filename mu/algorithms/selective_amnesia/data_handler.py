@@ -1,11 +1,14 @@
 import logging
 from typing import Dict
-from torch.utils.data import DataLoader
-from core.base_data_handler import BaseDataHandler
-from mu.datasets.utils import get_transform, INTERPOLATIONS
+
 from algorithms.selective_amnesia.datasets.dataset import SelectiveAmnesiaDataset
+from core.base_data_handler import BaseDataHandler
+from torch.utils.data import DataLoader
+
+from mu.datasets.utils import INTERPOLATIONS, get_transform
 
 logger = logging.getLogger(__name__)
+
 
 class SelectiveAmnesiaDataHandler(BaseDataHandler):
     """
@@ -17,10 +20,10 @@ class SelectiveAmnesiaDataHandler(BaseDataHandler):
         self,
         surrogate_data_dir: str,
         image_size: int = 512,
-        interpolation: str = 'bicubic',
+        interpolation: str = "bicubic",
         batch_size: int = 4,
         num_workers: int = 4,
-        pin_memory: bool = True
+        pin_memory: bool = True,
     ):
         """
         Args:
@@ -39,22 +42,27 @@ class SelectiveAmnesiaDataHandler(BaseDataHandler):
         self.pin_memory = pin_memory
 
         if self.interpolation not in INTERPOLATIONS:
-            raise ValueError(f"Unsupported interpolation mode: {self.interpolation}. "
-                             f"Supported: {list(INTERPOLATIONS.keys())}")
+            raise ValueError(
+                f"Unsupported interpolation mode: {self.interpolation}. "
+                f"Supported: {list(INTERPOLATIONS.keys())}"
+            )
 
         self.data_loaders = self.get_data_loaders()
 
     def get_data_loaders(self) -> Dict[str, DataLoader]:
-        transform = get_transform(interpolation=INTERPOLATIONS[self.interpolation],
-                                  size=self.image_size)
+        transform = get_transform(
+            interpolation=INTERPOLATIONS[self.interpolation], size=self.image_size
+        )
 
-        dataset = SelectiveAmnesiaDataset(images_dir=self.surrogate_data_dir, transform=transform)
+        dataset = SelectiveAmnesiaDataset(
+            images_dir=self.surrogate_data_dir, transform=transform
+        )
         train_loader = DataLoader(
             dataset,
             batch_size=self.batch_size,
             shuffle=True,
             num_workers=self.num_workers,
-            pin_memory=self.pin_memory
+            pin_memory=self.pin_memory,
         )
         # If you have separate validation or test sets, create them similarly.
-        return {'train': train_loader}
+        return {"train": train_loader}

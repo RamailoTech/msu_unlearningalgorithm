@@ -7,8 +7,8 @@ logs/*
 **/__pycache__/
 *.pyc
 
-wandb 
-.vscode 
+wandb
+.vscode
 cache
 outputs/*
 !outputs/.gitkeep
@@ -17,3 +17,4 @@ models
 !models/.gitkeep
 
 !mu/algorithms/erase_diff/.gitignore
+.venv

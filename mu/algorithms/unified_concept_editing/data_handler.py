@@ -1,10 +1,11 @@
 # unified_concept_editing/data_handler.py
 
-from typing import List, Optional, Tuple
 import logging
+from typing import List, Optional, Tuple
 
 from mu.core import BaseDataHandler
 from mu.datasets.constants import *
+
 
 class UnifiedConceptEditingDataHandler(BaseDataHandler):
     """
@@ -17,7 +18,7 @@ class UnifiedConceptEditingDataHandler(BaseDataHandler):
         dataset_type: str,
         template: str,
         template_name: str,
-        use_sample: bool = False
+        use_sample: bool = False,
     ):
         """
         Initialize the UnifiedConceptEditingDataHandler.
@@ -36,20 +37,26 @@ class UnifiedConceptEditingDataHandler(BaseDataHandler):
 
         self.logger = logging.getLogger(__name__)
 
-        if self.dataset_type == 'unlearncanvas':
-            if template == 'style':
-                self.concepts_available = uc_sample_theme_available if self.use_sample else uc_theme_available
-            elif template == 'object' :
-                self.concepts_available = uc_sample_class_available if self.use_sample else uc_class_available
+        if self.dataset_type == "unlearncanvas":
+            if template == "style":
+                self.concepts_available = (
+                    uc_sample_theme_available if self.use_sample else uc_theme_available
+                )
+            elif template == "object":
+                self.concepts_available = (
+                    uc_sample_class_available if self.use_sample else uc_class_available
+                )
 
-        elif self.dataset_type == 'i2p':
-            self.concepts_available = i2p_sample_categories if self.use_sample else i2p_categories
+        elif self.dataset_type == "i2p":
+            self.concepts_available = (
+                i2p_sample_categories if self.use_sample else i2p_categories
+            )
 
     def generate_dataset(
         self,
         add_prompts: bool,
         guided_concepts: Optional[str],
-        preserve_concepts: Optional[str]
+        preserve_concepts: Optional[str],
     ) -> Tuple[List[str], List[str], List[str]]:
         """
         Generate old_texts, new_texts, and retain_texts based on the selected theme, class, and configuration.
@@ -68,35 +75,37 @@ class UnifiedConceptEditingDataHandler(BaseDataHandler):
 
         additional_prompts = []
         concept = self.template_name
-        if self.template == 'style' and self.template_name in self.concepts_available:
+        if self.template == "style" and self.template_name in self.concepts_available:
             additional_prompts = [
-                'image in {concept} Style',
-                'art by {concept}',
-                'artwork by {concept}',
-                'picture by {concept}',
-                'style of {concept}'
+                "image in {concept} Style",
+                "art by {concept}",
+                "artwork by {concept}",
+                "picture by {concept}",
+                "style of {concept}",
             ]
-        elif self.template == 'object' and self.template_name in self.concepts_available:
+        elif (
+            self.template == "object" and self.template_name in self.concepts_available
+        ):
             additional_prompts = [
-                'image of {concept}',
-                'photo of {concept}',
-                'portrait of {concept}',
-                'picture of {concept}',
-                'painting of {concept}'
+                "image of {concept}",
+                "photo of {concept}",
+                "portrait of {concept}",
+                "picture of {concept}",
+                "painting of {concept}",
             ]
 
         if not add_prompts:
             additional_prompts = []
- 
-        old_texts.append(f'{concept}')
+
+        old_texts.append(f"{concept}")
         for prompt in additional_prompts:
             old_texts.append(prompt.format(concept=concept))
 
         # Prepare new_texts based on guided_concepts
         if guided_concepts is None:
-            new_texts = [' ' for _ in old_texts]
+            new_texts = [" " for _ in old_texts]
         else:
-            guided_concepts = [con.strip() for con in guided_concepts.split(',')]
+            guided_concepts = [con.strip() for con in guided_concepts.split(",")]
             if len(guided_concepts) == 1:
                 new_texts = [guided_concepts[0] for _ in old_texts]
             else:
@@ -104,20 +113,22 @@ class UnifiedConceptEditingDataHandler(BaseDataHandler):
                 for con in guided_concepts:
                     new_texts.extend([con] * (1 + len(additional_prompts)))
 
-        assert len(new_texts) == len(old_texts), "Length of new_texts must match old_texts."
+        assert len(new_texts) == len(
+            old_texts
+        ), "Length of new_texts must match old_texts."
 
         # Prepare retain_texts based on preserve_concepts
         if preserve_concepts is None:
-            retain_texts = ['']
+            retain_texts = [""]
         else:
-            preserve_concepts = [con.strip() for con in preserve_concepts.split(',')]
+            preserve_concepts = [con.strip() for con in preserve_concepts.split(",")]
             for con in preserve_concepts:
                 for theme_item in self.concepts_available:
                     if theme_item == "Seed_Images":
                         adjusted_theme = "Photo"
                     else:
                         adjusted_theme = theme_item
-                    retain_texts.append(f'A {con} image in {adjusted_theme} style')
+                    retain_texts.append(f"A {con} image in {adjusted_theme} style")
 
         self.logger.info(f"Old Texts: {old_texts}")
         self.logger.info(f"New Texts: {new_texts}")
@@ -148,4 +159,3 @@ class UnifiedConceptEditingDataHandler(BaseDataHandler):
             Any: Preprocessed data.
         """
         pass
-    

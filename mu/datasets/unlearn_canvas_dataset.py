@@ -1,28 +1,31 @@
-#datasets/unlearn_canvas_dataset.py
+# datasets/unlearn_canvas_dataset.py
 
-from typing import Any, Tuple
-from PIL import Image
 import os
-import torch
+from typing import Any, Tuple
+
 import numpy as np
+import torch
 from einops import rearrange
-from mu.datasets import BaseDataset
+from PIL import Image
 from torchvision import transforms
 
-from mu.datasets.constants import * 
+from mu.datasets import BaseDataset
+from mu.datasets.constants import *
+
 
 class UnlearnCanvasDataset(BaseDataset):
     """
     Dataset for UnlearnCanvas algorithm.
     Allows selection of specific themes and classes.
     """
+
     def __init__(
         self,
         data_dir: str,
         template: str,
         template_name: str,
         use_sample: bool = False,
-        transform: Any = None
+        transform: Any = None,
     ):
         """
         Initialize the UnlearnCanvasDataset.
@@ -36,24 +39,28 @@ class UnlearnCanvasDataset(BaseDataset):
         """
         super().__init__()
 
-        if template == 'style':
-            available_options = uc_sample_theme_available if use_sample else uc_theme_available
-        elif template == 'object':
-            available_options = uc_sample_class_available if use_sample else uc_class_available
+        if template == "style":
+            available_options = (
+                uc_sample_theme_available if use_sample else uc_theme_available
+            )
+        elif template == "object":
+            available_options = (
+                uc_sample_class_available if use_sample else uc_class_available
+            )
         else:
             raise ValueError(f"Unsupported template type: {template}")
 
-        assert template_name in available_options, (
-            f"Selected template name '{template_name}' is not available for template type '{template}'."
-        )
+        assert (
+            template_name in available_options
+        ), f"Selected template name '{template_name}' is not available for template type '{template}'."
 
         self.template = template
         self.template_name = template_name
         self.transform = transform
 
         # Paths to images and prompts
-        self.images_txt = os.path.join(data_dir, 'images.txt')
-        self.prompts_txt = os.path.join(data_dir, 'prompts.txt')
+        self.images_txt = os.path.join(data_dir, "images.txt")
+        self.prompts_txt = os.path.join(data_dir, "prompts.txt")
 
         # Check if files exist
         if not os.path.exists(self.images_txt):
@@ -65,9 +72,9 @@ class UnlearnCanvasDataset(BaseDataset):
         self.image_paths = self.read_text_lines(self.images_txt)
         self.prompts = self.read_text_lines(self.prompts_txt)
 
-        assert len(self.image_paths) == len(self.prompts), (
-            "Number of images and prompts must be equal."
-        )
+        assert len(self.image_paths) == len(
+            self.prompts
+        ), "Number of images and prompts must be equal."
 
     def __len__(self) -> int:
         return len(self.prompts)
@@ -94,8 +101,7 @@ class UnlearnCanvasDataset(BaseDataset):
 
         # Convert the image to tensor and normalize
         image = rearrange(
-            2 * torch.tensor(np.array(image)).float() / 255 - 1,
-            "h w c -> c h w"
+            2 * torch.tensor(np.array(image)).float() / 255 - 1, "h w c -> c h w"
         )
 
         return image, prompt

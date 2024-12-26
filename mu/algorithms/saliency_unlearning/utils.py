@@ -1,13 +1,18 @@
 # algorithms/saliency_unlearning/utils.py
 
-from omegaconf import OmegaConf
-import torch
-from typing import Any
 from pathlib import Path
-from stable_diffusion.ldm.util import instantiate_from_config
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+from typing import Any
 
-def load_model_from_config(config_path: str, ckpt_path: str, device: str = "cpu") -> Any:
+import torch
+from omegaconf import OmegaConf
+
+from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+from stable_diffusion.ldm.util import instantiate_from_config
+
+
+def load_model_from_config(
+    config_path: str, ckpt_path: str, device: str = "cpu"
+) -> Any:
     """
     Load a model from a config file and checkpoint.
 
@@ -33,8 +38,24 @@ def load_model_from_config(config_path: str, ckpt_path: str, device: str = "cpu"
     model.cond_stage_model.device = device
     return model
 
+
 @torch.no_grad()
-def sample_model(model, sampler, c, h, w, ddim_steps, scale, ddim_eta, start_code=None, num_samples=1, t_start=-1, log_every_t=None, till_T=None, verbose=True):
+def sample_model(
+    model,
+    sampler,
+    c,
+    h,
+    w,
+    ddim_steps,
+    scale,
+    ddim_eta,
+    start_code=None,
+    num_samples=1,
+    t_start=-1,
+    log_every_t=None,
+    till_T=None,
+    verbose=True,
+):
     """
     Generate samples using the sampler.
 
@@ -77,7 +98,7 @@ def sample_model(model, sampler, c, h, w, ddim_steps, scale, ddim_eta, start_cod
         verbose_iter=verbose,
         t_start=t_start,
         log_every_t=log_t,
-        till_T=till_T
+        till_T=till_T,
     )
     if log_every_t is not None:
         return samples_ddim, inters

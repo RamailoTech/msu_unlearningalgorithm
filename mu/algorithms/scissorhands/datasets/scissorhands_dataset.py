@@ -1,10 +1,13 @@
 # algorithms/erase_diff/datasets/erase_diff_dataset.py
 
 import os
-from typing import Any, Tuple, Dict
-from torch.utils.data import DataLoader
+from typing import Any, Dict, Tuple
+
 from datasets.unlearn_canvas_dataset import UnlearnCanvasDataset
+from torch.utils.data import DataLoader
+
 from mu.datasets.utils import INTERPOLATIONS, get_transform
+
 
 class ScissorHandsDataset(UnlearnCanvasDataset):
     """
@@ -21,9 +24,9 @@ class ScissorHandsDataset(UnlearnCanvasDataset):
         selected_class: str,
         use_sample: bool = False,
         image_size: int = 512,
-        interpolation: str = 'bicubic',
+        interpolation: str = "bicubic",
         batch_size: int = 4,
-        num_workers: int = 4
+        num_workers: int = 4,
     ):
         """
         Initialize the ScissorHandsDataset.
@@ -42,7 +45,9 @@ class ScissorHandsDataset(UnlearnCanvasDataset):
         """
         # Initialize transformations
         if interpolation not in INTERPOLATIONS:
-            raise ValueError(f"Unsupported interpolation mode: {interpolation}. Supported modes: {list(INTERPOLATIONS.keys())}")
+            raise ValueError(
+                f"Unsupported interpolation mode: {interpolation}. Supported modes: {list(INTERPOLATIONS.keys())}"
+            )
 
         interpolation_mode = INTERPOLATIONS[interpolation]
         transform = get_transform(interpolation=interpolation_mode, size=image_size)
@@ -53,7 +58,7 @@ class ScissorHandsDataset(UnlearnCanvasDataset):
             selected_theme=selected_theme,
             selected_class=selected_class,
             use_sample=use_sample,
-            transform=transform
+            transform=transform,
         )
 
         # Initialize remain dataset
@@ -62,7 +67,7 @@ class ScissorHandsDataset(UnlearnCanvasDataset):
             selected_theme=selected_theme,
             selected_class=selected_class,
             use_sample=use_sample,
-            transform=transform
+            transform=transform,
         )
 
         # Initialize DataLoaders
@@ -70,12 +75,10 @@ class ScissorHandsDataset(UnlearnCanvasDataset):
             self.forget_dataset,
             batch_size=batch_size,
             shuffle=True,
-         )
+        )
 
         self.remain_loader = DataLoader(
-            self.remain_dataset,
-            batch_size=batch_size,
-            shuffle=True
+            self.remain_dataset, batch_size=batch_size, shuffle=True
         )
 
     def get_data_loaders(self) -> Dict[str, DataLoader]:
@@ -85,10 +88,7 @@ class ScissorHandsDataset(UnlearnCanvasDataset):
         Returns:
             Dict[str, DataLoader]: Dictionary containing 'forget' and 'remain' DataLoaders.
         """
-        return {
-            'forget': self.forget_loader,
-            'remain': self.remain_loader
-        }
+        return {"forget": self.forget_loader, "remain": self.remain_loader}
 
     def __len__(self) -> int:
         """
@@ -110,4 +110,3 @@ class ScissorHandsDataset(UnlearnCanvasDataset):
             Tuple[Any, str]: A tuple containing the data sample and its corresponding prompt.
         """
         return self.forget_dataset[idx]
-

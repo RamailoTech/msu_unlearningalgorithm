@@ -2,11 +2,15 @@
 
 import os
 from typing import Any, Dict, List
-from torch.utils.data import DataLoader
-from algorithms.saliency_unlearning.datasets.saliency_unlearn_dataset import SaliencyUnlearnDataset
+
+from algorithms.saliency_unlearning.datasets.saliency_unlearn_dataset import (
+    SaliencyUnlearnDataset,
+)
 from algorithms.saliency_unlearning.logger import setup_logger
 from core.base_data_handler import BaseDataHandler
 from datasets.constants import *
+from torch.utils.data import DataLoader
+
 
 class SaliencyUnlearnDataHandler(BaseDataHandler):
     """
@@ -14,7 +18,7 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
     Manages forget and remain datasets through SaliencyUnlearnDataset.
     Handles mask loading and application.
     """
-    
+
     def __init__(
         self,
         original_data_dir: str,
@@ -25,10 +29,10 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
         use_sample: bool = False,
         batch_size: int = 4,
         image_size: int = 512,
-        interpolation: str = 'bicubic',
+        interpolation: str = "bicubic",
         num_workers: int = 4,
         pin_memory: bool = True,
-        use_mask: bool = False
+        use_mask: bool = False,
     ):
         """
         Initialize the SaliencyUnlearnDataHandler.
@@ -60,7 +64,7 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
         self.use_mask = use_mask
 
         # Initialize logger
-        self.logger = setup_logger('SaliencyUnlearnDataHandler')
+        self.logger = setup_logger("SaliencyUnlearnDataHandler")
 
         # Generate the dataset upon initialization
         self.generate_dataset()
@@ -83,20 +87,24 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
             for class_ in uc_sample_class_available:
                 for idx in [1, 2, 3]:
                     prompt = f"A {class_} image in {theme.replace('_', ' ')} style."
-                    image_path = os.path.join(self.original_data_dir, theme, class_, f"{idx}.jpg")
+                    image_path = os.path.join(
+                        self.original_data_dir, theme, class_, f"{idx}.jpg"
+                    )
                     if os.path.exists(image_path):
                         prompt_list.append(prompt)
                         path_list.append(image_path)
                     else:
                         self.logger.warning(f"Image not found: {image_path}")
             # Write prompts and images to text files
-            prompts_txt_path = os.path.join(theme_dir, 'prompts.txt')
-            images_txt_path = os.path.join(theme_dir, 'images.txt')
-            with open(prompts_txt_path, 'w') as f:
-                f.write('\n'.join(prompt_list))
-            with open(images_txt_path, 'w') as f:
-                f.write('\n'.join(path_list))
-            self.logger.info(f"Generated dataset for theme '{theme}' with {len(path_list)} samples.")
+            prompts_txt_path = os.path.join(theme_dir, "prompts.txt")
+            images_txt_path = os.path.join(theme_dir, "images.txt")
+            with open(prompts_txt_path, "w") as f:
+                f.write("\n".join(prompt_list))
+            with open(images_txt_path, "w") as f:
+                f.write("\n".join(path_list))
+            self.logger.info(
+                f"Generated dataset for theme '{theme}' with {len(path_list)} samples."
+            )
 
         # For Seed Images
         seed_theme = "Seed_Images"
@@ -107,20 +115,24 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
         for class_ in uc_sample_class_available:
             for idx in [1, 2, 3]:
                 prompt = f"A {class_} image in Photo style."
-                image_path = os.path.join(self.original_data_dir, seed_theme, class_, f"{idx}.jpg")
+                image_path = os.path.join(
+                    self.original_data_dir, seed_theme, class_, f"{idx}.jpg"
+                )
                 if os.path.exists(image_path):
                     prompt_list.append(prompt)
                     path_list.append(image_path)
                 else:
                     self.logger.warning(f"Image not found: {image_path}")
         # Write prompts and images to text files
-        prompts_txt_path = os.path.join(seed_dir, 'prompts.txt')
-        images_txt_path = os.path.join(seed_dir, 'images.txt')
-        with open(prompts_txt_path, 'w') as f:
-            f.write('\n'.join(prompt_list))
-        with open(images_txt_path, 'w') as f:
-            f.write('\n'.join(path_list))
-        self.logger.info(f"Generated Seed Images dataset with {len(path_list)} samples.")
+        prompts_txt_path = os.path.join(seed_dir, "prompts.txt")
+        images_txt_path = os.path.join(seed_dir, "images.txt")
+        with open(prompts_txt_path, "w") as f:
+            f.write("\n".join(prompt_list))
+        with open(images_txt_path, "w") as f:
+            f.write("\n".join(path_list))
+        self.logger.info(
+            f"Generated Seed Images dataset with {len(path_list)} samples."
+        )
 
         # For class unlearning
         for object_class in uc_sample_class_available:
@@ -130,21 +142,27 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
             path_list = []
             for theme in uc_sample_theme_available:
                 for idx in [1, 2, 3]:
-                    prompt = f"A {object_class} image in {theme.replace('_', ' ')} style."
-                    image_path = os.path.join(self.original_data_dir, theme, object_class, f"{idx}.jpg")
+                    prompt = (
+                        f"A {object_class} image in {theme.replace('_', ' ')} style."
+                    )
+                    image_path = os.path.join(
+                        self.original_data_dir, theme, object_class, f"{idx}.jpg"
+                    )
                     if os.path.exists(image_path):
                         prompt_list.append(prompt)
                         path_list.append(image_path)
                     else:
                         self.logger.warning(f"Image not found: {image_path}")
             # Write prompts and images to text files
-            prompts_txt_path = os.path.join(class_dir, 'prompts.txt')
-            images_txt_path = os.path.join(class_dir, 'images.txt')
-            with open(prompts_txt_path, 'w') as f:
-                f.write('\n'.join(prompt_list))
-            with open(images_txt_path, 'w') as f:
-                f.write('\n'.join(path_list))
-            self.logger.info(f"Generated dataset for class '{object_class}' with {len(path_list)} samples.")
+            prompts_txt_path = os.path.join(class_dir, "prompts.txt")
+            images_txt_path = os.path.join(class_dir, "images.txt")
+            with open(prompts_txt_path, "w") as f:
+                f.write("\n".join(prompt_list))
+            with open(images_txt_path, "w") as f:
+                f.write("\n".join(path_list))
+            self.logger.info(
+                f"Generated dataset for class '{object_class}' with {len(path_list)} samples."
+            )
 
         self.logger.info("Dataset generation completed.")
 
@@ -159,8 +177,8 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
         Returns:
             Any: Loaded data (e.g., dictionary containing image paths and prompts).
         """
-        images_txt = os.path.join(data_path, 'images.txt')
-        prompts_txt = os.path.join(data_path, 'prompts.txt')
+        images_txt = os.path.join(data_path, "images.txt")
+        prompts_txt = os.path.join(data_path, "prompts.txt")
         if not os.path.isfile(images_txt) or not os.path.isfile(prompts_txt):
             self.logger.error(f"Missing images.txt or prompts.txt in {data_path}")
             raise FileNotFoundError(f"Missing images.txt or prompts.txt in {data_path}")
@@ -169,7 +187,7 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
         if len(image_paths) != len(prompts):
             self.logger.error(f"Mismatch between images and prompts in {data_path}")
             raise ValueError(f"Mismatch between images and prompts in {data_path}")
-        return {'image_paths': image_paths, 'prompts': prompts}
+        return {"image_paths": image_paths, "prompts": prompts}
 
     def preprocess_data(self, data: Any) -> Any:
         """
@@ -218,7 +236,7 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
             batch_size=batch_size,
             num_workers=self.num_workers,
             pin_memory=self.pin_memory,
-            use_mask = self.use_mask
+            use_mask=self.use_mask,
         )
 
         # Retrieve DataLoaders

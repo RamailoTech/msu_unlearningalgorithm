@@ -2,12 +2,12 @@ import torchvision.transforms as torch_transforms
 from torchvision.transforms import InterpolationMode
 from torchvision.transforms import functional as F
 
-
 INTERPOLATIONS = {
-    'bilinear': InterpolationMode.BILINEAR,
-    'bicubic': InterpolationMode.BICUBIC,
-    'lanczos': InterpolationMode.LANCZOS,
+    "bilinear": InterpolationMode.BILINEAR,
+    "bicubic": InterpolationMode.BICUBIC,
+    "lanczos": InterpolationMode.LANCZOS,
 }
+
 
 class CenterSquareCrop:
     def __call__(self, img):
@@ -17,7 +17,10 @@ class CenterSquareCrop:
         top = (h - min_dim) / 2
         return F.crop(img, top=int(top), left=int(left), height=min_dim, width=min_dim)
 
-def get_transform(interpolation=InterpolationMode.BICUBIC, size: int = 512) -> torch_transforms.Compose:
+
+def get_transform(
+    interpolation=InterpolationMode.BICUBIC, size: int = 512
+) -> torch_transforms.Compose:
     """
     Get a composed transformation pipeline.
 
@@ -28,8 +31,10 @@ def get_transform(interpolation=InterpolationMode.BICUBIC, size: int = 512) -> t
     Returns:
         transforms.Compose: Composed transformations.
     """
-    transform = torch_transforms.Compose([
-        CenterSquareCrop(),
-        torch_transforms.Resize(size, interpolation=interpolation),
-    ])
+    transform = torch_transforms.Compose(
+        [
+            CenterSquareCrop(),
+            torch_transforms.Resize(size, interpolation=interpolation),
+        ]
+    )
     return transform

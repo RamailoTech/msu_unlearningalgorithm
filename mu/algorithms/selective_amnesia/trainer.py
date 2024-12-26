@@ -1,13 +1,15 @@
-import torch
-from torch.nn import MSELoss
-from torch.optim import Adam
-from core.base_trainer import BaseTrainer
-import wandb
 import logging
-from tqdm import tqdm
 from typing import Dict
 
+import torch
+import wandb
+from core.base_trainer import BaseTrainer
+from torch.nn import MSELoss
+from torch.optim import Adam
+from tqdm import tqdm
+
 logger = logging.getLogger(__name__)
+
 
 class SelectiveAmnesiaTrainer(BaseTrainer):
     """
@@ -25,35 +27,37 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
         self.setup_optimizer()
 
     def setup_optimizer(self):
-        train_method = self.config.get('train_method', 'full')
-        lr = self.config.get('lr', 5e-5)
+        train_method = self.config.get("train_method", "full")
+        lr = self.config.get("lr", 5e-5)
         parameters = []
 
         for name, param in self.model.model.named_parameters():
             # Example selective finetuning logic
-            if train_method == 'full':
+            if train_method == "full":
                 parameters.append(param)
-            elif train_method == 'xattn' and 'attn2' in name:
+            elif train_method == "xattn" and "attn2" in name:
                 parameters.append(param)
             # Add other methods if needed
 
         self.optimizer = Adam(parameters, lr=lr)
 
     def train(self):
-        epochs = self.config.get('epochs', 1)
+        epochs = self.config.get("epochs", 1)
         data_loaders = self.data_handler.get_data_loaders()
-        train_dl = data_loaders.get('train')
+        train_dl = data_loaders.get("train")
 
-        wandb.init(project=self.config.get('project_name', 'selective_amnesia'), 
-                   name=self.config.get('run_name', 'selective_amnesia_run'),
-                   config=self.config)
+        wandb.init(
+            project=self.config.get("project_name", "selective_amnesia"),
+            name=self.config.get("run_name", "selective_amnesia_run"),
+            config=self.config,
+        )
         logger.info("WandB logging initialized.")
 
         global_step = 0
         for epoch in range(epochs):
             logger.info(f"Starting Epoch {epoch+1}/{epochs}")
             self.model.model.train()
-            with tqdm(total=len(train_dl), desc=f'Epoch {epoch+1}/{epochs}') as pbar:
+            with tqdm(total=len(train_dl), desc=f"Epoch {epoch+1}/{epochs}") as pbar:
                 for batch in train_dl:
                     self.optimizer.zero_grad()
 
@@ -63,7 +67,9 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
                     loss.backward()
                     self.optimizer.step()
 
-                    wandb.log({"loss": loss.item(), "epoch": epoch+1, "step": global_step})
+                    wandb.log(
+                        {"loss": loss.item(), "epoch": epoch + 1, "step": global_step}
+                    )
                     pbar.set_postfix({"loss": loss.item()})
                     pbar.update(1)
                     global_step += 1
@@ -71,7 +77,7 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
             logger.info(f"Epoch {epoch+1}/{epochs} completed.")
 
         # Save final model
-        output_name = self.config.get('output_name', 'selective_amnesia_model.pth')
+        output_name = self.config.get("output_name", "selective_amnesia_model.pth")
         self.model.save_model(output_name)
         logger.info(f"Trained model saved at {output_name}")
         wandb.save(output_name)
