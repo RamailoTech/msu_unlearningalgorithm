@@ -62,6 +62,17 @@ class ScissorHandsDataHandler(BaseDataHandler):
         # Initialize DataLoaders
         self.data_loaders = self.get_data_loaders()
 
+    def generate_dataset(self):
+        """
+        Generate dataset based on the dataset type
+        """
+        if self.dataset_type == 'unlearncanvas':
+            self._generate_dataset_uc()
+        elif self.dataset_type == 'i2p':
+            self._generate_dataset_i2p()
+        else:
+            raise ValueError(f"Unsupported dataset type: {self.dataset_type}")
+        
     def _generate_dataset_uc(self):
         """
         Generate datasets by organizing images into themes and classes.
