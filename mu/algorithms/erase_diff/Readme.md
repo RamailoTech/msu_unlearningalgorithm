@@ -1,4 +1,4 @@
-# ESD Algorithm for Machine Unlearning
+# EraseDiff Algorithm for Machine Unlearning
 
 This repository provides an implementation of the erase diff algorithm for machine unlearning in Stable Diffusion models. The erasediff algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.
 
