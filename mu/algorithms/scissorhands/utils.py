@@ -72,7 +72,7 @@ def snip(model, dataloader, sparsity, prune_num, device):
     Returns:
         model: Pruned model.
     """
-    grads = [torch.zeros_like(p) for p in model.model.model.diffusion_model.parameters()]
+    grads = [torch.zeros_like(p) for p in model.model.diffusion_model.parameters()]
     criterion = MSELoss()
 
     # Compute gradients over multiple iterations
@@ -84,20 +84,20 @@ def snip(model, dataloader, sparsity, prune_num, device):
             "edited": forget_images.to(device),
             "edit": {"c_crossattn": forget_prompts}
         }
-        loss = model.model.shared_step(forget_batch)[0]
-        model.model.model.diffusion_model.zero_grad()
+        loss = model.shared_step(forget_batch)[0]
+        model.model.diffusion_model.zero_grad()
         loss.backward()
 
         with torch.no_grad():
-            for i, param in enumerate(model.model.model.diffusion_model.parameters()):
+            for i, param in enumerate(model.model.diffusion_model.parameters()):
                 if param.grad is not None:
                     grads[i] += param.grad.abs()
             torch.cuda.empty_cache()
             gc.collect()
 
     # Compute saliency scores
-    weights = [p for p in model.model.model.diffusion_model.parameters()]
-    mask = create_dense_mask(copy.deepcopy(model.model.model.diffusion_model), device, value=1)
+    weights = [p for p in model.model.diffusion_model.parameters()]
+    mask = create_dense_mask(copy.deepcopy(model.model.diffusion_model), device, value=1)
 
     with torch.no_grad():
         abs_saliences = [(grad * weight).abs() for grad, weight in zip(grads, weights)]
@@ -110,7 +110,7 @@ def snip(model, dataloader, sparsity, prune_num, device):
             param.data[indices] = 0
 
         # Update the model parameters with the mask
-        for (name, param), mask_param in zip(model.model.model.diffusion_model.named_parameters(), mask.parameters()):
+        for (name, param), mask_param in zip(model.model.diffusion_model.named_parameters(), mask.parameters()):
             if "attn2" in name:
                 mask_tensor = torch.empty_like(param.data)
                 if "weight" in name:

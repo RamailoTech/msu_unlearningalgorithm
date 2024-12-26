@@ -54,9 +54,6 @@ def main():
     # Additional flags
     parser.add_argument('--use_sample', help='Use the sample dataset for training')
 
-    # Additional flags
-    parser.add_argument('--use_sample', action='store_true', help='Use the sample dataset for training')
-
     args = parser.parse_args()
 
     # Load default configuration from YAML
