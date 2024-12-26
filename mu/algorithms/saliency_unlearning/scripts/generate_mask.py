@@ -1,70 +1,73 @@
-import os
-import sys
-import argparse
-import torch
+# mu/algorithms/saliency_unlearning/scripts/generate_mask.py
 
-from algorithms.saliency_unlearning.algorithm import MaskingAlgorithm
+import argparse
+import os
+from pathlib import Path
+import logging
+
+from mu.algorithms.saliency_unlearning.algorithm import MaskingAlgorithm
+from mu.helpers import setup_logger, load_config
+from mu.helpers.path_setup import *
 
 def main():
     parser = argparse.ArgumentParser(prog='GenerateMask', description='Generate saliency mask using MaskingAlgorithm.')
 
-    parser.add_argument('--c_guidance', help='Guidance scale used in loss computation', type=float, default=7.5)
-    parser.add_argument('--batch_size', help='Batch size used for mask generation', type=int, default=4)
-    parser.add_argument('--ckpt_path', help='Checkpoint path for the model', type=str, required=True)
-    parser.add_argument('--config_path', type=str, required=True, help='Path to the model configuration file')
-    parser.add_argument('--num_timesteps', help='Number of timesteps for diffusion', type=int, default=1000)
-    parser.add_argument('--theme', type=str, required=True, help='Concept or theme to unlearn')
-    parser.add_argument('--classes', type=str, required=True, help='Class or objects to unlearn')
-    parser.add_argument('--output_dir', help='Output directory for the generated mask', type=str, required=False, default='data/mask')
-    parser.add_argument('--threshold', help='Threshold for mask generation', type=float, default=0.5)
-    # Dataset directories
-    parser.add_argument('--original_data_dir', type=str, required=False,default='/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/quick-canvas-benchmark',
-                        help='Directory containing the original dataset organized by themes and classes.')
-    parser.add_argument('--new_data_dir', type=str, required=False,default='/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/saliency_unlearning/data',
-                        help='Directory where the new datasets will be saved.')
+    parser.add_argument('--config_path', help='Config path for Stable Diffusion', type=str,
+                        required=True)
+    
+    parser.add_argument('--c_guidance', help='Guidance scale used in loss computation', type=float, )
+    parser.add_argument('--batch_size', help='Batch size used for mask generation', type=int, )
+    parser.add_argument('--ckpt_path', help='Checkpoint path for the model', type=str)
+    parser.add_argument('--model_config_path', type=str, help='Path to the model configuration file')
+    parser.add_argument('--num_timesteps', help='Number of timesteps for diffusion', type=int)
 
-    parser.add_argument('--image_size', help='Image size for training', type=int, default=512)
-    parser.add_argument('--lr', help='Learning rate for optimizer', type=float, default=1e-5)
-    parser.add_argument('--device', help='Device to use for training', type=str, default='cuda:0')
-    parser.add_argument('--use_sample', action='store_true', help='Use the sample dataset for training')
+
+    # Dataset directories
+    parser.add_argument('--raw_dataset_dir', type=str,
+                        help='Directory containing the original dataset organized by themes and classes.')
+    parser.add_argument('--processed_dataset_dir', type=str,
+                        help='Directory where the new datasets will be saved.')
+    parser.add_argument('--dataset_type', type=str, choices=['unlearncanvas', 'i2p'])
+    parser.add_argument('--template', type=str, choices=['object', 'style', 'i2p'])
+    parser.add_argument('--template_name', type=str, choices=['self-harm', 'Abstractionism'])
+
+    parser.add_argument('--output_dir', help='Output directory for the masks ', type=str)
+    parser.add_argument('--threshold', help='Threshold for mask generation', type=float)
+
+    parser.add_argument('--image_size', help='Image size used to train', type=int)
+    parser.add_argument('--lr', help='Learning rate used to train', type=float)
+    parser.add_argument('--devices', help='CUDA devices to train on (comma-separated)', type=str)
+    parser.add_argument('--use_sample', help='Use the sample dataset for training')
 
     args = parser.parse_args()
 
-    prompt = f"An image in {args.theme} Style."
-    output_dir = os.path.join(args.output_dir, args.theme)
-    os.makedirs(output_dir, exist_ok=True)
+    # Load default configuration from YAML
+    config = load_config(args.config_path)
 
-    mask_path = os.path.join(output_dir, f'{args.threshold}.pt')
-    if os.path.exists(mask_path):
-        print(f"Mask for threshold {args.threshold} already exists at {mask_path}. Skipping.")
-        return
-    device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
 
-    config = {
-        'original_data_dir': args.original_data_dir,
-        'new_data_dir': args.new_data_dir,
-        'mask_path': None,
-        'theme': args.theme,
-        'class': args.classes,
-        'batch_size': args.batch_size,
-        'image_size': args.image_size,
-        'interpolation': 'bicubic',
-        'use_sample': False,
-        'num_workers': 4,
-        'pin_memory': True,
-        'train_method': 'xattn',  # or whatever method needed
-        'lr': args.lr,
-        'config_path': args.config_path,
-        'ckpt_path': args.ckpt_path,
-        'output_dir': output_dir,
-        'devices': [args.device],
-        'c_guidance': args.c_guidance,
-        'num_timesteps': args.num_timesteps,
-        'threshold': args.threshold,
-        'prompt': prompt,
-        'use_sample': args.use_sample
+    # Prepare output directory
+    output_name = os.path.join(args.output_dir or config.get('output_dir', 'results'), f"{args.template_name or config.get('template_name', 'self-harm')}.pth")
+    os.makedirs(args.output_dir or config.get('output_dir', 'results'), exist_ok=True)
 
-    }
+    # Parse devices
+    devices = (
+        [f'cuda:{int(d.strip())}' for d in args.devices.split(',')]
+        if args.devices
+        else [f'cuda:{int(d.strip())}' for d in config.get('devices').split(',')]
+    )
+
+    # Update configuration only if arguments are explicitly provided
+    for key, value in vars(args).items():
+        if value is not None:  # Update only if the argument is provided
+            config[key] = value
+
+    # Ensure devices are properly set
+    config['devices'] = devices
+
+    # Setup logger
+    log_file = os.path.join(logs_dir, f"saliency_unlearning_masking_{config.get('dataset_type')}_{config.get('template')}_{config.get('template_name')}.log")
+    logger = setup_logger(log_file=log_file, level=logging.INFO)
+    logger.info("Starting Saliency Unlearning Masking")
 
     algorithm = MaskingAlgorithm(config)
     algorithm.run()
