@@ -1,15 +1,17 @@
 # mu/datasets/unlearn_canvas_dataset.py
 
-from typing import Any, Tuple
-from PIL import Image
 import os
-import torch
+from typing import Any, Tuple
+
 import numpy as np
+import torch
 from einops import rearrange
+from PIL import Image
 
 from mu.datasets import BaseDataset
-from mu.datasets.constants import * 
+from mu.datasets.constants import *
 from mu.helpers import read_text_lines
+
 
 class I2PDataset(BaseDataset):
     """

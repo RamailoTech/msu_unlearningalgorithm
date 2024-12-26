@@ -1,13 +1,14 @@
 # modify from:
 # - https://github.com/bmaltais/kohya_ss/blob/master/networks/merge_lora.py
 
-import math
 import argparse
+import math
 import os
-import torch
+
 import safetensors
-from safetensors.torch import load_file
+import torch
 from diffusers import DiffusionPipeline
+from safetensors.torch import load_file
 
 
 def load_state_dict(file_name, dtype):

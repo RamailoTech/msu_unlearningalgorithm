@@ -1,11 +1,12 @@
+import logging
+from typing import Dict
+
 import torch
+import wandb
+from core.base_trainer import BaseTrainer
 from torch.nn import MSELoss
 from torch.optim import Adam
-from core.base_trainer import BaseTrainer
-import wandb
-import logging
 from tqdm import tqdm
-from typing import Dict
 
 logger = logging.getLogger(__name__)
 

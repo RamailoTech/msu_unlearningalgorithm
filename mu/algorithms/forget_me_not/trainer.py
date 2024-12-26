@@ -1,16 +1,17 @@
 # forget_me_not/trainer.py
 
-import os
-import math
 import logging
+import math
+import os
 from typing import Dict
-from tqdm import tqdm
-import torch
-from torch.optim import AdamW
 
-from diffusers.optimization import get_scheduler
-from accelerate.utils import set_seed
+import torch
 import torch.nn.functional as F
+from accelerate.utils import set_seed
+from diffusers.optimization import get_scheduler
+from torch.optim import AdamW
+from tqdm import tqdm
+
 
 class ForgetMeNotTrainer:
     """

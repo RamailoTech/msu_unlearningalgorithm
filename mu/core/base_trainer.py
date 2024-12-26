@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+
 class BaseTrainer(ABC):
     """Abstract base class for training unlearning models."""
 

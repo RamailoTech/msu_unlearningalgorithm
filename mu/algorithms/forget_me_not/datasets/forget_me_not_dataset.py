@@ -6,8 +6,8 @@ from typing import Optional
 
 import cv2
 import numpy as np
-from PIL import Image, ImageFilter
 from datasets.base_dataset import BaseDataset
+from PIL import Image, ImageFilter
 from torchvision import transforms
 
 # Templates for object and style prompts

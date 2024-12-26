@@ -1,19 +1,24 @@
 # semipermeable_membrane/trainer.py
 
 import logging
-import torch
-from torch.optim import Adam
-from torch.nn import MSELoss
 from typing import List, Optional
 
-from algorithms.semipermeable_membrane.src.engine.sampling import sample
 import algorithms.semipermeable_membrane.src.engine.train_util as train_util
-from algorithms.semipermeable_membrane.src.models import model_util
-from algorithms.semipermeable_membrane.src.evaluation import eval_util
+import torch
 from algorithms.semipermeable_membrane.src.configs import config as config_pkg
 from algorithms.semipermeable_membrane.src.configs import prompt as prompt_pkg
 from algorithms.semipermeable_membrane.src.configs.config import RootConfig
-from algorithms.semipermeable_membrane.src.configs.prompt import PromptEmbedsCache, PromptEmbedsPair, PromptSettings
+from algorithms.semipermeable_membrane.src.configs.prompt import (
+    PromptEmbedsCache,
+    PromptEmbedsPair,
+    PromptSettings,
+)
+from algorithms.semipermeable_membrane.src.engine.sampling import sample
+from algorithms.semipermeable_membrane.src.evaluation import eval_util
+from algorithms.semipermeable_membrane.src.models import model_util
+from torch.nn import MSELoss
+from torch.optim import Adam
+
 
 class SemipermeableMembraneTrainer:
     """

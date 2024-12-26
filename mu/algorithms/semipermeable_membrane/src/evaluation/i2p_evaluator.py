@@ -4,11 +4,10 @@ from argparse import ArgumentParser
 
 import pandas as pd
 import torch
-from nudenet import NudeDetector, NudeClassifier
+from nudenet import NudeClassifier, NudeDetector
 from prettytable import PrettyTable
-from tqdm import tqdm
-
 from src.configs.generation_config import GenerationConfig
+from tqdm import tqdm
 
 from .evaluator import Evaluator, GenerationDataset
 

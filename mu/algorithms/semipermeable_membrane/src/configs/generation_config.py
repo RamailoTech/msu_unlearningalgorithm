@@ -1,6 +1,7 @@
-from pydantic import BaseModel
 import torch
 import yaml
+from pydantic import BaseModel
+
 
 class GenerationConfig(BaseModel):
     prompts: list[str] = []

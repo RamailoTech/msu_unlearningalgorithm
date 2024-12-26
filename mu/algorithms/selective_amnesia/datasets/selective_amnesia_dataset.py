@@ -1,7 +1,9 @@
 import os
+from typing import Callable, List, Tuple
+
 from PIL import Image
 from torch.utils.data import Dataset
-from typing import List, Tuple, Callable
+
 
 class SelectiveAmnesiaDataset(Dataset):
     """

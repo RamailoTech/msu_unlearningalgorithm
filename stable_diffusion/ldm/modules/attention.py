@@ -1,13 +1,15 @@
 # File modified by authors of InstructPix2Pix from original (https://github.com/CompVis/stable-diffusion).
 # See more details in LICENSE.
 
-from inspect import isfunction
 import math
+import sys
+from inspect import isfunction
+
 import torch
 import torch.nn.functional as F
-from torch import nn, einsum
 from einops import rearrange, repeat
-import sys
+from torch import einsum, nn
+
 sys.path.append('.')
 
 from stable_diffusion.ldm.modules.diffusionmodules.util import checkpoint

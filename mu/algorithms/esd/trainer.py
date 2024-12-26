@@ -1,13 +1,14 @@
-import torch
-from tqdm import tqdm
 import random
+
+import torch
 from torch.nn import MSELoss
+from tqdm import tqdm
 
-
-from mu.helpers import load_model_from_config, sample_model
-from mu.core import BaseTrainer
 from mu.algorithms.esd.model import ESDModel
 from mu.algorithms.esd.sampler import ESDSampler
+from mu.core import BaseTrainer
+from mu.helpers import load_model_from_config, sample_model
+
 
 class ESDTrainer(BaseTrainer):
     """Trainer for the ESD algorithm."""

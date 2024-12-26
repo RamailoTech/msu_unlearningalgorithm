@@ -1,3 +1,4 @@
+import glob
 import random
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
@@ -6,7 +7,7 @@ from PIL import Image
 from torch import zeros_like
 from torch.utils.data import Dataset
 from torchvision import transforms
-import glob
+
 from .preprocess_files import face_mask_google_mediapipe
 
 OBJECT_TEMPLATE = [

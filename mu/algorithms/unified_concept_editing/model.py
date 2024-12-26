@@ -1,15 +1,16 @@
 # mu/algorithms/unified_concept_editing/model.py
 
-import torch
-from typing import Any, List, Optional
-import logging
-import copy
-from tqdm import tqdm
 import ast
-from diffusers import StableDiffusionPipeline
+import copy
+import logging
+from typing import Any, List, Optional
 
+import torch
+from diffusers import StableDiffusionPipeline
+from tqdm import tqdm
 
 from mu.core import BaseModel
+
 
 class UnifiedConceptEditingModel(BaseModel):
     """

@@ -1,11 +1,12 @@
 
+import abc
 from typing import List, Tuple
-from scipy import interpolate
+
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
-import matplotlib.pyplot as plt
 from IPython.display import clear_output
-import abc
+from scipy import interpolate
 
 
 class GuideModel(torch.nn.Module, abc.ABC):

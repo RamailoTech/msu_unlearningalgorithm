@@ -1,18 +1,19 @@
 # mu/algorithms/erase_diff/trainer.py
 
-import torch
 import gc
-from tqdm import tqdm
-import random
-from torch.nn import MSELoss
-import wandb
 import logging
+import random
 from pathlib import Path
-from timm.utils import AverageMeter
-import logging 
 
-from mu.core import BaseTrainer
+import torch
+import wandb
+from timm.utils import AverageMeter
+from torch.nn import MSELoss
+from tqdm import tqdm
+
 from mu.algorithms.erase_diff.model import EraseDiffModel
+from mu.core import BaseTrainer
+
 
 class EraseDiffTrainer(BaseTrainer):
     """

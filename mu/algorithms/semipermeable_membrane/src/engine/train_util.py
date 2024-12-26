@@ -1,20 +1,18 @@
 # ref: 
 # - https://github.com/p1atdev/LECO/blob/main/train_util.py
 
-from typing import Optional, Union
-
 import ast
 import importlib
+from typing import Optional, Union
+
 import torch
-from torch.optim import Optimizer
 import transformers
-from transformers import CLIPTextModel, CLIPTokenizer
-from diffusers import UNet2DConditionModel, SchedulerMixin, DiffusionPipeline
-from diffusers.optimization import SchedulerType, TYPE_TO_SCHEDULER_FUNCTION
-
+from diffusers import DiffusionPipeline, SchedulerMixin, UNet2DConditionModel
+from diffusers.optimization import TYPE_TO_SCHEDULER_FUNCTION, SchedulerType
 from src.models.model_util import SDXL_TEXT_ENCODER_TYPE
-
+from torch.optim import Optimizer
 from tqdm import tqdm
+from transformers import CLIPTextModel, CLIPTokenizer
 
 UNET_IN_CHANNELS = 4  # Stable Diffusion の in_channels は 4 で固定。XLも同じ。
 VAE_SCALE_FACTOR = 8  # 2 ** (len(vae.config.block_out_channels) - 1) = 8

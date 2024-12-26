@@ -1,15 +1,18 @@
 # mu/algorithms/unified_concept_editing/algorithm.py
 
+import logging
+from pathlib import Path
+from typing import Dict
+
 import torch
 import wandb
-import logging
-from typing import Dict
-from pathlib import Path
 
-from mu.core import BaseAlgorithm
+from mu.algorithms.unified_concept_editing.data_handler import (
+    UnifiedConceptEditingDataHandler,
+)
 from mu.algorithms.unified_concept_editing.model import UnifiedConceptEditingModel
 from mu.algorithms.unified_concept_editing.trainer import UnifiedConceptEditingTrainer
-from mu.algorithms.unified_concept_editing.data_handler import UnifiedConceptEditingDataHandler
+from mu.core import BaseAlgorithm
 
 
 class UnifiedConceptEditingAlgorithm(BaseAlgorithm):

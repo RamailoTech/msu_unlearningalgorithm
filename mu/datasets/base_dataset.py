@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
-from torch.utils.data import Dataset
 from typing import Any, Tuple
+
+from torch.utils.data import Dataset
+
 
 class BaseDataset(Dataset, ABC):
     """

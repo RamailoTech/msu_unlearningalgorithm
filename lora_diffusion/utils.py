@@ -1,6 +1,10 @@
+import glob
+import math
+import os
 from typing import List, Union
 
 import torch
+from diffusers import StableDiffusionPipeline
 from PIL import Image
 from transformers import (
     CLIPProcessor,
@@ -9,11 +13,7 @@ from transformers import (
     CLIPVisionModelWithProjection,
 )
 
-from diffusers import StableDiffusionPipeline
-from .lora import patch_pipe, tune_lora_scale, _text_lora_path, _ti_lora_path
-import os
-import glob
-import math
+from .lora import _text_lora_path, _ti_lora_path, patch_pipe, tune_lora_scale
 
 EXAMPLE_PROMPTS = [
     "<obj> swimming in a pool",

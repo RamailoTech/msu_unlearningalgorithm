@@ -1,14 +1,16 @@
 
-import torch
-import wandb
-from typing import Dict
 import logging
 from pathlib import Path
+from typing import Dict
 
-from mu.core import BaseAlgorithm
+import torch
+import wandb
+
+from mu.algorithms.scissorhands.data_handler import ScissorHandsDataHandler
 from mu.algorithms.scissorhands.model import ScissorHandsModel
 from mu.algorithms.scissorhands.trainer import ScissorHandsTrainer
-from mu.algorithms.scissorhands.data_handler import ScissorHandsDataHandler
+from mu.core import BaseAlgorithm
+
 
 class ScissorHandsAlgorithm(BaseAlgorithm):
     """

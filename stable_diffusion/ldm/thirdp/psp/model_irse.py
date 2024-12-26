@@ -1,8 +1,25 @@
 # https://github.com/eladrich/pixel2style2pixel
 import sys
+
 sys.path.append(".")
-from torch.nn import Linear, Conv2d, BatchNorm1d, BatchNorm2d, PReLU, Dropout, Sequential, Module
-from stable_diffusion.ldm.thirdp.psp.helpers import get_blocks, Flatten, bottleneck_IR, bottleneck_IR_SE, l2_norm
+from torch.nn import (
+    BatchNorm1d,
+    BatchNorm2d,
+    Conv2d,
+    Dropout,
+    Linear,
+    Module,
+    PReLU,
+    Sequential,
+)
+
+from stable_diffusion.ldm.thirdp.psp.helpers import (
+    Flatten,
+    bottleneck_IR,
+    bottleneck_IR_SE,
+    get_blocks,
+    l2_norm,
+)
 
 """
 Modified Backbone implementation from [TreB1eN](https://github.com/TreB1eN/InsightFace_Pytorch)

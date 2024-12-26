@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 
+
 def setup_logger(log_file: str = "erase_diff_training.log", level: int = logging.INFO) -> logging.Logger:
     """
     Setup a logger for the training process.

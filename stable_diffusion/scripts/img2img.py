@@ -1,23 +1,26 @@
 """make variations of input image"""
 
-import argparse, os, sys, glob
+import argparse
+import glob
+import os
+import sys
+import time
+from contextlib import nullcontext
+from itertools import islice
+
+import numpy as np
 import PIL
 import torch
-import numpy as np
-from omegaconf import OmegaConf
-from PIL import Image
-from tqdm import tqdm, trange
-from itertools import islice
 from einops import rearrange, repeat
-from torchvision.utils import make_grid
-from torch import autocast
-from contextlib import nullcontext
-import time
-from pytorch_lightning import seed_everything
-
-from ldm.util import instantiate_from_config
 from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.models.diffusion.plms import PLMSSampler
+from ldm.util import instantiate_from_config
+from omegaconf import OmegaConf
+from PIL import Image
+from pytorch_lightning import seed_everything
+from torch import autocast
+from torchvision.utils import make_grid
+from tqdm import tqdm, trange
 
 
 def chunk(it, size):

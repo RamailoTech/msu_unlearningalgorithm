@@ -1,12 +1,12 @@
 import logging
-import torch
-import wandb
 from typing import Dict
 
-from core.base_algorithm import BaseAlgorithm
+import torch
+import wandb
+from algorithms.concept_ablation.data_handler import ConceptAblationDataHandler
 from algorithms.concept_ablation.model import ConceptAblationModel
 from algorithms.concept_ablation.trainer import ConceptAblationTrainer
-from algorithms.concept_ablation.data_handler import ConceptAblationDataHandler
+from core.base_algorithm import BaseAlgorithm
 
 
 class ConceptAblationAlgorithm(BaseAlgorithm):

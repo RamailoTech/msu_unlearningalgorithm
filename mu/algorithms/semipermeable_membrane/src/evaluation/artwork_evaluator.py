@@ -4,7 +4,6 @@ from argparse import ArgumentParser
 
 import pandas as pd
 from prettytable import PrettyTable
-
 from src.configs.generation_config import GenerationConfig
 
 from .eval_util import clip_score

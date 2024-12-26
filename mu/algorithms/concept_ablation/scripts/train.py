@@ -1,11 +1,14 @@
 import argparse
-import os
 import logging
+import os
 import sys
 
 # Adjust these imports according to your project structure
 from algorithms.concept_ablation.algorithm import ConceptAblationAlgorithm
-from algorithms.erase_diff.logger import setup_logger  # or create a similar logger for concept_ablation if needed
+from algorithms.erase_diff.logger import (
+    setup_logger,  # or create a similar logger for concept_ablation if needed
+)
+
 
 def main():
     parser = argparse.ArgumentParser(

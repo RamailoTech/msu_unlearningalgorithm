@@ -1,12 +1,13 @@
 # semipermeable_membrane/scripts/train.py
 
 import argparse
-import os
-import yaml
 import logging
+import os
 
+import yaml
 from algorithms.semipermeable_membrane.algorithm import SemipermeableMembraneAlgorithm
 from algorithms.semipermeable_membrane.logger import setup_logger
+
 
 def main():
     parser = argparse.ArgumentParser(

@@ -1,14 +1,18 @@
+import logging
 import os
+from typing import Dict
+
 import torch
 import wandb
-from typing import Dict
-import logging
-
-from core.base_algorithm import BaseAlgorithm
+from algorithms.saliency_unlearning.data_handler import SaliencyUnlearnDataHandler
+from algorithms.saliency_unlearning.masking import (
+    accumulate_gradients_for_mask,
+    save_mask,
+)
 from algorithms.saliency_unlearning.model import SaliencyUnlearnModel
 from algorithms.saliency_unlearning.trainer import SaliencyUnlearnTrainer
-from algorithms.saliency_unlearning.data_handler import SaliencyUnlearnDataHandler
-from algorithms.saliency_unlearning.masking import accumulate_gradients_for_mask, save_mask
+from core.base_algorithm import BaseAlgorithm
+
 
 class SaliencyUnlearnAlgorithm(BaseAlgorithm):
     """

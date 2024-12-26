@@ -4,7 +4,6 @@ from typing import Iterator
 from torch.utils.data import IterableDataset
 
 
-
 class GenerationDataset(IterableDataset):
     """
     Dataset for generate images.

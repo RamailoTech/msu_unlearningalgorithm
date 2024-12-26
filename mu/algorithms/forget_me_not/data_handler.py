@@ -1,11 +1,13 @@
 # forget_me_not/data_handler.py
 
+import os
 from typing import Any, Dict
-from torch.utils.data import DataLoader
-from core.base_data_handler import BaseDataHandler
+
 from algorithms.forget_me_not.datasets.forget_me_not_dataset import ForgetMeNotDataset
-from datasets.constants import * 
-import os 
+from core.base_data_handler import BaseDataHandler
+from datasets.constants import *
+from torch.utils.data import DataLoader
+
 
 class ForgetMeNotDataHandler(BaseDataHandler):
     """

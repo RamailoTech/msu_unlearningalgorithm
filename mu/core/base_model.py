@@ -1,7 +1,9 @@
 # mu/core/base_model.py
 
 from abc import ABC, abstractmethod
+
 import torch.nn as nn
+
 
 class BaseModel(nn.Module, ABC):
     """Abstract base class for all unlearning models."""

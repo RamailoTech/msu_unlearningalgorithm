@@ -1,12 +1,14 @@
 # mu/algorithms/erase_diff/model.py
 
-import torch
+import logging
 from pathlib import Path
 from typing import Any
-import logging 
+
+import torch
 
 from mu.core import BaseModel
 from mu.helpers import load_model_from_config
+
 
 class EraseDiffModel(BaseModel):
     """

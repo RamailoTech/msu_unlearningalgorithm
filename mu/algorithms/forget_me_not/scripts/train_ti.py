@@ -1,7 +1,9 @@
 import argparse
 import os
+
 import yaml
 from algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+
 
 def load_config(yaml_path):
     """Loads the configuration from a YAML file."""

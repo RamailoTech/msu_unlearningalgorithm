@@ -1,9 +1,8 @@
 from typing import Literal, Optional
 
-import yaml
-
-from pydantic import BaseModel
 import torch
+import yaml
+from pydantic import BaseModel
 
 PRECISION_TYPES = Literal["fp32", "fp16", "bf16", "float32", "float16", "bfloat16"]
 

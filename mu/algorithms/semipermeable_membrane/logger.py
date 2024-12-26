@@ -2,6 +2,7 @@
 
 import logging
 
+
 def setup_logger(name: str, log_file: str = None, level=logging.INFO) -> logging.Logger:
     """
     Setup a logger for the module.

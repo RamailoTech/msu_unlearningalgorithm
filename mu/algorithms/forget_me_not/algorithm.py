@@ -1,13 +1,14 @@
 # forget_me_not/algorithm.py
 
 import logging
-import torch
 from typing import Dict
-import wandb
 
+import torch
+import wandb
 from algorithms.forget_me_not.data_handler import ForgetMeNotDataHandler
 from algorithms.forget_me_not.model import ForgetMeNotModel
 from algorithms.forget_me_not.trainer import ForgetMeNotTrainer
+
 
 class ForgetMeNotAlgorithm:
     """

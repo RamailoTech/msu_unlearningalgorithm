@@ -3,8 +3,10 @@
 import logging
 from typing import Optional
 
+from mu.algorithms.unified_concept_editing.data_handler import (
+    UnifiedConceptEditingDataHandler,
+)
 from mu.algorithms.unified_concept_editing.model import UnifiedConceptEditingModel
-from mu.algorithms.unified_concept_editing.data_handler import UnifiedConceptEditingDataHandler
 from mu.core import BaseTrainer
 
 

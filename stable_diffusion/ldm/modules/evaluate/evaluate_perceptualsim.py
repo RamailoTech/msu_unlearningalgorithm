@@ -1,19 +1,18 @@
 import argparse
 import glob
 import os
-from tqdm import tqdm
+import sys
 from collections import namedtuple
 
 import numpy as np
 import torch
 import torchvision.transforms as transforms
-from torchvision import models
 from PIL import Image
+from torchvision import models
+from tqdm import tqdm
 
-import sys
 sys.path.append(".")
 from stable_diffusion.ldm.modules.evaluate.ssim import ssim
-
 
 transform = transforms.Compose([transforms.ToTensor()])
 

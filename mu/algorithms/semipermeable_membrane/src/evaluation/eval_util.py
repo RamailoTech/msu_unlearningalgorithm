@@ -2,19 +2,18 @@
 # - https://github.com/jmhessel/clipscore/blob/main/clipscore.py
 # - https://github.com/openai/CLIP/blob/main/notebooks/Prompt_Engineering_for_ImageNet.ipynb
 
-import torch
+import random
+from typing import List, Union
+
 import clip
 import numpy as np
-from typing import List, Union
-from PIL import Image
-import random
-
-from src.engine.train_util import text2img
-from src.configs.config import RootConfig
-from src.misc.clip_templates import imagenet_templates
-
-from torchvision.transforms import CenterCrop, Compose, Normalize, Resize, ToTensor
+import torch
 from diffusers.pipelines import DiffusionPipeline
+from PIL import Image
+from src.configs.config import RootConfig
+from src.engine.train_util import text2img
+from src.misc.clip_templates import imagenet_templates
+from torchvision.transforms import CenterCrop, Compose, Normalize, Resize, ToTensor
 
 
 def get_clip_preprocess(n_px=224):

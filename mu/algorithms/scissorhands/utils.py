@@ -1,12 +1,13 @@
 # mu/algorithms/scissorhands/utils.py
 
-import torch
-from pathlib import Path
-import gc
-import numpy as np
-from timm.models.layers import trunc_normal_
 import copy
+import gc
+from pathlib import Path
+
+import numpy as np
 import quadprog
+import torch
+from timm.models.layers import trunc_normal_
 from torch.nn import MSELoss
 
 

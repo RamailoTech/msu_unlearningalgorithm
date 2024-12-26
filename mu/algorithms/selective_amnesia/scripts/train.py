@@ -1,8 +1,12 @@
 import argparse
-import os
 import logging
+import os
+
+from algorithms.erase_diff.logger import (
+    setup_logger,  # or adapt a similar logger if needed.
+)
 from algorithms.selective_amnesia.algorithm import SelectiveAmnesiaAlgorithm
-from algorithms.erase_diff.logger import setup_logger  # or adapt a similar logger if needed.
+
 
 def main():
     parser = argparse.ArgumentParser(description='Train Selective Amnesia')

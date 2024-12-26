@@ -2,13 +2,17 @@
 
 import os
 from typing import Any, Dict, List
-from torch.utils.data import DataLoader
-from algorithms.saliency_unlearning.datasets.saliency_unlearn_dataset import SaliencyUnlearnDataset
+
+from algorithms.saliency_unlearning.datasets.saliency_unlearn_dataset import (
+    SaliencyUnlearnDataset,
+)
 from algorithms.saliency_unlearning.logger import setup_logger
 from core.base_data_handler import BaseDataHandler
 from datasets.constants import *
+from torch.utils.data import DataLoader
 
 from mu.helpers import read_text_lines
+
 
 class SaliencyUnlearnDataHandler(BaseDataHandler):
     """

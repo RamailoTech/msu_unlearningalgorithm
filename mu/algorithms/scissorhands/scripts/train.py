@@ -1,13 +1,14 @@
 # mu/algorithms/scissorhands/scripts/train.py
 
 import argparse
+import logging
 import os
 from pathlib import Path
-import logging
 
 from mu.algorithms.scissorhands.algorithm import ScissorHandsAlgorithm
-from mu.helpers import setup_logger, load_config
+from mu.helpers import load_config, setup_logger
 from mu.helpers.path_setup import *
+
 
 def main():
     parser = argparse.ArgumentParser(

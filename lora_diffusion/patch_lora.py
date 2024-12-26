@@ -1,5 +1,6 @@
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, Union
+
 import torch
-from typing import Callable, Dict, List, Optional, Set, Tuple, Type, Union, Any
 
 try:
     from safetensors.torch import safe_open

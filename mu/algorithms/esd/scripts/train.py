@@ -1,12 +1,13 @@
 # mu/algorithms/esd/scripts/train.py
 
 import argparse
-import os
 import logging
+import os
 
 from mu.algorithms.esd.algorithm import ESDAlgorithm
-from mu.helpers import setup_logger, load_config, setup_logger
-from mu.helpers.path_setup import * 
+from mu.helpers import load_config, setup_logger
+from mu.helpers.path_setup import *
+
 
 def main():
     parser = argparse.ArgumentParser(

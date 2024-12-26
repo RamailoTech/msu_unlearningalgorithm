@@ -1,9 +1,11 @@
-import torch
-from typing import Any
 from pathlib import Path
+from typing import Any
+
+import torch
 
 from mu.core import BaseModel
 from mu.helpers import load_model_from_config
+
 
 class ESDModel(BaseModel):
     """
