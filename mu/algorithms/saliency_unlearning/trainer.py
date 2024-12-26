@@ -9,6 +9,8 @@ from torch.nn import MSELoss
 import wandb
 import logging
 from pathlib import Path
+from timm.utils import AverageMeter
+
 
 from mu.core import BaseTrainer
 from mu.algorithms.saliency_unlearning.model import SaliencyUnlearnModel
@@ -33,6 +35,7 @@ class SaliencyUnlearnTrainer(BaseTrainer):
         super().__init__(model, config, **kwargs)
         self.device = device
         self.model = model.model
+        self.mask = model.mask
         self.criteria = MSELoss()
         self.logger = logging.getLogger(__name__)
         self.data_handler = data_handler
@@ -145,10 +148,10 @@ class SaliencyUnlearnTrainer(BaseTrainer):
                         self.optimizer.step()
 
                         # Apply mask to gradients if necessary
-                        if self.model.mask:
+                        if self.mask:
                             for name, param in self.model.model.named_parameters():
-                                if param.grad is not None and name in self.model.mask:
-                                    param.grad *= self.model.mask[name].to(self.device)
+                                if param.grad is not None and name in self.mask:
+                                    param.grad *= self.mask[name].to(self.device)
 
                         # Logging
                         wandb.log({"loss": total_loss.item()})

@@ -66,6 +66,7 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
         self.pin_memory = pin_memory
         self.dataset_type = dataset_type
         self.use_mask = use_mask
+        self.use_sample = use_sample
 
         # Initialize logger
         self.logger = logging.getLogger(__name__)

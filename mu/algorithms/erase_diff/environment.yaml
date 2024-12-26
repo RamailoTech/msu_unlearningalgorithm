@@ -45,8 +45,9 @@ dependencies:
     - h5py # This is for ICL_Inpainting
     - xtcocotools # This is for ICL_Inpainting
     - natsort # This is for ICL_Inpainting
-    - timm==0.3.2 # This is for ICL_Inpainting
+    - timm==1.0.11 # This is for ICL_Inpainting
     - git+https://github.com/cocodataset/panopticapi.git # This is for ICL_Inpainting
     - fairscale # This is for ICL_Inpainting
     - git+https://github.com/facebookresearch/detectron2.git # This is for ICL_Inpainting
     - open_clip_torch # This is for ICL_Prompt_Diffusion
+    - wandb==0.18.7

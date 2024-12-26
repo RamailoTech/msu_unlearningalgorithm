@@ -6,15 +6,15 @@ ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning
 model_config_path: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/saliency_unlearning/configs/model_config.yaml"  # Config path for Stable Diffusion
 
 raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
-processed_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/erase_diff/data"
+processed_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/saliency_unlearning/data"
 dataset_type : "unlearncanvas"
 template : "style"
 template_name : "Abstractionism"
 
 # Directory Configuration
 output_dir: "outputs/saliency_unlearning/finetuned_models"  # Output directory to save results
-mask_path: "outputs/saliency_unlearning/masks"  # Output directory to save results
+mask_path: "/home/ubuntu/Projects/msu_unlearningalgorithm/outputs/saliency_unlearning/masks/0.5.pt"  # Output directory to save results
 
 # Training Configuration
 devices: "0"  # CUDA devices to train on (comma-separated)
-use_sample: false
+use_sample: true

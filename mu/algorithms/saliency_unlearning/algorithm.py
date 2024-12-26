@@ -62,7 +62,7 @@ class SaliencyUnlearnAlgorithm(BaseAlgorithm):
 
         # Initialize Model
         self.model = SaliencyUnlearnModel(
-            model_config_path=self.config.get('config_path'),
+            model_config_path=self.config.get('model_config_path'),
             ckpt_path=self.config.get('ckpt_path'),
             mask=mask,
             device=str(self.device)

@@ -36,7 +36,7 @@ def main():
 
     parser.add_argument('--output_dir', help='Output directory for the masks ', type=str)
     parser.add_argument('--mask_path', help='Path to the mask file', type=str)
-    parser.add_argument('--use_sample', action='store_true', help='Use the sample dataset for training')
+    parser.add_argument('--use_sample', help='Use the sample dataset for training')
 
     # Device configuration
     parser.add_argument('--devices', help='CUDA devices to train on (comma-separated)', type=str)
