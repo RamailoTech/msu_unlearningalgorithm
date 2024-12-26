@@ -2,27 +2,13 @@
 
 # Function to display usage information
 usage() {
-  echo "Usage: $0 --model=MODEL_NAME"
+  echo "Usage: $0 MODEL_NAME"
   echo "MODEL_NAME should be either 'diffuser' or 'compvis'"
   exit 1
 }
 
-# Parse command-line arguments
-MODEL=""
-for arg in "$@"; do
-  case $arg in
-    --model=*)
-      MODEL="${arg#*=}"
-      shift
-      ;;
-    *)
-      echo "Unknown argument: $arg"
-      usage
-      ;;
-  esac
-done
-
 # Validate the model name
+MODEL="$1"
 if [[ "$MODEL" != "diffuser" && "$MODEL" != "compvis" ]]; then
   echo "Invalid model name: $MODEL"
   usage
