@@ -1,26 +1,25 @@
 # based on https://github.com/universome/fvd-comparison/blob/master/compare_models.py; huge thanks!
-import os
-import numpy as np
-import io
-import re
-import requests
-import html
+import glob
 import hashlib
+import html
+import io
+import multiprocessing as mp
+import os
+import re
 import urllib
 import urllib.request
+from typing import Any, Callable, Dict, List, Tuple, Union
+
+import numpy as np
+import requests
 import scipy.linalg
-import multiprocessing as mp
-import glob
-
-
-from tqdm import tqdm
-from typing import Any, List, Tuple, Union, Dict, Callable
-
-from torchvision.io import read_video
-import torch; torch.set_grad_enabled(False)
 from einops import rearrange
-
 from nitro.util import isvideo
+from torchvision.io import read_video
+from tqdm import tqdm
+
+import torch; torch.set_grad_enabled(False)
+
 
 def compute_frechet_distance(mu_sample,sigma_sample,mu_ref,sigma_ref) -> float:
     print('Calculate frechet distance...')

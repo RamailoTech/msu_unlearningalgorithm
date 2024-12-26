@@ -2,10 +2,10 @@ import json
 import os
 import random
 from argparse import ArgumentParser
-from prettytable import PrettyTable
-from tqdm import tqdm
 
+from prettytable import PrettyTable
 from src.configs.generation_config import GenerationConfig
+from tqdm import tqdm
 
 from ..misc.clip_templates import anchor_templates, imagenet_templates
 from .eval_util import clip_eval_by_image

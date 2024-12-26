@@ -1,15 +1,15 @@
-import torch
-from tqdm import tqdm
-from torch.nn import MSELoss
-import logging
 import copy
+import logging
 
-from mu.core import BaseTrainer
-from mu.algorithms.scissorhands.model import ScissorHandsModel
+import torch
+from torch.nn import MSELoss
+from tqdm import tqdm
+
 from mu.algorithms.scissorhands.data_handler import EraseDiffDataHandler
+from mu.algorithms.scissorhands.model import ScissorHandsModel
+from mu.algorithms.scissorhands.utils import project2cone2, snip
+from mu.core import BaseTrainer
 
-
-from mu.algorithms.scissorhands.utils import snip, project2cone2
 
 class ScissorHandsTrainer(BaseTrainer):
     """

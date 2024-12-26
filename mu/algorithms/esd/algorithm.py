@@ -1,13 +1,15 @@
+import logging
+from pathlib import Path
+from typing import Dict
+
 import torch
 import wandb
-from typing import Dict
-from pathlib import Path
-import logging
 
-from mu.core import BaseAlgorithm
 from mu.algorithms.esd.model import ESDModel
-from mu.algorithms.esd.trainer import ESDTrainer
 from mu.algorithms.esd.sampler import ESDSampler
+from mu.algorithms.esd.trainer import ESDTrainer
+from mu.core import BaseAlgorithm
+
 
 class ESDAlgorithm(BaseAlgorithm):
     """

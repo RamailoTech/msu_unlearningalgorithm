@@ -1,18 +1,28 @@
+import sys
+from functools import partial
+
+import clip
+import kornia
+import numpy as np
 import torch
 import torch.nn as nn
-import numpy as np
-from functools import partial
-import kornia
-import sys
-import clip
+
 sys.path.append(".")
 
-from stable_diffusion.ldm.util import instantiate_from_config
-from stable_diffusion.ldm.modules.diffusionmodules.util import make_beta_schedule, extract_into_tensor, noise_like
-from stable_diffusion.ldm.modules.x_transformer import Encoder, TransformerWrapper  # TODO: can we directly rely on lucidrains code and simply add this as a reuirement? --> test
-from stable_diffusion.ldm.util import default
-from stable_diffusion.ldm.thirdp.psp.id_loss import IDFeatures
 import kornia.augmentation as K
+
+from stable_diffusion.ldm.modules.diffusionmodules.util import (
+    extract_into_tensor,
+    make_beta_schedule,
+    noise_like,
+)
+from stable_diffusion.ldm.modules.x_transformer import (  # TODO: can we directly rely on lucidrains code and simply add this as a reuirement? --> test
+    Encoder,
+    TransformerWrapper,
+)
+from stable_diffusion.ldm.thirdp.psp.id_loss import IDFeatures
+from stable_diffusion.ldm.util import default, instantiate_from_config
+
 
 class AbstractEncoder(nn.Module):
     def __init__(self):
@@ -112,7 +122,8 @@ class BERTEmbedder(AbstractEncoder):
         return self(text)
 
 
-from transformers import T5Tokenizer, T5EncoderModel, CLIPTokenizer, CLIPTextModel
+from transformers import CLIPTextModel, CLIPTokenizer, T5EncoderModel, T5Tokenizer
+
 
 def disabled_train(self, mode=True):
     """Overwrite model.train with this function to make sure train/eval mode
@@ -217,6 +228,8 @@ class FrozenCLIPEmbedder(AbstractEncoder):
 
 import torch.nn.functional as F
 from transformers import CLIPVisionModel
+
+
 class ClipImageProjector(AbstractEncoder):
     """
         Uses the CLIP image encoder.

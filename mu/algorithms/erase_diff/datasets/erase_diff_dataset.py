@@ -1,9 +1,11 @@
 import os
-from typing import Any, Tuple, Dict
+from typing import Any, Dict, Tuple
+
 from torch.utils.data import DataLoader
 
-from mu.datasets import UnlearnCanvasDataset, I2PDataset, BaseDataset
+from mu.datasets import BaseDataset, I2PDataset, UnlearnCanvasDataset
 from mu.datasets.utils import INTERPOLATIONS, get_transform
+
 
 class EraseDiffDataset(BaseDataset):
     """

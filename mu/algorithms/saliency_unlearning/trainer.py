@@ -1,21 +1,24 @@
 # algorithms/saliency_unlearning/trainer.py
 
-from core.base_trainer import BaseTrainer
-from algorithms.saliency_unlearning.model import SaliencyUnlearnModel
-import torch
 import gc
-from tqdm import tqdm
-import random
-from algorithms.saliency_unlearning.utils import load_model_from_config, sample_model
-from torch.nn import MSELoss
-import wandb
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 import logging
+import random
 from pathlib import Path
-from stable_diffusion.ldm.util import instantiate_from_config
+from typing import Dict
+
+import torch
+import wandb
+from algorithms.saliency_unlearning.model import SaliencyUnlearnModel
+from algorithms.saliency_unlearning.utils import load_model_from_config, sample_model
+from core.base_trainer import BaseTrainer
 from omegaconf import OmegaConf
 from timm.utils import AverageMeter
-from typing import Dict
+from torch.nn import MSELoss
+from tqdm import tqdm
+
+from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+from stable_diffusion.ldm.util import instantiate_from_config
+
 
 class SaliencyUnlearnTrainer(BaseTrainer):
     """

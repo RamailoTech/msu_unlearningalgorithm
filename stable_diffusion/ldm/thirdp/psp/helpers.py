@@ -1,8 +1,19 @@
 # https://github.com/eladrich/pixel2style2pixel
 
 from collections import namedtuple
+
 import torch
-from torch.nn import Conv2d, BatchNorm2d, PReLU, ReLU, Sigmoid, MaxPool2d, AdaptiveAvgPool2d, Sequential, Module
+from torch.nn import (
+    AdaptiveAvgPool2d,
+    BatchNorm2d,
+    Conv2d,
+    MaxPool2d,
+    Module,
+    PReLU,
+    ReLU,
+    Sequential,
+    Sigmoid,
+)
 
 """
 ArcFace implementation from [TreB1eN](https://github.com/TreB1eN/InsightFace_Pytorch)

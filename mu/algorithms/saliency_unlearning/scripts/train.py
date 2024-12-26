@@ -1,14 +1,14 @@
 # saliency_unlearning/scripts/train.py
 
-import os
-import sys
-import torch
-from tqdm import tqdm
 import argparse
 import logging
+import os
+import sys
 
+import torch
 from algorithms.saliency_unlearning.algorithm import SaliencyUnlearnAlgorithm
 from algorithms.saliency_unlearning.logger import setup_logger
+from tqdm import tqdm
 
 if __name__ == '__main__':    
     parser = argparse.ArgumentParser(

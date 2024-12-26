@@ -1,21 +1,21 @@
-from typing import Literal, Union, Optional
+from typing import Literal, Optional, Union
 
 import torch
-from transformers import CLIPTextModel, CLIPTokenizer, CLIPTextModelWithProjection
 from diffusers import (
-    UNet2DConditionModel,
+    AltDiffusionPipeline,
+    DiffusionPipeline,
     SchedulerMixin,
     StableDiffusionPipeline,
     StableDiffusionXLPipeline,
-    AltDiffusionPipeline,
-    DiffusionPipeline,
+    UNet2DConditionModel,
 )
 from diffusers.schedulers import (
     DDIMScheduler,
     DDPMScheduler,
-    LMSDiscreteScheduler,
     EulerAncestralDiscreteScheduler,
+    LMSDiscreteScheduler,
 )
+from transformers import CLIPTextModel, CLIPTextModelWithProjection, CLIPTokenizer
 
 TOKENIZER_V1_MODEL_NAME = "CompVis/stable-diffusion-v1-4"
 TOKENIZER_V2_MODEL_NAME = "stabilityai/stable-diffusion-2-1"

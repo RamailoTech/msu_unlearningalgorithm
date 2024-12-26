@@ -1,9 +1,11 @@
 import logging
 from typing import Dict
-from torch.utils.data import DataLoader
-from core.base_data_handler import BaseDataHandler
-from mu.datasets.utils import get_transform, INTERPOLATIONS
+
 from algorithms.selective_amnesia.datasets.dataset import SelectiveAmnesiaDataset
+from core.base_data_handler import BaseDataHandler
+from torch.utils.data import DataLoader
+
+from mu.datasets.utils import INTERPOLATIONS, get_transform
 
 logger = logging.getLogger(__name__)
 

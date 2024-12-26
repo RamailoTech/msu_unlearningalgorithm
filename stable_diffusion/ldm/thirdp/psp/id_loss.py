@@ -1,7 +1,9 @@
 # https://github.com/eladrich/pixel2style2pixel
+import sys
+
 import torch
 from torch import nn
-import sys
+
 sys.path.append('.')
 from stable_diffusion.ldm.thirdp.psp.model_irse import Backbone
 

@@ -1,6 +1,6 @@
 import random
-import torch
 
+import torch
 from src.configs.prompt import PromptEmbedsPair
 
 

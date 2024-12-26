@@ -1,9 +1,10 @@
+import argparse
 import os
 import sys
-import argparse
-import torch
 
+import torch
 from algorithms.saliency_unlearning.algorithm import MaskingAlgorithm
+
 
 def main():
     parser = argparse.ArgumentParser(prog='GenerateMask', description='Generate saliency mask using MaskingAlgorithm.')

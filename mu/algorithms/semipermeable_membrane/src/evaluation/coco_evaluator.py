@@ -3,9 +3,8 @@ import os
 from argparse import ArgumentParser
 
 import pandas as pd
-from prettytable import PrettyTable
 from cleanfid import fid
-
+from prettytable import PrettyTable
 from src.configs.generation_config import GenerationConfig
 
 from .evaluator import Evaluator, GenerationDataset

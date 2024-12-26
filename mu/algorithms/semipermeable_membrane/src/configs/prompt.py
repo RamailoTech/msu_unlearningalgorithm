@@ -1,16 +1,14 @@
+import random
+from pathlib import Path
 from typing import Literal, Optional, Union
 
-import yaml
-from pathlib import Path
 import pandas as pd
-import random
-
-from pydantic import BaseModel, root_validator
-from transformers import CLIPTextModel, CLIPTokenizer
 import torch
-
-from src.misc.clip_templates import imagenet_templates
+import yaml
+from pydantic import BaseModel, root_validator
 from src.engine.train_util import encode_prompts
+from src.misc.clip_templates import imagenet_templates
+from transformers import CLIPTextModel, CLIPTokenizer
 
 ACTION_TYPES = Literal[
     "erase",

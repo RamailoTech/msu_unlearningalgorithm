@@ -9,6 +9,7 @@ import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
 
+
 def gaussian(window_size, sigma):
     gauss = torch.Tensor(
         [

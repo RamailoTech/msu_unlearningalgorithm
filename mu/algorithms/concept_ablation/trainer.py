@@ -1,12 +1,12 @@
+import logging
+from typing import Dict
+
 import torch
 import wandb
+from core.base_trainer import BaseTrainer
 from torch.nn import MSELoss
 from torch.optim import Adam
 from tqdm import tqdm
-import logging
-
-from core.base_trainer import BaseTrainer
-from typing import Dict
 
 
 class ConceptAblationTrainer(BaseTrainer):

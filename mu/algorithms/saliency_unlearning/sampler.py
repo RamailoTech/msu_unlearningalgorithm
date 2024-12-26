@@ -1,7 +1,9 @@
 # algorithms/saliency_unlearning/sampler.py
 
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 from typing import Any
+
+from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+
 
 class SaliencyUnlearnSampler(DDIMSampler):
     """

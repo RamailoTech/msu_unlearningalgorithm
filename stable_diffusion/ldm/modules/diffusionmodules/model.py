@@ -1,16 +1,19 @@
 # pytorch_diffusion + derived encoder decoder
 import math
+import sys
+
+import numpy as np
 import torch
 import torch.nn as nn
-import numpy as np
 from einops import rearrange
 
-import sys
 sys.path.append('.')
 
-from stable_diffusion.ldm.util import instantiate_from_config
 from stable_diffusion.ldm.modules.attention import LinearAttention
-from stable_diffusion.ldm.modules.distributions.distributions import DiagonalGaussianDistribution
+from stable_diffusion.ldm.modules.distributions.distributions import (
+    DiagonalGaussianDistribution,
+)
+from stable_diffusion.ldm.util import instantiate_from_config
 
 
 def get_timestep_embedding(timesteps, embedding_dim):

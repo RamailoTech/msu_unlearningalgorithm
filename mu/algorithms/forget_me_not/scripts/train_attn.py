@@ -2,7 +2,9 @@
 
 import argparse
 import os
+
 from algorithms.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+
 
 def main():
     parser = argparse.ArgumentParser(description='Forget Me Not - Train Attention')

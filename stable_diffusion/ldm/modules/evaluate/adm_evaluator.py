@@ -10,11 +10,11 @@ from functools import partial
 from multiprocessing import cpu_count
 from multiprocessing.pool import ThreadPool
 from typing import Iterable, Optional, Tuple
-import yaml
 
 import numpy as np
 import requests
 import tensorflow.compat.v1 as tf
+import yaml
 from scipy import linalg
 from tqdm.auto import tqdm
 

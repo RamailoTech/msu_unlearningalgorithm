@@ -8,14 +8,15 @@
 # thanks!
 
 
-import os
 import math
+import os
+import sys
+
+import numpy as np
 import torch
 import torch.nn as nn
-import numpy as np
 from einops import repeat
 
-import sys
 sys.path.append('.')
 
 from stable_diffusion.ldm.util import instantiate_from_config

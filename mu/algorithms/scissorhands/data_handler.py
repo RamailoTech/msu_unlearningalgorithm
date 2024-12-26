@@ -1,11 +1,12 @@
+import logging
 import os
 from typing import Any, Dict, List
+
 from torch.utils.data import DataLoader
-import logging
 
 from mu.algorithms.scissorhands.datasets.scissorhands_dataset import ScissorHandsDataset
-from mu.datasets.constants import *
 from mu.core import BaseDataHandler
+from mu.datasets.constants import *
 from mu.helpers import read_text_lines
 
 

@@ -21,10 +21,7 @@ the FID (Frechet Inception Distance) used for images, but uses a different
 embedding to be better suitable for videos.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
+from __future__ import absolute_import, division, print_function
 
 import six
 import tensorflow.compat.v1 as tf

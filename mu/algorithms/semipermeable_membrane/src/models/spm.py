@@ -2,9 +2,9 @@
 # - https://github.com/cloneofsimo/lora/blob/master/lora_diffusion/lora.py
 # - https://github.com/kohya-ss/sd-scripts/blob/main/networks/lora.py
 
-import os
 import math
-from typing import Optional, List
+import os
+from typing import List, Optional
 
 import torch
 import torch.nn as nn

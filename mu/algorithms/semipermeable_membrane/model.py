@@ -1,12 +1,13 @@
 # semipermeable_membrane/model.py
 
 import logging
+
 import torch
+from algorithms.semipermeable_membrane.src.models import model_util
+from algorithms.semipermeable_membrane.src.models.spm import SPMLayer, SPMNetwork
 from diffusers import StableDiffusionPipeline
 from torch import nn
 
-from algorithms.semipermeable_membrane.src.models.spm import SPMNetwork, SPMLayer
-from algorithms.semipermeable_membrane.src.models import model_util
 
 class SemipermeableMembraneModel(nn.Module):
     """

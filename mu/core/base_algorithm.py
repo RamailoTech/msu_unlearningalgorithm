@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict
 
+
 class BaseAlgorithm(ABC):
     """
     Abstract base class for the overall unlearning algorithm, combining the model, trainer, and sampler.

@@ -1,12 +1,15 @@
 # mu/algorithms/unified_concept_editing/scripts/train.py
 
 import argparse
-import os
 import logging
+import os
 
-from mu.algorithms.unified_concept_editing.algorithm import UnifiedConceptEditingAlgorithm
-from mu.helpers import setup_logger, load_config
+from mu.algorithms.unified_concept_editing.algorithm import (
+    UnifiedConceptEditingAlgorithm,
+)
+from mu.helpers import load_config, setup_logger
 from mu.helpers.path_setup import *
+
 
 def main():
     parser = argparse.ArgumentParser(

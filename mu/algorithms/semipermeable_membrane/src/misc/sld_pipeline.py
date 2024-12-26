@@ -1,24 +1,18 @@
 import inspect
 from typing import Callable, List, Optional, Union
 
-import torch
-
 import numpy as np
 import PIL
-
-from diffusers.utils import is_accelerate_available
-from transformers import CLIPFeatureExtractor, CLIPTextModel, CLIPTokenizer
-
+import torch
 from diffusers.configuration_utils import FrozenDict
 from diffusers.models import AutoencoderKL, UNet2DConditionModel
 from diffusers.pipeline_utils import DiffusionPipeline
-from diffusers.schedulers import (
-    DDIMScheduler,
-    LMSDiscreteScheduler,
-    PNDMScheduler,
+from diffusers.pipelines.stable_diffusion.safety_checker import (
+    StableDiffusionSafetyChecker,
 )
-from diffusers.utils import BaseOutput, deprecate, logging
-from diffusers.pipelines.stable_diffusion.safety_checker import StableDiffusionSafetyChecker
+from diffusers.schedulers import DDIMScheduler, LMSDiscreteScheduler, PNDMScheduler
+from diffusers.utils import BaseOutput, deprecate, is_accelerate_available, logging
+from transformers import CLIPFeatureExtractor, CLIPTextModel, CLIPTokenizer
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
 

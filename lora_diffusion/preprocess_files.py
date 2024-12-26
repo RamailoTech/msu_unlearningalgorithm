@@ -2,15 +2,16 @@
 # Have BLIP auto caption
 # Have CLIPSeg auto mask concept
 
-from typing import List, Literal, Union, Optional, Tuple
-import os
-from PIL import Image, ImageFilter
-import torch
-import numpy as np
-import fire
-from tqdm import tqdm
 import glob
-from transformers import CLIPSegProcessor, CLIPSegForImageSegmentation
+import os
+from typing import List, Literal, Optional, Tuple, Union
+
+import fire
+import numpy as np
+import torch
+from PIL import Image, ImageFilter
+from tqdm import tqdm
+from transformers import CLIPSegForImageSegmentation, CLIPSegProcessor
 
 
 @torch.no_grad()
@@ -133,7 +134,7 @@ def blip_captioning_dataset(
     Returns a list of captions for the given images
     """
 
-    from transformers import BlipProcessor, BlipForConditionalGeneration
+    from transformers import BlipForConditionalGeneration, BlipProcessor
 
     processor = BlipProcessor.from_pretrained(model_id)
     model = BlipForConditionalGeneration.from_pretrained(model_id).to(device)

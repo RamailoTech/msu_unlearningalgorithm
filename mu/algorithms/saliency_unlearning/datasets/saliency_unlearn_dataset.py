@@ -1,11 +1,14 @@
 # algorithms/saliency_unlearning/datasets/saliency_unlearn_dataset.py
 
 import os
-import torch 
-from typing import Any, Tuple, Dict
-from torch.utils.data import DataLoader
+from typing import Any, Dict, Tuple
+
+import torch
 from datasets.unlearn_canvas_dataset import UnlearnCanvasDataset
+from torch.utils.data import DataLoader
+
 from mu.datasets.utils import INTERPOLATIONS, get_transform
+
 
 class SaliencyUnlearnDataset(UnlearnCanvasDataset):
     """

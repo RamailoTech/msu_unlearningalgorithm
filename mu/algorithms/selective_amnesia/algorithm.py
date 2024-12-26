@@ -1,11 +1,12 @@
 import logging
 from typing import Dict
+
 import torch
 import wandb
-from core.base_algorithm import BaseAlgorithm
+from algorithms.selective_amnesia.data_handler import SelectiveAmnesiaDataHandler
 from algorithms.selective_amnesia.model import SelectiveAmnesiaModel
 from algorithms.selective_amnesia.trainer import SelectiveAmnesiaTrainer
-from algorithms.selective_amnesia.data_handler import SelectiveAmnesiaDataHandler
+from core.base_algorithm import BaseAlgorithm
 
 logger = logging.getLogger(__name__)
 

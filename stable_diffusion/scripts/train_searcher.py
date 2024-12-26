@@ -1,12 +1,13 @@
-import os, sys
-import numpy as np
-import scann
 import argparse
 import glob
+import os
+import sys
 from multiprocessing import cpu_count
-from tqdm import tqdm
 
+import numpy as np
+import scann
 from ldm.util import parallel_data_prefetch
+from tqdm import tqdm
 
 
 def search_bruteforce(searcher):

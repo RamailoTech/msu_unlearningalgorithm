@@ -1,13 +1,16 @@
 # semipermeable_membrane/algorithm.py
 
 import logging
-import torch
-import wandb
 from typing import Dict
 
+import torch
+import wandb
+from algorithms.semipermeable_membrane.data_handler import (
+    SemipermeableMembraneDataHandler,
+)
 from algorithms.semipermeable_membrane.model import SemipermeableMembraneModel
-from algorithms.semipermeable_membrane.data_handler import SemipermeableMembraneDataHandler
 from algorithms.semipermeable_membrane.trainer import SemipermeableMembraneTrainer
+
 
 class SemipermeableMembraneAlgorithm:
     """

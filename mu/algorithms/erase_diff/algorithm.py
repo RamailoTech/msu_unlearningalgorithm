@@ -1,15 +1,17 @@
 # mu/algorithms/erase_diff/algorithm.py
 
-import torch
-import wandb
-from typing import Dict
 import logging
 from pathlib import Path
+from typing import Dict
 
-from mu.core import BaseAlgorithm
+import torch
+import wandb
+
+from mu.algorithms.erase_diff.data_handler import EraseDiffDataHandler
 from mu.algorithms.erase_diff.model import EraseDiffModel
 from mu.algorithms.erase_diff.trainer import EraseDiffTrainer
-from mu.algorithms.erase_diff.data_handler import EraseDiffDataHandler
+from mu.core import BaseAlgorithm
+
 
 class EraseDiffAlgorithm(BaseAlgorithm):
     """

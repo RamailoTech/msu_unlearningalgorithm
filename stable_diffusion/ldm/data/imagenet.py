@@ -1,20 +1,29 @@
-import os, yaml, pickle, shutil, tarfile, glob
-import cv2
-import albumentations
-import PIL
-import numpy as np
-import torchvision.transforms.functional as TF
-from omegaconf import OmegaConf
+import glob
+import os
+import pickle
+import shutil
+import tarfile
 from functools import partial
-from PIL import Image
-from tqdm import tqdm
-from torch.utils.data import Dataset, Subset
 
+import albumentations
+import cv2
+import numpy as np
+import PIL
 import taming.data.utils as tdu
-from taming.data.imagenet import str_to_indices, give_synsets_from_indices, download, retrieve
-from taming.data.imagenet import ImagePaths
-
+import torchvision.transforms.functional as TF
+import yaml
 from ldm.modules.image_degradation import degradation_fn_bsr, degradation_fn_bsr_light
+from omegaconf import OmegaConf
+from PIL import Image
+from taming.data.imagenet import (
+    ImagePaths,
+    download,
+    give_synsets_from_indices,
+    retrieve,
+    str_to_indices,
+)
+from torch.utils.data import Dataset, Subset
+from tqdm import tqdm
 
 
 def synset2idx(path_to_yaml="data/index_synset.yaml"):

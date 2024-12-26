@@ -1,10 +1,22 @@
 # forget_me_not/model.py
 
 import logging
+
 import torch
-from diffusers import StableDiffusionPipeline, UNet2DConditionModel, AutoencoderKL, DDPMScheduler
+from diffusers import (
+    AutoencoderKL,
+    DDPMScheduler,
+    StableDiffusionPipeline,
+    UNet2DConditionModel,
+)
 from transformers import CLIPTextModel, CLIPTokenizer
-from lora_diffusion.patch_lora import safe_open, parse_safeloras_embeds, apply_learned_embed_in_clip
+
+from lora_diffusion.patch_lora import (
+    apply_learned_embed_in_clip,
+    parse_safeloras_embeds,
+    safe_open,
+)
+
 
 class ForgetMeNotModel:
     """
