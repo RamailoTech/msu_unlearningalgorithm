@@ -8,7 +8,6 @@ from mu.core import BaseTrainer
 from mu.algorithms.scissorhands.model import ScissorHandsModel
 from mu.algorithms.scissorhands.data_handler import ScissorHandsDataHandler
 
-
 from mu.algorithms.scissorhands.utils import snip, project2cone2
 
 class ScissorHandsTrainer(BaseTrainer):
@@ -136,7 +135,7 @@ class ScissorHandsTrainer(BaseTrainer):
         pseudo_batch = {"edited": forget_images.to(self.device), "edit": {"c_crossattn": pseudo_prompts}}
 
         forget_input, forget_emb = self.model.get_input(forget_batch, self.model.first_stage_key)
-        pseudo_input, pseudo_emb = self.model.get_input(pseudo_batch, self.model.model.first_stage_key)
+        pseudo_input, pseudo_emb = self.model.get_input(pseudo_batch, self.model.first_stage_key)
 
         t = torch.randint(0, self.model.num_timesteps, (forget_input.shape[0],), device=self.device).long()
         noise = torch.randn_like(forget_input, device=self.device)

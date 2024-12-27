@@ -7,7 +7,7 @@ num_timesteps: 1000
 image_size: 512
 
 raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
-processed_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/erase_diff/data"
+processed_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/saliency_unlearning/data"
 dataset_type : "unlearncanvas"
 template : "style"
 template_name : "Abstractionism"
@@ -19,4 +19,4 @@ output_dir: "outputs/saliency_unlearning/masks"  # Output directory to save resu
 # Training Configuration
 lr: 0.00001
 devices: "0"  # CUDA devices to train on (comma-separated)
-use_sample: false
+use_sample: true

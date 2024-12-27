@@ -15,14 +15,19 @@ dependencies:
     - diffusers
     - opencv-python==4.1.2.30
     - pudb==2019.2
+    - tqdm==4.66.5 
+    - timm==1.0.12  # This is for ICL_Inpainting
+    - pandas==2.0.3
     - invisible-watermark
     - imageio==2.9.0
     - imageio-ffmpeg==0.4.2
-    - pytorch-lightning==1.4.2
+    - pytorch-lightning==2.4.0
     - omegaconf==2.1.1
     - test-tube>=0.7.5
     - streamlit>=0.73.1
-    - einops==0.3.0
+    - omegaconf==2.3.0
+    - einops==0.8.0
+    - pyyaml==6.0.2  
     - torch-fidelity==0.3.0
     - transformers==4.36.0
     - torchmetrics==0.6.0
@@ -45,8 +50,9 @@ dependencies:
     - h5py # This is for ICL_Inpainting
     - xtcocotools # This is for ICL_Inpainting
     - natsort # This is for ICL_Inpainting
-    - timm==0.3.2 # This is for ICL_Inpainting
+    - timm==1.0.11 # This is for ICL_Inpainting
     - git+https://github.com/cocodataset/panopticapi.git # This is for ICL_Inpainting
     - fairscale # This is for ICL_Inpainting
     - git+https://github.com/facebookresearch/detectron2.git # This is for ICL_Inpainting
     - open_clip_torch # This is for ICL_Prompt_Diffusion
+    - wandb==0.18.7
