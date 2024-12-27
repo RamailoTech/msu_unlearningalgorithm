@@ -38,7 +38,7 @@ class UnifiedConceptEditingTrainer(BaseTrainer):
         self.data_handler = data_handler
         self.logger = logging.getLogger(__name__)
         self.technique = self.config.get('technique', 'replace')
-        self.lamb = self.config.get('lamb', 0.5)
+        self.lamb = float(self.config.get('lamb', 0.5))
         self.erase_scale = self.config.get('erase_scale', 1.0)
         self.preserve_scale = self.config.get('preserve_scale', 0.1)
         self.layers_to_edit = self.config.get('layers_to_edit', None)  # Optional: List[int]

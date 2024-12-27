@@ -116,15 +116,6 @@ After downloading, verify that the datasets have been correctly extracted:
     * Type: int
     * Example: 1
 
-* K_steps: Number of K optimization steps during training.
-
-    * Type: int
-    * Example: 2
-
-* lr: Learning rate used for the optimizer during training.
-
-    * Type: float
-    * Example: 5e-5
 
 **Model Configuration**
 
@@ -174,39 +165,31 @@ After downloading, verify that the datasets have been correctly extracted:
     * Type: str
     * Example: "outputs/erase_diff/finetuned_models"
 
-* separator: String separator used to train multiple words separately, if applicable.
-
-    * Type: str or null
-    * Example: null
-
 **Sampling and Image Configurations**
 
-* image_size: Size of the training images (height and width in pixels).
-
-    * Type: int
-    * Example: 512
-
-* interpolation: Interpolation method used for image resizing.
-
-    * Choices: ["bilinear", "bicubic", "lanczos"]
-    * Example: "bicubic"
-
-* ddim_steps: Number of DDIM inference steps during training.
-
-    * Type: int
-    * Example: 50
-
-* ddim_eta: DDIM eta parameter for stochasticity during sampling.
+* sparsity: Threshold for mask.
 
     * Type: float
-    * Example: 0.0
+    * Example: 0.99
+
+* project: 
+    * Type: bool
+    * Example: false
+
+* memory_num: 
+    * Type: Int
+    * Example: 1
+
+* prune_num: 
+    * Type: Int
+    * Example: 1
 
 **Device Configuration**
 
 * devices: Specifies the CUDA devices to be used for training (comma-separated).
 
-    * Type: str
-    * Example: "0"
+    * Type: str (Comma separated)
+    * Example: "0, 1"
 
 
 **Additional Flags**
@@ -216,22 +199,10 @@ After downloading, verify that the datasets have been correctly extracted:
     * Type: bool
     * Example: True
 
-* num_workers: Number of worker threads for data loading.
-
-    * Type: int
-    * Example: 4
-
-* pin_memory: Flag to enable pinning memory during data loading for faster GPU transfers.
-
-    * Type: bool
-    * Example: true
-
-
-
 
 ## Usage
 
-To train the erase_diff algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
+To train the ScissorHands algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
 
 **Example Command**
 
@@ -259,8 +230,6 @@ python -m mu.algorithms.scissorhands.scripts.train \
 --config_path mu/algorithms/scissorhands/configs/train_config.yaml \
 --train_method xattn \
 --alpha 0.2 \
---epochs 10 \
---lr 1e-4 \
 --devices 0,1 \
 --raw_dataset_dir /path/to/raw_dataset \
 --output_dir outputs/experiment_1
@@ -271,8 +240,6 @@ python -m mu.algorithms.scissorhands.scripts.train \
 * --config_path: Specifies the YAML configuration file to load default values.
 * --train_method: Overrides the training method ("xattn").
 * --alpha: Sets the guidance strength for the starting image to 0.2.
-* --epochs: Increases the number of training epochs to 10.
-* --lr: Updates the learning rate to 1e-4.
 * --devices: Specifies the GPUs (e.g., device 0 and 1) for training.
 * --raw_dataset_dir: Changes the raw dataset directory.
 * --output_dir: Sets a custom output directory for this run.
@@ -288,10 +255,10 @@ python -m mu.algorithms.scissorhands.scripts.train \
 
 ### Directory Structure
 
-- `algorithm.py`: Implementation of the EraseDiffAlgorithm class.
+- `algorithm.py`: Implementation of the ScissorHandsAlgorithm class.
 - `configs/`: Contains configuration files for training and generation.
-- `model.py`: Implementation of the EraseDiffModel class.
-- `scripts/train.py`: Script to train the EraseDiff algorithm.
-- `trainer.py`: Implementation of the EraseDiffTrainer class.
+- `model.py`: Implementation of the ScissorHandsModel class.
+- `scripts/train.py`: Script to train the ScissorHands algorithm.
+- `trainer.py`: Implementation of the ScissorHandsTrainer class.
 - `utils.py`: Utility functions used in the project.
 - `data_handler.py` : Implementation of DataHandler class
