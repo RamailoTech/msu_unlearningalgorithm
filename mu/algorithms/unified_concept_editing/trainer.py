@@ -56,10 +56,6 @@ class UnifiedConceptEditingTrainer(BaseTrainer):
         """
         Execute the model editing process.
         """
-        assert (
-            mode is None
-        ), "UnifiedConceptEditingTrainer does not support this training mode."
-
         if mode=="erase":
             return self.train_erase()
         elif mode=="debias":
