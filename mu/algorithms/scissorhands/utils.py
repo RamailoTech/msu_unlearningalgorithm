@@ -89,9 +89,11 @@ def snip(model, dataloader, sparsity, prune_num, device):
         loss.backward()
 
         with torch.no_grad():
-            for i, param in enumerate(model.model.diffusion_model.parameters()):
-                if param.grad is not None:
-                    grads[i] += param.grad.abs()
+            j = 0
+            for n, param in  model.model.diffusion_model.named_parameters():
+                if (param.grad is not None):
+                    grads[j] += (param.grad.data).abs()
+                j += 1
             torch.cuda.empty_cache()
             gc.collect()
 
