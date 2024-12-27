@@ -1,0 +1,40 @@
+# unified_concept_editing/config/train_config.yaml
+
+# Training parameters
+train_method: "full"  # Options: full, partial
+alpha: 0.1
+epochs: 1
+lr: 5e-5
+
+# Model configuration
+ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
+
+# Output configurations
+output_dir: "outputs/uce/train_erase/finetuned_models"  # Output directory to save results
+dataset_type : "unlearncanvas"
+template : "style"
+template_name : "Abstractionism"
+
+
+# Device configuration
+devices: "0"
+
+# Additional flags
+use_sample: true
+
+# Editing specific parameters
+guided_concepts: "A Elephant image"  # Comma-separated string if multiple concepts, e.g., "concept1,concept2"
+technique: "replace"  # Options: replace, tensor
+
+preserve_scale: null  # Float value, e.g., 0.1
+preserve_number: null # Integer value, e.g., 1
+erase_scale: 0.01
+lamb: 10.0
+add_prompts: true
+
+
+# New arugements from debias only
+concept: ["cashier"]
+attributes: ["male", "female"]
+base : 1.4
+num_images : 10

@@ -31,9 +31,7 @@ def main():
     parser.add_argument(
         "--attributes", help="Attributes to debias", type=str, default="male, female"
     )
-    parser.add_argument(
-        "--device", help="CUDA device to train on", type=str, default="0"
-    )
+
     parser.add_argument(
         "--base", help="Base version for Stable Diffusion", type=str, default="1.4"
     )
@@ -110,7 +108,7 @@ def main():
 
     # Initialize and run the UnifiedConceptEditingAlgorithm
     algorithm = UnifiedConceptEditingAlgorithm(config)
-    algorithm.run(erase="debias")
+    algorithm.run(mode="debias")
 
 
 if __name__ == "__main__":

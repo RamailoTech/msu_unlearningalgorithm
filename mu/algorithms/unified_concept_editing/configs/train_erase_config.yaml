@@ -10,7 +10,7 @@ lr: 5e-5
 ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
 
 # Output configurations
-output_dir: "outputs/uce/finetuned_models"  # Output directory to save results
+output_dir: "outputs/uce/train_erase/finetuned_models"  # Output directory to save results
 dataset_type : "unlearncanvas"
 template : "style"
 template_name : "Abstractionism"
