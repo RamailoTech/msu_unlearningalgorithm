@@ -97,6 +97,15 @@ After downloading, verify that the datasets have been correctly extracted:
 `ls -lh ./data/quick-canvas-dataset/sample/`
 
 
+<br>
+
+**The unlearning has two stages:**
+
+1. Generate the mask 
+
+2. Unlearn the weights.
+
+<br>
 
 ### Description of Arguments mask_config.yaml
 
@@ -242,71 +251,126 @@ The `scripts/train.py` script is used to fine-tune the Stable Diffusion model to
 * processed_dataset_dir: Path to the directory where the processed dataset will be saved.
 
     * Type: str
+    * Example: 'path/processed_dataset_dir'
+
+* dataset_type: Specifies the type of dataset to use for training.
+
+    * Choices: unlearncanvas, i2p
+    * Type: str
+    * Example: i2p
+
+* template: Specifies the template type for training.
+
+    * Choices: object, style, i2p
+    * Type: str
+    * Example: style
+
+* template_name: Name of the specific template used for training.
+
+    * Choices: self-harm, Abstractionism
+    * Type: str
+    * Example: Abstractionism
+
+
+**Output Arguments**
+
+* output_dir: Directory where the fine-tuned model and training outputs will be saved.
+
+    * Type: str
+    * Example: 'output/folder_name'
+
+* mask_path: Path to the saliency mask file used during training.
+
+    * Type: str
     * Example: 
+
 
 
 ## Usage
 
-To train the mu_saliency_unlearning algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
+To train the saliency unlearning algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
 
-### Example Command
+## Usage
+
+To train the erase_diff algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
+
+**Step 1: Generate mask**
 
 ```bash
-python -m algorithms.saliency_unlearning.scripts.train \
-    --train_method xattn \
-    --theme "Your_Theme" \
-    --ckpt_path "path/to/your/model.ckpt" \
-    --config_path "path/to/your_config.yaml" \
-    --output_dir "path/to/your_output_dir"
+python -m mu.algorithms.saliency_unlearning.scripts.generate_mask \
+--config_path mu/algorithms/saliency_unlearning/configs/mask_config.yaml
 ```
 
-**Replace the placeholders with your own values:**
+**Running the Script in Offline Mode**
 
-- `Your_Theme`: The concept or style you want the model to unlearn (e.g., `"Van_Gogh_Style"`).
-- `path/to/your/model.ckpt`: Path to your pre-trained Stable Diffusion model checkpoint.
-- `configs/train_esd.yaml`: Path to the ESD training configuration file.
+```bash
+WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.generate_mask \
+--config_path mu/algorithms/saliency_unlearning/configs/mask_config.yaml
+```
+
+**Step 2: Unlearn the weights**
+
+- Add the generated mask path to the `train_config.yaml` file or you can override it by passing them directly as arguments during runtime.
+
+- Run the script:
+
+```bash
+WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.train \
+--config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml
+```
+
+**Running the Script in Offline Mode**
+```bash
+python -m mu.algorithms.saliency_unlearning.scripts.train \
+--config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml
+```
 
 
-## Directory Structure
+**Passing Arguments via the Command Line**
 
-- `algorithm.py`: Implementation of the ESDAlgorithm class.
+The `train.py` script allows you to override configuration parameters specified in the `train_config.yaml` file by passing them directly as arguments during runtime. This can be useful for quick experimentation without modifying the configuration file.
+
+
+**Example Usage with Command-Line Arguments**
+
+```bash
+python -m mu.algorithms.saliency_unlearning.scripts.train \
+--config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml \
+--mask_path /path/to/mask.pt \
+--alpha 0.1 \
+--epochs 10 \
+--raw_dataset_dir /path/to/raw_dataset \
+--output_dir outputs/experiment_1
+```
+
+**Explanation of the Example**
+
+* --config_path: Specifies the YAML configuration file to load default values.
+* --mask_path: Path of the generated mask.
+* --alpha: Sets the guidance strength for the starting image to 0.2.
+* --epochs: Increases the number of training epochs to 10.
+* --lr: Updates the learning rate to 1e-4.
+* --raw_dataset_dir: Changes the raw dataset directory.
+* --output_dir: Sets a custom output directory for this run.
+
+**Similarly, you can pass arguments during runtime to generate mask.**
+
+**How It Works** 
+* Default Values: The script first loads default values from the YAML file specified by --config_path.
+
+* Command-Line Overrides: Any arguments passed on the command line will override the corresponding keys in the YAML configuration file.
+
+* Final Configuration: The script merges the YAML file and command-line arguments into a single configuration dictionary and uses it for training.
+
+
+### Directory Structure
+
+- `algorithm.py`: Implementation of the SaliencyUnlearnAlgorithm class.
 - `configs/`: Contains configuration files for training and generation.
-- `model.py`: Implementation of the ESDModel class.
-- `sampler.py`: Implementation of the ESDSampler class.
-- `scripts/train.py`: Script to train the ESD algorithm.
-- `trainer.py`: Implementation of the ESDTrainer class.
+- `model.py`: Implementation of the SaliencyUnlearnModel class.
+- `scripts/train.py`: Script to train the SaliencyUnlearn algorithm.
+- `trainer.py`: Implementation of the SaliencyUnlearnTrainer class.
 - `utils.py`: Utility functions used in the project.
 - `data_handler.py` : Implementation of DataHandler class
 
-
-For running the masking script 
-
- python -m algorithms.saliency_unlearning.scripts.generate_mask --config_path "algorithms/saliency_unlearning/config/train_config.yaml" --ckpt_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" --theme "Abstractionism" --class "Architectures" --output_dir "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/saliency_unlearning/data/masks" 
-
-
- python -m algorithms.saliency_unlearning.scripts.train --config_path "algorithms/saliency_unlearning/config/train_config.yaml" --ckpt_path "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" --output_dir "/home/ubuntu/Projects/msu_unlearningalgorithm/data/results/saliency_unlearning/models" --theme "Abstractionism" --classes "Architectures" --mask_path "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/saliency_unlearning/data/masks/Abstractionism/0.5.pt" --use_sample 
-
-Running generate_mask
-
- python scripts/generate_mask.py \
-    --ckpt_path "path/to/checkpoint.ckpt" \
-    --config_path "configs/saliency_unlearn_config.yaml" \
-    --theme "Abstractionism" \
-    --forget_data_dir "data" \
-    --remain_data_dir "data/Seed_Images" \
-    --output_dir "output/masks" \
-    --threshold 0.4 \
-    --c_guidance 7.5 \
-    --batch_size 4 \
-    --image_size 512 \
-    --num_timesteps 1000 \
-    --lr 1e-5
-
-
-
-python -m mu.algorithms.saliency_unlearning.scripts.generate_mask \
---config_path mu/algorithms/saliency_unlearning/configs/mask_config.yaml
-
-python -m mu.algorithms.saliency_unlearning.scripts.train \
---config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml
 
