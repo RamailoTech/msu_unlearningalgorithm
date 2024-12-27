@@ -41,6 +41,16 @@ class SaliencyUnlearnTrainer(BaseTrainer):
         self.data_handler = data_handler
         self.setup_optimizer()
 
+        #if training depends upon precomputed mask path
+        mask_path = config.get('mask_path')
+        if mask_path:
+            try:
+                self.model.mask = torch.load(mask_path, map_location=self.device)
+                self.logger.info(f"Saliency mask loaded from {mask_path}")
+            except FileNotFoundError:
+                self.logger.error(f"Saliency mask file not found: {mask_path}")
+                raise
+
     def setup_optimizer(self):
         """
         Setup the optimizer based on the training method.
@@ -57,6 +67,9 @@ class SaliencyUnlearnTrainer(BaseTrainer):
                 parameters.append(param)
             elif train_method == 'noxattn':
                 if not (name.startswith('out.') or 'attn2' in name or 'time_embed' in name):
+                    parameters.append(param)
+            elif train_method == 'notime':
+                if not (name.startswith('out.') or 'time_embed' in name):
                     parameters.append(param)
             elif train_method == 'xlayer':
                 if 'attn2' in name and ('output_blocks.6.' in name or 'output_blocks.8.' in name):
