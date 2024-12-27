@@ -174,7 +174,7 @@ These parameters define the dataset paths and settings for mask generation.
 
 * template_name: Specific template name for the mask generation process.
 
-    * Choices: self-harm, Abstractionism
+    * Example Choices: self-harm, Abstractionism
     * Type: str
     * Example: Abstractionism
 
@@ -267,7 +267,7 @@ The `scripts/train.py` script is used to fine-tune the Stable Diffusion model to
 
 * template_name: Name of the specific template used for training.
 
-    * Choices: self-harm, Abstractionism
+    * Example Choices: self-harm, Abstractionism
     * Type: str
     * Example: Abstractionism
 
@@ -285,14 +285,9 @@ The `scripts/train.py` script is used to fine-tune the Stable Diffusion model to
     * Example: 
 
 
-
 ## Usage
 
 To train the saliency unlearning algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
-
-## Usage
-
-To train the erase_diff algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
 
 **Step 1: Generate mask**
 
@@ -321,7 +316,7 @@ WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.train \
 
 **Running the Script in Offline Mode**
 ```bash
-python -m mu.algorithms.saliency_unlearning.scripts.train \
+WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.train \
 --config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml
 ```
 
