@@ -39,8 +39,8 @@ def main():
 
 
     # Output configurations
-    parser.add_argument('--output_dir', help='Output directory to save results', type=str, required=False,
-                        default='results')
+    parser.add_argument('--output_dir', help='Output directory to save results', type=str, required=False
+                        )
     
     # Sampling and image configurations
     parser.add_argument('--sparsity', help='threshold for mask', type=float)
