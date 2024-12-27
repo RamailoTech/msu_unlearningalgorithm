@@ -29,7 +29,7 @@ class ESDTrainer(BaseTrainer):
 
         train_method = self.config['train_method']
         parameters = []
-        for name, param in self.model.model.model.named_parameters():
+        for name, param in self.model.model.named_parameters():
             if train_method == 'full':
                 parameters.append(param)
             elif train_method == 'xattn' and 'attn2' in name:
