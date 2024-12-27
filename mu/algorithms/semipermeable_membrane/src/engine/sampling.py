@@ -1,7 +1,7 @@
 import random
 import torch
 
-from src.configs.prompt import PromptEmbedsPair
+from mu.algorithms.semipermeable_membrane.src.configs.prompt import PromptEmbedsPair
 
 
 def sample(prompt_pair: PromptEmbedsPair, tokenizer=None, text_encoder=None):

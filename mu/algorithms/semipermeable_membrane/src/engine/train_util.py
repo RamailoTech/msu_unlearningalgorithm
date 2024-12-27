@@ -12,7 +12,7 @@ from transformers import CLIPTextModel, CLIPTokenizer
 from diffusers import UNet2DConditionModel, SchedulerMixin, DiffusionPipeline
 from diffusers.optimization import SchedulerType, TYPE_TO_SCHEDULER_FUNCTION
 
-from src.models.model_util import SDXL_TEXT_ENCODER_TYPE
+from mu.algorithms.semipermeable_membrane.src.models.model_util import SDXL_TEXT_ENCODER_TYPE
 
 from tqdm import tqdm
 

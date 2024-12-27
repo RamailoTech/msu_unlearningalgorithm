@@ -9,20 +9,19 @@ class BaseDataHandler(ABC):
     Abstract base class for data handling and processing.
     Defines the interface for loading, preprocessing, and providing data loaders.
     """
+
     @abstractmethod
-    def generate_dataset(self):
+    def generate_dataset(self, *args, **kwargs) -> Any:
         """
         Generate the dataset.
         """
         pass
 
+    
     @abstractmethod
-    def load_data(self, data_path: str) -> Any:
+    def load_data(self, *args, **kwargs) -> Any:
         """
-        Load data from the specified path.
-
-        Args:
-            data_path (str): Path to the data.
+        Load data
 
         Returns:
             Any: Loaded data.
@@ -30,12 +29,9 @@ class BaseDataHandler(ABC):
         pass
 
     @abstractmethod
-    def preprocess_data(self, data: Any) -> Any:
+    def preprocess_data(self, *args, **kwargs ) -> Any:
         """
         Preprocess the data (e.g., normalization, augmentation).
-
-        Args:
-            data (Any): Raw data to preprocess.
 
         Returns:
             Any: Preprocessed data.

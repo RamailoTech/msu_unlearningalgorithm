@@ -8,11 +8,12 @@ from torch.nn import MSELoss
 import wandb
 import logging
 from pathlib import Path
+from omegaconf import OmegaConf
 from timm.utils import AverageMeter
 import logging 
 
 from mu.core import BaseTrainer
-from mu.algorithms.erase_diff.model import EraseDiffModel
+from mu.algorithms.erase_diff import EraseDiffModel
 
 class EraseDiffTrainer(BaseTrainer):
     """
@@ -28,12 +29,15 @@ class EraseDiffTrainer(BaseTrainer):
             model (EraseDiffModel): Instance of EraseDiffModel.
             config (dict): Configuration dictionary.
             device (str): Device to perform training on.
+            device_orig (str): Device for the original (frozen) model.
             data_handler (EraseDiffDataHandler): Instance of EraseDiffDataHandler.
             **kwargs: Additional keyword arguments.
         """
         super().__init__(model, config, **kwargs)
         self.device = device
         self.model = model.model
+        self.sampler = None
+        self.sampler_orig = None
         self.criteria = MSELoss()
         self.logger = logging.getLogger(__name__)
         self.data_handler = data_handler
@@ -50,14 +54,11 @@ class EraseDiffTrainer(BaseTrainer):
             if train_method == 'full':
                 parameters.append(param)
             elif train_method == 'xattn' and 'attn2' in name:
-                parameters.append(param) 
+                parameters.append(param)
             elif train_method == 'selfattn' and 'attn1' in name:
                 parameters.append(param)
             elif train_method == 'noxattn':
                 if not (name.startswith('out.') or 'attn2' in name or 'time_embed' in name):
-                    parameters.append(param)
-            elif train_method == 'notime':
-                if not (name.startswith('out.') or 'time_embed' in name):
                     parameters.append(param)
             elif train_method == 'xlayer':
                 if 'attn2' in name and ('output_blocks.6.' in name or 'output_blocks.8.' in name):
@@ -66,7 +67,7 @@ class EraseDiffTrainer(BaseTrainer):
                 if 'attn1' in name and ('input_blocks.4.' in name or 'input_blocks.7.' in name):
                     parameters.append(param)
 
-        self.optimizer = torch.optim.Adam(parameters, lr=float(self.config.get('lr', 5e-5)))
+        self.optimizer = torch.optim.Adam(parameters, lr=self.config.get('lr', 1e-5))
 
     def train(self):
         """
@@ -155,9 +156,9 @@ class EraseDiffTrainer(BaseTrainer):
 
             self.logger.info(f"Epoch {epoch+1}/{epochs} completed.")
 
-        self.model.eval()
+        self.model.model.eval()
         self.logger.info("Training completed.")
-        return self.model
+        return self.model.model
 
     def get_param(self) -> list:
         """

@@ -1,50 +1,38 @@
-# semipermeable_membrane/trainer.py
+# mu/algorithms/semipermeable_membrane/trainer.py
 
 import logging
 import torch
-from torch.optim import Adam
 from torch.nn import MSELoss
-from typing import List, Optional
+from tqdm import tqdm
+from pathlib import Path
 
-from algorithms.semipermeable_membrane.src.engine.sampling import sample
-import algorithms.semipermeable_membrane.src.engine.train_util as train_util
-from algorithms.semipermeable_membrane.src.models import model_util
-from algorithms.semipermeable_membrane.src.evaluation import eval_util
-from algorithms.semipermeable_membrane.src.configs import config as config_pkg
-from algorithms.semipermeable_membrane.src.configs import prompt as prompt_pkg
-from algorithms.semipermeable_membrane.src.configs.config import RootConfig
-from algorithms.semipermeable_membrane.src.configs.prompt import PromptEmbedsCache, PromptEmbedsPair, PromptSettings
 
-class SemipermeableMembraneTrainer:
+from mu.algorithms.semipermeable_membrane.model import SemipermeableMembraneModel
+from mu.algorithms.semipermeable_membrane.data_handler import SemipermeableMembraneDataHandler
+from mu.core import BaseTrainer
+
+import mu.algorithms.semipermeable_membrane.src.engine.train_util as train_util
+from mu.algorithms.semipermeable_membrane.src.configs.prompt import PromptEmbedsCache, PromptEmbedsPair, PromptSettings
+from mu.algorithms.semipermeable_membrane.src.engine.sampling import sample
+
+import gc
+
+class SemipermeableMembraneTrainer(BaseTrainer):
     """
     Trainer for the Semipermeable Membrane algorithm.
     Handles the training loop and integrates model, data, and prompts.
     """
 
-    def __init__(self, model, config, device, data_handler):
+    def __init__(self, model: SemipermeableMembraneModel, config, data_handler: SemipermeableMembraneDataHandler,*args, **kwargs):
+        super().__init__(model, config, **kwargs)
+        self.network = model.network 
         self.model = model
         self.config = config
-        self.device = device
+        self.device = model.device
         self.data_handler = data_handler
         self.logger = logging.getLogger('SemipermeableMembraneTrainer')
-
-        # Load training parameters
-        self.iterations = self.config.get('train', {}).get('iterations', 1000)
-        self.lr = self.config.get('train', {}).get('lr', 1e-4)
-        self.text_encoder_lr = self.config.get('train', {}).get('text_encoder_lr', 5e-5)
-        self.unet_lr = self.config.get('train', {}).get('unet_lr', 1e-4)
-        self.max_grad_norm = self.config.get('train', {}).get('max_grad_norm', 1.0)
-        self.noise_scheduler_name = self.config.get('train', {}).get('noise_scheduler', 'ddim')
-        self.max_denoising_steps = self.config.get('train', {}).get('max_denoising_steps', 50)
-
-        # Initialize optimizer
-        self.optimizer = Adam(
-            [
-                {"params": self.model.pipeline.text_encoder.parameters(), "lr": self.text_encoder_lr},
-                {"params": self.model.network.parameters(), "lr": self.unet_lr}
-            ],
-            lr=self.lr
-        )
+        self.setup_optimizer()
+        self.verbose = self.config.get("verbose")
 
         # Initialize scheduler if needed
         self.lr_scheduler = train_util.get_scheduler_fix(self.config, self.optimizer)
@@ -52,159 +40,293 @@ class SemipermeableMembraneTrainer:
         # Define loss criterion
         self.criterion = MSELoss()
 
-    def train(self):
+    def setup_optimizer(self,*args, **kwargs): 
+        """
+        Setup the optimizer
+        """
+        lr = self.config.get('train', {}).get('lr', 1e-4)
+        text_encoder_lr = self.config.get('train', {}).get('text_encoder_lr', 5e-5)
+        unet_lr = self.config.get('train', {}).get('unet_lr', 1e-4)
+
+        self.trainable_params = self.model.prepare_optimizer_params(
+            text_encoder_lr, unet_lr, lr
+        )
+
+        optimizer_name, optimizer_args, self.optimizer = train_util.get_optimizer(
+            self.config, self.trainable_params
+        )
+
+    @staticmethod
+    def flush_cache():
+        """
+        Flush the cache.
+        """
+        torch.cuda.empty_cache()
+        gc.collect()
+    
+    def train(self, *args, **kwargs):
         """
         Execute the training process.
         """
-        add_prompts = self.config.get('add_prompts', False)
-        guided_concepts = self.config.get('guided_concepts')
-        preserve_concepts = self.config.get('preserve_concepts')
+        iterations = self.config.get('train', {}).get('iterations', 1000)
+        max_denoising_steps = self.config.get('train', {}).get('max_denoising_steps', 1000)
+        verbose = self.config.get('verbose')
+        max_grad_norm = self.config.get('train', {}).get('max_grad_norm', 0)
+        prompts = self.data_handler.load_data()
+        rank = self.config.get('network', {}).get('rank', 1)
+        alpha = self.config.get('network', {}).get('alpha', 1.0)
+        save_per_steps = self.config.get('save', {}).get('per_steps', 1000)
+        train_iterations = self.config.get('train', {}).get('iterations', 1000)
 
-        # Prepare prompts using data handler
-        old_texts, new_texts, retain_texts = self.data_handler.prepare_prompts(
-            add_prompts=add_prompts,
-            guided_concepts=guided_concepts,
-            preserve_concepts=preserve_concepts
-        )
+        self.model.model_metadata =  {
+            "prompts": ",".join([prompt.target for prompt in prompts]),
+            "rank": str(rank),
+            "alpha": str(alpha),
+        }
 
-        # Initialize prompt embedding cache
+
         cache = PromptEmbedsCache()
-        prompt_pairs: List[PromptEmbedsPair] = []
+        prompt_pairs: list[PromptEmbedsPair] = []
 
         with torch.no_grad():
-            for target, positive, neutral, unconditional in self._load_prompts():
-                # Encode prompts
-                for prompt in [target, positive, neutral, unconditional]:
-                    if cache[prompt] is None:
+            for settings in prompts:
+                for prompt in [
+                    settings.target,
+                    settings.positive,
+                    settings.neutral,
+                    settings.unconditional,
+                ]:
+                    if cache[prompt] == None:
                         cache[prompt] = train_util.encode_prompts(
-                            self.model.pipeline.tokenizer, self.model.pipeline.text_encoder, [prompt]
+                            self.model.tokenizer, self.model.text_encoder , [prompt]
                         )
 
-                # Create PromptEmbedsPair
                 prompt_pair = PromptEmbedsPair(
-                    criteria=self.criterion,
-                    target=cache[target],
-                    positive=cache[positive],
-                    unconditional=cache[unconditional],
-                    neutral=cache[neutral],
-                    settings=None  # Update if PromptSettings are used
+                    self.criterion,
+                    cache[settings.target],
+                    cache[settings.positive],
+                    cache[settings.unconditional],
+                    cache[settings.neutral],
+                    settings,
                 )
-
+                assert prompt_pair.sampling_batch_size % prompt_pair.batch_size == 0
                 prompt_pairs.append(prompt_pair)
-                self.logger.info(f"Encoded prompt: {target}")
+                print(f"norm of target: {prompt_pair.target.norm()}")
 
         self.logger.info(f"Total prompt pairs: {len(prompt_pairs)}")
 
-        # Begin training loop
-        for step in range(1, self.iterations + 1):
-            self.optimizer.zero_grad()
+        SemipermeableMembraneTrainer.flush_cache()
 
-            # Select a random prompt pair
-            prompt_pair = prompt_pairs[torch.randint(0, len(prompt_pairs), (1,)).item()]
+        pbar = tqdm(range(iterations))
+        loss = None
 
-            # Sample timesteps
-            timesteps_to = torch.randint(
-                1, self.max_denoising_steps, (1,)
-            ).item()
+        for i in pbar:
+            with torch.no_grad():
+                self.model.noise_scheduler.set_timesteps(
+                    max_denoising_steps, device=self.device
+                )
 
-            # Generate latents
-            latents = train_util.get_initial_latents(
-                noise_scheduler=self._get_noise_scheduler(),
-                batch_size=prompt_pair.batch_size,
-                height=prompt_pair.resolution,
-                width=prompt_pair.resolution,
-                num_channels=1
-            ).to(self.device, dtype=self.model.weight_dtype)
+                self.optimizer.zero_grad()
 
-            # Forward pass through SPM network
-            denoised_latents = self.model.network(
-                latents=latents,
-                embeddings=train_util.concat_embeddings(
-                    prompt_pair.unconditional,
-                    prompt_pair.target,
-                    prompt_pair.batch_size
-                ),
-                timesteps=timesteps_to,
-                guidance_scale=3
-            )
+                prompt_pair: PromptEmbedsPair = prompt_pairs[
+                    torch.randint(0, len(prompt_pairs), (1,)).item()
+                ]
 
-            # Predict noise using unet
-            noise_scheduler = self._get_noise_scheduler()
-            noise_scheduler.set_timesteps(self.max_denoising_steps, device=self.device)
-            denoised_latents = denoised_latents.to(self.device)
-            target_latents = train_util.predict_noise(
-                unet=self.model.pipeline.unet,
-                noise_scheduler=noise_scheduler,
-                timesteps_to=timesteps_to,
-                denoised_latents=denoised_latents,
-                embeddings=train_util.concat_embeddings(
-                    prompt_pair.unconditional,
-                    prompt_pair.target,
-                    prompt_pair.batch_size
-                ),
-                guidance_scale=1
-            )
+                timesteps_to = torch.randint(
+                    1, max_denoising_steps, (1,)
+                ).item()
 
-            # Compute loss
+                height, width = (
+                    prompt_pair.resolution,
+                    prompt_pair.resolution,
+                )
+                if prompt_pair.dynamic_resolution:
+                    height, width = train_util.get_random_resolution_in_bucket(
+                        prompt_pair.resolution
+                    )
+
+                if verbose:
+                    print("guidance_scale:", prompt_pair.guidance_scale)
+                    print("resolution:", prompt_pair.resolution)
+                    print("dynamic_resolution:", prompt_pair.dynamic_resolution)
+                    if prompt_pair.dynamic_resolution:
+                        print("bucketed resolution:", (height, width))
+                    print("batch_size:", prompt_pair.batch_size)
+
+                latents = train_util.get_initial_latents(
+                    self.model.noise_scheduler, prompt_pair.batch_size, height, width, 1
+                ).to(self.device, dtype=self.model.weight_dtype)
+
+                with self.network:
+                    denoised_latents = train_util.diffusion(
+                        self.model.unet,
+                        self.model.noise_scheduler,
+                        latents,
+                        train_util.concat_embeddings(
+                            prompt_pair.unconditional,
+                            prompt_pair.target,
+                            prompt_pair.batch_size,
+                        ),
+                        start_timesteps=0,
+                        total_timesteps=timesteps_to,
+                        guidance_scale=3,
+                    )
+
+                self.model.noise_scheduler.set_timesteps(1000)
+
+                current_timestep = self.model.noise_scheduler.timesteps[
+                    int(timesteps_to * 1000 / max_denoising_steps)
+                ]
+
+                positive_latents = train_util.predict_noise(
+                    self.model.unet,
+                    self.model.noise_scheduler,
+                    current_timestep,
+                    denoised_latents,
+                    train_util.concat_embeddings(
+                        prompt_pair.unconditional,
+                        prompt_pair.positive,
+                        prompt_pair.batch_size,
+                    ),
+                    guidance_scale=1,
+                ).to("cpu", dtype=torch.float32)
+                neutral_latents = train_util.predict_noise(
+                    self.model.unet,
+                    self.model.noise_scheduler,
+                    current_timestep,
+                    denoised_latents,
+                    train_util.concat_embeddings(
+                        prompt_pair.unconditional,
+                        prompt_pair.neutral,
+                        prompt_pair.batch_size,
+                    ),
+                    guidance_scale=1,
+                ).to("cpu", dtype=torch.float32)
+
+            with self.network:
+                target_latents = train_util.predict_noise(
+                    self.model.unet,
+                    self.model.noise_scheduler,
+                    current_timestep,
+                    denoised_latents,
+                    train_util.concat_embeddings(
+                        prompt_pair.unconditional,
+                        prompt_pair.target,
+                        prompt_pair.batch_size,
+                    ),
+                    guidance_scale=1,
+                ).to("cpu", dtype=torch.float32)
+
+            # ------------------------- latent anchoring part -----------------------------
+
+            if prompt_pair.action == "erase_with_la":
+                # noise sampling
+                anchors = sample(prompt_pair, tokenizer=self.model.tokenizer, text_encoder=self.model.text_encoder)
+
+                # get latents
+                repeat = prompt_pair.sampling_batch_size // prompt_pair.batch_size
+                with self.network:
+                    anchor_latents = train_util.predict_noise(
+                        self.model.unet,
+                        self.model.noise_scheduler,
+                        current_timestep,
+                        denoised_latents.repeat(repeat, 1, 1, 1),
+                        anchors,
+                        guidance_scale=1,
+                    ).to("cpu", dtype=torch.float32)
+
+                with torch.no_grad():
+                    anchor_latents_ori = train_util.predict_noise(
+                        self.model.unet,
+                        self.model.noise_scheduler,
+                        current_timestep,
+                        denoised_latents.repeat(repeat, 1, 1, 1),
+                        anchors,
+                        guidance_scale=1,
+                    ).to("cpu", dtype=torch.float32)
+                anchor_latents_ori.requires_grad_ = False
+
+            else:
+                anchor_latents = None
+                anchor_latents_ori = None
+
+            positive_latents.requires_grad = False
+            neutral_latents.requires_grad = False
+
             loss = prompt_pair.loss(
                 target_latents=target_latents,
-                positive_latents=None,  # Update if positive latents are used
-                neutral_latents=None,   # Update if neutral latents are used
-                anchor_latents=None,    # Update if anchor latents are used
-                anchor_latents_ori=None
+                positive_latents=positive_latents,
+                neutral_latents=neutral_latents,
+                anchor_latents=anchor_latents,
+                anchor_latents_ori=anchor_latents_ori,
             )
 
-            # Backward pass
             loss["loss"].backward()
-
-            # Gradient clipping
-            if self.max_grad_norm > 0:
+            if max_grad_norm > 0:
                 torch.nn.utils.clip_grad_norm_(
-                    self.model.pipeline.text_encoder.parameters(), self.max_grad_norm
+                    self.trainable_params, max_grad_norm, norm_type=2
                 )
-                torch.nn.utils.clip_grad_norm_(
-                    self.model.network.parameters(), self.max_grad_norm
-                )
-
-            # Optimizer step
             self.optimizer.step()
             self.lr_scheduler.step()
 
-            # Logging
-            if step % 100 == 0 or step == 1:
-                self.logger.info(f"Step {step}/{self.iterations}: Loss={loss['loss'].item()}")
+            pbar.set_description(f"Loss*1k: {loss['loss'].item()*1000:.4f}")
 
-            # Save checkpoints
-            if step % self.config.get('save', {}).get('per_steps', 200) == 0:
-                output_path = self.config.get('save', {}).get('path', 'checkpoints/')
-                output_name = f"{self.config.get('save', {}).get('name', 'spm_model')}_step{step}.safetensors"
-                full_save_path = f"{output_path}/{output_name}"
-                self.model.save_model(full_save_path)
-                self.logger.info(f"Checkpoint saved at {full_save_path}")
+                    # save model
+            if (
+                i % save_per_steps == 0
+                and i != 0
+                and i != train_iterations - 1
+            ):
+                self.logger.info("Saving...")
+                # Create output directory if it doesn't exist
+                output_dir = Path(self.config.get("output_dir", "./outputs"))
+                output_dir.mkdir(parents=True, exist_ok=True)
 
-            # Clean up
-            del loss
-            torch.cuda.empty_cache()
+                output_name = output_dir / f"semipermeable_membrane_{self.config.get('template_name')}_{i}_steps.safetensors"
 
-        # Save the final model
-        final_model_path = f"{self.config.get('save', {}).get('path', 'checkpoints/')}/{self.config.get('save', {}).get('name', 'spm_model')}_final.safetensors"
-        self.model.save_model(final_model_path)
-        self.logger.info(f"Training completed. Final model saved at {final_model_path}.")
+                self.model.save_model(
+                    self.network,
+                    output_name,
+                    dtype=self.model.save_weight_dtype,
+                    metadata=self.model.model_metadata,
+                )
+        
+            del (
+                positive_latents,
+                neutral_latents,
+                target_latents,
+                latents,
+                anchor_latents,
+                anchor_latents_ori,
+            )
+            
+            SemipermeableMembraneTrainer.flush_cache()
 
-    def _get_noise_scheduler(self):
-        """
-        Initialize and return the noise scheduler based on the configuration.
-        """
-        return model_util.get_noise_scheduler(
-            scheduler_name=self.noise_scheduler_name,
-            device=self.device
+
+        self.logger.info("Saving...")
+
+        # Create output directory if it doesn't exist
+        output_dir = Path(self.config.get("output_dir", "./outputs"))
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        output_name = output_dir / f"semipermeable_membrane_{self.config.get('template_name')}_last.safetensors"
+
+        self.model.save_model(
+            self.network,
+            output_name,
+            dtype=self.model.save_weight_dtype,
+            metadata=self.model.model_metadata,
         )
 
-    def _load_prompts(self):
-        """
-        Load and yield prompts from the prompts file.
-        """
-        # Implement actual prompt loading logic from prompts_file
-        prompts = prompt_pkg.load_prompts_from_yaml(self.data_handler.prompts_file)
-        for settings in prompts:
-            yield settings.target, settings.positive, settings.neutral, settings.unconditional
+        del (
+            self.model.unet,
+            self.model.noise_scheduler,
+            loss,
+            self.optimizer,
+            self.network,
+        )
+
+        SemipermeableMembraneTrainer.flush_cache()
+
+
+

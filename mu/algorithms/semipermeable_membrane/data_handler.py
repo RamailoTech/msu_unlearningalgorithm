@@ -1,13 +1,10 @@
-# semipermeable_membrane/data_handler.py
+# mu/algorithms/semipermeable_membrane/data_handler.py
 
-from typing import List, Optional, Tuple
+from typing import Any, Dict
 import logging
-from core.base_data_handler import BaseDataHandler
-from datasets.constants import *
-import yaml
-from pathlib import Path
 
-from algorithms.semipermeable_membrane.src.configs.prompt import PromptSettings
+from mu.core import BaseDataHandler
+from mu.algorithms.semipermeable_membrane.src.configs.prompt import PromptSettings
 
 class SemipermeableMembraneDataHandler(BaseDataHandler):
     """
@@ -15,42 +12,39 @@ class SemipermeableMembraneDataHandler(BaseDataHandler):
     Extends the core DataHandler to generate specific prompts based on themes and classes.
     """
 
-
     def __init__(
         self,
-        config,
-        selected_theme: str,
-        selected_class: str,
-        use_sample: bool = False
+        template: str,
+        template_name: str,
+        dataset_type: str = 'unlearncanvas',
+        use_sample: bool = False,
+        config: Dict = None,
     ):
         """
         Initialize the SemipermeableMembraneDataHandler.
 
         Args:
-            selected_theme (str): The specific theme to edit.
-            selected_class (str): The specific class to edit.
+            template (str): Template type ('style' or 'object')
+            template_name (str): Name of the template to use
+            dataset_type (str, optional): Type of dataset to use. Defaults to 'unlearncanvas'.
             use_sample (bool, optional): Flag to use a sample dataset. Defaults to False.
+            config (Dict, optional): Configuration dictionary. Defaults to None.
         """
         super().__init__()
-        self.config = config
-        self.selected_theme = selected_theme
-        self.selected_class = selected_class
+        self.template_name = template_name
+        self.template = template
+        self.dataset_type = dataset_type
         self.use_sample = use_sample
+        self.config = config 
+        self.logger = logging.getLogger(__name__)
 
-        # Select available themes and classes based on use_sample flag
-        if self.use_sample:
-            self.theme_available = uc_sample_theme_available
-            self.class_available = uc_sample_class_available
-            self.logger = logging.getLogger('SemipermeableMembraneDataHandler_Sample')
-            self.logger.info("Using sample themes and classes.")
-        else:
-            self.theme_available = uc_theme_available
-            self.class_available = uc_class_available
-            self.logger = logging.getLogger('SemipermeableMembraneDataHandler_Full')
-            self.logger.info("Using full themes and classes.")
+    def generate_dataset(self, *args, **kwargs):
+        pass 
 
+    def preprocess_data(self, *args, **kwargs):
+        pass 
 
-    def load_prompts(self):
+    def load_data(self,*args, **kwargs):
         """
         Load prompts from the prompts_file.
         Returns:

@@ -6,7 +6,7 @@ import pandas as pd
 from prettytable import PrettyTable
 from cleanfid import fid
 
-from src.configs.generation_config import GenerationConfig
+from mu.algorithms.semipermeable_membrane.src.configs.generation_config import GenerationConfig
 
 from .evaluator import Evaluator, GenerationDataset
 

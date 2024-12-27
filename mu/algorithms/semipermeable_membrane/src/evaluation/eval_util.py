@@ -9,9 +9,9 @@ from typing import List, Union
 from PIL import Image
 import random
 
-from src.engine.train_util import text2img
-from src.configs.config import RootConfig
-from src.misc.clip_templates import imagenet_templates
+from mu.algorithms.semipermeable_membrane.src.engine.train_util import text2img
+from mu.algorithms.semipermeable_membrane.src.configs.config import RootConfig
+from mu.algorithms.semipermeable_membrane.src.misc.clip_templates import imagenet_templates
 
 from torchvision.transforms import CenterCrop, Compose, Normalize, Resize, ToTensor
 from diffusers.pipelines import DiffusionPipeline

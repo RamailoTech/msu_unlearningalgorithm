@@ -9,8 +9,8 @@ from pydantic import BaseModel, root_validator
 from transformers import CLIPTextModel, CLIPTokenizer
 import torch
 
-from src.misc.clip_templates import imagenet_templates
-from src.engine.train_util import encode_prompts
+from mu.algorithms.semipermeable_membrane.src.misc.clip_templates import imagenet_templates
+from mu.algorithms.semipermeable_membrane.src.engine.train_util import encode_prompts
 
 ACTION_TYPES = Literal[
     "erase",

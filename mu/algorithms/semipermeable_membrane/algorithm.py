@@ -1,15 +1,18 @@
-# semipermeable_membrane/algorithm.py
+# mu/algorithms/semipermeable_membrane/algorithm.py
 
-import logging
 import torch
 import wandb
 from typing import Dict
+import logging
+from pathlib import Path
 
-from algorithms.semipermeable_membrane.model import SemipermeableMembraneModel
-from algorithms.semipermeable_membrane.data_handler import SemipermeableMembraneDataHandler
-from algorithms.semipermeable_membrane.trainer import SemipermeableMembraneTrainer
+from mu.core import BaseAlgorithm
 
-class SemipermeableMembraneAlgorithm:
+from mu.algorithms.semipermeable_membrane.model import SemipermeableMembraneModel
+from mu.algorithms.semipermeable_membrane.data_handler import SemipermeableMembraneDataHandler
+from mu.algorithms.semipermeable_membrane.trainer import SemipermeableMembraneTrainer
+
+class SemipermeableMembraneAlgorithm(BaseAlgorithm):
     """
     SemipermeableMembraneAlgorithm orchestrates the setup and training of the SPM method.
     """
@@ -25,7 +28,7 @@ class SemipermeableMembraneAlgorithm:
         self.model = None
         self.trainer = None
         self.data_handler = None
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device(self.config.get('devices', ['cuda:0'])[0])
         self.logger = logging.getLogger(__name__)
         self._setup_components()
 
@@ -37,8 +40,9 @@ class SemipermeableMembraneAlgorithm:
 
         # Initialize Data Handler
         self.data_handler = SemipermeableMembraneDataHandler(
-            selected_theme=self.config.get('theme', ''),
-            selected_class=self.config.get('classes', ''),
+            template=self.config.get('template', ''),
+            template_name=self.config.get('template_name', ''),
+            dataset_type=self.config.get('dataset_type', 'unlearncanvas'),
             use_sample=self.config.get('use_sample', False)
         )
 
@@ -57,16 +61,41 @@ class SemipermeableMembraneAlgorithm:
         """
         Execute the training process.
         """
-        # Initialize WandB
-        wandb.init(
-            project=self.config.get('wandb', {}).get('project', 'semipermeable_membrane_project'),
-            name=self.config.get('wandb', {}).get('name', 'spm_run'),
-            config=self.config
-        )
-        self.logger.info("Initialized WandB for logging.")
+        try:
+            # Initialize WandB with configurable project/run names
+            wandb_config = {
+                "project": self.config.get("wandb_project", "quick-canvas-machine-unlearning"),
+                "name": self.config.get("wandb_run", "Semipermeable Membrane"),
+                "config": self.config
+            }
+            wandb.init(**wandb_config)
+            self.logger.info("Initialized WandB for logging.")
 
-        # Start training
-        self.trainer.train()
+            # Create output directory if it doesn't exist
+            output_dir = Path(self.config.get("output_dir", "./outputs"))
+            output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Finish WandB run
-        wandb.finish()
+            try:
+                # Start training
+                self.trainer.train()
+
+                output_name = output_dir / self.config.get("output_name", f"semipermeable_membrane_{self.config.get('template_name')}_model.pth")
+                
+                # Save to WandB
+                wandb.save(str(output_name))
+                
+
+            except Exception as e:
+                self.logger.error(f"Error during training: {str(e)}")
+                raise
+                
+        except Exception as e:
+            self.logger.error(f"Failed to initialize training: {str(e)}")
+            raise
+
+        finally:
+            # Ensure WandB always finishes
+            if wandb.run is not None:
+                wandb.finish()
+            self.logger.info("Training complete. WandB logging finished.")
+

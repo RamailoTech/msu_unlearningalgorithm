@@ -1,5 +1,3 @@
-# semipermeable_membrane/config/train_config.yaml
-
 pretrained_model:
   name_or_path: "CompVis/stable-diffusion-v1-4"
   v2: false
@@ -25,25 +23,23 @@ train:
   max_denoising_steps: 30
 
 save:
-  name: "Abstractionism"
-  path: "output/Abstractionism"
   per_steps: 500
   precision: float32
 
 other:
   use_xformers: true
 
-wandb:
-  project: "semipermeable_membrane_project"
-  name: "spm_run"
+wandb_project: "semipermeable_membrane_project"
+wandb_run: "spm_run"
 
-# Additional configurations if needed
-
-# semipermeable_membrane/configs/Abstractionism/prompt.yaml
+use_sample: True  # Use the sample dataset for training
+dataset_type : "unlearncanvas"
+template : "style"
+template_name : "Abstractionism"
 
 prompt:
-  target: "Abstractionism"
-  positive: "Abstractionism"
+  target: *template_name
+  positive: *template_name
   unconditional: ""
   neutral: ""
   action: "erase_with_la"
@@ -53,4 +49,13 @@ prompt:
   dynamic_resolution: true
   la_strength: 1000
   sampling_batch_size: 4
+
+devices: "0"  # CUDA devices to train on (comma-separated)
+
+output_dir: "outputs/semipermeable_membrane/finetuned_models"  # Output directory to save results
+
+verbose : True
+
+
+
 

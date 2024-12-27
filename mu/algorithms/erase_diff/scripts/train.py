@@ -7,7 +7,7 @@ import logging
 
 from mu.algorithms.erase_diff import EraseDiffAlgorithm
 from mu.helpers import setup_logger, load_config
-from mu.helpers.path_setup import *
+from mu.helpers.path_setup import logs_dir
 
 def main():
     parser = argparse.ArgumentParser(

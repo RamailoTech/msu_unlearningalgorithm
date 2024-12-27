@@ -8,7 +8,7 @@ from nudenet import NudeDetector, NudeClassifier
 from prettytable import PrettyTable
 from tqdm import tqdm
 
-from src.configs.generation_config import GenerationConfig
+from mu.algorithms.semipermeable_membrane.src.configs.generation_config import GenerationConfig
 
 from .evaluator import Evaluator, GenerationDataset
 
