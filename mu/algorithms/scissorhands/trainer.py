@@ -6,8 +6,7 @@ import copy
 
 from mu.core import BaseTrainer
 from mu.algorithms.scissorhands.model import ScissorHandsModel
-from mu.algorithms.scissorhands.data_handler import EraseDiffDataHandler
-
+from mu.algorithms.scissorhands.data_handler import ScissorHandsDataHandler
 
 from mu.algorithms.scissorhands.utils import snip, project2cone2
 
@@ -17,7 +16,7 @@ class ScissorHandsTrainer(BaseTrainer):
     Handles the training loop, loss computation, and optimization.
     """
 
-    def __init__(self, model: ScissorHandsModel, config: dict, device: str,  data_handler: EraseDiffDataHandler, **kwargs):
+    def __init__(self, model: ScissorHandsModel, config: dict, device: str,  data_handler: ScissorHandsDataHandler, **kwargs):
         """
         Initialize the ScissorHandsTrainer.
 
@@ -135,17 +134,17 @@ class ScissorHandsTrainer(BaseTrainer):
         forget_batch = {"edited": forget_images.to(self.device), "edit": {"c_crossattn": forget_prompts}}
         pseudo_batch = {"edited": forget_images.to(self.device), "edit": {"c_crossattn": pseudo_prompts}}
 
-        forget_input, forget_emb = self.model.model.get_input(forget_batch, self.model.model.first_stage_key)
-        pseudo_input, pseudo_emb = self.model.model.get_input(pseudo_batch, self.model.model.first_stage_key)
+        forget_input, forget_emb = self.model.get_input(forget_batch, self.model.first_stage_key)
+        pseudo_input, pseudo_emb = self.model.get_input(pseudo_batch, self.model.first_stage_key)
 
-        t = torch.randint(0, self.model.model.num_timesteps, (forget_input.shape[0],), device=self.device).long()
+        t = torch.randint(0, self.model.num_timesteps, (forget_input.shape[0],), device=self.device).long()
         noise = torch.randn_like(forget_input, device=self.device)
 
-        forget_noisy = self.model.model.q_sample(x_start=forget_input, t=t, noise=noise)
-        pseudo_noisy = self.model.model.q_sample(x_start=pseudo_input, t=t, noise=noise)
+        forget_noisy = self.model.q_sample(x_start=forget_input, t=t, noise=noise)
+        pseudo_noisy = self.model.q_sample(x_start=pseudo_input, t=t, noise=noise)
 
-        forget_out = self.model.model.apply_model(forget_noisy, t, forget_emb)
-        pseudo_out = self.model.model.apply_model(pseudo_noisy, t, pseudo_emb).detach()
+        forget_out = self.model.apply_model(forget_noisy, t, forget_emb)
+        pseudo_out = self.model.apply_model(pseudo_noisy, t, pseudo_emb).detach()
 
         forget_loss = self.criteria(forget_out, pseudo_out)
         return forget_loss
@@ -162,7 +161,7 @@ class ScissorHandsTrainer(BaseTrainer):
             remain_loss: Loss for remaining images.
         """
         remain_batch = {"edited": remain_images.to(self.device), "edit": {"c_crossattn": remain_prompts}}
-        remain_loss = self.model.model.shared_step(remain_batch)[0]
+        remain_loss = self.model.shared_step(remain_batch)[0]
         return remain_loss
 
     def prepare_projection(self, forget_dl):

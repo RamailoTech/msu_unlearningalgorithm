@@ -1,76 +1,78 @@
-# saliency_unlearning/scripts/train.py
+# mu/algorithms/saliency_unlearning/scripts/train.py
 
-import os
-import sys
-import torch
-from tqdm import tqdm
 import argparse
+import os
+from pathlib import Path
 import logging
 
-from algorithms.saliency_unlearning.algorithm import SaliencyUnlearnAlgorithm
-from algorithms.saliency_unlearning.logger import setup_logger
+from mu.algorithms.saliency_unlearning.algorithm import SaliencyUnlearnAlgorithm
+from mu.helpers import setup_logger, load_config
+from mu.helpers.path_setup import *
 
-if __name__ == '__main__':    
+
+def main():
     parser = argparse.ArgumentParser(
         prog='SaliencyUnlearnTrain',
         description='Finetuning stable diffusion model to perform saliency-based unlearning.')
 
-    # Dataset directories
-    parser.add_argument('--original_data_dir', type=str, required=False,default='/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/quick-canvas-benchmark',
-                        help='Directory containing the original dataset organized by themes and classes.')
-    parser.add_argument('--new_data_dir', type=str, required=False,default='/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/erase_diff/data',
-                        help='Directory where the new datasets will be saved.')
-
-
-    parser.add_argument('--theme', type=str, required=True, help='Concept or theme to unlearn')
-    parser.add_argument('--classes', type=str, required=True, help='Class or objects to unlearn')
-    parser.add_argument('--train_method', help='Method of training', type=str, default="xattn",
+    parser.add_argument('--config_path', help='Config path for Stable Diffusion', type=str,
+                        required=True)
+    
+    parser.add_argument('--alpha', help='Guidance scale for loss combination', type=float, )
+    parser.add_argument('--epochs', help='Number of epochs to train', type=int)
+    parser.add_argument('--train_method', help='Method of training', type=str,
                         choices=["noxattn", "selfattn", "xattn", "full", "notime", "xlayer", "selflayer"])
-    parser.add_argument('--alpha', help='Guidance scale for loss combination', type=float, required=False, default=0.1)
-    parser.add_argument('--epochs', help='Number of epochs to train', type=int, required=False, default=1)
-    parser.add_argument('--config_path', type=str, required=True)
-    parser.add_argument('--ckpt_path', type=str, required=True)
-    parser.add_argument('--output_dir', help='Output directory for the trained model', type=str, required=True)
-    parser.add_argument('--mask_path', help='Path to the mask file', type=str, required=True)
-    parser.add_argument('--device', help='Device to use for training', type=str, default='cuda:0')
-    parser.add_argument('--use_sample', action='store_true', help='Use the sample dataset for training')
+    parser.add_argument('--model_config_path', type=str, help='Path to the model configuration file')
+
+    
+    # Dataset directories
+    parser.add_argument('--raw_dataset_dir', type=str,
+                        help='Directory containing the original dataset organized by themes and classes.')
+    parser.add_argument('--processed_dataset_dir', type=str,
+                        help='Directory where the new datasets will be saved.')
+    parser.add_argument('--dataset_type', type=str, choices=['unlearncanvas', 'i2p'])
+    parser.add_argument('--template', type=str, choices=['object', 'style', 'i2p'])
+    parser.add_argument('--template_name', type=str, choices=['self-harm', 'Abstractionism'])
+
+    parser.add_argument('--output_dir', help='Output directory for the masks ', type=str)
+    parser.add_argument('--mask_path', help='Path to the mask file', type=str)
+    parser.add_argument('--use_sample', help='Use the sample dataset for training')
 
     # Device configuration
-    parser.add_argument('--devices', help='CUDA devices to train on (comma-separated)', type=str, required=False, default='0')
+    parser.add_argument('--devices', help='CUDA devices to train on (comma-separated)', type=str)
 
     args = parser.parse_args()
-    
-    # Setup logger
-    log_file = os.path.join(args.output_dir, "saliency_unlearning_training.log")
-    logger = setup_logger(log_file=log_file, level=logging.INFO)
-    logger.info("Starting Saliency Unlearning Training")
+
+    # Load default configuration from YAML
+    config = load_config(args.config_path)
 
 
     # Prepare output directory
-    output_name = os.path.join(args.output_dir, f"{args.theme}.pth")
-    os.makedirs(args.output_dir, exist_ok=True)
-    logger.info(f"Saving the model to {output_name}")
+    output_name = os.path.join(args.output_dir or config.get('output_dir', 'results'), f"{args.template_name or config.get('template_name', 'self-harm')}.pth")
+    os.makedirs(args.output_dir or config.get('output_dir', 'results'), exist_ok=True)
 
-    # Set device
-    devices = [f'cuda:{int(d.strip())}' for d in args.devices.split(',')]
+    # Parse devices
+    devices = (
+        [f'cuda:{int(d.strip())}' for d in args.devices.split(',')]
+        if args.devices
+        else [f'cuda:{int(d.strip())}' for d in config.get('devices').split(',')]
+    )
 
-    config = {
-        'train_method': args.train_method,
-        'alpha': args.alpha,
-        'config_path': args.config_path,
-        'ckpt_path': args.ckpt_path,
-        'original_data_dir': args.original_data_dir,
-        'new_data_dir': args.new_data_dir,
-        'output_dir': args.output_dir,
-        'theme': args.theme,
-        'class': args.classes,
-        'devices': devices,
-        'output_name': output_name,
-        'mask_path' : args.mask_path,
-        'epochs': args.epochs,
-        'use_sample':args.use_sample
-    }
+    # Update configuration only if arguments are explicitly provided
+    for key, value in vars(args).items():
+        if value is not None:  # Update only if the argument is provided
+            config[key] = value
 
-    # Initialize and run the algorithm
+    # Ensure devices are properly set
+    config['devices'] = devices
+
+    # Setup logger
+    log_file = os.path.join(logs_dir, f"saliency_unlearning_masking_{config.get('dataset_type')}_{config.get('template')}_{config.get('template_name')}.log")
+    logger = setup_logger(log_file=log_file, level=logging.INFO)
+    logger.info("Starting Saliency Unlearning Masking")
+
     algorithm = SaliencyUnlearnAlgorithm(config)
-    trained_model = algorithm.run()
+    algorithm.run()
+
+if __name__ == '__main__':
+    main()

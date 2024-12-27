@@ -1,11 +1,12 @@
-# algorithms/saliency_unlearning/model.py
+# mu/algorithms/saliency_unlearning/model.py
 
-from core.base_model import BaseModel
-from stable_diffusion.ldm.util import instantiate_from_config
-from omegaconf import OmegaConf
 import torch
 from pathlib import Path
 from typing import Any, Dict
+
+from mu.core import BaseModel
+from mu.helpers import load_model_from_config
+
 
 class SaliencyUnlearnModel(BaseModel):
     """
@@ -13,49 +14,39 @@ class SaliencyUnlearnModel(BaseModel):
     Incorporates mask application for saliency-based unlearning.
     """
 
-    def __init__(self, config_path: str, ckpt_path: str, mask: Dict[str, torch.Tensor], device: str):
+    def __init__(self, model_config_path: str, ckpt_path: str, mask: Dict[str, torch.Tensor], device: str):
         """
         Initialize the SaliencyUnlearnModel.
 
         Args:
-            config_path (str): Path to the model configuration file.
+            model_config_path (str): Path to the model configuration file.
             ckpt_path (str): Path to the model checkpoint.
             mask (Dict[str, torch.Tensor]): Mask dictionary for saliency.
             device (str): Device to load the model on (e.g., 'cuda:0').
         """
         super().__init__()
         self.device = device
-        self.config_path = config_path
+        self.model_config_path = model_config_path
         self.ckpt_path = ckpt_path
         self.mask = mask
-        self.model = self.load_model(config_path, ckpt_path, device)
+        self.model = self.load_model(model_config_path, ckpt_path, device)
         self.apply_mask()
 
-    def load_model(self, config_path: str, ckpt_path: str, device: str):
+    def load_model(self, model_config_path: str, ckpt_path: str, device: str):
         """
         Load the Stable Diffusion model from config and checkpoint.
 
         Args:
-            config_path (str): Path to the model configuration file.
+            model_config_path (str): Path to the model configuration file.
             ckpt_path (str): Path to the model checkpoint.
             device (str): Device to load the model on.
 
         Returns:
             torch.nn.Module: Loaded Stable Diffusion model.
         """
-        if isinstance(config_path, (str, Path)):
-            config = OmegaConf.load(config_path)
-        else:
-            config = config_path  # If already a config object
 
-        pl_sd = torch.load(ckpt_path, map_location="cpu")
-        sd = pl_sd["state_dict"]
-        model = instantiate_from_config(config.model)
-        model.load_state_dict(sd, strict=False)
-        model.to(device)
-        model.eval()
-        model.cond_stage_model.device = device
-        return model
+        return load_model_from_config(model_config_path, ckpt_path, device)
+
 
     def apply_mask(self):
         """
@@ -68,14 +59,15 @@ class SaliencyUnlearnModel(BaseModel):
                 param.data *= self.mask[name].to(self.device)
                 # Optionally, register hooks if dynamic masking is needed
 
-    def save_model(self, output_path: str):
+    def save_model(self,model, output_path: str):
         """
         Save the trained model's state dictionary.
 
         Args:
             output_path (str): Path to save the model checkpoint.
         """
-        torch.save({"state_dict": self.model.state_dict()}, output_path)
+        torch.save({"state_dict": model.state_dict()}, output_path)
+
 
     def forward(self, input_data: Any) -> Any:
         """

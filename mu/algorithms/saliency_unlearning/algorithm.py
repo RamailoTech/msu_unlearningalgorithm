@@ -3,12 +3,13 @@ import torch
 import wandb
 from typing import Dict
 import logging
+from pathlib import Path
 
-from core.base_algorithm import BaseAlgorithm
-from algorithms.saliency_unlearning.model import SaliencyUnlearnModel
-from algorithms.saliency_unlearning.trainer import SaliencyUnlearnTrainer
-from algorithms.saliency_unlearning.data_handler import SaliencyUnlearnDataHandler
-from algorithms.saliency_unlearning.masking import accumulate_gradients_for_mask, save_mask
+from mu.core import BaseAlgorithm
+from mu.algorithms.saliency_unlearning.model import SaliencyUnlearnModel
+from mu.algorithms.saliency_unlearning.trainer import SaliencyUnlearnTrainer
+from mu.algorithms.saliency_unlearning.data_handler import SaliencyUnlearnDataHandler
+from mu.algorithms.saliency_unlearning.masking import accumulate_gradients_for_mask, save_mask
 
 class SaliencyUnlearnAlgorithm(BaseAlgorithm):
     """
@@ -38,27 +39,30 @@ class SaliencyUnlearnAlgorithm(BaseAlgorithm):
 
         # Initialize Data Handler
         self.data_handler = SaliencyUnlearnDataHandler(
-            original_data_dir=self.config.get('original_data_dir'),
-            new_data_dir=self.config.get('new_data_dir'),
-            mask_path=self.config.get('mask_path'),
-            selected_theme=self.config.get('theme'),
-            selected_class=self.config.get('class'),
+            raw_dataset_dir=self.config.get('raw_dataset_dir'),
+            processed_dataset_dir=self.config.get('processed_dataset_dir'),
+            dataset_type=self.config.get('dataset_type', 'unlearncanvas'),
+            template=self.config.get('template'),
+            template_name=self.config.get('template_name'),
             batch_size=self.config.get('batch_size', 4),
             image_size=self.config.get('image_size', 512),
             interpolation=self.config.get('interpolation', 'bicubic'),
             use_sample=self.config.get('use_sample', False),
             num_workers=self.config.get('num_workers', 4),
             pin_memory=self.config.get('pin_memory', True),
+            mask_path=self.config.get('mask_path'),
             use_mask=True
         )
         
         mask_path=self.config.get('mask_path')
 
+        mask = None
         if mask_path is not None:
             mask = torch.load(mask_path)
+
         # Initialize Model
         self.model = SaliencyUnlearnModel(
-            config_path=self.config.get('config_path'),
+            model_config_path=self.config.get('model_config_path'),
             ckpt_path=self.config.get('ckpt_path'),
             mask=mask,
             device=str(self.device)
@@ -76,25 +80,47 @@ class SaliencyUnlearnAlgorithm(BaseAlgorithm):
         """
         Execute the training process.
         """
-        # Initialize WandB
-        wandb.init(
-            project='quick-canvas-machine-unlearning',
-            name=self.config.get('theme', 'SaliencyUnlearn'),
-            config=self.config
-        )
-        self.logger.info("Initialized WandB for logging.")
 
-        # Start training
-        trained_model = self.trainer.train()
+        try:
+            # Initialize WandB with configurable project/run names
+            wandb_config = {
+                "project": self.config.get("wandb_project", "quick-canvas-machine-unlearning"),
+                "name": self.config.get("wandb_run", "saliency_unlearn"),
+                "config": self.config
+            }
+            wandb.init(**wandb_config)
+            self.logger.info("Initialized WandB for logging.")
 
-        # Save the trained model
-        output_name = self.config.get('output_name', 'saliency_unlearn_model.pth')
-        self.model.save_model(output_name)
-        self.logger.info(f"Trained model saved at {output_name}")
-        wandb.save(output_name)
+            # Create output directory if it doesn't exist
+            output_dir = Path(self.config.get("output_dir", "./outputs"))
+            output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Finish WandB run
-        wandb.finish()
+            try:
+                # Start training
+                model = self.trainer.train()
+
+                # Save final model
+                output_name = output_dir / self.config.get("output_name", f"saliency_unlearning_{self.config.get('template_name')}_model.pth")
+                self.model.save_model(model,output_name)
+                self.logger.info(f"Trained model saved at {output_name}")
+                
+                # Save to WandB
+                wandb.save(str(output_name))
+                
+
+            except Exception as e:
+                self.logger.error(f"Error during training: {str(e)}")
+                raise
+                
+        except Exception as e:
+            self.logger.error(f"Failed to initialize training: {str(e)}")
+            raise
+
+        finally:
+            # Ensure WandB always finishes
+            if wandb.run is not None:
+                wandb.finish()
+            self.logger.info("Training complete. WandB logging finished.")
 
 
 class MaskingAlgorithm(BaseAlgorithm):
@@ -116,11 +142,12 @@ class MaskingAlgorithm(BaseAlgorithm):
         self.logger.info("Setting up components for MaskingAlgorithm...")
         # Initialize Data Handler
         self.data_handler = SaliencyUnlearnDataHandler(
-            original_data_dir=self.config.get('original_data_dir'),
-            new_data_dir=self.config.get('new_data_dir'),
+            raw_dataset_dir=self.config.get('raw_dataset_dir'),
+            processed_dataset_dir=self.config.get('processed_dataset_dir'),
+            dataset_type=self.config.get('dataset_type', 'unlearncanvas'),
+            template=self.config.get('template'),
+            template_name=self.config.get('template_name'),
             mask_path=None,
-            selected_theme=self.config.get('theme', ''),
-            selected_class=self.config.get('class', ''),
             batch_size=self.config.get('batch_size', 4),
             image_size=self.config.get('image_size', 512),
             interpolation=self.config.get('interpolation', 'bicubic'),
@@ -131,7 +158,7 @@ class MaskingAlgorithm(BaseAlgorithm):
 
         # Initialize Model
         self.model = SaliencyUnlearnModel(
-            config_path=self.config.get('config_path'),
+            model_config_path=self.config.get('model_config_path'),
             ckpt_path=self.config.get('ckpt_path'),
             mask={},
             device=str(self.device)
@@ -172,4 +199,5 @@ class MaskingAlgorithm(BaseAlgorithm):
         os.makedirs(output_dir, exist_ok=True)
         mask_path = os.path.join(output_dir, f"{threshold}.pt")
         save_mask(mask, mask_path)
+
         self.logger.info(f"Mask saved at {mask_path}")
