@@ -1,15 +1,18 @@
 ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
-
 # Dataset directories
 raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
-processed_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/forget_me_not/data"
+processed_dataset_dir: "/home/ubuntu/Projects/Palistha/msu_unlearningalgorithm/mu/algorithms/forget_me_not/data"
 dataset_type : "unlearncanvas"
 template : "style"
-template_name : "Abstractionism"
+template_name : &template_name "Abstractionism"
 use_sample: True  # Use the sample dataset for training
 
 use_ti : True 
-ti_weights_path : "outputs/forget_me_not/ti_models/step_inv_500.safetensors"
+ti_weights_path : "outputs/forget_me_not/ti_models/step_inv_10.safetensors"
+
+initializer_tokens: *template_name 
+placeholder_tokens: "<s1>|<s2>|<s3>|<s4>|<s5>|<s6>|<s7>|<s8>|<s9>|<s10>"
+
 
 # Training configuration
 mixed_precision: "fp16"
@@ -31,7 +34,7 @@ num_train_epochs : 1
 lr_warmup_steps : 1 
 lr_num_cycles : 1 
 lr_power : 1.0
-max-steps : 100
+max-steps : 2
 no_real_image : False
 max_grad_norm : 1.0
 checkpointing_steps : 500

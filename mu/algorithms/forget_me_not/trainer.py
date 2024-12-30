@@ -378,7 +378,10 @@ class ForgetMeNotTrainer(BaseTrainer):
                 "Please set gradient_accumulation_steps to 1. This feature will be supported in the future."
             )
         
-        self.logger.info(accelerator.state, main_process_only=False)
+        # self.logger.info(accelerator.state, main_process_only=False)
+        if accelerator.is_main_process:
+            self.logger.info(accelerator.state)
+
 
         # If passed along, set the training seed now.
         if seed is not None:
@@ -473,7 +476,7 @@ class ForgetMeNotTrainer(BaseTrainer):
         train_dataset = ForgetMeNotDataset(
             config = self.config,
             tokenizer=self.model.tokenizer,
-            processed_dataset_dir=self.config.get('processed_dataset_dir'),,
+            processed_dataset_dir=self.config.get('processed_dataset_dir'),
             dataset_type=self.config.get('dataset_type'),
             template_name=self.config.get('template_name'),
             template=self.config.get('template'),
@@ -498,7 +501,7 @@ class ForgetMeNotTrainer(BaseTrainer):
             overrode_max_train_steps = True
 
         lr_scheduler = get_scheduler(
-            lr_scheduler,
+            self.config.get('lr_scheduler', 'linear'),
             optimizer=optimizer,
             num_warmup_steps=lr_warmup_steps * gradient_accumulation_steps,
             num_training_steps=max_train_steps * gradient_accumulation_steps,
@@ -528,7 +531,13 @@ class ForgetMeNotTrainer(BaseTrainer):
         # Move vae and text_encoder to device and cast to weight_dtype
         self.model.vae.to(accelerator.device, dtype=weight_dtype)
         if not train_text_encoder:
-            text_encoder.to(accelerator.device, dtype=weight_dtype)
+            text_encoder = self.model.text_encoder.to(accelerator.device, dtype=weight_dtype)
+        
+        # text_encoder = self.model.text_encoder if train_text_encoder else None
+
+        # Move text_encoder to the appropriate device
+        # if text_encoder is not None:
+        #     text_encoder.to(accelerator.device, dtype=weight_dtype)
 
         # We need to recalculate our total training steps as the size of the training dataloader may have changed.
         num_update_steps_per_epoch = math.ceil(len(train_dataloader) / gradient_accumulation_steps)

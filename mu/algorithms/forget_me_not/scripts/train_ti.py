@@ -36,6 +36,9 @@ def main():
 
     parser.add_argument('--use_sample', help='Use the sample dataset for training')
 
+    parser.add_argument('--devices', type=str, help='CUDA devices to train on (comma-separated)')
+
+
     args = parser.parse_args()
 
     # Load default configuration from YAML
