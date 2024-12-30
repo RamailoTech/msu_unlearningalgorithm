@@ -29,8 +29,18 @@ class ForgetMeNotAlgorithm(BaseAlgorithm):
         self.trainer = None
         self.data_handler = None
         self.logger = logging.getLogger(__name__)
+        self.device = self._get_device()
         self._setup_components()
-        self.device = self.model.device
+        
+    
+    def _get_device(self):
+        """
+        Determine the device to use for training.
+        """
+        devices = self.config.get("devices", ["cuda:0"])
+        if torch.cuda.is_available():
+            return torch.device(devices[0])
+        return torch.device("cpu")
 
     def _setup_components(self):
         """

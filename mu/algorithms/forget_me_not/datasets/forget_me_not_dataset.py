@@ -9,6 +9,9 @@ from lora_diffusion.patch_lora import safe_open, parse_safeloras_embeds, apply_l
 
 from mu.algorithms.forget_me_not.model import ForgetMeNotModel
 from mu.datasets import BaseDataset
+from PIL import Image
+from mu.helpers import read_text_lines
+
 
 
 class ForgetMeNotDataset(BaseDataset):
@@ -49,15 +52,17 @@ class ForgetMeNotDataset(BaseDataset):
 
         self.instance_images_path = []
         self.instance_prompt = []
+        self.instance_data_root = Path(processed_dataset_dir) / template_name / "images.txt"
+        self.instance_images_path = read_text_lines(self.instance_data_root)
 
-        print(f"***************************************", multi_concept, "***************************************")
+        # print(f"***************************************", multi_concept, "***************************************")
 
         concept = None
 
         tok_idx = 1
         token = None
         idempotent_token = True
-        safeloras = safe_open(config.get('ti_weight_path'), framework="pt", device="cpu")
+        safeloras = safe_open(config.get('ti_weights_path'), framework="pt", device="cpu")
         tok_dict = parse_safeloras_embeds(safeloras)
 
         tok_dict = {f"<s{tok_idx + i}>": tok_dict[k] for i, k in enumerate(sorted(tok_dict.keys()))}
@@ -84,29 +89,40 @@ class ForgetMeNotDataset(BaseDataset):
         )
         c, t, num_tok = concept
 
-        p = Path(processed_dataset_dir, c)
+        p = Path(processed_dataset_dir, c) / "images.txt"
         if not p.exists():
             raise ValueError(f"Instance {p} images root doesn't exists.")
 
-        image_paths = list(p.iterdir())
+        # image_paths = list(p.iterdir()) 
         # print(f"***************************************", image_paths, "***************************************")
-        self.instance_images_path = image_paths
+        # self.instance_images_path = image_paths
+     
+        # prompt_lines = read_text_lines(Path(processed_dataset_dir, c, "prompts.txt"))
 
+        # # Generate target tokens and associate with prompts
+        # for i, prompt in enumerate(prompt_lines):
+        #     # Generate a target snippet based on the current index or other logic
+        #     target_snippet = f"{''.join([f'<s{i + 1}>' for i in range(num_tok)])}" if use_added_token else c.replace("-", " ")
+            
+        #     # Append the prompt and target tokens as a tuple
+        #     self.instance_prompt.append((prompt, target_snippet))
+            
         target_snippet = f"{''.join([f'<s{tok_idx + i}>' for i in range(num_tok)])}" if use_added_token else c.replace(
             "-", " ")
         if t == "object":
-            self.instance_prompt += [(f"a {target_snippet} image", target_snippet)] * len(image_paths)
+            self.instance_prompt += [(f"a {target_snippet} image", target_snippet)] * len(self.instance_images_path)
         elif t == "style":
             self.instance_prompt += [(f"an image in {target_snippet} Style", target_snippet)] * len(
-                image_paths)
+                self.instance_images_path)
             
         elif t == "i2p":
             self.instance_prompt += [(f"a {target_snippet} image", target_snippet)] * len(
-                image_paths)
+                self.instance_images_path)
         else:
             raise ValueError("unknown concept type!")
         if use_added_token:
             tok_idx += num_tok
+        
         self.num_instance_images = len(self.instance_images_path)
         self._length = self.num_instance_images
 

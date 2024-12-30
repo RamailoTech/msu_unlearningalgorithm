@@ -1,4 +1,6 @@
 import torch 
+from typing import Any
+
 
 class AttnController:
     def __init__(self) -> None:

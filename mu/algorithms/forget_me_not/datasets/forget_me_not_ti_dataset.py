@@ -12,7 +12,7 @@ import mediapipe as mp
 
 
 from mu.datasets import BaseDataset, UnlearnCanvasDataset, I2PDataset
-
+from mu.helpers import read_text_lines
 # Templates for object and style prompts
 OBJECT_TEMPLATE = [
     "an image of {}"
@@ -75,10 +75,11 @@ class ForgetMeNotTIDataset(BaseDataset):
         self.token_map = token_map
 
         # Validate and load instance images
-        self.instance_data_root = Path(processed_dataset_dir)
+        self.instance_data_root = Path(processed_dataset_dir) / template_name / "images.txt"
         if not self.instance_data_root.exists():
             raise ValueError("Instance images root doesn't exist.")
-        self.instance_images_path = list(self.instance_data_root.iterdir())
+        # self.instance_images_path = list(self.instance_data_root.iterdir())
+        self.instance_images_path = read_text_lines(self.instance_data_root)
         self.num_instance_images = len(self.instance_images_path)
 
         if dataset_type == "unlearncanvas":

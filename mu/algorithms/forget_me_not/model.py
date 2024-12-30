@@ -54,7 +54,7 @@ class ForgetMeNotModel(BaseModel):
         self.placeholder_tokens = placeholder_tokens
         self.token_map = token_map
 
-        ckpt_path = self.config.get('pretrained_model_name_or_path', '')
+        ckpt_path = self.config.get('ckpt_path', '')
         pretrained_vae_name_or_path = self.config.get('pretrained_vae_name_or_path', '')
         placeholder_tokens = self.config.get('placeholder_tokens', []) 
         initializer_tokens = self.config.get('initializer_tokens', [])
@@ -62,10 +62,13 @@ class ForgetMeNotModel(BaseModel):
         type = self.config.get('type', 'train_ti')
         self.load_model(ckpt_path, pretrained_vae_name_or_path, self.placeholder_tokens, self.initializer_tokens, revision, type)
 
-    def load_model(self, pretrained_model_name_or_path, pretrained_vae_name_or_path, placeholder_tokens :  List[str], initializer_tokens:  List[str], revision, type='ti', **args, **kwargs):
+    def load_model(self, pretrained_model_name_or_path, pretrained_vae_name_or_path, placeholder_tokens :  List[str], initializer_tokens:  List[str], revision, type='ti', *args, **kwargs):
         """
         Load the model.
         """
+        if not pretrained_model_name_or_path:
+            raise ValueError("The `pretrained_model_name_or_path` is not provided.")
+    
         if type == 'train_ti':
             tokenizer = CLIPTokenizer.from_pretrained(
                 pretrained_model_name_or_path,
@@ -92,6 +95,8 @@ class ForgetMeNotModel(BaseModel):
             token_ids = tokenizer.encode(init_tok)
             token_list = token_list + token_ids
         assert len(token_list) <= len(placeholder_tokens)
+
+        placeholder_tokens = self.config.get('placeholder_tokens', '').split('|')
 
         for idx, token in enumerate(placeholder_tokens):
             num_added_tokens = tokenizer.add_tokens(token)
