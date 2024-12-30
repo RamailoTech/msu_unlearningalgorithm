@@ -28,9 +28,9 @@ class SemipermeableMembraneAlgorithm(BaseAlgorithm):
         self.model = None
         self.trainer = None
         self.data_handler = None
-        self.device = torch.device(self.config.get('devices', ['cuda:0'])[0])
         self.logger = logging.getLogger(__name__)
         self._setup_components()
+        self.device = self.model.device
 
     def _setup_components(self):
         """
