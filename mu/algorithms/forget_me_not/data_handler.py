@@ -34,9 +34,6 @@ class ForgetMeNotDataHandler(BaseDataHandler):
         # Generate the dataset based on type
         self.generate_dataset()
 
-        # Initialize DataLoaders
-        self.data_loaders = self.get_data_loaders(processed_dataset_dir=self.processed_dataset_dir, tokenizer=tokenizer )
-
     def generate_dataset(self, *args, **kwargs):
         """
         Generate dataset based on the dataset type
@@ -258,18 +255,20 @@ class ForgetMeNotDataHandler(BaseDataHandler):
         return train_dataloader
 
     def load_data(self,         
-                        tokenizer,
-                        token_map: Optional[dict] = None,
-                        class_data_root=None,
-                        class_prompt=None,
-                        size=512,
-                        h_flip=True,
-                        color_jitter=False,
-                        resize=True,
-                        use_face_segmentation_condition=False,
-                        blur_amount: int = 70,
-                        train_batch_size: int = 1,
-                    ) -> Dict[str, DataLoader]:
+                tokenizer,
+                token_map: Optional[dict] = None,
+                class_data_root=None,
+                class_prompt=None,
+                size=512,
+                h_flip=True,
+                color_jitter=False,
+                resize=True,
+                use_face_segmentation_condition=False,
+                blur_amount: int = 70,
+                train_batch_size: int = 1,
+                *args, 
+                **kwargs
+            ) -> Dict[str, DataLoader]:
         """
         Create and return data loaders for training (and optionally validation/test sets).
         
