@@ -81,6 +81,8 @@ def main():
 
     # Ensure devices are properly set
     config['devices'] = devices
+    config['lr'] = float(config['lr'])
+    
 
     # Setup logger
     log_file = os.path.join(logs_dir, f"erase_diff_training_{config.get('dataset_type')}_{config.get('template')}_{config.get('template_name')}.log")
