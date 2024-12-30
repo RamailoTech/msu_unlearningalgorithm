@@ -1,78 +1,102 @@
 #!/bin/bash
 
-# Define URLs for datasets on Hugging Face
-SAMPLE_URL="https://huggingface.co/datasets/dipeshlav/sample-quick-unlearn-canvas/resolve/main/sample-quick-unlearn-canvas.zip"
-FULL_URL="https://huggingface.co/datasets/your-username/your-dataset-name/resolve/main/full-dataset.zip"
-
-# Define output filenames
-SAMPLE_FILE="sample-dataset.zip"
-FULL_FILE="full-dataset.zip"
-
-# Define target directories
-DATA_DIR="./data/quick-canvas-dataset"
-SAMPLE_DIR="$DATA_DIR/sample"
-FULL_DIR="$DATA_DIR/full"
-
-# Create directories if they don't exist
-prepare_directories() {
-  echo "Preparing directories..."
-  mkdir -p "$DATA_DIR"
-}
-
-# Function to download and extract a dataset
-download_and_extract() {
-  local url=$1
-  local output=$2
-  local target_dir=$3
-
-  echo "Downloading $output from Hugging Face..."
-  curl -L -o "$output" "$url"
-  if [ $? -eq 0 ]; then
-    echo "Download complete: $output"
-    echo "Extracting $output to $target_dir..."
-    # Check if the file is a valid ZIP file
-    if file "$output" | grep -q 'Zip archive data'; then
-      unzip -o "$output" -d "$DATA_DIR"
-      if [ $? -eq 0 ]; then
-        echo "Extraction complete: $DATA_DIR"
-        rm "$output"  # Clean up the downloaded ZIP file
-      else
-        echo "Extraction failed."
-      fi
-    else
-      echo "$output is not a valid ZIP file."
-    fi
-  else
-    echo "Download failed: $output"
-  fi
-}
-
-# Main logic to handle arguments
+# Check if the required argument is provided
 if [ "$#" -ne 1 ]; then
-  echo "Usage: $0 {sample|full}"
-  exit 1
+    echo "Usage: $0 <full|sample>"
+    exit 1
 fi
 
-# Parse the argument for sample or full
-case "$1" in
-  sample)
-    URL="$SAMPLE_URL"
-    FILE="$SAMPLE_FILE"
-    TARGET_DIR="$SAMPLE_DIR"
-    ;;
-  full)
-    URL="$FULL_URL"
-    FILE="$FULL_FILE"
-    TARGET_DIR="$FULL_DIR"
-    ;;
-  *)
-    echo "Invalid argument. Usage: $0 {sample|full}"
-    exit 1
-    ;;
+# Dataset type
+DATASET_TYPE=$1
+
+# Repository and URLs
+FULL_REPO="https://huggingface.co/datasets/nebulaanish/quick-canvas-benchmark"
+SAMPLE_ZIP_URL="https://huggingface.co/datasets/dipeshlav/sample-quick-unlearn-canvas/resolve/main/sample-quick-unlearn-canvas.zip"
+
+# Output directories
+BASE_DIR="data/quick-canvas-dataset"
+FULL_DIR="data/quick-canvas-dataset"
+SAMPLE_DIR="data/quick-canvas-dataset"
+
+# Function to check if command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Check for required commands
+check_requirements() {
+    local missing_deps=()
+    
+    if ! command_exists git; then
+        missing_deps+=("git")
+    fi
+    
+    if ! command_exists git-lfs; then
+        missing_deps+=("git-lfs")
+    fi
+    
+    if [ ${#missing_deps[@]} -ne 0 ]; then
+        echo "Error: Missing required dependencies: ${missing_deps[*]}"
+        echo "Please install them before continuing."
+        echo "For Ubuntu/Debian: sudo apt-get install ${missing_deps[*]}"
+        echo "For MacOS: brew install ${missing_deps[*]}"
+        exit 1
+    fi
+}
+
+# Download full dataset using Git LFS
+download_full_dataset() {
+    echo "Downloading full dataset..."
+    
+    mkdir -p "$FULL_DIR"
+    cd "$FULL_DIR" || exit 1
+    
+    git lfs install
+    
+    # Clone the repository with Git LFS
+    mkdir -p "full" && cd "full" 
+    if git clone "$FULL_REPO" .; then
+        echo "Full dataset downloaded successfully to $FULL_DIR"
+    else
+        echo "Error: Failed to download the full dataset"
+        exit 1
+    fi
+}
+
+# Download and extract sample dataset
+download_sample_dataset() {
+    echo "Downloading sample dataset..."
+    mkdir -p "$SAMPLE_DIR"
+    
+    local zip_file="$SAMPLE_DIR/sample-quick-unlearn-canvas.zip"
+    
+    if wget -q --show-progress -O "$zip_file" "$SAMPLE_ZIP_URL"; then
+        echo "Extracting sample dataset..."
+        if unzip -q "$zip_file" -d "$SAMPLE_DIR"; then
+            rm "$zip_file"
+            echo "Sample dataset extracted to $SAMPLE_DIR"
+        else
+            echo "Error: Failed to extract the sample dataset"
+            rm "$zip_file"
+            exit 1
+        fi
+    else
+        echo "Error: Failed to download the sample dataset"
+        exit 1
+    fi
+}
+
+# Main execution
+case "$DATASET_TYPE" in
+    "full")
+        check_requirements
+        download_full_dataset
+        ;;
+    "sample")
+        download_sample_dataset
+        ;;
+    *)
+        echo "Invalid dataset type. Use 'full' or 'sample'."
+        exit 1
+        ;;
 esac
-
-# Prepare directories
-prepare_directories
-
-# Download and extract the selected dataset
-download_and_extract "$URL" "$FILE" "$TARGET_DIR"
