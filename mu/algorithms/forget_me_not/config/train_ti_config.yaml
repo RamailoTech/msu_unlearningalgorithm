@@ -1,0 +1,31 @@
+ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
+
+# Dataset directories
+raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
+processed_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/forget_me_not/data"
+dataset_type : "unlearncanvas"
+template : "style"
+template_name : "Abstractionism"
+use_sample: True  # Use the sample dataset for training
+
+# Training configuration
+initializer_tokens : *template_name
+steps : 500
+lr : 1e-4
+weight_decay_ti : 0.1
+seed : 42
+placeholder_tokens : "<s1>|<s2>|<s3>|<s4>|<s5>|<s6>|<s7>|<s8>|<s9>|<s10>"
+placeholder_token_at_data: "<s>|<s1><s2><s3><s4><s5><s6><s7><s8><s9><s10>"
+gradient_checkpointing: False
+scale_lr : False
+gradient_accumulation_steps:  1
+train_batch_size : 1
+lr_warmup_steps: 100
+
+
+# Output configurations
+output_dir: "outputs/forget_me_not/ti_models"  # Output directory to save results
+
+# Device configuration
+devices: "0"  # CUDA devices to train on (comma-separated)
+

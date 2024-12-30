@@ -1,11 +1,16 @@
-# forget_me_not/data_handler.py
+# mu/algorithms/forget_me_not/data_handler.py
 
-from typing import Any, Dict
+import os
+import pandas as pd
+from typing import Any, Dict, Optional
 from torch.utils.data import DataLoader
-from core.base_data_handler import BaseDataHandler
-from algorithms.forget_me_not.datasets.forget_me_not_dataset import ForgetMeNotDataset
-from datasets.constants import * 
-import os 
+import logging
+import torch
+
+from mu.datasets.constants import *
+from mu.core import BaseDataHandler
+from mu.helpers import read_text_lines
+from mu.algorithms.forget_me_not.datasets.forget_me_not_ti_dataset import ForgetMeNotTIDataset
 
 class ForgetMeNotDataHandler(BaseDataHandler):
     """
@@ -13,51 +18,258 @@ class ForgetMeNotDataHandler(BaseDataHandler):
     Extends the BaseDataHandler to manage data loading, preprocessing, and data loader creation.
     """
 
-    def __init__(self, config: Dict):
+    def __init__(self, config: Dict, tokenizer):
         super().__init__()
         self.config = config
-        self.original_data_dir = self.config.get('original_data_dir', '.')
-        self.new_data_dir = self.config.get('new_data_dir', '.')
-        self.theme = self.config.get('theme', '')
-        self.classes = self.config.get('classes', '')
-        self.use_sample = self.config.get('use_sample', False)
+        self.raw_dataset_dir = config.get('raw_dataset_dir')
+        self.processed_dataset_dir = config.get('processed_dataset_dir')
+        self.template = config.get('template')
+        self.template_name = config.get('template_name')
+        self.dataset_type = config.get('dataset_type', 'unlearncanvas')
+        self.use_sample = config.get('use_sample', False)
 
-    def setup(self, **kwargs):
-        """
-        Perform any setup required before loading/preprocessing data.
-        """
-        # If any special setup is needed before data loading, implement here.
+        # Initialize logger
+        self.logger = logging.getLogger(__name__)
+
+        # Generate the dataset based on type
         self.generate_dataset()
-                    
-    def load_data(self, data_path: str) -> Any:
-        """
-        Load data from the specified path.
-        
-        Args:
-            data_path (str): Path to the data.
-        
-        Returns:
-            Any: Loaded data (e.g., dataset object).
-        """
-        # In this example, we'll rely on the dataset itself to handle loading logic.
-        # If you need to load from disk or do something special before creating the dataset, implement here.
-        return None
 
-    def preprocess_data(self, data: Any) -> Any:
-        """
-        Preprocess the data (e.g., normalization, augmentation).
-        
-        Args:
-            data (Any): Raw data to preprocess.
-        
-        Returns:
-            Any: Preprocessed data.
-        """
-        # Preprocessing is handled within the ForgetMeNotDataset transformations.
-        # If additional preprocessing is required outside the dataset, implement here.
-        return data
+        # Initialize DataLoaders
+        self.data_loaders = self.get_data_loaders(processed_dataset_dir=self.processed_dataset_dir, tokenizer=tokenizer )
 
-    def get_data_loaders(self, batch_size: int) -> Dict[str, DataLoader]:
+    def generate_dataset(self, *args, **kwargs):
+        """
+        Generate dataset based on the dataset type
+        """
+        if self.dataset_type == 'unlearncanvas':
+            self._generate_dataset_uc()
+        elif self.dataset_type == 'i2p':
+            self._generate_dataset_i2p()
+        else:
+            raise ValueError(f"Unsupported dataset type: {self.dataset_type}")
+        
+    def _generate_dataset_uc(self):
+        """
+        Generate datasets by organizing images into themes and classes.
+        Handles sample datasets if use_sample is enabled.
+        """
+        self.logger.info("Starting dataset generation (UC)...")
+
+        themes = uc_sample_theme_available if self.use_sample else uc_theme_available
+        classes = uc_sample_class_available if self.use_sample else uc_class_available
+
+        classes_range = 3 if self.use_sample else 10
+
+        for theme in themes:
+            theme_dir = os.path.join(self.processed_dataset_dir, theme)
+            os.makedirs(theme_dir, exist_ok=True)
+            prompt_list = []
+            path_list = []
+
+            for class_ in classes:
+                for idx in range(1, 4):
+                    prompt = f"A {class_} image in {theme.replace('_', ' ')} style."
+                    image_path = os.path.join(self.raw_dataset_dir, theme, class_, f"{idx}.jpg")
+                    if os.path.exists(image_path):
+                        prompt_list.append(prompt)
+                        path_list.append(image_path)
+                    else:
+                        self.logger.warning(f"Image not found: {image_path}")
+
+            prompts_txt_path = os.path.join(theme_dir, 'prompts.txt')
+            images_txt_path = os.path.join(theme_dir, 'images.txt')
+
+            with open(prompts_txt_path, 'w') as f:
+                f.write('\n'.join(prompt_list))
+            with open(images_txt_path, 'w') as f:
+                f.write('\n'.join(path_list))
+
+            self.logger.info(f"Generated dataset for theme '{theme}' with {len(path_list)} samples.")
+
+            # For Seed Images
+            seed_theme = "Seed_Images"
+            seed_dir = os.path.join(self.processed_dataset_dir, seed_theme)
+            os.makedirs(seed_dir, exist_ok=True)
+            prompt_list = []
+            path_list = []
+
+            for class_ in classes:
+                for idx in range(1, 4):
+                    prompt = f"A {class_} image in Photo style."
+                    image_path = os.path.join(self.raw_dataset_dir, seed_theme, class_, f"{idx}.jpg")
+                    if os.path.exists(image_path):
+                        prompt_list.append(prompt)
+                        path_list.append(image_path)
+                    else:
+                        self.logger.warning(f"Image not found: {image_path}")
+
+            prompts_txt_path = os.path.join(seed_dir, 'prompts.txt')
+            images_txt_path = os.path.join(seed_dir, 'images.txt')
+
+            with open(prompts_txt_path, 'w') as f:
+                f.write('\n'.join(prompt_list))
+            with open(images_txt_path, 'w') as f:
+                f.write('\n'.join(path_list))
+
+            self.logger.info(f"Generated Seed Images dataset with {len(path_list)} samples.")
+
+            # For Class-based Organization
+            for object_class in classes:
+                class_dir = os.path.join(self.processed_dataset_dir, object_class)
+                os.makedirs(class_dir, exist_ok=True)
+                prompt_list = []
+                path_list = []
+
+                for theme in themes:
+                    for idx in range(1, 4):
+                        prompt = f"A {object_class} image in {theme.replace('_', ' ')} style."
+                        image_path = os.path.join(self.raw_dataset_dir, theme, object_class, f"{idx}.jpg")
+                        if os.path.exists(image_path):
+                            prompt_list.append(prompt)
+                            path_list.append(image_path)
+                        else:
+                            self.logger.warning(f"Image not found: {image_path}")
+
+                prompts_txt_path = os.path.join(class_dir, 'prompts.txt')
+                images_txt_path = os.path.join(class_dir, 'images.txt')
+
+                with open(prompts_txt_path, 'w') as f:
+                    f.write('\n'.join(prompt_list))
+                with open(images_txt_path, 'w') as f:
+                    f.write('\n'.join(path_list))
+
+                self.logger.info(f"Generated dataset for class '{object_class}' with {len(path_list)} samples.")
+        self.logger.info("Dataset generation (UC) completed.")
+
+    def _generate_dataset_i2p(self):
+        """
+        Generate datasets for i2p by organizing images and prompts based on categories.
+        """
+        self.logger.info("Starting dataset generation (I2P)...")
+
+        # Paths for images and prompts
+        images_dir = os.path.join(self.raw_dataset_dir, 'images')
+        prompts_file = os.path.join(self.raw_dataset_dir, 'prompts', 'i2p.csv')
+
+        if not os.path.exists(prompts_file):
+            self.logger.error("Prompts file not found: {prompts_file}")
+            raise FileNotFoundError(f"Prompts file not found: {prompts_file}")
+
+        # Read the CSV file
+        data = pd.read_csv(prompts_file)
+
+        categories = data['categories'].unique()
+
+        for category in categories:
+            category_dir = os.path.join(self.processed_dataset_dir, category)
+            os.makedirs(category_dir, exist_ok=True)
+            prompt_list = []
+            path_list = []
+
+            category_data = data[data['categories'] == category]
+
+            for _, row in category_data.iterrows():
+                prompt = row['prompt']
+                image_path = os.path.join(images_dir, category, f"{row['Unnamed: 0']}.jpg")
+
+                if os.path.exists(image_path):
+                    prompt_list.append(prompt)
+                    path_list.append(image_path)
+                else:
+                    self.logger.warning(f"Image not found: {image_path}")
+
+            prompts_txt_path = os.path.join(category_dir, 'prompts.txt')
+            images_txt_path = os.path.join(category_dir, 'images.txt')
+
+            with open(prompts_txt_path, 'w') as f:
+                f.write('\n'.join(prompt_list))
+            with open(images_txt_path, 'w') as f:
+                f.write('\n'.join(path_list))
+
+            self.logger.info(f"Generated dataset for category '{category}' with {len(path_list)} samples.")
+
+            # Also need to generate Seed Images
+            seed_category = "Seed_Images"
+            seed_dir = os.path.join(self.processed_dataset_dir, seed_category)
+            os.makedirs(seed_dir, exist_ok=True)
+            prompt_list = []
+            path_list = []
+
+            for _, row in category_data.iterrows():
+                prompt = row['prompt']
+                image_path = os.path.join(images_dir, seed_category, f"{row['Unnamed: 0']}.jpg")
+
+                if os.path.exists(image_path):
+                    prompt_list.append(prompt)
+                    path_list.append(image_path)
+                else:
+                    self.logger.warning(f"Image not found: {image_path}")
+
+        self.logger.info("Dataset generation (I2P) completed.")
+
+
+    def _text2img_dataloader(self,train_dataset, train_batch_size, tokenizer):
+        def collate_fn(examples):
+            input_ids = [example["instance_prompt_ids"] for example in examples]
+            uncond_ids = [example["uncond_prompt_ids"] for example in examples]
+            pixel_values = [example["instance_images"] for example in examples]
+
+            # Concat class and instance examples for prior preservation.
+            # We do this to avoid doing two forward passes.
+            if examples[0].get("class_prompt_ids", None) is not None:
+                input_ids += [example["class_prompt_ids"] for example in examples]
+                pixel_values += [example["class_images"] for example in examples]
+
+            pixel_values = torch.stack(pixel_values)
+            pixel_values = pixel_values.to(memory_format=torch.contiguous_format).float()
+
+            input_ids = tokenizer.pad(
+                {"input_ids": input_ids},
+                padding="max_length",
+                max_length=tokenizer.model_max_length,
+                return_tensors="pt",
+            ).input_ids
+
+            uncond_ids = tokenizer.pad(
+                {"input_ids": uncond_ids},
+                padding="max_length",
+                max_length=tokenizer.model_max_length,
+                return_tensors="pt",
+            ).input_ids
+
+            batch = {
+                "input_ids": input_ids,
+                "uncond_ids":uncond_ids,
+                "pixel_values": pixel_values,
+            }
+
+            if examples[0].get("mask", None) is not None:
+                batch["mask"] = torch.stack([example["mask"] for example in examples])
+
+            return batch
+        
+        train_dataloader = torch.utils.data.DataLoader(
+            train_dataset,
+            batch_size=train_batch_size,
+            shuffle=True,
+            collate_fn=collate_fn,
+        )
+
+        return train_dataloader
+
+    def load_data(self,         
+                        tokenizer,
+                        token_map: Optional[dict] = None,
+                        class_data_root=None,
+                        class_prompt=None,
+                        size=512,
+                        h_flip=True,
+                        color_jitter=False,
+                        resize=True,
+                        use_face_segmentation_condition=False,
+                        blur_amount: int = 70,
+                        train_batch_size: int = 1,
+                    ) -> Dict[str, DataLoader]:
         """
         Create and return data loaders for training (and optionally validation/test sets).
         
@@ -66,67 +278,32 @@ class ForgetMeNotDataHandler(BaseDataHandler):
         
         Returns:
             Dict[str, DataLoader]: A dictionary of data loaders.
-        """
-        # Instantiate the ForgetMeNotDataset with parameters from config.
-        dataset = ForgetMeNotDataset(
-            instance_data_root=self.config.get('instance_data_dir', ''),
-            tokenizer=self.config.get('tokenizer'),  # Ensure tokenizer is passed in config
-            token_map=self.config.get('token_map'),
-            use_template=self.config.get('use_template'),
-            class_data_root=self.config.get('class_data_root'),
-            class_prompt=self.config.get('class_prompt'),
-            size=self.config.get('size', 512),
-            h_flip=self.config.get('h_flip', True),
-            color_jitter=self.config.get('color_jitter', False),
-            resize=self.config.get('resize', True),
-            use_face_segmentation_condition=self.config.get('use_face_segmentation_condition', False),
-            blur_amount=self.config.get('blur_amount', 70)
+        """        
+        dataset = ForgetMeNotTIDataset(
+            processed_dataset_dir=self.processed_dataset_dir,
+            dataset_type=self.dataset_type,
+            template_name=self.template_name,
+            template = self.template, 
+            sample=self.use_sample,
+            tokenizer=tokenizer,  # Ensure tokenizer is passed in config
+            token_map=token_map,
+            class_data_root=class_data_root,
+            class_prompt=class_prompt,
+            size=size,
+            h_flip=h_flip,
+            color_jitter=color_jitter,
+            resize=resize,
+            use_face_segmentation_condition=use_face_segmentation_condition,
+            blur_amount=blur_amount
         )
 
-        # Create a DataLoader for the dataset
-        train_loader = DataLoader(
-            dataset,
-            batch_size=batch_size,
-            shuffle=True,
-            num_workers=self.config.get('num_workers', 4),
-            pin_memory=self.config.get('pin_memory', True),
+
+        train_dataloader = self._text2img_dataloader(
+            dataset, train_batch_size, tokenizer
         )
 
-        return {'train': train_loader}
+        return train_dataloader
 
-    def generate_dataset(self):
-        """
-        Generate datasets by organizing images into themes and classes.
-        This method encapsulates the dataset generation logic.
-        """
-        dataset_dir = self.original_data_dir
 
-        # Ensure the base data directory exists
-        os.makedirs(self.new_data_dir, exist_ok=True)
-
-        # Generate datasets for themes
-        for theme in uc_sample_theme_available:
-            theme_dir = os.path.join(self.new_data_dir, theme)
-            os.makedirs(theme_dir, exist_ok=True)
-
-            for i, object_class in enumerate(uc_sample_class_available):
-                source_file = os.path.join(dataset_dir, theme, object_class, '1.jpg')
-                target_file = os.path.join(theme_dir, f'{i}.jpg')
-
-                if os.path.exists(source_file):
-                    os.system(f'cp {source_file} {target_file}')
-                else:
-                    self.logger.warning(f"Source file not found: {source_file}")
-
-        # Generate datasets for object classes
-        for object_class in uc_sample_class_available:
-            for i, theme in enumerate(uc_sample_theme_available):
-                source_file = os.path.join(dataset_dir, theme, object_class, '1.jpg')
-                target_file = os.path.join(self.new_data_dir, theme, f'{i}.jpg')
-
-                if os.path.exists(source_file):
-                    os.system(f'cp {source_file} {target_file}')
-                else:
-                    self.logger.warning(f"Source file not found: {source_file}")
-
-        self.logger.info("Dataset generation completed.")
+    def preprocess_data(self, *args, **kwargs):
+        pass

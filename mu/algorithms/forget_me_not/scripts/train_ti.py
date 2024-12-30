@@ -1,61 +1,75 @@
+# mu/algorithms/forget_me_not/scripts/train_ti.py
+
+
 import argparse
 import os
-import yaml
-from algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from pathlib import Path
+import logging
 
-def load_config(yaml_path):
-    """Loads the configuration from a YAML file."""
-    if os.path.exists(yaml_path):
-        with open(yaml_path, 'r') as file:
-            return yaml.safe_load(file)
-    return {}
+from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from mu.helpers import setup_logger, load_config
+from mu.helpers.path_setup import logs_dir
+
 
 def main():
     parser = argparse.ArgumentParser(description='Forget Me Not - Train TI')
     
-    # Command-line arguments
-    parser.add_argument('--config_path', type=str, default='config/train_ti.yaml',
-                        help='Path to the configuration YAML file.')
-    parser.add_argument('--pretrained_path', type=str, help='Path to the pretrained diffuser directory.')
-    parser.add_argument('--theme', type=str, help='Theme or concept to unlearn.')
-    parser.add_argument('--output_dir', type=str, help='Directory to save outputs and checkpoints.')
-    parser.add_argument('--steps', type=int, help='Number of training steps for TI.')
-    parser.add_argument('--lr', type=float, help='Learning rate for TI training.')
-    parser.add_argument('--instance_data_dir', type=str, help='Directory containing instance images.')
-    parser.add_argument('--use_wandb', action='store_true', help='Use Weights & Biases for logging.')
-    parser.add_argument('--wandb_project', type=str, help='WandB project name.')
-    parser.add_argument('--wandb_name', type=str, help='WandB run name.')
+    parser.add_argument('--config_path', help='Config path for Stable Diffusion', type=str,
+                        required=True)
+    
+    parser.add_argument('--ckpt_path', help='Checkpoint path for Stable Diffusion', type=str)
 
     # Dataset directories
-    parser.add_argument('--original_data_dir', type=str, help='Directory containing the original dataset organized by themes and classes.')
-    parser.add_argument('--new_data_dir', type=str, help='Directory where the new datasets will be saved.')
+    parser.add_argument('--raw_dataset_dir', type=str,
+                        help='Directory containing the original dataset organized by themes and classes.')
+    parser.add_argument('--processed_dataset_dir', type=str,
+                        help='Directory where the new datasets will be saved.')
+    parser.add_argument('--dataset_type', type=str, choices=['unlearncanvas', 'i2p'])
+    parser.add_argument('--template', type=str, choices=['object', 'style', 'i2p'])
+    parser.add_argument('--template_name', type=str, choices=['self-harm', 'Abstractionism'])
+
+    # Output configurations
+    parser.add_argument('--output_dir', help='Output directory to save results', type=str)
+
+    parser.add_argument('--steps', type=int)
+    parser.add_argument('--lr', help='Learning rate used to train', type=float)
+
+    parser.add_argument('--use_sample', help='Use the sample dataset for training')
 
     args = parser.parse_args()
 
     # Load default configuration from YAML
     config = load_config(args.config_path)
 
-    # Override YAML configuration with command-line arguments if provided
-    config.update({
-        'pretrained_model_name_or_path': args.pretrained_path or config.get('pretrained_model_name_or_path'),
-        'theme': args.theme or config.get('theme'),
-        'output_dir': os.path.join(args.output_dir or config.get('output_dir', ''), args.theme or config.get('theme')),
-        'steps': args.steps or config.get('steps', 500),
-        'lr': args.lr or config.get('lr', 1e-4),
-        'instance_data_dir': os.path.join(args.instance_data_dir or config.get('instance_data_dir', 'data'), args.theme or config.get('theme')),
-        'train_batch_size': config.get('train_batch_size', 1),
-        'save_steps': config.get('save_steps', 500),
-        'use_wandb': args.use_wandb or config.get('use_wandb', False),
-        'wandb_project': args.wandb_project or config.get('wandb_project', 'forget_me_not'),
-        'wandb_name': args.wandb_name or config.get('wandb_name', 'ti_run'),
-        'original_data_dir': args.original_data_dir or config.get('original_data_dir'),
-        'new_data_dir': args.new_data_dir or config.get('new_data_dir'),
-        'initializer_tokens': args.theme or config.get('initializer_tokens', args.theme)
-    })
 
-    # Initialize and run the ForgetMeNotAlgorithm for TI training
+    # Prepare output directory
+    output_name = os.path.join(args.output_dir or config.get('output_dir', 'results'), f"{args.template_name or config.get('template_name', 'self-harm')}.pth")
+    os.makedirs(args.output_dir or config.get('output_dir', 'results'), exist_ok=True)
+
+    # Parse devices
+    devices = (
+        [f'cuda:{int(d.strip())}' for d in args.devices.split(',')]
+        if args.devices
+        else [f'cuda:{int(d.strip())}' for d in config.get('devices').split(',')]
+    )
+
+    # Update configuration only if arguments are explicitly provided
+    for key, value in vars(args).items():
+        if value is not None:  # Update only if the argument is provided
+            config[key] = value
+
+    # Ensure devices are properly set
+    config['devices'] = devices
+    config['type'] = 'train_ti'
+
+    # Setup logger
+    log_file = os.path.join(logs_dir, f"forget_me_not_training_ti_{config.get('dataset_type')}_{config.get('template')}_{config.get('template_name')}.log")
+    logger = setup_logger(log_file=log_file, level=logging.INFO)
+    logger.info("Starting Forget Me Not Training ti")
+
+    # Initialize and run the EraseDiff algorithm
     algorithm = ForgetMeNotAlgorithm(config)
-    algorithm.run_ti_training()
+    algorithm.run(train_type='train_ti')
 
 if __name__ == '__main__':
     main()
