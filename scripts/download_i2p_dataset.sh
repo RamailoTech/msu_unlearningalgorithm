@@ -18,6 +18,7 @@ BASE_DIR="data/i2p-dataset"
 FULL_DIR="data/i2p-dataset"
 SAMPLE_DIR="data/i2p-dataset"
 
+
 # Function to check if command exists
 command_exists() {
     command -v "$1" >/dev/null 2>&1
@@ -44,6 +45,18 @@ check_requirements() {
     fi
 }
 
+check_existing_directory() {
+    if [ "$DATASET_TYPE" == "full" ] && [ -d "$FULL_DIR/full" ]; then
+        echo "Error: Directory '$FULL_DIR/full'  already exists. Please remove it before proceeding."
+        exit 1
+    fi
+    
+    if [ "$DATASET_TYPE" == "sample" ] && [ -d "$SAMPLE_DIR/sample" ]; then
+        echo "Error: Directory '$SAMPLE_DIR/sample' already exists. Please remove it before proceeding."
+        exit 1
+    fi
+}
+
 # Download full dataset using Git LFS
 download_full_dataset() {
     echo "Downloading full dataset..."
@@ -64,6 +77,8 @@ download_full_dataset() {
     fi
 
 }
+
+
 
 # Download and extract sample dataset
 download_sample_dataset() {
@@ -89,6 +104,7 @@ download_sample_dataset() {
 }
 
 # Main execution
+check_existing_directory
 case "$DATASET_TYPE" in
     "full")
         check_requirements
