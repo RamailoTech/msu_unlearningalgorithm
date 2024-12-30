@@ -1,5 +1,6 @@
 pretrained_model:
   name_or_path: "CompVis/stable-diffusion-v1-4"
+  ckpt_path: "CompVis/stable-diffusion-v1-4"
   v2: false
   v_pred: false
   clip_skip: 1
@@ -11,7 +12,7 @@ network:
 train:
   precision: float32
   noise_scheduler: "ddim"
-  iterations: 3000
+  iterations: 10 #3000 
   batch_size: 1
   lr: 0.0001
   unet_lr: 0.0001
@@ -35,11 +36,11 @@ wandb_run: "spm_run"
 use_sample: True  # Use the sample dataset for training
 dataset_type : "unlearncanvas"
 template : "style"
-template_name : "Abstractionism"
+template_name: &template_name "Abstractionism"  # Define the anchor
 
 prompt:
-  target: *template_name
-  positive: *template_name
+  target: *template_name  # Use the alias
+  positive: *template_name  # Use the alias
   unconditional: ""
   neutral: ""
   action: "erase_with_la"
@@ -55,7 +56,3 @@ devices: "0"  # CUDA devices to train on (comma-separated)
 output_dir: "outputs/semipermeable_membrane/finetuned_models"  # Output directory to save results
 
 verbose : True
-
-
-
-

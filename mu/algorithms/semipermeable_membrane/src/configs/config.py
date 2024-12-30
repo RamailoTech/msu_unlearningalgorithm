@@ -9,7 +9,7 @@ PRECISION_TYPES = Literal["fp32", "fp16", "bf16", "float32", "float16", "bfloat1
 
 
 class PretrainedModelConfig(BaseModel):
-    name_or_path: str
+    ckpt_path: str
     v2: bool = False
     v_pred: bool = False
     clip_skip: Optional[int] = None

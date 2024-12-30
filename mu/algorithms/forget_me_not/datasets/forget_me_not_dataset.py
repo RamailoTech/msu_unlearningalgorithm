@@ -1,23 +1,15 @@
 # forget_me_not/datasets/forget_me_not_dataset.py
 
-import random
 from pathlib import Path
-from typing import Optional
 
-import cv2
-import numpy as np
-from PIL import Image, ImageFilter
-from datasets.base_dataset import BaseDataset
 from torchvision import transforms
+import torch 
 
-# Templates for object and style prompts
-OBJECT_TEMPLATE = [
-    "an image of {}"
-]
+from lora_diffusion.patch_lora import safe_open, parse_safeloras_embeds, apply_learned_embed_in_clip
 
-STYLE_TEMPLATE = [
-    "an image in {} Style",
-]
+from mu.algorithms.forget_me_not.model import ForgetMeNotModel
+from mu.datasets import BaseDataset
+
 
 class ForgetMeNotDataset(BaseDataset):
     """
@@ -27,170 +19,149 @@ class ForgetMeNotDataset(BaseDataset):
 
     def __init__(
         self,
-        instance_data_root: str,
+        config,
+        processed_dataset_dir,
+        dataset_type,
+        template_name,
+        template, 
+        use_sample,
         tokenizer,
-        token_map: Optional[dict] = None,
-        use_template: Optional[str] = None,
-        class_data_root: Optional[str] = None,
-        class_prompt: Optional[str] = None,
-        size: int = 512,
-        h_flip: bool = True,
-        color_jitter: bool = False,
-        resize: bool = True,
-        use_face_segmentation_condition: bool = False,
-        blur_amount: int = 70
+        size=512,
+        center_crop=False,
+        use_added_token=True,
+        use_pooler=False,
+        use_ti: bool = True,
+        model: ForgetMeNotModel = None,
     ):
         """
         Initialize the ForgetMeNotDataset.
 
         Args:
-            instance_data_root (str): Path to the directory containing instance images.
+            processed_dataset_dir (str): Path to the directory containing instance images.
             tokenizer: Tokenizer object for text prompts.
             token_map (Optional[dict]): A mapping from placeholder tokens to actual strings.
-            use_template (Optional[str]): Determines the template type ("object", "style", or None).
-            class_data_root (Optional[str]): Path to the directory containing class images, if any.
-            class_prompt (Optional[str]): Prompt for class images, if provided.
-            size (int): Resolution to resize images to.
-            h_flip (bool): Whether to apply horizontal flip augmentation.
-            color_jitter (bool): Whether to apply color jitter augmentation.
-            resize (bool): Whether to resize images.
-            use_face_segmentation_condition (bool): Whether to use face segmentation conditioning.
-            blur_amount (int): Amount of Gaussian blur to apply for face segmentation masks.
         """
+        self.use_added_token = use_added_token
+        self.use_pooler = use_pooler
         self.size = size
+        self.center_crop = center_crop
         self.tokenizer = tokenizer
-        self.resize = resize
-        self.h_flip = h_flip
-        self.use_face_segmentation_condition = use_face_segmentation_condition
-        self.blur_amount = blur_amount
-        self.token_map = token_map
 
-        # Validate and load instance images
-        self.instance_data_root = Path(instance_data_root)
-        if not self.instance_data_root.exists():
-            raise ValueError("Instance images root doesn't exist.")
-        self.instance_images_path = list(self.instance_data_root.iterdir())
-        self.num_instance_images = len(self.instance_images_path)
+        self.instance_images_path = []
+        self.instance_prompt = []
 
-        # Select the appropriate template list
-        if use_template == "object":
-            self.templates = OBJECT_TEMPLATE
-        elif use_template == "style":
-            self.templates = STYLE_TEMPLATE
+        print(f"***************************************", multi_concept, "***************************************")
+
+        concept = None
+
+        tok_idx = 1
+        token = None
+        idempotent_token = True
+        safeloras = safe_open(config.get('ti_weight_path'), framework="pt", device="cpu")
+        tok_dict = parse_safeloras_embeds(safeloras)
+
+        tok_dict = {f"<s{tok_idx + i}>": tok_dict[k] for i, k in enumerate(sorted(tok_dict.keys()))}
+        tok_idx += len(tok_dict.keys())
+        if dataset_type == "unlearncanvas":
+            if use_ti:
+                concept = [template_name, template , len(tok_dict.keys())]
+            else: 
+                concept = [template_name, template, -1]
+        
+        if dataset_type == "i2p":
+            if use_ti:
+                concept = [template_name, template , len(tok_dict.keys())]
+            else: 
+                concept = [template_name, template , -1 ]
+
+        # print("---Adding Tokens---:", c, t)
+        apply_learned_embed_in_clip(
+            tok_dict,
+            model.text_encoder,
+            tokenizer,
+            token=token,
+            idempotent=idempotent_token,
+        )
+        c, t, num_tok = concept
+
+        p = Path(processed_dataset_dir, c)
+        if not p.exists():
+            raise ValueError(f"Instance {p} images root doesn't exists.")
+
+        image_paths = list(p.iterdir())
+        # print(f"***************************************", image_paths, "***************************************")
+        self.instance_images_path = image_paths
+
+        target_snippet = f"{''.join([f'<s{tok_idx + i}>' for i in range(num_tok)])}" if use_added_token else c.replace(
+            "-", " ")
+        if t == "object":
+            self.instance_prompt += [(f"a {target_snippet} image", target_snippet)] * len(image_paths)
+        elif t == "style":
+            self.instance_prompt += [(f"an image in {target_snippet} Style", target_snippet)] * len(
+                image_paths)
+            
+        elif t == "i2p":
+            self.instance_prompt += [(f"a {target_snippet} image", target_snippet)] * len(
+                image_paths)
         else:
-            self.templates = [""]
-
+            raise ValueError("unknown concept type!")
+        if use_added_token:
+            tok_idx += num_tok
+        self.num_instance_images = len(self.instance_images_path)
         self._length = self.num_instance_images
 
-        # If class data is provided, load and set up for prior preservation
-        if class_data_root is not None:
-            self.class_data_root = Path(class_data_root)
-            self.class_data_root.mkdir(parents=True, exist_ok=True)
-            self.class_images_path = list(self.class_data_root.iterdir())
-            self.num_class_images = len(self.class_images_path)
-            self._length = max(self.num_class_images, self.num_instance_images)
-            self.class_prompt = class_prompt
-        else:
-            self.class_data_root = None
-
-        # Define image transformations
-        transform_list = []
-        if resize:
-            transform_list.append(
-                transforms.Resize(size, interpolation=transforms.InterpolationMode.BILINEAR)
-            )
-        if color_jitter:
-            transform_list.append(transforms.ColorJitter(0.1, 0.1))
-        transform_list.extend([
-            transforms.ToTensor(),
-            transforms.Normalize([0.5], [0.5]),
-        ])
-        self.image_transforms = transforms.Compose(transform_list)
-
-        # If using face segmentation, load mediapipe
-        if self.use_face_segmentation_condition:
-            import mediapipe as mp
-            mp_face_detection = mp.solutions.face_detection
-            self.face_detection = mp_face_detection.FaceDetection(
-                model_selection=1, min_detection_confidence=0.5
-            )
+        self.image_transforms = transforms.Compose(
+            [
+                transforms.Resize(size, interpolation=transforms.InterpolationMode.BILINEAR),
+                transforms.CenterCrop(size) if center_crop else transforms.RandomCrop(size),
+                transforms.ToTensor(),
+                transforms.Normalize([0.5], [0.5]),
+            ]
+        )
 
     def __len__(self):
         return self._length
 
     def __getitem__(self, index):
         example = {}
+        instance_image = Image.open(self.instance_images_path[index % self.num_instance_images])
+        instance_prompt, target_tokens = self.instance_prompt[index % self.num_instance_images]
 
-        # Load instance image
-        instance_image_path = self.instance_images_path[index % self.num_instance_images]
-        instance_image = Image.open(instance_image_path).convert("RGB")
+        if not instance_image.mode == "RGB":
+            instance_image = instance_image.convert("RGB")
+        example["instance_prompt"] = instance_prompt
         example["instance_images"] = self.image_transforms(instance_image)
 
-        # Prepare text prompt
-        if self.templates and self.token_map is not None:
-            input_tok = list(self.token_map.values())[0]
-            text = random.choice(self.templates).format(input_tok)
-        else:
-            text = instance_image_path.stem
-            if self.token_map is not None:
-                for token, value in self.token_map.items():
-                    text = text.replace(token, value)
-
-        # Face segmentation conditioning if enabled
-        if self.use_face_segmentation_condition:
-            image = cv2.imread(str(instance_image_path))
-            results = self.face_detection.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-            black_image = np.zeros((image.shape[0], image.shape[1]), dtype=np.uint8)
-
-            if results.detections:
-                for detection in results.detections:
-                    x_min = int(detection.location_data.relative_bounding_box.xmin * image.shape[1])
-                    y_min = int(detection.location_data.relative_bounding_box.ymin * image.shape[0])
-                    width = int(detection.location_data.relative_bounding_box.width * image.shape[1])
-                    height = int(detection.location_data.relative_bounding_box.height * image.shape[0])
-                    black_image[y_min: y_min + height, x_min: x_min + width] = 255
-
-            # Apply Gaussian blur to the mask
-            black_mask = Image.fromarray(black_image, mode="L").filter(
-                ImageFilter.GaussianBlur(radius=self.blur_amount)
-            )
-            black_mask = transforms.ToTensor()(black_mask)
-            black_mask = transforms.Resize(self.size, interpolation=transforms.InterpolationMode.BILINEAR)(black_mask)
-            example["mask"] = black_mask
-
-        # Apply random horizontal flip
-        if self.h_flip and random.random() > 0.5:
-            hflip = transforms.RandomHorizontalFlip(p=1)
-            example["instance_images"] = hflip(example["instance_images"])
-            if self.use_face_segmentation_condition and "mask" in example:
-                example["mask"] = hflip(example["mask"])
-
-        # Tokenize prompts
         example["instance_prompt_ids"] = self.tokenizer(
-            text,
-            padding="do_not_pad",
+            instance_prompt,
             truncation=True,
+            padding="max_length",
             max_length=self.tokenizer.model_max_length,
+            return_tensors="pt",
+        ).input_ids
+        prompt_ids = self.tokenizer(
+            instance_prompt,
+            truncation=True,
+            padding="max_length",
+            max_length=self.tokenizer.model_max_length
         ).input_ids
 
-        # Unconditional prompt
-        example["uncond_prompt_ids"] = self.tokenizer(
-            "",
-            padding="do_not_pad",
-            truncation=True,
-            max_length=self.tokenizer.model_max_length,
+        concept_ids = self.tokenizer(
+            target_tokens,
+            add_special_tokens=False
         ).input_ids
 
-        # If class images are used, load and tokenize class prompts
-        if self.class_data_root:
-            class_image_path = self.class_images_path[index % self.num_class_images]
-            class_image = Image.open(class_image_path).convert("RGB")
-            example["class_images"] = self.image_transforms(class_image)
-            example["class_prompt_ids"] = self.tokenizer(
-                self.class_prompt,
-                padding="do_not_pad",
-                truncation=True,
-                max_length=self.tokenizer.model_max_length,
-            ).input_ids
+        pooler_token_id = self.tokenizer(
+            "<|endoftext|>",
+            add_special_tokens=False
+        ).input_ids[0]
+
+        concept_positions = [0] * self.tokenizer.model_max_length
+        for i, tok_id in enumerate(prompt_ids):
+            if tok_id == concept_ids[0] and prompt_ids[i:i + len(concept_ids)] == concept_ids:
+                concept_positions[i:i + len(concept_ids)] = [1] * len(concept_ids)
+            if self.use_pooler and tok_id == pooler_token_id:
+                concept_positions[i] = 1
+        example["concept_positions"] = torch.tensor(concept_positions)[None]
 
         return example

@@ -1,53 +1,74 @@
-# forget_me_not/scripts/train_attn.py
+# mu/algorithms/forget_me_not/scripts/train_attn.py
 
 import argparse
 import os
-from algorithms.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from pathlib import Path
+import logging
+
+
+from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from mu.helpers import setup_logger, load_config
+from mu.helpers.path_setup import logs_dir
+
+
 
 def main():
-    parser = argparse.ArgumentParser(description='Forget Me Not - Train Attention')
-    parser.add_argument('--theme', type=str, required=True, help='Theme or concept to unlearn.')
-    parser.add_argument('--lr', type=float, default=2e-5, help='Learning rate for attention-based training.')
-    parser.add_argument('--max-steps', type=int, default=100, help='Number of training steps for attention training.')
-    parser.add_argument('--ti_weight_path', type=str, required=True, help='Path to TI weights (e.g., from train_ti step).')
-    parser.add_argument('--output_dir', type=str, required=True, help='Directory to save outputs and checkpoints.')
-    parser.add_argument('--only_xa', action='store_true', help='If set, only optimize cross-attention parameters.')
-    parser.add_argument('--instance_data_dir', type=str, default='data', help='Directory containing instance images.')
-    parser.add_argument('--pretrained_path', type=str, default='', help='Path to the pretrained diffuser directory.')
-    parser.add_argument('--use_wandb', action='store_true', help='Use Weights & Biases for logging.')
-    parser.add_argument('--wandb_project', type=str, default='forget_me_not', help='WandB project name.')
-    parser.add_argument('--wandb_name', type=str, default='attn_run', help='WandB run name.')
+    parser = argparse.ArgumentParser(description='Forget Me Not - Train TI')
+    
+    parser.add_argument('--config_path', help='Config path for Stable Diffusion', type=str,
+                        required=True)
+    
+    parser.add_argument('--ckpt_path', help='Checkpoint path for Stable Diffusion', type=str)
 
     # Dataset directories
-    parser.add_argument('--original_data_dir', type=str, required=False,default='/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/quick-canvas-benchmark',
+    parser.add_argument('--raw_dataset_dir', type=str,
                         help='Directory containing the original dataset organized by themes and classes.')
-    parser.add_argument('--new_data_dir', type=str, required=False,default='/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/erase_diff/data',
+    parser.add_argument('--processed_dataset_dir', type=str,
                         help='Directory where the new datasets will be saved.')
-    
+    parser.add_argument('--dataset_type', type=str, choices=['unlearncanvas', 'i2p'])
+    parser.add_argument('--template', type=str, choices=['object', 'style', 'i2p'])
+    parser.add_argument('--template_name', type=str, choices=['self-harm', 'Abstractionism'])
+
+    # Output configurations
+    parser.add_argument('--output_dir', help='Output directory to save results', type=str)
+
+    parser.add_argument('--ti_weights_path', help='Train inversion model weights', type=str)
+    parser.add_argument('--lr', help='Learning rate used to train', type=float)
+    parser.add_argument('--use_sample', help='Use the sample dataset for training')
+
     args = parser.parse_args()
 
-    config = {
-        'original_data_dir': args.original_data_dir,
-        'new_data_dir': args.new_data_dir,
-        'theme': args.theme,
-        'lr': args.lr,
-        'max_steps': args.max_steps,
-        'ti_weight_path': args.ti_weight_path,
-        'output_dir': os.path.join(args.output_dir, args.theme),
-        'instance_data_dir': os.path.join(args.instance_data_dir, args.theme),
-        'train_batch_size': 1,
-        'save_steps': 200,
-        'pretrained_model_name_or_path': args.pretrained_path,
-        'use_wandb': args.use_wandb,
-        'wandb_project': args.wandb_project,
-        'wandb_name': args.wandb_name,
-        'only_optimize_ca': args.only_xa,
-        # Add any additional configurations needed by your data handler, model, or trainer.
-    }
+    # Load default configuration from YAML
+    config = load_config(args.config_path)
 
-    # Initialize and run the ForgetMeNotAlgorithm for attention training
+
+    # Prepare output directory
+    os.makedirs(args.output_dir or config.get('output_dir', 'results'), exist_ok=True)
+
+    # Parse devices
+    devices = (
+        [f'cuda:{int(d.strip())}' for d in args.devices.split(',')]
+        if args.devices
+        else [f'cuda:{int(d.strip())}' for d in config.get('devices').split(',')]
+    )
+
+    # Update configuration only if arguments are explicitly provided
+    for key, value in vars(args).items():
+        if value is not None:  # Update only if the argument is provided
+            config[key] = value
+
+    # Ensure devices are properly set
+    config['devices'] = devices
+    config['type'] = 'train_attn'
+
+    # Setup logger
+    log_file = os.path.join(logs_dir, f"forget_me_not_training_attn_{config.get('dataset_type')}_{config.get('template')}_{config.get('template_name')}.log")
+    logger = setup_logger(log_file=log_file, level=logging.INFO)
+    logger.info("Starting Forget Me Not Training attn")
+
+    # Initialize and run the EraseDiff algorithm
     algorithm = ForgetMeNotAlgorithm(config)
-    algorithm.run_attn_training()
+    algorithm.run(train_type='train_attn')
 
 if __name__ == '__main__':
     main()

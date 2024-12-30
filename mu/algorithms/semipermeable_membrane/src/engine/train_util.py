@@ -342,7 +342,8 @@ def get_add_time_ids(
 
 def get_optimizer(config, trainable_params):
     # "Optimizer to use: AdamW, AdamW8bit, Lion, SGDNesterov, SGDNesterov8bit, PagedAdamW8bit, Lion8bit, PagedLion8bit, DAdaptation(DAdaptAdamPreprint), DAdaptAdaGrad, DAdaptAdam, DAdaptAdan, DAdaptAdanIP, DAdaptLion, DAdaptSGD, Adafactor"
-
+    print("config",config)
+    print("type",type(config))
     optimizer_type = config.train.optimizer_type
     if optimizer_type is None or optimizer_type == "":
         optimizer_type = "AdamW"

@@ -107,7 +107,7 @@ After downloading, verify that the datasets have been correctly extracted:
 
 <br>
 
-### Description of Arguments mask_config.yaml
+### Description of Arguments in mask_config.yaml
 
 The `config/mask_config.yaml` file is a configuration file for generating saliency masks using the `scripts/generate_mask.py` script. It defines various parameters related to the model, dataset, output, and training. Below is a detailed description of each section and parameter:
 
@@ -310,7 +310,7 @@ WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.generate_
 - Run the script:
 
 ```bash
-WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.train \
+python -m mu.algorithms.saliency_unlearning.scripts.train \
 --config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml
 ```
 

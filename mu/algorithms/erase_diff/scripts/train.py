@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import logging
 
-from mu.algorithms.erase_diff import EraseDiffAlgorithm
+from mu.algorithms.erase_diff.algorithm import EraseDiffAlgorithm
 from mu.helpers import setup_logger, load_config
 from mu.helpers.path_setup import logs_dir
 
@@ -81,6 +81,8 @@ def main():
 
     # Ensure devices are properly set
     config['devices'] = devices
+    config['lr'] = float(config['lr'])
+    
 
     # Setup logger
     log_file = os.path.join(logs_dir, f"erase_diff_training_{config.get('dataset_type')}_{config.get('template')}_{config.get('template_name')}.log")

@@ -13,7 +13,7 @@ from timm.utils import AverageMeter
 import logging 
 
 from mu.core import BaseTrainer
-from mu.algorithms.erase_diff import EraseDiffModel
+from mu.algorithms.erase_diff.model import EraseDiffModel
 
 class EraseDiffTrainer(BaseTrainer):
     """
