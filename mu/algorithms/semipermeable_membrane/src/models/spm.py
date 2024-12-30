@@ -100,7 +100,7 @@ class SPMNetwork(nn.Module):
         module_kwargs = None,
     ) -> None:
         super().__init__()
-
+        self.unet = unet
         self.multiplier = multiplier
         self.dim = rank
         self.alpha = alpha

@@ -10,12 +10,15 @@ from pathlib import Path
 from mu.algorithms.semipermeable_membrane.model import SemipermeableMembraneModel
 from mu.algorithms.semipermeable_membrane.data_handler import SemipermeableMembraneDataHandler
 from mu.core import BaseTrainer
-
+from mu.algorithms.semipermeable_membrane.src.models.spm import SPMNetwork
 import mu.algorithms.semipermeable_membrane.src.engine.train_util as train_util
 from mu.algorithms.semipermeable_membrane.src.configs.prompt import PromptEmbedsCache, PromptEmbedsPair, PromptSettings
 from mu.algorithms.semipermeable_membrane.src.engine.sampling import sample
+from mu.algorithms.semipermeable_membrane.src.configs.config import RootConfig 
+
 
 import gc
+
 
 class SemipermeableMembraneTrainer(BaseTrainer):
     """
@@ -32,13 +35,16 @@ class SemipermeableMembraneTrainer(BaseTrainer):
         self.data_handler = data_handler
         self.logger = logging.getLogger('SemipermeableMembraneTrainer')
         self.setup_optimizer()
-        self.verbose = self.config.get("verbose")
+        self.verbose = getattr(self.config, "verbose", False)  # Default to False if not found
 
+        config = RootConfig(**self.config)
         # Initialize scheduler if needed
-        self.lr_scheduler = train_util.get_scheduler_fix(self.config, self.optimizer)
+        self.lr_scheduler = train_util.get_scheduler_fix(config, self.optimizer)
 
         # Define loss criterion
         self.criterion = MSELoss()
+    
+    
 
     def setup_optimizer(self,*args, **kwargs): 
         """
@@ -48,12 +54,14 @@ class SemipermeableMembraneTrainer(BaseTrainer):
         text_encoder_lr = self.config.get('train', {}).get('text_encoder_lr', 5e-5)
         unet_lr = self.config.get('train', {}).get('unet_lr', 1e-4)
 
-        self.trainable_params = self.model.prepare_optimizer_params(
+        self.trainable_params = self.network.prepare_optimizer_params(
             text_encoder_lr, unet_lr, lr
         )
 
+        config = RootConfig(**self.config)
+
         optimizer_name, optimizer_args, self.optimizer = train_util.get_optimizer(
-            self.config, self.trainable_params
+            config, self.trainable_params
         )
 
     @staticmethod
@@ -248,7 +256,7 @@ class SemipermeableMembraneTrainer(BaseTrainer):
 
             else:
                 anchor_latents = None
-                anchor_latents_ori = None
+                anchor_latents_ori = None 
 
             positive_latents.requires_grad = False
             neutral_latents.requires_grad = False
@@ -279,7 +287,8 @@ class SemipermeableMembraneTrainer(BaseTrainer):
             ):
                 self.logger.info("Saving...")
                 # Create output directory if it doesn't exist
-                output_dir = Path(self.config.get("output_dir", "./outputs"))
+                output_dir = Path(getattr(self.config, "output_dir", "./outputs"))
+
                 output_dir.mkdir(parents=True, exist_ok=True)
 
                 output_name = output_dir / f"semipermeable_membrane_{self.config.get('template_name')}_{i}_steps.safetensors"
@@ -306,10 +315,12 @@ class SemipermeableMembraneTrainer(BaseTrainer):
         self.logger.info("Saving...")
 
         # Create output directory if it doesn't exist
-        output_dir = Path(self.config.get("output_dir", "./outputs"))
+        output_dir = Path(getattr(self.config, "output_dir", "./outputs"))
+
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        output_name = output_dir / f"semipermeable_membrane_{self.config.get('template_name')}_last.safetensors"
+        output_name = output_dir / f"semipermeable_membrane_{getattr(self.config, 'template_name', 'default_template')}_last.safetensors"
+
 
         self.model.save_model(
             self.network,
