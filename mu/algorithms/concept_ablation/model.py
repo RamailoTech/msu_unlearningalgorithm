@@ -1,9 +1,12 @@
-from core.base_model import BaseModel
-from stable_diffusion.ldm.util import instantiate_from_config
-from omegaconf import OmegaConf
+# mu/algorithms/concept_ablation/model.py
+
 import torch
 from pathlib import Path
 from typing import Any
+import logging 
+
+from mu.core import BaseModel
+from mu.helpers import load_model_from_config
 
 
 class ConceptAblationModel(BaseModel):
@@ -12,20 +15,21 @@ class ConceptAblationModel(BaseModel):
     in the context of concept ablation.
     """
 
-    def __init__(self, config_path: str, ckpt_path: str, device: str):
+    def __init__(self, model_config_path: str, ckpt_path: str, device: str, *args, **kwargs):
         """
         Initialize the ConceptAblationModel.
 
         Args:
-            config_path (str): Path to the model configuration file (YAML).
+            model_config_path (str): Path to the model configuration file (YAML).
             ckpt_path (str): Path to the model checkpoint (CKPT).
             device (str): Device to load the model on (e.g., 'cuda:0').
         """
         super().__init__()
         self.device = device
-        self.config_path = config_path
+        self.model_config_path = model_config_path
         self.ckpt_path = ckpt_path
-        self.model = self.load_model(config_path, ckpt_path, device)
+        self.model = self.load_model(model_config_path, ckpt_path, device)
+        self.logger = logging.getLogger(__name__)
 
     def load_model(self, config_path: str, ckpt_path: str, device: str):
         """

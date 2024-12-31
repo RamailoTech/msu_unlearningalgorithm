@@ -1,4 +1,6 @@
 from typing import List,Any
+import argparse
+
 
 from omegaconf import OmegaConf
 import torch
@@ -6,8 +8,17 @@ from pathlib import Path
 
 
 from stable_diffusion.ldm.util import instantiate_from_config
-# from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 
+
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ("yes", "true", "t", "y", "1"):
+        return True
+    elif v.lower() in ("no", "false", "f", "n", "0"):
+        return False
+    else:
+        raise argparse.ArgumentTypeError("Boolean value expected.")
 
 def read_text_lines(path: str) -> List[str]:
     """Read lines from a text file and strip whitespace."""
@@ -93,3 +104,12 @@ def sample_model(model, sampler, c, h, w, ddim_steps, scale, ddim_eta, start_cod
     if log_every_t is not None:
         return samples_ddim, inters
     return samples_ddim
+
+
+def safe_dir(dir):
+    """
+    Create a directory if it does not exist.
+    """
+    if not dir.exists():
+        dir.mkdir()
+    return dir

@@ -1,13 +1,15 @@
-import logging
+# mu/algorithms/concept_ablation/algorithm.py
+
 import torch
 import wandb
 from typing import Dict
+import logging
+from pathlib import Path
 
-from core.base_algorithm import BaseAlgorithm
-from algorithms.concept_ablation.model import ConceptAblationModel
-from algorithms.concept_ablation.trainer import ConceptAblationTrainer
-from algorithms.concept_ablation.data_handler import ConceptAblationDataHandler
-
+from mu.core import BaseAlgorithm
+from mu.algorithms.concept_ablation.data_handler import ConceptAblationDataHandler
+from mu.algorithms.concept_ablation.model import ConceptAblationModel
+from mu.algorithms.concept_ablation.trainer import ConceptAblationTrainer
 
 class ConceptAblationAlgorithm(BaseAlgorithm):
     """
@@ -20,40 +22,21 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
         Initialize the ConceptAblationAlgorithm.
 
         Args:
-            config (Dict): Configuration dictionary containing keys like:
-                - 'concept_type': (str) 'style', 'object', or 'memorization'
-                - 'prompts_path': (str) path to initial prompts
-                - 'output_dir': (str) directory to store generated data and results
-                - 'base_config': (str) path to the model config
-                - 'ckpt_path': (str) path to the model checkpoint
-                - 'delta_ckpt': (str, optional)
-                - 'caption_target': (str, optional)
-                - 'train_size': (int, optional)
-                - 'n_samples': (int, optional)
-                - 'image_size': (int, optional)
-                - 'interpolation': (str)
-                - 'batch_size': (int)
-                - 'num_workers': (int)
-                - 'pin_memory': (bool)
-                - 'use_regularization': (bool, optional)
-                - 'devices': (list) CUDA devices to train on
-                - 'epochs', 'lr', 'train_method', etc.
-                - 'output_name': (str) name of the final saved model file
-                - Additional keys for WandB logging, etc.
+            config (Dict): Configuration dictionary
         """
         self.config = config
+        self.model = None
+        self.trainer = None
+        self.data_handler = None
         self.device = torch.device(self.config.get('devices', ['cuda:0'])[0])
         self.logger = logging.getLogger(__name__)
-        self.model = None
-        self.data_handler = None
-        self.trainer = None
         self._setup_components()
 
     def _setup_components(self):
         """
         Setup model, data handler, and trainer components.
         """
-        self.logger.info("Setting up Concept Ablation components...")
+        self.logger.info("Setting up components...")
 
         # Initialize Data Handler
         self.data_handler = ConceptAblationDataHandler(
@@ -76,7 +59,7 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
 
         # Initialize Model
         self.model = ConceptAblationModel(
-            config_path=self.config.get('config_path'),
+            model_config_path=self.config.get('model_config_path'),
             ckpt_path=self.config.get('ckpt_path'),
             device=str(self.device)
         )
@@ -93,20 +76,43 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
         """
         Execute the training process.
         """
-        # Initialize WandB if needed
-        project_name = self.config.get('project_name', 'concept_ablation_project')
-        run_name = self.config.get('run_name', 'concept_ablation_run')
-        wandb.init(project=project_name, name=run_name, config=self.config)
-        self.logger.info("Initialized WandB for logging.")
+        try:
+            # Initialize WandB with configurable project/run names
+            wandb_config = {
+                "project": self.config.get("wandb_project", "quick-canvas-machine-unlearning"),
+                "name": self.config.get("wandb_run", "Concept Ablation"),
+                "config": self.config
+            }
+            wandb.init(**wandb_config)
+            self.logger.info("Initialized WandB for logging.")
 
-        # Start training
-        trained_model = self.trainer.train()
+            # Create output directory if it doesn't exist
+            output_dir = Path(self.config.get("output_dir", "./outputs"))
+            output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Save the trained model
-        output_name = self.config.get('output_name', 'concept_ablation_model.pth')
-        self.model.save_model(output_name)
-        self.logger.info(f"Trained model saved at {output_name}")
-        wandb.save(output_name)
+            try:
+                # Start training
+                model = self.trainer.train()
 
-        # Finish WandB run
-        wandb.finish()
+                # Save final model
+                output_name = output_dir / self.config.get("output_name", f"concept_ablation_{self.config.get('template_name')}_model.pth")
+                self.model.save_model(model,output_name)
+                self.logger.info(f"Trained model saved at {output_name}")
+                
+                # Save to WandB
+                wandb.save(str(output_name))
+                
+
+            except Exception as e:
+                self.logger.error(f"Error during training: {str(e)}")
+                raise
+                
+        except Exception as e:
+            self.logger.error(f"Failed to initialize training: {str(e)}")
+            raise
+
+        finally:
+            # Ensure WandB always finishes
+            if wandb.run is not None:
+                wandb.finish()
+            self.logger.info("Training complete. WandB logging finished.")

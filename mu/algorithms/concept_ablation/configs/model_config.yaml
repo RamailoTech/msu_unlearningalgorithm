@@ -1,11 +1,11 @@
 model:
   base_learning_rate: 2.0e-06
-  target: src.model.CustomDiffusion
+  target: mu.algorithms.concept_ablation.src.model.CustomDiffusion
   params:
     linear_start: 0.00085
     linear_end: 0.0120
     num_timesteps_cond: 1
-    log_every_t: 200
+    log_every_t: 2000000
     timesteps: 1000
     first_stage_key: "image"
     cond_stage_key: "caption"
@@ -32,7 +32,7 @@ model:
         use_spatial_transformer: True
         transformer_depth: 1
         context_dim: 768
-        use_checkpoint: True
+        use_checkpoint: False
         legacy: False
 
     first_stage_config:
@@ -60,39 +60,3 @@ model:
 
     cond_stage_config:
       target: stable_diffusion.ldm.modules.encoders.modules.FrozenCLIPEmbedder
-
-data:
-  target: train.DataModuleFromConfig
-  params:
-    batch_size: 4
-    num_workers: 4
-    wrap: false
-    train:
-      target: src.finetune_data.MaskBase
-      params:
-        size: 256
-        style: True
-        aug: False
-    train2:
-      target: src.finetune_data.MaskBase
-      params:
-        size: 256
-        style: True
-        aug: False
-
-
-lightning:
-  callbacks:
-    image_logger:
-      target: train.ImageLogger
-      params:
-        batch_frequency: 200
-        save_freq: 100000000
-        max_images: 8
-        increase_log_steps: False
-  modelcheckpoint:
-    params:
-      every_n_train_steps: 10000
-
-  trainer:
-    max_steps: 1000

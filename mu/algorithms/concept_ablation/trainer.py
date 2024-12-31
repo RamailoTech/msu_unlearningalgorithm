@@ -4,9 +4,12 @@ from torch.nn import MSELoss
 from torch.optim import Adam
 from tqdm import tqdm
 import logging
+from pytorch_lightning import seed_everything
+
 
 from core.base_trainer import BaseTrainer
 from typing import Dict
+
 
 
 class ConceptAblationTrainer(BaseTrainer):
@@ -56,7 +59,8 @@ class ConceptAblationTrainer(BaseTrainer):
         """
         Execute the training loop.
         """
-        epochs = self.config.get('epochs', 1)
+        seed = self.config.get('seed', 42)
+
 
         # Get the train dataloader
         data_loaders = self.data_handler.get_data_loaders()
@@ -69,6 +73,9 @@ class ConceptAblationTrainer(BaseTrainer):
         self.logger.info("WandB logging initialized.")
 
         self.logger.info("Starting training...")
+
+        seed_everything(seed)
+
         global_step = 0
         for epoch in range(epochs):
             self.logger.info(f"Starting Epoch {epoch+1}/{epochs}")
