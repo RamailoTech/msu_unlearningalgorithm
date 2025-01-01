@@ -5,8 +5,11 @@ from pathlib import Path
 from typing import Any
 import logging 
 
+from stable_diffusion.ldm.util import instantiate_from_config
+
 from mu.core import BaseModel
-from mu.helpers import load_model_from_config
+from mu.helpers import  load_config_from_yaml
+
 
 
 class ConceptAblationModel(BaseModel):
@@ -15,7 +18,7 @@ class ConceptAblationModel(BaseModel):
     in the context of concept ablation.
     """
 
-    def __init__(self, model_config_path: str, ckpt_path: str, device: str, *args, **kwargs):
+    def __init__(self, train_config, model_config_path: str, ckpt_path: str, device: str, *args, **kwargs):
         """
         Initialize the ConceptAblationModel.
 
@@ -26,82 +29,65 @@ class ConceptAblationModel(BaseModel):
         """
         super().__init__()
         self.device = device
+        self.train_config = train_config
         self.model_config_path = model_config_path
+        self.config = load_config_from_yaml(model_config_path)
         self.ckpt_path = ckpt_path
-        self.model = self.load_model(model_config_path, ckpt_path, device)
+        self.model = self.load_model(self.train_config,self.config, self.ckpt_path, device)
         self.logger = logging.getLogger(__name__)
 
-    def load_model(self, config_path: str, ckpt_path: str, device: str):
+    def load_model(self, train_config, config, ckpt_path: str, device: str):
         """
         Load the Stable Diffusion model from a configuration and checkpoint.
 
         Args:
-            config_path (str): Path to the model configuration file.
+            config: model config
             ckpt_path (str): Path to the model checkpoint.
             device (str): Device to load the model on.
 
         Returns:
             torch.nn.Module: The loaded Stable Diffusion model.
         """
-        if isinstance(config_path, (str, Path)):
-            config = OmegaConf.load(config_path)
-        else:
-            config = config_path  # If already a config object
+        dataset_type = train_config.get('dataset_type')
+        base_lr = train_config.get('base_lr')
+        modifier_token = train_config.get('modifier_token')
+        freeze_model = train_config.get('freeze_model')
+        loss_type_reverse = train_config.get('loss_type_reverse')
 
-        pl_sd = torch.load(ckpt_path, map_location="cpu")
-        sd = pl_sd["state_dict"]
+        if dataset_type in ["unlearncanvas", "i2p"]:
+            config.model.params.cond_stage_trainable = False
+            config.model.params.freeze_model = "crossattn-kv"
+
+        if base_lr is not None:
+            config.model.params.base_lr = base_lr
+
+        if modifier_token is not None:
+            config.model.params.cond_stage_config.params.modifier_token = modifier_token
+        
+        if ckpt_path : 
+            config.model.params.ckpt_path = None
+
+        if freeze_model is not None:
+            config.model.params.freeze_model = freeze_model
+
+        config.model.params.loss_type_reverse = loss_type_reverse
+
         model = instantiate_from_config(config.model)
-        model.load_state_dict(sd, strict=False)
-        model.to(device)
-        model.eval()
-        model.cond_stage_model.device = device
+
+        if ckpt_path : 
+            st = torch.load(ckpt_path, map_location='cpu')["state_dict"]
+            token_weights = st["cond_stage_model.transformer.text_model.embeddings.token_embedding.weight"]
+            model.load_state_dict(st, strict=False)
+            model.cond_stage_model.transformer.text_model.embeddings.token_embedding.weight.data[
+                :token_weights.shape[0]] = token_weights
+            
         return model
 
-    def save_model(self, output_path: str):
+    def save_model(self,model, output_path: str):
         """
         Save the trained model's state dictionary.
 
         Args:
             output_path (str): Path to save the model checkpoint.
         """
-        torch.save({"state_dict": self.model.state_dict()}, output_path)
-
-    def forward(self, input_data: Any) -> Any:
-        """
-        Define the forward pass (if needed for integration with certain pipelines).
-
-        Args:
-            input_data (Any): Input data for the model.
-
-        Returns:
-            Any: Model output (if needed).
-        """
-        # Typically, Stable Diffusion forward operations are handled differently (via apply_model).
-        # Implement if your training pipeline requires a direct forward call.
-        pass
-
-    def get_learned_conditioning(self, prompts: list) -> Any:
-        """
-        Obtain learned conditioning for given prompts.
-
-        Args:
-            prompts (list): List of prompt strings.
-
-        Returns:
-            Any: Learned conditioning tensors for the model.
-        """
-        return self.model.get_learned_conditioning(prompts)
-
-    def apply_model(self, z: torch.Tensor, t: torch.Tensor, c: Any) -> torch.Tensor:
-        """
-        Apply the model to generate outputs from noisy latent vectors.
-
-        Args:
-            z (torch.Tensor): Noisy latent vectors.
-            t (torch.Tensor): Timesteps.
-            c (Any): Conditioning information.
-
-        Returns:
-            torch.Tensor: Model outputs (denoised latents).
-        """
-        return self.model.apply_model(z, t, c)
+        torch.save({"state_dict": model.state_dict()}, output_path)

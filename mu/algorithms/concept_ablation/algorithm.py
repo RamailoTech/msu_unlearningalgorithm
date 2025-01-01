@@ -17,7 +17,7 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
     It sets up the model, data handler, and trainer, and then runs the training loop.
     """
 
-    def __init__(self, config: Dict):
+    def __init__(self, config: Dict, config_path: str):
         """
         Initialize the ConceptAblationAlgorithm.
 
@@ -25,6 +25,7 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
             config (Dict): Configuration dictionary
         """
         self.config = config
+        self.config_path = config_path
         self.model = None
         self.trainer = None
         self.data_handler = None
@@ -69,7 +70,8 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
             model=self.model,
             config=self.config,
             device=str(self.device),
-            data_handler=self.data_handler
+            data_handler=self.data_handler,
+            config_path = self.config_path
         )
 
     def run(self):

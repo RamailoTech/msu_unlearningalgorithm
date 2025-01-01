@@ -113,3 +113,15 @@ def safe_dir(dir):
     if not dir.exists():
         dir.mkdir()
     return dir
+
+
+def load_config_from_yaml(config_path):
+    """
+    Load a configuration from a YAML file.
+    """
+    if isinstance(config_path, (str, Path)):
+        config = OmegaConf.load(config_path)
+    else:
+        config = config_path  # If already a config object
+
+    return config

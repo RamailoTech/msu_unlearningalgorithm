@@ -1,15 +1,23 @@
-import torch
-import wandb
+from typing import Dict
 from torch.nn import MSELoss
 from torch.optim import Adam
 from tqdm import tqdm
 import logging
 from pytorch_lightning import seed_everything
+import os 
+from packaging import version
+import pytorch_lightning as pl
+from omegaconf import OmegaConf
+from pytorch_lightning.callbacks import  LearningRateMonitor
+from pytorch_lightning.trainer import Trainer
+import signal
+import pudb
+from pathlib import Path
 
+from stable_diffusion.ldm.util import instantiate_from_config
 
-from core.base_trainer import BaseTrainer
-from typing import Dict
-
+from mu.algorithms.concept_ablation.data_handler import ConceptAblationDataHandler
+from mu.core.base_trainer import BaseTrainer
 
 
 class ConceptAblationTrainer(BaseTrainer):
@@ -18,7 +26,7 @@ class ConceptAblationTrainer(BaseTrainer):
     Handles the training loop, loss computation, and optimization.
     """
 
-    def __init__(self, model, config: Dict, device: str, data_handler, **kwargs):
+    def __init__(self, model, config: Dict, device: str, data_handler,config_path: str, **kwargs):
         """
         Initialize the ConceptAblationTrainer.
 
@@ -31,118 +39,257 @@ class ConceptAblationTrainer(BaseTrainer):
         """
         super().__init__(model, config, **kwargs)
         self.device = device
-        self.model = model
+        self.model = model.model
+        self.model_config_path = model.model_config_path
+        self.config_path = config_path
         self.data_handler = data_handler
+        self.opt_config = config
         self.logger = logging.getLogger(__name__)
-        self.criteria = MSELoss()
         self.setup_optimizer()
 
-    def setup_optimizer(self):
+    def setup_optimizer(self,*args, **kwargs):
         """
         Setup the optimizer based on the training configuration.
         Adjust parameter groups or other attributes as per concept ablation needs.
         """
-        train_method = self.config.get('train_method', 'full')
-        parameters = []
-        for name, param in self.model.model.named_parameters():
-            # Example: fine-tuning cross-attn layers only
-            # Adjust logic as needed for concept ablation specifics
-            if train_method == 'full':
-                parameters.append(param)
-            elif train_method == 'xattn' and 'attn2' in name:
-                parameters.append(param)
-            # Add other conditions if needed
-        lr = self.config.get('lr', 1e-5)
-        self.optimizer = Adam(parameters, lr=lr)
+        pass
 
     def train(self):
         """
         Execute the training loop.
         """
-        seed = self.config.get('seed', 42)
 
+        configs = [OmegaConf.load(cfg) for cfg in [self.config_path, self.model_config_path]]
+        config = OmegaConf.merge(*configs)
 
-        # Get the train dataloader
-        data_loaders = self.data_handler.get_data_loaders()
-        train_dl = data_loaders.get('train')
+        lightning_config = config.pop("lightning", OmegaConf.create())
 
-        # Initialize WandB logging if needed
-        project_name = self.config.get('project_name', 'concept_ablation_project')
-        run_name = self.config.get('run_name', 'concept_ablation_run')
-        wandb.init(project=project_name, name=run_name, config=self.config)
-        self.logger.info("WandB logging initialized.")
+        trainer_config = lightning_config.get("trainer", OmegaConf.create())
+
+        trainer_config["accelerator"] = "gpu"
+
+        trainer_config["devices"] = self.opt_config.get('devices')
+        trainer_config["strategy"] = "ddp"
+        cpu = False
+
+        lightning_config.trainer = trainer_config
+
+        if self.opt_config.get('prompts') is None:
+            if self.opt_config.get('datapath') == '' or self.opt_config.get('caption') == '':
+                self.logger.info('either initial prompts or path to generated images folder should be provided')
+                raise NotImplementedError
+            if self.opt_config.get('regularization'):
+                config.datapath2 = self.opt_config.get('datapath')
+                config.caption2 = self.opt_config.get('caption')
+        else:
+            name = Path(self.opt_config.get('prompts')).stem
+            gen_folder = Path(self.opt_config.get('processed_dataset_dir')) / (name + '_gen')
+            os.makedirs(gen_folder, exist_ok=True)
+            ranks = [int(i) for i in trainer_config["devices"].split(',') if i != ""]
+            ConceptAblationDataHandler.preprocess(self.opt_config, self.model_config_path, gen_folder, ranks)
+            config.datapath = str(gen_folder / 'images.txt')
+            config.caption = str(gen_folder / 'caption.txt')
+            if config.regularization:
+                config.datapath2 = str(gen_folder / 'images.txt')
+                config.caption2 = str(gen_folder / 'caption.txt')
+
+        trainer_kwargs = dict()
+
+        seed = self.opt_config.get('seed', 42)
+        wandb_entity = self.opt_config.get('wandb_entity', "")
+        output_dir = self.opt_config.get('output_dir', "")
+
+        os.makedirs(output_dir, exist_ok=True)
+
+        ckptdir = os.path.join(output_dir, "checkpoints")
+        cfgdir = os.path.join(output_dir, "configs")
 
         self.logger.info("Starting training...")
-
         seed_everything(seed)
 
-        global_step = 0
-        for epoch in range(epochs):
-            self.logger.info(f"Starting Epoch {epoch+1}/{epochs}")
-            self.model.model.train()
-            with tqdm(total=len(train_dl), desc=f'Epoch {epoch+1}/{epochs}') as pbar:
-                for batch in train_dl:
-                    self.optimizer.zero_grad()
+        # default logger configs
+        default_logger_cfgs = {
+            "wandb": {
+                "target": "pytorch_lightning.loggers.WandbLogger",
+                "params": {
+                    "project": "quick-canvas-machine-unlearning",
+                    "name": f"concept_ablation_{self.opt_config.get('template_name')}",
+                    "save_dir": output_dir,
+                    "dir": output_dir,
+                    "id": f"concept_ablation_{self.opt_config.get('template_name')}",
+                    "resume": "allow",
+                    "entity": 'concept-ablation',
+                }
+            },
+            "tensorboard": {
+                "target": "pytorch_lightning.loggers.TensorBoardLogger",
+                "params": {
+                    "name": "tensorboard",
+                    "save_dir": output_dir,
+                }
+            },
+        }
+        if wandb_entity is not None:
+            default_logger_cfg = default_logger_cfgs["wandb"]
+        else:
+            default_logger_cfg = default_logger_cfgs["tensorboard"]
 
-                    images, prompts = batch
-                    images = images.to(self.device)
+        if "logger" in lightning_config:
+            logger_cfg = lightning_config.logger
+        else:
+            logger_cfg = OmegaConf.create()
+        logger_cfg = OmegaConf.merge(default_logger_cfg, logger_cfg)
+        trainer_kwargs["logger"] = instantiate_from_config(logger_cfg)
 
-                    # Compute loss
-                    loss = self.compute_loss(images, prompts)
+        # modelcheckpoint - use TrainResult/EvalResult(checkpoint_on=metric) to
+        # specify which metric is used to determine best models
+        default_modelckpt_cfg = {
+            "target": "pytorch_lightning.callbacks.ModelCheckpoint",
+            "params": {
+                "dirpath": ckptdir,
+                "filename": "{epoch:06}",
+                "verbose": True,
+                "save_last": True,
+            }
+        }
+        if hasattr(self.model, "monitor"):
+            self.logger.info(f"Monitoring {self.model.monitor} as checkpoint metric.")
+            default_modelckpt_cfg["params"]["monitor"] = self.model.monitor
+            default_modelckpt_cfg["params"]["save_top_k"] = -1
 
-                    loss.backward()
-                    self.optimizer.step()
+        if "modelcheckpoint" in lightning_config:
+            modelckpt_cfg = lightning_config.modelcheckpoint
+        else:
+            modelckpt_cfg = OmegaConf.create()
+        modelckpt_cfg = OmegaConf.merge(default_modelckpt_cfg, modelckpt_cfg)
+        self.logger.info(f"Merged modelckpt-cfg: \n{modelckpt_cfg}")
 
-                    # Logging
-                    wandb.log({"loss": loss.item(), "epoch": epoch+1, "step": global_step})
-                    pbar.set_postfix({"loss": loss.item()})
-                    pbar.update(1)
-                    global_step += 1
+        if version.parse(pl.__version__) < version.parse('1.4.0'):
+            trainer_kwargs["checkpoint_callback"] = instantiate_from_config(modelckpt_cfg)
 
-            self.logger.info(f"Epoch {epoch+1}/{epochs} completed.")
+        # add callback which sets up log directory
+        default_callbacks_cfg = {
+            "setup_callback": {
+                "target": "mu.algorithms.concept_ablation.callbacks.SetupCallback",
+                "params": {
+                    "resume": "",
+                    "now": f"concept_ablation_{self.opt_config.get('template_name')}",
+                    "logdir": output_dir,
+                    "ckptdir": ckptdir,
+                    "cfgdir": cfgdir,
+                    "config": config,
+                    "lightning_config": lightning_config,
+                }
+            },
+            "image_logger": {
+                "target": "mu.algorithms.concept_ablation.callbacks.ImageLogger",
+                "params": {
+                    "batch_frequency": 750,
+                    "max_images": 4,
+                    "clamp": True
+                }
+            },
+            "learning_rate_logger": {
+                "target": "LearningRateMonitor",
+                "params": {
+                    "logging_interval": "step",
+                    # "log_momentum": True
+                }
+            },
+            "cuda_callback": {
+                "target": "mu.algorithms.concept_ablation.callbacks.CUDACallback"
+            },
+        }
 
-        self.logger.info("Training completed.")
-        # Save the trained model
-        output_name = self.config.get('output_name', 'concept_ablation_model.pth')
-        self.model.save_model(output_name)
-        self.logger.info(f"Trained model saved at {output_name}")
-        wandb.save(output_name)
-        wandb.finish()
+        if version.parse(pl.__version__) >= version.parse('1.4.0'):
+            default_callbacks_cfg.update({'checkpoint_callback': modelckpt_cfg})
 
-        return self.model.model
+        if "callbacks" in lightning_config:
+            callbacks_cfg = lightning_config.callbacks
+        else:
+            callbacks_cfg = OmegaConf.create()
 
-    def compute_loss(self, images: torch.Tensor, prompts: list) -> torch.Tensor:
-        """
-        Compute the training loss for concept ablation.
+        if 'metrics_over_trainsteps_checkpoint' in callbacks_cfg:
+            self.logger.info(
+                'Caution: Saving checkpoints every n train steps without deleting. This might require some free space.')
+            default_metrics_over_trainsteps_ckpt_dict = {
+                'metrics_over_trainsteps_checkpoint':
+                    {"target": 'pytorch_lightning.callbacks.ModelCheckpoint',
+                     'params': {
+                         "dirpath": os.path.join(ckptdir, 'trainstep_checkpoints'),
+                         "filename": "{epoch:06}-{step:09}",
+                         "verbose": True,
+                         'save_top_k': -1,
+                         'every_n_train_steps': modelckpt_cfg.param.every_n_train_steps,
+                         'save_weights_only': True
+                     }
+                     }
+            }
+            default_callbacks_cfg.update(default_metrics_over_trainsteps_ckpt_dict)
 
-        Args:
-            images (torch.Tensor): Batch of images (e.g., generated or from dataset).
-            prompts (list): Corresponding textual prompts.
+        callbacks_cfg = OmegaConf.merge(default_callbacks_cfg, callbacks_cfg)
+        if ('ignore_keys_callback' in callbacks_cfg) and self.opt_config.get('ckpt_path'):
+            callbacks_cfg.ignore_keys_callback.params['ckpt_path'] = self.opt_config.get('ckpt_path')
+        elif 'ignore_keys_callback' in callbacks_cfg:
+            del callbacks_cfg['ignore_keys_callback']
 
-        Returns:
-            torch.Tensor: Computed loss.
-        """
-        # Below is placeholder logic:
-        # In practice, you'd implement the concept ablation loss, which may involve:
-        # - Getting conditioning from prompts
-        # - Diffusion step forward
-        # - Comparing model outputs with a target distribution or image
-        # For demonstration, we will:
-        # 1. Get conditioning from prompts
-        # 2. Apply model to a noisy latent and compute MSE with another latent (dummy logic)
+        trainer_kwargs["callbacks"] = [instantiate_from_config(callbacks_cfg[k]) for k in callbacks_cfg]
 
-        # Generate a dummy latent as a stand-in. In reality, you'd follow your pipeline's logic.
-        # For instance, you might sample latents from a prior distribution or use q_sample steps.
-        b, c, h, w = images.shape
-        noisy_latent = torch.randn((b, 4, h // 8, w // 8), device=self.device)
-        t = torch.randint(0, self.model.model.num_timesteps, (b,), device=self.device).long()
-        c = self.model.get_learned_conditioning(prompts)
+        trainer = Trainer.from_argparse_args(**trainer_kwargs)
 
-        # Apply model forward pass on noisy_latent
-        output = self.model.apply_model(noisy_latent, t, c)
+        trainer.logdir = output_dir 
+        
+        data = instantiate_from_config(config.data)
+        data.prepare_data()
+        self.logger.info("#### Data #####")
+        for k in data.datasets:
+            self.logger.info(f"{k}, {data.datasets[k].__class__.__name__}, {len(data.datasets[k])}")
 
-        # Dummy target (for demonstration): just use the noisy latent shifted by some factor
-        target = noisy_latent * 0.0  # in practice, you'd define a meaningful target
 
-        loss = self.criteria(output, target)
-        return loss
+        # configure learning rate
+        bs, base_lr = config.data.params.batch_size, config.model.base_learning_rate
+        if not cpu:
+            ngpu = len(lightning_config.trainer.devices.strip(",").split(','))
+        else:
+            ngpu = 1
+        if 'accumulate_grad_batches' in lightning_config.trainer:
+            accumulate_grad_batches = lightning_config.trainer.accumulate_grad_batches
+        else:
+            accumulate_grad_batches = 1
+        self.logger.info(f"accumulate_grad_batches = {accumulate_grad_batches}")
+        lightning_config.trainer.accumulate_grad_batches = accumulate_grad_batches
+        if config.get('scale_lr'):
+            self.model.learning_rate = accumulate_grad_batches * ngpu * bs * base_lr
+            self.logger.info(
+                "Setting learning rate to {:.2e} = {} (accumulate_grad_batches) * {} (num_gpus) * {} (batchsize) * {:.2e} (base_lr)".format(
+                    self.model.learning_rate, accumulate_grad_batches, ngpu, bs, base_lr))
+        else:
+            self.model.learning_rate = base_lr
+            self.logger.info("++++ NOT USING LR SCALING ++++")
+            self.logger.info(f"Setting learning rate to {self.model.learning_rate:.2e}")
+
+        # allow checkpointing via USR1
+
+        def melk(*args, **kwargs):
+            # run all checkpoint hooks
+            if trainer.global_rank == 0:
+                self.logger.info("Summoning checkpoint.")
+                ckpt_path = os.path.join(ckptdir, "last.ckpt")
+                trainer.save_checkpoint(ckpt_path)
+
+        def divein(*args, **kwargs):
+            if trainer.global_rank == 0:
+                pudb.set_trace()
+
+
+        signal.signal(signal.SIGUSR1, melk)
+        signal.signal(signal.SIGUSR2, divein)
+
+        # run
+        try:
+            trainer.fit(self.model, data)
+        except Exception:
+            melk()
+            raise
+
+

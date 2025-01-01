@@ -1,5 +1,6 @@
-from .concept_ablation_dataset import ConceptAblationDataset
+from .concept_ablation_dataset import WrappedDataset, ConcatDataset
 
 __all__ = [
-    'ConceptAblationDataset'
+    'WrappedDataset',
+    'ConcatDataset'
 ]

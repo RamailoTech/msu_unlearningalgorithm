@@ -3,12 +3,17 @@ import logging
 from torch.utils.data import DataLoader
 from functools import partial
 import pytorch_lightning as pl
+import torch.multiprocessing as mp
+from pathlib import Path
+import numpy as np
+
 from stable_diffusion.ldm.util import instantiate_from_config
 from stable_diffusion.ldm.data.base import Txt2ImgIterableBaseDataset
 
+from mu.helpers import safe_dir
 from mu.algorithms.concept_ablation.utils import worker_init_fn
 from mu.algorithms.concept_ablation.datasets.concept_ablation_dataset import WrappedDataset, ConcatDataset
-
+from mu.algorithms.concept_ablation.utils import distributed_sample_images
 
 class ConceptAblationDataHandler(pl.LightningDataModule):
     '''
@@ -41,6 +46,25 @@ class ConceptAblationDataHandler(pl.LightningDataModule):
             self.dataset_configs["predict"] = predict
             self.predict_dataloader = self._predict_dataloader
         self.wrap = wrap
+
+    @staticmethod
+    def preprocess(opt_config, model_config_path,outdir, ranks): 
+        '''
+        Preprocess data for the model.'''
+        with open(opt_config.get("prompts"), "r") as f:
+            data = f.read().splitlines()
+            assert opt_config.get("train_size") % len(data) == 0
+            n_repeat = opt_config.get("train_size") // len(data)
+            data = np.array([n_repeat * [prompt] for prompt in data]
+                            ).reshape(-1, opt_config.get("n_samples")).tolist()
+        # check integrity
+        sample_path = safe_dir(outdir / 'samples')
+        if not sample_path.exists() or not len(list(sample_path.glob('*'))) == opt_config.get("train_size"):
+            distributed_sample_images(
+                data, ranks, model_config_path, opt_config.get("ckpt_path"),
+                None, str(outdir), 200
+            )
+
 
     def prepare_data(self):
         '''

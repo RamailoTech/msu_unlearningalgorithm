@@ -5,7 +5,7 @@ caption_target : "Abstractionism Style"
 regularization : True 
 n_samples : 10 
 train_size : 1000 
-base_lr : 1e-4
+base_lr : 2.0e-06
 
 # Model configuration
 model_config_path: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/concept_ablation/configs/model_config.yaml"  # Config path for Stable Diffusion

@@ -93,7 +93,7 @@ def main():
         type=float,
         help="overwrite base learning rate"
     )
-    
+
     parser.add_argument(
         "--save_freq",
         type=int,
@@ -174,7 +174,7 @@ def main():
     logger.info("Starting Concept Ablation Training")
 
     # Initialize and run the EraseDiff algorithm
-    algorithm = ConceptAblationAlgorithm(config)
+    algorithm = ConceptAblationAlgorithm(config, config_path=args.config_path)
     algorithm.run()
 
 
