@@ -69,4 +69,7 @@ model:
 
     cond_stage_config:
       target: stable_diffusion.ldm.modules.encoders.modules.FrozenCLIPEmbedder
+      params:
+        freeze: True
+        layer: "penultimate"
 
