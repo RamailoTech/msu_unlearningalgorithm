@@ -1,4 +1,4 @@
-from pytorch_lightning.callbacks import Callback, 
+from pytorch_lightning.callbacks import Callback
 import torchvision
 import pytorch_lightning as pl
 import os 
@@ -8,7 +8,7 @@ from PIL import Image
 import time 
 from pytorch_lightning.utilities import rank_zero_info
 from pytorch_lightning.utilities.distributed import rank_zero_only
-
+import numpy as np
 
 class SetupCallback(Callback):
     def __init__(self, resume, now, logdir, ckptdir, cfgdir, config, lightning_config):
