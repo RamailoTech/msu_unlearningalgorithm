@@ -1,7 +1,7 @@
 # Training parameters
 train_method: "xattn"  # choices: ["noxattn", "selfattn", "xattn", "full", "notime", "xlayer", "selflayer"]
 alpha: 0.75  # Guidance of start image used to train
-epochs: 1
+epochs: 5
 
 # Model configuration
 model_config_path: "mu/algorithms/scissorhands/configs/model_config.yaml"  # Config path for Stable Diffusion
@@ -19,9 +19,10 @@ output_dir: "outputs/scissorhands/finetuned_models"  # Output directory to save 
 
 # Sampling and image configurations
 sparsity: 0.90 # threshold for mask
+sparsity: 0.90 # threshold for mask
 project: false
 memory_num: 1
-prune_num: 1
+prune_num: 10
 
 # Device configuration
 devices: "0,1"  # CUDA devices (comma-separated)
