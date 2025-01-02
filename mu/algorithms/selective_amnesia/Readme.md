@@ -193,7 +193,7 @@ To train the Selective Amnesia algorithm to remove specific concepts or styles f
 ### Running the Training Script in Offline Mode
 
 ```bash
-WANDB_MODE=offline python -m mu.algorithms.selective_amnesia.scripts.tra
+
 ```
 
 ### Overriding Configuration via Command Line

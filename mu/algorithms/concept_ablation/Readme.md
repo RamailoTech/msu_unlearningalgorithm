@@ -176,13 +176,17 @@ To train the Concept Ablation algorithm to remove specific concepts or styles fr
 ### Example Command
 
 ```bash
-
+python -m mu.algorithms.concept_ablation.scripts.train \
+--config_path mu/algorithms/concept_ablation/configs/train_config.yaml \
+--prompts mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt
 ```
 
 ### Running the Training Script in Offline Mode
 
 ```bash
-
+WANDB_MODE=offline python -m mu.algorithms.concept_ablation.scripts.train \
+--config_path mu/algorithms/concept_ablation/configs/train_config.yaml \
+--prompts /home/ubuntu/Projects/Palistha/msu_unlearningalgorithm/mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt
 ```
 
 ### Overriding Configuration via Command Line
