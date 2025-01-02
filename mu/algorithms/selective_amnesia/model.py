@@ -78,7 +78,7 @@ class SelectiveAmnesiaModel(BaseModel):
             if len(u) > 0:
                 rank_zero_print("unexpected keys:")
                 rank_zero_print(u)
-            
+        model.eval()   
         return model
 
     def save_model(self,model, output_path: str):

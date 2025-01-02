@@ -3,6 +3,10 @@
 from torch.utils.data import DataLoader
 from functools import partial
 import pytorch_lightning as pl
+import os 
+import pandas as pd 
+import logging
+from typing import Any
 
 
 from stable_diffusion.ldm.util import instantiate_from_config
@@ -11,14 +15,26 @@ from stable_diffusion.ldm.data.base import Txt2ImgIterableBaseDataset
 from mu.algorithms.selective_amnesia.utils import worker_init_fn
 from mu.algorithms.selective_amnesia.datasets import WrappedDataset
 
+from mu.datasets.constants import * 
+import subprocess
+
 class SelectiveAmnesiaDataHandler(pl.LightningDataModule):
     """
     Concrete data handler for the Selective Amnesia algorithm.
     """
-    def __init__(self, train_batch_size, val_batch_size, train=None, validation=None, test=None, predict=None,
+    def __init__(self, train_batch_size, val_batch_size, raw_dataset_dir, processed_dataset_dir,template,template_name, dataset_type,use_sample = False, train=None, validation=None, test=None, predict=None,
                  wrap=False, num_workers=None, shuffle_test_loader=False, use_worker_init_fn=False,
                  shuffle_val_dataloader=False, num_val_workers=None):
         super().__init__()
+        self.raw_dataset_dir = raw_dataset_dir
+        self.processed_dataset_dir = processed_dataset_dir
+        self.template = template
+        self.template_name = template_name
+        self.dataset_type = dataset_type
+        self.use_sample = use_sample
+
+        self.logger = logging.getLogger(__name__)
+
         self.train_batch_size = train_batch_size
         self.val_batch_size = val_batch_size
         self.dataset_configs = dict()
@@ -41,6 +57,76 @@ class SelectiveAmnesiaDataHandler(pl.LightningDataModule):
             self.dataset_configs["predict"] = predict
             self.predict_dataloader = self._predict_dataloader
         self.wrap = wrap
+
+    @staticmethod 
+    def update_config_based_on_template(raw_dataset_dir, processed_dataset_dir, config, template, template_name, dataset_type, use_sample):
+        if dataset_type == 'unlearncanvas':
+            if template == 'object' : 
+                raise ValueError("Only style template is supported for unlearncanvas dataset")
+            
+            if use_sample :
+                assert template_name in uc_sample_theme_available, f"Invalid template name: {template_name}"
+            else:
+                assert template_name in uc_theme_available, f"Invalid template name: {template_name}"
+
+            config.data.params.train.forget_prompt = f"An image in {template_name} style"
+
+            config.data.params.validation.params.captions = [
+                f"A {class_} image in {template_name} style"
+                for class_ in (
+                    uc_sample_class_available if use_sample else uc_class_available
+                )
+            ]       
+            
+        elif dataset_type == 'i2p': 
+
+            prompts_file = os.path.join(raw_dataset_dir, 'prompts', 'i2p.csv')
+
+            if not os.path.exists(prompts_file):
+                raise FileNotFoundError(f"Prompts file not found: {prompts_file}")
+
+            # Read the CSV file
+            data = pd.read_csv(prompts_file)
+
+            categories = data['categories'].unique()
+
+            assert template_name in categories, f"Invalid template name: {template_name}"
+            config.data.params.train.forget_prompt = f"An image in {template_name} style"
+            config.data.params.validation.params.captions = [
+                f"A {class_} image in {template_name} style"
+                for class_ in categories
+            ]
+        n_samples = 10 if use_sample else 1000
+        model_config_path = config.model_config_path
+        ckpt_path = config.ckpt_path
+        SelectiveAmnesiaDataHandler.generate_dataset(f"{processed_dataset_dir}/{template_name}", config.data.params.train.forget_prompt, n_samples, model_config_path, ckpt_path)
+
+        config.data.params.train.forget_dataset_path = f"{processed_dataset_dir}/{template_name}"
+        return config
+
+    @staticmethod
+    def generate_dataset(outdir, prompt, n_samples, model_config_path, ckpt_path):
+        """
+        Generate dataset based on the dataset type
+        """
+        
+        # Construct the command
+        command = [
+            "python",
+            "stable_diffusion/scripts/txt2img_make_n_samples.py",
+            "--outdir", outdir,
+            "--prompt", prompt,
+            "--n_samples", str(n_samples),
+            "--config", model_config_path,
+            "--ckpt", ckpt_path
+        ]
+        
+        # Run the command
+        try:
+            subprocess.run(command, check=True)
+        except subprocess.CalledProcessError as e:
+            self.logger.error(f"Failed to generate dataset: {e}")
+            raise
 
     def prepare_data(self):
         for data_cfg in self.dataset_configs.values():
