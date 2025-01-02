@@ -26,7 +26,7 @@ class ConceptAblationTrainer(BaseTrainer):
     Handles the training loop, loss computation, and optimization.
     """
 
-    def __init__(self, model, config: Dict, device: str, data_handler,config_path: str, **kwargs):
+    def __init__(self, model, config: Dict, device: str, config_path: str, **kwargs):
         """
         Initialize the ConceptAblationTrainer.
 
@@ -42,7 +42,6 @@ class ConceptAblationTrainer(BaseTrainer):
         self.model = model.model
         self.model_config_path = model.model_config_path
         self.config_path = config_path
-        self.data_handler = data_handler
         self.opt_config = config
         self.logger = logging.getLogger(__name__)
         self.setup_optimizer()

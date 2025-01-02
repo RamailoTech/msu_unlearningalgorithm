@@ -1,94 +1,66 @@
-model:
-  base_learning_rate: 1.0e-05
-  target: ldm.models.diffusion.ddpm_forget.LatentDiffusion
-  params:
-    linear_start: 0.00085
-    linear_end: 0.0120
-    num_timesteps_cond: 1
-    log_every_t: 200
-    timesteps: 1000
-    first_stage_key: "image"
-    cond_stage_key: "txt"
-    image_size: 32
-    channels: 4
-    cond_stage_trainable: false   # Note: different from the one we trained before
-    conditioning_key: crossattn
-    scale_factor: 0.18215
-    gamma: 1 # keep this at 1
-    lmbda: 50 # change FIM weighting term here
-    train_method: 'full' # choices: ['full', 'xattn', 'noxattn']
+# Training parameters
+seed : 23 
+scale_lr : True 
 
-    scheduler_config: # 10000 warmup steps
-      target: ldm.lr_scheduler.LambdaLinearScheduler
-      params:
-        warm_up_steps: [ 1 ] # NOTE for resuming. use 10000 if starting from scratch
-        cycle_lengths: [ 10000000000000 ] # incredibly large number to prevent corner cases
-        f_start: [ 1.e-6 ]
-        f_max: [ 1. ]
-        f_min: [ 1. ]
+# Model configuration
+model_config_path: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/selective_amnesia/configs/model_config.yaml"  # Config path for Stable Diffusion
+ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
 
-    unet_config:
-      target: ldm.modules.diffusionmodules.openaimodel.UNetModel
-      params:
-        image_size: 32 # unused
-        in_channels: 4
-        out_channels: 4
-        model_channels: 320
-        attention_resolutions: [ 4, 2, 1 ]
-        num_res_blocks: 2
-        channel_mult: [ 1, 2, 4, 4 ]
-        num_heads: 8
-        use_spatial_transformer: True
-        transformer_depth: 1
-        context_dim: 768
-        use_checkpoint: True
-        legacy: False
+# Dataset directories
+raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
+processed_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/selective_amnesia/data"
+dataset_type : "unlearncanvas"
+template : "style"
+template_name : "Abstractionism"
 
-    first_stage_config:
-      target: ldm.models.autoencoder.AutoencoderKL
-      ckpt_path: "models/first_stage_models/kl-f8/model.ckpt"
-      params:
-        embed_dim: 4
-        monitor: val/rec_loss
-        ddconfig:
-          double_z: true
-          z_channels: 4
-          resolution: 256
-          in_channels: 3
-          out_ch: 3
-          ch: 128
-          ch_mult:
-          - 1
-          - 2
-          - 4
-          - 4
-          num_res_blocks: 2
-          attn_resolutions: []
-          dropout: 0.0
-        lossconfig:
-          target: torch.nn.Identity
 
-    cond_stage_config:
-      target: ldm.modules.encoders.modules.FrozenCLIPEmbedder
+# Output configurations
+output_dir: "outputs/selective_amnesia/finetuned_models"  # Output directory to save results
 
+# Sampling and image configurations
+
+# Device configuration
+devices: "0"  # CUDA devices to train on (comma-separated)
+
+# Additional flags
+use_sample: True  # Use the sample dataset for training
 
 data:
-  target: main_forget.DataModuleFromConfig
+  target: mu.algorithms.selective_amnesia.data_handler.SelectiveAmnesiaDataHandler
   params:
     train_batch_size: 4
     val_batch_size: 6
     num_workers: 4
     num_val_workers: 0 # Avoid a weird val dataloader issue (keep unchanged)
     train:
-      target: ldm.data.ForgettingDataset
+      target: stable_diffusion.ldm.data.ForgettingDataset
       params:
-        forget_prompt: An image in Abstractionism style
-        forget_dataset_path: ./data/photo_style
+        forget_prompt: An image in Artist_Sketch style
+        forget_dataset_path: ./q_dist/photo_style
     validation:
-      target: ldm.data.VisualizationDataset
+      target: stable_diffusion.ldm.data.VisualizationDataset
       params:
         captions:
-        - a Architectures image in Abstractionism style
+        - a Architectures image in Artist_Sketch style
+        - a Bears image in Artist_Sketch style
+        - a Birds image in Artist_Sketch style
+        - a Butterfly image in Artist_Sketch style
+        - a Cats image in Artist_Sketch style
+        - a Dogs image in Artist_Sketch style
+        - a Fishes image in Artist_Sketch style
+        - a Flame image in Artist_Sketch style
+        - a Flowers image in Artist_Sketch style
+        - a Frogs image in Artist_Sketch style
+        - a Horses image in Artist_Sketch style
+        - a Human image in Artist_Sketch style
+        - a Jellyfish image in Artist_Sketch style
+        - a Rabbits image in Artist_Sketch style
+        - a Sandwiches image in Artist_Sketch style
+        - a Sea image in Artist_Sketch style
+        - a Statues image in Artist_Sketch style
+        - a Towers image in Artist_Sketch style
+        - a Trees image in Artist_Sketch style
+        - a Waterfalls image in Artist_Sketch style
         output_size: 512
         n_gpus: 1 # CHANGE THIS TO NUMBER OF GPUS! small hack to sure we see all our logging samples
 
@@ -103,7 +75,7 @@ lightning:
 
   callbacks:
     image_logger:
-      target: main_forget.ImageLogger
+      target: mu.algorithms.selective_amnesia.callbacks.ImageLogger
       params:
         batch_frequency: 1
         max_images: 999
@@ -125,6 +97,5 @@ lightning:
   trainer:
     benchmark: True
     num_sanity_val_steps: 0
-    max_epochs: 500 # modify epochs here!
+    max_epochs: 50 # modify epochs here!
     check_val_every_n_epoch: 10
-    

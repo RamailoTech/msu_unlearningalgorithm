@@ -1,14 +1,15 @@
+# mu/algorithms/selective_amnesia/model.py
+
 import torch
-from omegaconf import OmegaConf
-from stable_diffusion.ldm.util import instantiate_from_config
-from core.base_model import BaseModel
 from pathlib import Path
 from typing import Any
-import logging
+import logging 
 
-from algorithms.selective_amnesia.utils import modify_weights, load_fim
+from stable_diffusion.ldm.util import instantiate_from_config
 
-logger = logging.getLogger(__name__)
+from mu.core import BaseModel
+from mu.helpers import  load_config_from_yaml, rank_zero_print
+from mu.algorithms.selective_amnesia.utils import modify_weights
 
 class SelectiveAmnesiaModel(BaseModel):
     """
@@ -16,62 +17,75 @@ class SelectiveAmnesiaModel(BaseModel):
     Loads the Stable Diffusion model and applies EWC constraints using the precomputed FIM.
     """
 
-    def __init__(self, config_path: str, ckpt_path: str, fim_path: str, device: str):
+    def __init__(self, model_config_path: str, ckpt_path: str, device: str, *args, **kwargs):
+        """
+        Initialize the ConceptAblationModel.
+
+        Args:
+            model_config_path (str): Path to the model configuration file (YAML).
+            ckpt_path (str): Path to the model checkpoint (CKPT).
+            device (str): Device to load the model on (e.g., 'cuda:0').
+        """
         super().__init__()
         self.device = device
-        self.config_path = config_path
+        self.model_config_path = model_config_path
+        self.config = load_config_from_yaml(model_config_path)
         self.ckpt_path = ckpt_path
-        self.fim_path = fim_path
-        self.fim_dict = None
-        self.model = self.load_model(config_path, ckpt_path, device)
-        self.load_ewc_params()
+        self.model = self.load_model(self.config, self.ckpt_path)
+        self.logger = logging.getLogger(__name__)
 
-    def load_model(self, config_path: str, ckpt_path: str, device: str):
-        if isinstance(config_path, (str, Path)):
-            config = OmegaConf.load(config_path)
-        else:
-            config = config_path
+    def load_model(self, config, ckpt_path: str):
+        """
+        Load the Stable Diffusion model from a configuration and checkpoint.
 
-        old_state = torch.load(ckpt_path, map_location="cpu")
-        if "state_dict" in old_state:
-            old_state = old_state["state_dict"]
+        Args:
+            config: model config
+            ckpt_path (str): Path to the model checkpoint.
+            device (str): Device to load the model on.
 
+        Returns:
+            torch.nn.Module: The loaded Stable Diffusion model.
+        """
         model = instantiate_from_config(config.model)
-        # If input channels differ, modify weights as needed (example)
-        in_filters_load = old_state.get("model.diffusion_model.input_blocks.0.0.weight", None)
-        if in_filters_load is not None:
-            curr_shape = model.state_dict()["model.diffusion_model.input_blocks.0.0.weight"].shape
-            if in_filters_load.shape != curr_shape:
-                logger.info("Modifying weights to double input channels...")
-                old_state["model.diffusion_model.input_blocks.0.0.weight"] = modify_weights(
-                    in_filters_load, scale=1e-8, n=(curr_shape[1]//in_filters_load.shape[1] - 1)
-                )
 
-        m,u = model.load_state_dict(old_state, strict=False)
-        if len(m) > 0:
-            logger.warning(f"Missing keys in state_dict load: {m}")
-        if len(u) > 0:
-            logger.warning(f"Unexpected keys in state_dict load: {u}")
+        if ckpt_path : 
+            rank_zero_print(f"Attempting to load state from {ckpt_path}")
+            old_state = torch.load(ckpt_path, map_location="cpu")
+            if "state_dict" in old_state:
+                rank_zero_print(f"Found nested key 'state_dict' in checkpoint, loading this instead")
+                old_state = old_state["state_dict"]
 
-        model.to(device)
-        model.eval()
+            #Check if we need to port weights from 4ch input to 8ch
+            in_filters_load = old_state["model.diffusion_model.input_blocks.0.0.weight"]
+            new_state = model.state_dict()
+            in_filters_current = new_state["model.diffusion_model.input_blocks.0.0.weight"]
+            in_shape = in_filters_current.shape
+            if in_shape != in_filters_load.shape:
+                rank_zero_print("Modifying weights to double number of input channels")
+                keys_to_change = [
+                    "model.diffusion_model.input_blocks.0.0.weight",
+                    "model_ema.diffusion_modelinput_blocks00weight",
+                ]
+                scale = 1e-8
+                for k in keys_to_change:
+                    print("modifying input weights for compatibitlity")
+                    old_state[k] = modify_weights(old_state[k], scale=scale, n=in_shape//4 - 1)
+
+            m, u = model.load_state_dict(old_state, strict=False)
+            if len(m) > 0:
+                rank_zero_print("missing keys:")
+                rank_zero_print(m)
+            if len(u) > 0:
+                rank_zero_print("unexpected keys:")
+                rank_zero_print(u)
+            
         return model
 
-    def load_ewc_params(self):
+    def save_model(self,model, output_path: str):
         """
-        Load EWC parameters from the precomputed FIM to guide forgetting training.
+        Save the trained model's state dictionary.
+
+        Args:
+            output_path (str): Path to save the model checkpoint.
         """
-        self.fim_dict = load_fim(self.fim_path)
-
-    def save_model(self, output_path: str):
-        torch.save({"state_dict": self.model.state_dict()}, output_path)
-
-    def forward(self, *args, **kwargs):
-        # Implement forward pass if needed
-        pass
-
-    def get_learned_conditioning(self, prompts: list) -> Any:
-        return self.model.get_learned_conditioning(prompts)
-
-    def apply_model(self, z: torch.Tensor, t: torch.Tensor, c: Any) -> torch.Tensor:
-        return self.model.apply_model(z, t, c)
+        torch.save({"state_dict": model.state_dict()}, output_path)

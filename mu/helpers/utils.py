@@ -4,11 +4,11 @@ import argparse
 
 from omegaconf import OmegaConf
 import torch
+from pytorch_lightning.utilities.distributed import rank_zero_only
 from pathlib import Path
 
 
 from stable_diffusion.ldm.util import instantiate_from_config
-
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -125,3 +125,7 @@ def load_config_from_yaml(config_path):
         config = config_path  # If already a config object
 
     return config
+
+@rank_zero_only
+def rank_zero_print(*args):
+    print(*args)

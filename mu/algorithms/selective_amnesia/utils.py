@@ -1,18 +1,6 @@
 import torch
-import os
-import logging
-
-logger = logging.getLogger(__name__)
-
-def load_fim(fim_path: str):
-    """
-    Load the precomputed Fisher Information Matrix (FIM).
-    """
-    if not os.path.exists(fim_path):
-        raise FileNotFoundError(f"FIM file not found at {fim_path}")
-    fim_dict = torch.load(fim_path, map_location='cpu')
-    logger.info(f"Loaded FIM from {fim_path}")
-    return fim_dict
+from stable_diffusion.ldm.data.base import Txt2ImgIterableBaseDataset
+import numpy as np
 
 def modify_weights(w, scale=1e-6, n=2):
     """
@@ -23,3 +11,18 @@ def modify_weights(w, scale=1e-6, n=2):
     for _ in range(n):
         new_w = torch.cat((new_w, extra_w.clone()), dim=1)
     return new_w
+
+def worker_init_fn(_):
+    worker_info = torch.utils.data.get_worker_info()
+
+    dataset = worker_info.dataset
+    worker_id = worker_info.id
+
+    if isinstance(dataset, Txt2ImgIterableBaseDataset):
+        split_size = dataset.num_records // worker_info.num_workers
+        # reset num_records to the true number to retain reliable length information
+        dataset.sample_ids = dataset.valid_ids[worker_id * split_size:(worker_id + 1) * split_size]
+        current_id = np.random.choice(len(np.random.get_state()[1]), 1)
+        return np.random.seed(np.random.get_state()[1][current_id] + worker_id)
+    else:
+        return np.random.seed(np.random.get_state()[1][0] + worker_id)

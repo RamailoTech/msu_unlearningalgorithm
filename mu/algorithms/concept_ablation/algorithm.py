@@ -28,7 +28,6 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
         self.config_path = config_path
         self.model = None
         self.trainer = None
-        self.data_handler = None
         self.device = torch.device(self.config.get('devices', ['cuda:0'])[0])
         self.logger = logging.getLogger(__name__)
         self._setup_components()
@@ -39,27 +38,10 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
         """
         self.logger.info("Setting up components...")
 
-        # Initialize Data Handler
-        self.data_handler = ConceptAblationDataHandler(
-            concept_type=self.config.get('concept_type'),
-            prompts_path=self.config.get('prompts_path'),
-            output_dir=self.config.get('output_dir'),
-            base_config=self.config.get('config_path'),
-            resume_ckpt=self.config.get('ckpt_path'),
-            delta_ckpt=self.config.get('delta_ckpt', None),
-            caption_target=self.config.get('caption_target', None),
-            train_size=self.config.get('train_size', 1000),
-            n_samples=self.config.get('n_samples', 10),
-            image_size=self.config.get('image_size', 512),
-            interpolation=self.config.get('interpolation', 'bicubic'),
-            batch_size=self.config.get('batch_size', 4),
-            num_workers=self.config.get('num_workers', 4),
-            pin_memory=self.config.get('pin_memory', True),
-            use_regularization=self.config.get('use_regularization', False)
-        )
 
         # Initialize Model
         self.model = ConceptAblationModel(
+            train_config=self.config,
             model_config_path=self.config.get('model_config_path'),
             ckpt_path=self.config.get('ckpt_path'),
             device=str(self.device)
@@ -70,7 +52,6 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
             model=self.model,
             config=self.config,
             device=str(self.device),
-            data_handler=self.data_handler,
             config_path = self.config_path
         )
 
@@ -94,16 +75,7 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
 
             try:
                 # Start training
-                model = self.trainer.train()
-
-                # Save final model
-                output_name = output_dir / self.config.get("output_name", f"concept_ablation_{self.config.get('template_name')}_model.pth")
-                self.model.save_model(model,output_name)
-                self.logger.info(f"Trained model saved at {output_name}")
-                
-                # Save to WandB
-                wandb.save(str(output_name))
-                
+                self.trainer.train()                
 
             except Exception as e:
                 self.logger.error(f"Error during training: {str(e)}")
