@@ -201,8 +201,17 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
 
         trainer.logdir = output_dir 
 
+        config.data.params.raw_dataset_dir = self.opt_config.get('raw_dataset_dir')
+        config.data.params.processed_dataset_dir = self.opt_config.get('processed_dataset_dir')
+        config.data.params.dataset_type = self.opt_config.get('dataset_type')
+        config.data.params.template = self.opt_config.get('template')
+        config.data.params.template_name = self.opt_config.get('template_name')
+        config.data.params.use_sample = self.opt_config.get('use_sample')
+
+        config = SelectiveAmnesiaDataHandler.update_config_based_on_template(self.opt_config.get('raw_dataset_dir'), self.opt_config.get('processed_dataset_dir'), config, self.opt_config.get('template'), self.opt_config.get('template_name'), self.opt_config.get('dataset_type'), self.opt_config.get('use_sample'))
         data = instantiate_from_config(config.data)
         data.prepare_data()
+
         self.logger.info("#### Data #####")
         for k in data.datasets:
             self.logger.info(f"{k}, {data.datasets[k].__class__.__name__}, {len(data.datasets[k])}")
