@@ -18,7 +18,7 @@ template_name : "Abstractionism"
 output_dir: "outputs/scissorhands/finetuned_models"  # Output directory to save results
 
 # Sampling and image configurations
-sparsity: 0.90 # threshold for masks
+sparsity: 0.90 # threshold for mask
 project: false
 memory_num: 1
 prune_num: 1

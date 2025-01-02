@@ -26,8 +26,8 @@ use_sample: true
 guided_concepts: "A Elephant image"  # Comma-separated string if multiple concepts, e.g., "concept1,concept2"
 technique: "replace"  # Options: replace, tensor
 
-preserve_scale: 0.1  # Float value, e.g., 0.1  #None in orignal codebase.
+preserve_scale: 0.1  # Float value, e.g., 0.1
 preserve_number: null # Integer value, e.g., 1
-erase_scale: 1
+erase_scale: 0.1
 lamb: 0.1
 add_prompts: true

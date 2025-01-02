@@ -1,6 +1,6 @@
 # Model Configuration
 alpha: 0.1
-epochs: 1  # 1000 in orignal codebase
+epochs: 1
 train_method: "xattn"  # Choices: ["noxattn", "selfattn", "xattn", "full" ]
 ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
 model_config_path: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/saliency_unlearning/configs/model_config.yaml"  # Config path for Stable Diffusion

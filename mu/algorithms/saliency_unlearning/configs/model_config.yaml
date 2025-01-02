@@ -9,7 +9,7 @@ model:
     timesteps: 1000
     first_stage_key: "edited"
     cond_stage_key: "edit"
-    image_size: 64
+    image_size: 32
     channels: 4
     cond_stage_trainable: false   # Note: different from the one we trained before
     conditioning_key: crossattn

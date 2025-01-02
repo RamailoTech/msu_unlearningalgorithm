@@ -15,7 +15,7 @@ placeholder_tokens: "<s1>|<s2>|<s3>|<s4>|<s5>|<s6>|<s7>|<s8>|<s9>|<s10>"
 
 
 # Training configuration
-mixed_precision: null
+mixed_precision: "fp16"
 gradient_accumulation_steps:  1
 train_text_encoder: False
 enable_xformers_memory_efficient_attention : False
