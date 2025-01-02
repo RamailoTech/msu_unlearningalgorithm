@@ -9,7 +9,7 @@ model:
     timesteps: 1000
     first_stage_key: "image"
     cond_stage_key: "caption"
-    image_size: 32
+    image_size: 64
     channels: 4
     cond_stage_trainable: False   # Note: different from the one we trained before
     freeze_model: "crossattn-kv"
@@ -21,7 +21,7 @@ model:
     unet_config:
       target: stable_diffusion.ldm.modules.diffusionmodules.openaimodel.UNetModel
       params:
-        image_size: 32 # unused
+        image_size: 64 # unused
         in_channels: 4
         out_channels: 4
         model_channels: 320
