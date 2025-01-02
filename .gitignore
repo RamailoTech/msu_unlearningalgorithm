@@ -17,3 +17,5 @@ models/*
 !models/.gitkeep
 
 !mu/algorithms/erase_diff/.gitignore
+
+venv/
