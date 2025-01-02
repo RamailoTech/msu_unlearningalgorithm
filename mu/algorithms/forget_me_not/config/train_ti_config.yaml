@@ -14,8 +14,10 @@ steps: 10
 lr: 1e-4
 weight_decay_ti: 0.1
 seed: 42
-placeholder_tokens: "<s1>|<s2>|<s3>|<s4>|<s5>|<s6>|<s7>|<s8>|<s9>|<s10>"
-placeholder_token_at_data: "<s>|<s1><s2><s3><s4><s5><s6><s7><s8><s9><s10>"
+placeholder_tokens: "<s1>|<s2>|<s3>|<s4>"
+# placeholder_tokens: "<s1>|<s2>|<s3>|<s4>|<s5>|<s6>|<s7>|<s8>|<s9>|<s10>"
+
+placeholder_token_at_data: "<s>|<s1><s2><s3><s4>"
 
 gradient_checkpointing: False
 scale_lr: False

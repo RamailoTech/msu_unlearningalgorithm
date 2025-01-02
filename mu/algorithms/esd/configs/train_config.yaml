@@ -1,7 +1,7 @@
 # Training parameters
 train_method: "xattn"  # Choices: ["noxattn", "selfattn", "xattn", "full", "notime", "xlayer", "selflayer"]
-start_guidance: 0.1  # Optional: guidance of start image (previously alpha)
-negative_guidance: 0.0  # Optional: guidance of negative training
+start_guidance: 3  # Optional: guidance of start image (previously alpha)
+negative_guidance: 1  # Optional: guidance of negative training
 iterations: 1  # Optional: iterations used to train (previously epochs)
 lr: 1e-5  # Optional: learning rate
 image_size: 512  # Optional: image size used to train
