@@ -13,7 +13,6 @@ dataset_type : "unlearncanvas"
 template : "style"
 template_name : "Abstractionism"
 
-
 # Output configurations
 output_dir: "outputs/selective_amnesia/finetuned_models"  # Output directory to save results
 

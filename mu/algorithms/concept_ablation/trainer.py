@@ -13,7 +13,8 @@ from pytorch_lightning.trainer import Trainer
 import signal
 import pudb
 from pathlib import Path
-
+from argparse import Namespace
+import argparse
 from stable_diffusion.ldm.util import instantiate_from_config
 
 from mu.algorithms.concept_ablation.data_handler import ConceptAblationDataHandler
@@ -68,8 +69,11 @@ class ConceptAblationTrainer(BaseTrainer):
         trainer_config["accelerator"] = "gpu"
 
         trainer_config["devices"] = self.opt_config.get('devices')
+
+        
         trainer_config["strategy"] = "ddp"
         cpu = False
+        trainer_opt = argparse.Namespace(**trainer_config)
 
         lightning_config.trainer = trainer_config
 
@@ -189,7 +193,7 @@ class ConceptAblationTrainer(BaseTrainer):
                 }
             },
             "learning_rate_logger": {
-                "target": "LearningRateMonitor",
+                "target": "mu.algorithms.concept_ablation.trainer.LearningRateMonitor",
                 "params": {
                     "logging_interval": "step",
                     # "log_momentum": True
@@ -225,7 +229,7 @@ class ConceptAblationTrainer(BaseTrainer):
                      }
             }
             default_callbacks_cfg.update(default_metrics_over_trainsteps_ckpt_dict)
-
+        
         callbacks_cfg = OmegaConf.merge(default_callbacks_cfg, callbacks_cfg)
         if ('ignore_keys_callback' in callbacks_cfg) and self.opt_config.get('ckpt_path'):
             callbacks_cfg.ignore_keys_callback.params['ckpt_path'] = self.opt_config.get('ckpt_path')
@@ -234,7 +238,9 @@ class ConceptAblationTrainer(BaseTrainer):
 
         trainer_kwargs["callbacks"] = [instantiate_from_config(callbacks_cfg[k]) for k in callbacks_cfg]
 
-        trainer = Trainer.from_argparse_args(**trainer_kwargs)
+        trainer = Trainer.from_argparse_args(trainer_opt,**trainer_kwargs)
+        # trainer = Trainer.from_argparse_args(**trainer_kwargs)
+        
 
         trainer.logdir = output_dir 
         

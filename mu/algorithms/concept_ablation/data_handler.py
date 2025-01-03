@@ -52,6 +52,8 @@ class ConceptAblationDataHandler(pl.LightningDataModule):
     def preprocess(opt_config, model_config_path,outdir, ranks): 
         '''
         Preprocess data for the model.'''
+        mp.set_start_method('spawn')
+
         with open(opt_config.get("prompts"), "r") as f:
             data = f.read().splitlines()
             assert opt_config.get("train_size") % len(data) == 0
@@ -63,7 +65,7 @@ class ConceptAblationDataHandler(pl.LightningDataModule):
         if not sample_path.exists() or not len(list(sample_path.glob('*'))) == opt_config.get("train_size"):
             distributed_sample_images(
                 data, ranks, model_config_path, opt_config.get("ckpt_path"),
-                None, str(outdir), 200
+                None, str(outdir), 200,10
             )
 
 

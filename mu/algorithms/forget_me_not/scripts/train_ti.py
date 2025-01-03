@@ -37,6 +37,19 @@ def main():
     parser.add_argument('--use_sample', help='Use the sample dataset for training')
 
     parser.add_argument('--devices', type=str, help='CUDA devices to train on (comma-separated)')
+    
+    parser.add_argument('--tokenizer_name', type=str, required=False)
+    parser.add_argument('--instance_prompt', type=str, required=False)
+    parser.add_argument('--concept_keyword', type=str, required=False)
+    parser.add_argument('--lr_scheduler', type=str, required=False)
+    parser.add_argument('--prior_generation_precision', type=str, required=False)
+    parser.add_argument('--local_rank', type=int, required=False)
+    parser.add_argument('--class_prompt', type=str, required=False)
+    parser.add_argument('--num_class_images', type=int, required=False)
+    parser.add_argument('--dataloader_num_workers', type=int, required=False)
+    parser.add_argument('--center_crop', type=bool, required=False)
+    parser.add_argument('--prior_loss_weight', type=float, required=False)
+    parser.add_argument('--lr_warmup_steps', type=int, required=False)
 
 
     args = parser.parse_args()

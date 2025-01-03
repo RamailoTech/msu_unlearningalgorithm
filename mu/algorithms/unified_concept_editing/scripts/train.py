@@ -36,6 +36,8 @@ def main():
     parser.add_argument('--erase_scale', type=float,  help='Scale for erasure')
     parser.add_argument('--lamb', type=float,  help='Lambda parameter')
     parser.add_argument('--add_prompts', type=bool,  help='Whether to add prompts')
+    parser.add_argument('--preserver_concepts', type=str,  help='Concepts to preserve')
+    parser.add_argument('--base', type=str,  help='Base version of stable diffusion')
 
     args = parser.parse_args()
 

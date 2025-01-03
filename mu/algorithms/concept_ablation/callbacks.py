@@ -6,7 +6,8 @@ from omegaconf import OmegaConf
 import torch
 from PIL import Image
 import time 
-from pytorch_lightning.utilities import rank_zero_info
+from pytorch_lightning.utilities import rank_zero_info,rank_zero_only
+import numpy as np
 
 
 class SetupCallback(Callback):
