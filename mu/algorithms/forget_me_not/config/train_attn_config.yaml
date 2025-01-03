@@ -1,7 +1,7 @@
-ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
+ckpt_path: "models/diffuser/style50"
 # Dataset directories
-raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
-processed_dataset_dir: "/home/ubuntu/Projects/Palistha/msu_unlearningalgorithm/mu/algorithms/forget_me_not/data"
+raw_dataset_dir: "data/quick-canvas-dataset/sample"
+processed_dataset_dir: "mu/algorithms/forget_me_not/data"
 dataset_type : "unlearncanvas"
 template : "style"
 template_name : &template_name "Abstractionism"
@@ -50,3 +50,29 @@ output_dir: "outputs/forget_me_not/finetuned_models/Abstractionism"  # Output di
 devices: "0"  # CUDA devices to train on (comma-separated)
 
 only-xa : True #
+
+
+perform_inversion: True
+continue_inversion: True
+continue_inversion_lr: 0.0001
+learning_rate_ti: 0.001
+learning_rate_unet: 0.0003
+learning_rate_text: 0.0003
+lr_scheduler: "constant"
+lr_scheduler_lora: "linear"
+lr_warmup_steps_lora: 0
+prior_loss_weight: 1.0
+weight_decay_lora: 0.001
+use_face_segmentation_condition: False
+max_train_steps_ti: 500
+max_train_steps_tuning: 1000
+save_steps: 100
+class_data_dir: null
+stochastic_attribute: null
+class_prompt: null
+num_class_images: 100
+resolution: 512
+color_jitter: False
+sample_batch_size: 1
+lora_rank: 4
+clip_ti_decay: True

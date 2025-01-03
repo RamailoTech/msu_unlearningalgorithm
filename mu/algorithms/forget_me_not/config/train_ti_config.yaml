@@ -30,3 +30,17 @@ output_dir: "outputs/forget_me_not/ti_models"  # Output directory to save result
 
 # Device configuration
 devices: "0"  # CUDA devices to train on (comma-separated)
+
+
+# Additional configurations
+tokenizer_name: "default_tokenizer"
+instance_prompt: "default_prompt"
+concept_keyword: "default_keyword"
+lr_scheduler: "linear"
+prior_generation_precision: "fp32"
+local_rank: 0
+class_prompt: "default_class_prompt"
+num_class_images: 100
+dataloader_num_workers: 4
+center_crop: True
+prior_loss_weight: 0.1

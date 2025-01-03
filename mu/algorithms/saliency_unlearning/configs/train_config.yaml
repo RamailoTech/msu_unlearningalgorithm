@@ -18,3 +18,8 @@ mask_path: "/home/ubuntu/Projects/msu_unlearningalgorithm/outputs/saliency_unlea
 # Training Configuration
 devices: "0"  # CUDA devices to train on (comma-separated)
 use_sample: true
+
+
+start_guidance: 0.5
+negative_guidance: 0.5
+ddim_steps: 50

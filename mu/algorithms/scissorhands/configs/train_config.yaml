@@ -28,3 +28,8 @@ devices: "0,1"  # CUDA devices (comma-separated)
 
 # Additional configurations
 use_sample: true  # Use sample dataset for training
+
+
+start_guidence: 0.5  # Starting guidance factor
+negative_guidance: 0.3  # Negative guidance factor
+Iterations: 1000  # Number of training iterations

@@ -11,20 +11,15 @@ from mu.helpers import setup_logger, load_config
 from mu.helpers.path_setup import logs_dir
 
 
-
 def main():
     parser = argparse.ArgumentParser(description='Forget Me Not - Train TI')
     
-    parser.add_argument('--config_path', help='Config path for Stable Diffusion', type=str,
-                        required=True)
-    
+    parser.add_argument('--config_path', help='Config path for Stable Diffusion', type=str, required=True)
     parser.add_argument('--ckpt_path', help='Checkpoint path for Stable Diffusion', type=str)
 
     # Dataset directories
-    parser.add_argument('--raw_dataset_dir', type=str,
-                        help='Directory containing the original dataset organized by themes and classes.')
-    parser.add_argument('--processed_dataset_dir', type=str,
-                        help='Directory where the new datasets will be saved.')
+    parser.add_argument('--raw_dataset_dir', type=str, help='Directory containing the original dataset organized by themes and classes.')
+    parser.add_argument('--processed_dataset_dir', type=str, help='Directory where the new datasets will be saved.')
     parser.add_argument('--dataset_type', type=str, choices=['unlearncanvas', 'i2p'])
     parser.add_argument('--template', type=str, choices=['object', 'style', 'i2p'])
     parser.add_argument('--template_name', type=str, choices=['self-harm', 'Abstractionism'])
@@ -38,35 +33,34 @@ def main():
     parser.add_argument('--devices', type=str, help='CUDA devices to train on (comma-separated)')
     
     # Newly added parameters
-    parser.add_argument('--train_text_encoder', type=bool, default=False, required=False)
-    parser.add_argument('--perform_inversion', type=bool, default=True, required=False)
-    parser.add_argument('--continue_inversion', type=bool, default=True, required=False)
-    parser.add_argument('--continue_inversion_lr', type=float, default=0.0001, required=False)
-    parser.add_argument('--learning_rate_ti', type=float, default=0.001, required=False)
-    parser.add_argument('--learning_rate_unet', type=float, default=0.0003, required=False)
-    parser.add_argument('--learning_rate_text', type=float, default=0.0003, required=False)
-    parser.add_argument('--lr_scheduler', type=str, default='constant', required=False)
-    parser.add_argument('--lr_scheduler_lora', type=str, default='linear', required=False)
-    parser.add_argument('--lr_warmup_steps_lora', type=int, default=0, required=False)
-    parser.add_argument('--prior_loss_weight', type=float, default=1.0, required=False)
-    parser.add_argument('--weight_decay_lora', type=float, default=0.001, required=False)
-    parser.add_argument('--mixed_precision', type=str, default='fp16', required=False)
-    parser.add_argument('--use_8bit_adam', type=bool, default=False, required=False)
-    parser.add_argument('--use_face_segmentation_condition', type=bool, default=False, required=False)
-    parser.add_argument('--max_train_steps_ti', type=int, default=500, required=False)
-    parser.add_argument('--max_train_steps_tuning', type=int, default=1000, required=False)
-    parser.add_argument('--save_steps', type=int, default=100, required=False)
-    parser.add_argument('--class_data_dir', type=str, default=None, required=False)
-    parser.add_argument('--stochastic_attribute', type=str, default=None, required=False)
-    parser.add_argument('--class_prompt', type=str, default=None, required=False)
-    parser.add_argument('--with_prior_preservation', type=bool, default=False, required=False)
-    parser.add_argument('--num_class_images', type=int, default=100, required=False)
-    parser.add_argument('--resolution', type=int, default=512, required=False)
-    parser.add_argument('--color_jitter', type=bool, default=False, required=False)
-    parser.add_argument('--sample_batch_size', type=int, default=1, required=False)
-    parser.add_argument('--lora_rank', type=int, default=4, required=False)
-    parser.add_argument('--clip_ti_decay', type=bool, default=True, required=False)
-    
+    parser.add_argument('--train_text_encoder', type=bool, required=False)
+    parser.add_argument('--perform_inversion', type=bool, required=False)
+    parser.add_argument('--continue_inversion', type=bool, required=False)
+    parser.add_argument('--continue_inversion_lr', type=float, required=False)
+    parser.add_argument('--learning_rate_ti', type=float, required=False)
+    parser.add_argument('--learning_rate_unet', type=float, required=False)
+    parser.add_argument('--learning_rate_text', type=float, required=False)
+    parser.add_argument('--lr_scheduler', type=str, required=False)
+    parser.add_argument('--lr_scheduler_lora', type=str, required=False)
+    parser.add_argument('--lr_warmup_steps_lora', type=int, required=False)
+    parser.add_argument('--prior_loss_weight', type=float, required=False)
+    parser.add_argument('--weight_decay_lora', type=float, required=False)
+    parser.add_argument('--mixed_precision', type=str, required=False)
+    parser.add_argument('--use_8bit_adam', type=bool, required=False)
+    parser.add_argument('--use_face_segmentation_condition', type=bool, required=False)
+    parser.add_argument('--max_train_steps_ti', type=int, required=False)
+    parser.add_argument('--max_train_steps_tuning', type=int, required=False)
+    parser.add_argument('--save_steps', type=int, required=False)
+    parser.add_argument('--class_data_dir', type=str, required=False)
+    parser.add_argument('--stochastic_attribute', type=str, required=False)
+    parser.add_argument('--class_prompt', type=str, required=False)
+    parser.add_argument('--with_prior_preservation', type=bool, required=False)
+    parser.add_argument('--num_class_images', type=int, required=False)
+    parser.add_argument('--resolution', type=int, required=False)
+    parser.add_argument('--color_jitter', type=bool, required=False)
+    parser.add_argument('--sample_batch_size', type=int, required=False)
+    parser.add_argument('--lora_rank', type=int, required=False)
+    parser.add_argument('--clip_ti_decay', type=bool, required=False)
 
     args = parser.parse_args()
 
