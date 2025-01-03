@@ -12,7 +12,7 @@ processed_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorit
 dataset_type : "unlearncanvas"
 template : "style"
 template_name : "Abstractionism"
-
+use_ema : true
 
 # Output configurations
 output_dir: "outputs/selective_amnesia/finetuned_models"  # Output directory to save results

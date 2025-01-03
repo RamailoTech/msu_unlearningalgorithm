@@ -34,6 +34,9 @@ def main():
 
     # Device configuration
     parser.add_argument('--devices', help='CUDA devices to train on (comma-separated)', type=str)
+    
+    # Newly added paramters
+    parser.add_argument('--use_ema', type=str2bool, help='Use EMA for training')
 
     # Additional flags
     parser.add_argument('--use_sample', help='Use the sample dataset for training')

@@ -56,6 +56,10 @@ def main():
     parser.add_argument('--use_sample', help='Use the sample dataset for training')
     parser.add_argument('--num_workers', type=int)
     parser.add_argument('--pin_memory', type=bool)
+    
+    # Newly added parameters
+    parser.add_argument('--start_guidence', help='(newly added) Starting guidance factor', type=float)
+    parser.add_argument('--negative_guidance', help='(newly added) Negative guidance factor', type=float)
 
     args = parser.parse_args()
 

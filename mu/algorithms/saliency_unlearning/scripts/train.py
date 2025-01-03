@@ -38,6 +38,11 @@ def main():
     parser.add_argument('--mask_path', help='Path to the mask file', type=str)
     parser.add_argument('--use_sample', help='Use the sample dataset for training')
 
+    parser.add_argument('--start_guidance', help='Starting guidance factor', type=float)
+    parser.add_argument('--negative_guidance', help='Negative guidance factor', type=float)
+    parser.add_argument('--ddim_steps', help='DDIM steps of inference used to train', type=int)
+
+
     # Device configuration
     parser.add_argument('--devices', help='CUDA devices to train on (comma-separated)', type=str)
 
