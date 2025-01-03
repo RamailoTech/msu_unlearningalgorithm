@@ -4,6 +4,7 @@ import torch.nn.functional as F
 from contextlib import contextmanager
 
 from taming.modules.vqvae.quantize import VectorQuantizer2 as VectorQuantizer
+from contextlib import contextmanager
 
 import sys
 sys.path.append('.')

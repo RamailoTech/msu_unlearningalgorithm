@@ -35,8 +35,6 @@ def main():
     # Device configuration
     parser.add_argument('--devices', help='CUDA devices to train on (comma-separated)', type=str)
     
-    # Newly added paramters
-    parser.add_argument('--use_ema', type=str2bool, help='Use EMA for training')
 
     # Additional flags
     parser.add_argument('--use_sample', help='Use the sample dataset for training')
@@ -58,7 +56,6 @@ def main():
     # Load default configuration from YAML
     config = load_config(args.config_path)
 
-
     # Prepare output directory
     os.makedirs(args.output_dir or config.get('output_dir', 'results'), exist_ok=True)
 
@@ -76,7 +73,6 @@ def main():
 
     # Ensure devices are properly set
     config['devices'] = devices
-    config['lr'] = float(config['lr'])
     
 
     # Setup logger
