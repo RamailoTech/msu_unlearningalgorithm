@@ -6,11 +6,11 @@ K_steps: 2  # Number of K steps
 lr: 5e-5  # Learning rate
 
 # Model configuration
-model_config_path: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/erase_diff/configs/model_config.yaml"  # Config path for Stable Diffusion
-ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
+model_config_path: "mu/algorithms/erase_diff/configs/model_config.yaml"  # Config path for Stable Diffusion
+ckpt_path: "models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
 
 # Dataset directories
-raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
+raw_dataset_dir: "data/quick-canvas-dataset/sample"
 dataset_type : "unlearncanvas"
 template : "style"
 template_name : "Abstractionism"
