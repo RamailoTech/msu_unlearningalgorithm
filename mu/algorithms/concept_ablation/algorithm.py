@@ -28,7 +28,7 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
         self.config_path = config_path
         self.model = None
         self.trainer = None
-        self.device = torch.device(self.config.get('devices', ['cuda:0'])[0])
+        self.device = self.config.get('devices')
         self.logger = logging.getLogger(__name__)
         self._setup_components()
 
@@ -60,13 +60,13 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
         Execute the training process.
         """
         try:
-            # Initialize WandB with configurable project/run names
-            wandb_config = {
-                "project": self.config.get("wandb_project", "quick-canvas-machine-unlearning"),
-                "name": self.config.get("wandb_run", "Concept Ablation"),
-                "config": self.config
-            }
-            wandb.init(**wandb_config)
+            # # Initialize WandB with configurable project/run names
+            # wandb_config = {
+            #     "project": self.config.get("wandb_project", "quick-canvas-machine-unlearning"),
+            #     "name": self.config.get("wandb_run", "Concept Ablation"),
+            #     "config": self.config
+            # }
+            # wandb.init(**wandb_config)
             self.logger.info("Initialized WandB for logging.")
 
             # Create output directory if it doesn't exist
@@ -87,6 +87,7 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
 
         finally:
             # Ensure WandB always finishes
-            if wandb.run is not None:
-                wandb.finish()
-            self.logger.info("Training complete. WandB logging finished.")
+            # if wandb.run is not None:
+            #     wandb.finish()
+            # self.logger.info("Training complete. WandB logging finished.")
+            pass

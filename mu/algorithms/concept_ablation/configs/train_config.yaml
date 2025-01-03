@@ -13,12 +13,12 @@ ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning
 
 # Dataset directories
 raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
-processed_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/mu/algorithms/concept_ablation/data"
+processed_dataset_dir: "/home/ubuntu/Projects/Palistha/msu_unlearningalgorithm/mu/algorithms/concept_ablation/data"
 dataset_type : "unlearncanvas"
 template : "style"
 template_name : "Abstractionism"
 
-
+lr: 5e-5 
 # Output configurations
 output_dir: "outputs/concept_ablation/finetuned_models"  # Output directory to save results
 
