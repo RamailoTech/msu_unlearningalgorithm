@@ -77,6 +77,42 @@ def main():
         help="target style to remove, used when kldiv loss",
     )
     parser.add_argument(
+        "--caption",
+        type=str,
+        default="",
+        help="path to target images",
+    )
+    parser.add_argument(
+        "--reg_caption",
+        type=str,
+        default="",
+        help="path to target images",
+    )
+    parser.add_argument(
+        "--datapath2",
+        type=str,
+        default="",
+        help="path to target images",
+    )
+    parser.add_argument(
+        "--reg_datapath2",
+        type=str,
+        default=None,
+        help="path to regularization images",
+    )
+    parser.add_argument(
+        "--caption2",
+        type=str,
+        default="",
+        help="path to target images",
+    )
+    parser.add_argument(
+        "--reg_caption2",
+        type=str,
+        default="",
+        help="path to regularization images' caption",
+    )
+    parser.add_argument(
         "--repeat",
         type=int,
         default=0,

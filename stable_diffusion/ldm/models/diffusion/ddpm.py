@@ -79,6 +79,7 @@ class DDPM(pl.LightningModule):
                  make_it_fit=False,
                  ucg_training=None,
                  load_ema=False,
+                 base_lr=None,
                  ):
         super().__init__()
         assert parameterization in ["eps", "x0"], 'currently only supporting "eps" and "x0"'
@@ -728,58 +729,42 @@ class LatentDiffusion(DDPM):
         encoder_posterior = self.encode_first_stage(x)
         z = self.get_first_stage_encoding(encoder_posterior).detach()
 
-        # if self.model.conditioning_key is not None:
-        #     if cond_key is None:
-        #         cond_key = self.cond_stage_key
-        #     if cond_key != self.first_stage_key:
-        #         if cond_key in ['caption', 'coordinates_bbox']:
-        #         if cond_key in ['caption', 'coordinates_bbox', "txt"]:
-        #             xc = batch[cond_key]
-        #         elif cond_key == 'class_label':
-        #             xc = batch
-        #         else:
-        #             xc = super().get_input(batch, cond_key).to(self.device)
-        #     else:
-        #         xc = x
-        #     if not self.cond_stage_trainable or force_c_encode:
-        #         if isinstance(xc, dict) or isinstance(xc, list):
-        #             # import pudb; pudb.set_trace()
-        #             c = self.get_learned_conditioning(xc)
-        #         else:
-        #             c = self.get_learned_conditioning(xc.to(self.device))
-        #     else:
-        #         c = xc
-        #     if bs is not None:
-        #         c = c[:bs]
-        #     if self.use_positional_encodings:
-        #         pos_x, pos_y = self.compute_latent_shifts(batch)
-        #         ckey = __conditioning_keys__[self.model.conditioning_key]
-        #         c = {ckey: c, 'pos_x': pos_x, 'pos_y': pos_y}
-        # else:
-        #     c = None
-        #     xc = None
-        #     if self.use_positional_encodings:
-        #         pos_x, pos_y = self.compute_latent_shifts(batch)
-        #         c = {'pos_x': pos_x, 'pos_y': pos_y}
-        # out = [z, c]
+        if self.model.conditioning_key is not None:
+            if cond_key is None:
+                cond_key = self.cond_stage_key
+            if cond_key != self.first_stage_key:
+                if cond_key in ['caption', 'coordinates_bbox']:
+                    xc = batch[cond_key]
+                elif cond_key == 'class_label':
+                    xc = batch
+                else:
+                    xc = super().get_input(batch, cond_key).to(self.device)
+            else:
+                xc = x
+            if not self.cond_stage_trainable or force_c_encode:
+                if isinstance(xc, dict) or isinstance(xc, list):
+                    # import pudb; pudb.set_trace()
+                    c = self.get_learned_conditioning(xc)
+                else:
+                    c = self.get_learned_conditioning(xc.to(self.device))
+            else:
+                c = xc
+            if bs is not None:
+                c = c[:bs]
 
-        if cond_key is None:
-            cond_key = self.cond_stage_key
-        xc = super().get_input(batch, cond_key)
-        if bs is not None:  # bs is None
-            xc["c_crossattn"] = xc["c_crossattn"][:bs]
+            if self.use_positional_encodings:
+                pos_x, pos_y = self.compute_latent_shifts(batch)
+                ckey = __conditioning_keys__[self.model.conditioning_key]
+                c = {ckey: c, 'pos_x': pos_x, 'pos_y': pos_y}
 
-        # To support classifier-free guidance, randomly drop out only text conditioning 5%,
-        # only image conditioning 5%, and both 5%.
-        random = torch.rand(x.size(0), device=x.device)
-        prompt_mask = rearrange(random < 2 * uncond, "n -> n 1 1")
+        else:
+            c = None
+            xc = None
+            if self.use_positional_encodings:
+                pos_x, pos_y = self.compute_latent_shifts(batch)
+                c = {'pos_x': pos_x, 'pos_y': pos_y}
+        out = [z, c]
 
-        # LatentDiffusion.get_learned_conditioning
-        # null_prompt shape [1, 77, 768], 77 is the maximum token number, 768 is the hidden_state_dim
-        null_prompt = self.get_learned_conditioning([""])
-        cond = [torch.where(prompt_mask, null_prompt, self.get_learned_conditioning(xc["c_crossattn"]).detach())]
-
-        out = [z, cond]
         if return_first_stage_outputs:
             xrec = self.decode_first_stage(z)
             out.extend([x, xrec])

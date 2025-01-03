@@ -90,11 +90,21 @@ class ConceptAblationTrainer(BaseTrainer):
             os.makedirs(gen_folder, exist_ok=True)
             ranks = [int(i) for i in trainer_config["devices"].split(',') if i != ""]
             ConceptAblationDataHandler.preprocess(self.opt_config, self.model_config_path, gen_folder, ranks)
-            config.datapath = str(gen_folder / 'images.txt')
-            config.caption = str(gen_folder / 'caption.txt')
-            if config.regularization:
-                config.datapath2 = str(gen_folder / 'images.txt')
-                config.caption2 = str(gen_folder / 'caption.txt')
+            self.opt_config['datapath'] = str(gen_folder / 'images.txt')
+            self.opt_config['caption'] = str(gen_folder / 'caption.txt')
+            if self.opt_config.get('regularization'):
+                self.opt_config['datapath2'] = str(gen_folder / 'images.txt')
+                self.opt_config['caption2'] = str(gen_folder / 'caption.txt')
+
+        config.data.params.train.params.caption = self.opt_config.get('caption')
+        config.data.params.train.params.reg_caption = self.opt_config.get('reg_caption')
+        config.data.params.train.params.datapath = self.opt_config.get('datapath')
+        config.data.params.train.params.reg_datapath = self.opt_config.get('reg_datapath')
+        if self.opt_config.get('caption2') is not None:
+            config.data.params.train2.params.caption = self.opt_config.get('caption2')
+            config.data.params.train2.params.reg_caption = self.opt_config.get('reg_caption2')
+            config.data.params.train2.params.datapath = self.opt_config.get('datapath2')
+            config.data.params.train2.params.reg_datapath = self.opt_config.get('reg_datapath2')
 
         trainer_kwargs = dict()
 
@@ -241,11 +251,12 @@ class ConceptAblationTrainer(BaseTrainer):
         trainer = Trainer.from_argparse_args(trainer_opt,**trainer_kwargs)
         # trainer = Trainer.from_argparse_args(**trainer_kwargs)
         
-
         trainer.logdir = output_dir 
         
         data = instantiate_from_config(config.data)
         data.prepare_data()
+        data.setup()
+
         self.logger.info("#### Data #####")
         for k in data.datasets:
             self.logger.info(f"{k}, {data.datasets[k].__class__.__name__}, {len(data.datasets[k])}")

@@ -52,7 +52,9 @@ class ConceptAblationDataHandler(pl.LightningDataModule):
     def preprocess(opt_config, model_config_path,outdir, ranks): 
         '''
         Preprocess data for the model.'''
-        mp.set_start_method('spawn')
+        # mp.set_start_method('spawn')
+        if mp.get_start_method(allow_none=True) is None:
+            mp.set_start_method('spawn')
 
         with open(opt_config.get("prompts"), "r") as f:
             data = f.read().splitlines()
