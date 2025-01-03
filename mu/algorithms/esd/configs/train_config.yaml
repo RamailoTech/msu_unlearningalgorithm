@@ -3,7 +3,7 @@ train_method: "xattn"  # Choices: ["noxattn", "selfattn", "xattn", "full", "noti
 start_guidance: 0.1  # Optional: guidance of start image (previously alpha)
 negative_guidance: 0.0  # Optional: guidance of negative training
 iterations: 1  # Optional: iterations used to train (previously epochs)
-lr: 5e-5  # Optional: learning rate
+lr: 1e-5  # Optional: learning rate
 image_size: 512  # Optional: image size used to train
 ddim_steps: 50  # Optional: DDIM steps of inference
 
