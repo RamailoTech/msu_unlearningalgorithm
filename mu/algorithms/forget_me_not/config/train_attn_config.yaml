@@ -49,4 +49,4 @@ output_dir: "outputs/forget_me_not/finetuned_models/Abstractionism"  # Output di
 # Device configuration
 devices: "0"  # CUDA devices to train on (comma-separated)
 
-only-xa : True 
+only-xa : True #
