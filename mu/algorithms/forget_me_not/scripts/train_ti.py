@@ -38,7 +38,7 @@ def main():
 
     parser.add_argument('--devices', type=str, help='CUDA devices to train on (comma-separated)')
     
-    parser.add_argument('tokenizer_name', type=str, required=False)
+    parser.add_argument('--tokenizer_name', type=str, required=False)
     parser.add_argument('--instance_prompt', type=str, required=False)
     parser.add_argument('--concept_keyword', type=str, required=False)
     parser.add_argument('--lr_scheduler', type=str, required=False)
