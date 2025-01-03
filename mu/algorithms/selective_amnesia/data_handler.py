@@ -91,7 +91,7 @@ class SelectiveAmnesiaDataHandler(pl.LightningDataModule):
             categories = data['categories'].unique()
 
             assert template_name in categories, f"Invalid template name: {template_name}"
-            config.data.params.train.forget_prompt = f"An image in {template_name} style"
+            config.data.params.train.params.forget_prompt = f"An image in {template_name} style"
             config.data.params.validation.params.captions = [
                 f"A {class_} image in {template_name} style"
                 for class_ in categories
@@ -101,7 +101,10 @@ class SelectiveAmnesiaDataHandler(pl.LightningDataModule):
         ckpt_path = config.ckpt_path
         SelectiveAmnesiaDataHandler.generate_dataset(f"{processed_dataset_dir}/{template_name}", config.data.params.train.forget_prompt, n_samples, model_config_path, ckpt_path)
 
-        config.data.params.train.forget_dataset_path = f"{processed_dataset_dir}/{template_name}"
+        config.data.params.train.params.forget_dataset_path = f"{processed_dataset_dir}/{template_name}"
+        config.data.params.train.params.replay_dataset_path = f"{processed_dataset_dir}/{template_name}"
+        config.data.params.train.params.replay_prompt_path = f"{processed_dataset_dir}/fim_prompts.txt"
+
         return config
 
     @staticmethod
@@ -116,7 +119,7 @@ class SelectiveAmnesiaDataHandler(pl.LightningDataModule):
             "stable_diffusion/scripts/txt2img_make_n_samples.py",
             "--outdir", outdir,
             "--prompt", prompt,
-            "--n_samples", str(n_samples),
+            "--n_samples", str(2),
             "--config", model_config_path,
             "--ckpt", ckpt_path
         ]
@@ -125,7 +128,7 @@ class SelectiveAmnesiaDataHandler(pl.LightningDataModule):
         try:
             subprocess.run(command, check=True)
         except subprocess.CalledProcessError as e:
-            self.logger.error(f"Failed to generate dataset: {e}")
+            logging.error(f"Failed to generate dataset: {e}")
             raise
 
     def prepare_data(self):

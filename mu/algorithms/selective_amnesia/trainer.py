@@ -8,11 +8,11 @@ import os
 from packaging import version
 import pytorch_lightning as pl
 from omegaconf import OmegaConf
-from pytorch_lightning.callbacks import  LearningRateMonitor
 from pytorch_lightning.trainer import Trainer
 import signal
 import pudb
 from pathlib import Path
+import argparse
 
 from stable_diffusion.ldm.util import instantiate_from_config
 
@@ -69,6 +69,8 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
         trainer_config["devices"] = self.opt_config.get('devices')
         trainer_config["strategy"] = "ddp"
         cpu = False
+
+        trainer_opt = argparse.Namespace(**trainer_config)
 
         lightning_config.trainer = trainer_config
 
@@ -170,7 +172,7 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
                 }
             },
             "learning_rate_logger": {
-                "target": "LearningRateMonitor",
+                "target": "mu.algorithms.selective_amnesia.callbacks.LearningRateMonitor",
                 "params": {
                     "logging_interval": "step",
                     # "log_momentum": True
@@ -197,7 +199,7 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
 
         trainer_kwargs["callbacks"] = [instantiate_from_config(callbacks_cfg[k]) for k in callbacks_cfg]
 
-        trainer = Trainer.from_argparse_args(**trainer_kwargs)
+        trainer = Trainer.from_argparse_args(trainer_opt,**trainer_kwargs)
 
         trainer.logdir = output_dir 
 
@@ -211,13 +213,14 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
         config = SelectiveAmnesiaDataHandler.update_config_based_on_template(self.opt_config.get('raw_dataset_dir'), self.opt_config.get('processed_dataset_dir'), config, self.opt_config.get('template'), self.opt_config.get('template_name'), self.opt_config.get('dataset_type'), self.opt_config.get('use_sample'))
         data = instantiate_from_config(config.data)
         data.prepare_data()
+        data.setup()
 
         self.logger.info("#### Data #####")
         for k in data.datasets:
             self.logger.info(f"{k}, {data.datasets[k].__class__.__name__}, {len(data.datasets[k])}")
 
         # configure learning rate
-        bs, base_lr = config.data.params.batch_size, config.model.base_learning_rate
+        bs, base_lr = config.data.params.train_batch_size, config.model.base_learning_rate
         if not cpu:
             ngpu = len(lightning_config.trainer.devices.strip(",").split(','))
         else:

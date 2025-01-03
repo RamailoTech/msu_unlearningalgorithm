@@ -8,6 +8,7 @@ dependencies:
   - torchvision
   - pip:
     - accelerate
+    - pytorch-lightning==1.9.0
     - bitsandbytes==0.45.0
     - dadaptation==3.1
     - diffusers==0.32.1
@@ -41,4 +42,5 @@ dependencies:
     - clean-fid
     - lightning
     - nudenet==3.0.8
-    - git+https://github.com/openai/CLIP.git@main#egg=clip
+    - -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
+    - -e git+https://github.com/openai/CLIP.git@main#egg=clip

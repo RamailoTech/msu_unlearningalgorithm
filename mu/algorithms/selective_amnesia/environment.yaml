@@ -182,3 +182,7 @@ dependencies:
       - xxhash==3.3.0
       - yarl==1.9.2
       - zipp==3.17.0
+      - wandb
+      - -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
+      - -e git+https://github.com/openai/CLIP.git@main#egg=clip
+      - opencv-python

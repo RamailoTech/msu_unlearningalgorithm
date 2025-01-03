@@ -6,11 +6,12 @@ K_steps: 2  # Number of K steps
 lr: 5e-5  # Learning rate
 
 # Model configuration
-model_config_path: "mu/algorithms/erase_diff/configs/model_config.yaml"  # Config path for Stable Diffusion
+model_config_path: "mu/algorithms/erase_diff/configs/model_config.yaml"
 ckpt_path: "models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
 
 # Dataset directories
 raw_dataset_dir: "data/quick-canvas-dataset/sample"
+processed_dataset_dir: "mu/algorithms/erase_diff/data"
 dataset_type : "unlearncanvas"
 template : "style"
 template_name : "Abstractionism"

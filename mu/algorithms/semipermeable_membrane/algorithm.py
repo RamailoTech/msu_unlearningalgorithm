@@ -32,6 +32,7 @@ class SemipermeableMembraneAlgorithm(BaseAlgorithm):
         self._setup_components()
         self.device = self.model.device
 
+
     def _setup_components(self):
         """
         Setup model, data handler, and trainer components.
@@ -53,7 +54,7 @@ class SemipermeableMembraneAlgorithm(BaseAlgorithm):
         self.trainer = SemipermeableMembraneTrainer(
             model=self.model,
             config=self.config,
-            device=str(self.device),
+            device=str(self.model.device),
             data_handler=self.data_handler
         )
 
