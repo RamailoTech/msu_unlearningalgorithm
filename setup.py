@@ -26,8 +26,8 @@ check_conda()
 
 setup(
     name="unlearn_diff",  
-    version="0.1.5",
-    author="Ramailo Tech",
+    version="0.1.6",
+    author="nebulaanish",
     author_email="nebulaanish@gmail.com",
     description="Unlearning Algorithms",
     long_description=long_description,
