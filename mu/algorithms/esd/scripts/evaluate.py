@@ -217,7 +217,7 @@ class ESDEvaluator(BaseEvaluator):
         self.generator.sample_image()
         self.calculate_accuracy()
         self.calculate_fid_score()
-        self.save_results()
+        # self.save_results()
         self.logger.info("Evaluation completed successfully.")
 
 
