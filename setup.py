@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 import os
+import subprocess
+import sys
 
-# Read the README file for the long description
 with open("Readme.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-# Collect all environment.yaml files
 def package_data_files():
     data_files = []
     for root, dirs, files in os.walk("mu/algorithms"):
@@ -14,10 +14,20 @@ def package_data_files():
                 data_files.append(os.path.join(root, file))
     return data_files
 
+def check_conda():
+    try:
+        subprocess.run(["conda", "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print("Conda is installed.")
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        sys.stderr.write("Error: Conda is not installed.\n")
+        sys.exit(1)
+
+check_conda()
+
 setup(
-    name="unlearn_diff",  # Replace with your package name
-    version="0.0.1",
-    author="nebulaanish",
+    name="unlearn_diff",  
+    version="0.1.5",
+    author="Ramailo Tech",
     author_email="nebulaanish@gmail.com",
     description="Unlearning Algorithms",
     long_description=long_description,
@@ -35,12 +45,16 @@ setup(
     ],
     python_requires='>=3.7',
     install_requires=[
+        'pyyaml',
+        'setuptools',
     ],
     extras_require={
     },
     entry_points={
         'console_scripts': [
-            'create_env=mu.helpers.env_manager:main',
+            'create_env=scripts.commands:create_env_cli',
+            'download_data=scripts.commands:download_data_cli',
+            'download_models=scripts.commands:download_models_cli',
         ],
     },
 )

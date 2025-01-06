@@ -2,6 +2,7 @@
 
 Unlearn is an open-source Python package designed to streamline the development of unlearning algorithms and establish a standardized evaluation pipeline for diffusion models. It provides researchers and practitioners with tools to implement, evaluate, and extend unlearning algorithms effectively.
 
+
 ## Features
 
 - **Comprehensive Algorithm Support**: Includes commonly used concept erasing and machine unlearning algorithms tailored for diffusion models. Each algorithm is encapsulated and standardized in terms of input-output formats.
@@ -85,9 +86,39 @@ The project is organized to facilitate scalability and maintainability.
 
 ## Datasets
 
-We use the Quick Canvas benchmark dataset, available [here](https://drive.google.com/drive/folders/1-1Sc8h_tGArZv5Y201ugTF0K0D_Xn2lM). Currently, the algorithms are trained using 5 images belonging to the themes of **Abstractionism** and **Architectures**.
+We use the Quick Canvas benchmark dataset, available [here](https://huggingface.co/datasets/nebulaanish/quick-canvas-benchmark). Currently, the algorithms are trained using 5 images belonging to the themes of **Abstractionism** and **Architectures**.
 
 
 
 
+## Usage
+This section contains the usage guide for the package.
+### Prerequisities
+Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
 
+- **Miniconda** (recommended): [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
+- **Anaconda**: [https://www.anaconda.com/products/distribution](https://www.anaconda.com/products/distribution)
+
+After installing `conda`, ensure it is available in your PATH by running:
+
+```bash
+conda --version
+```
+
+### Downloading data and models.
+After you install the package, you can use following commands to download.
+1. **Dataset**
+<br>
+`<dataset_type> : sample | full ` <br>
+`<dataset_source>: i2p | quick_canvas`
+  ```
+  download_data <dataset_type> <dataset_source>
+  ```
+  eg:  `downlaod_data sample i2p`
+
+2. **Model** <br>
+`<model_type> : compvis | diffuser`
+  ```
+  download_model <model_type>
+  ```
+  eg: `download_model compvis`
