@@ -112,6 +112,10 @@ ls -lh ./data/quick-canvas-dataset/sample/
     * Type: str
     * Example: "/path/to/compvis.ckpt"
 
+* **full_fisher_dict_pkl_path:** Path to the full fisher dict pkl file
+    * Type: str
+    * Example: "full_fisher_dict.pkl"
+
 ### Dataset Directories
 
 * **raw_dataset_dir:** Directory containing the raw dataset categorized by themes or classes.
@@ -187,13 +191,19 @@ To train the Selective Amnesia algorithm to remove specific concepts or styles f
 
 ### Example Command
 
-```bash
+1. First download the full_fisher_dict.pkl file.
 ```
+wget https://huggingface.co/ajrheng/selective-amnesia/resolve/main/full_fisher_dict.pkl
+```
+
+2. Run the script 
+```python -m mu.algorithms.selective_amnesia.scripts.train --config_path mu/algorithms/selective_amnesia/configs/train_config.yaml ```
+
+
 
 ### Running the Training Script in Offline Mode
 
-```bash
-
+```WANDB_MODE=offline python -m mu.algorithms.selective_amnesia.scripts.train --config_path mu/algorithms/selective_amnesia/configs/train_config.yaml 
 ```
 
 ### Overriding Configuration via Command Line

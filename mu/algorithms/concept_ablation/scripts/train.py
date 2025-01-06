@@ -77,6 +77,42 @@ def main():
         help="target style to remove, used when kldiv loss",
     )
     parser.add_argument(
+        "--caption",
+        type=str,
+        default="",
+        help="path to target images",
+    )
+    parser.add_argument(
+        "--reg_caption",
+        type=str,
+        default="",
+        help="path to target images",
+    )
+    parser.add_argument(
+        "--datapath2",
+        type=str,
+        default="",
+        help="path to target images",
+    )
+    parser.add_argument(
+        "--reg_datapath2",
+        type=str,
+        default=None,
+        help="path to regularization images",
+    )
+    parser.add_argument(
+        "--caption2",
+        type=str,
+        default="",
+        help="path to target images",
+    )
+    parser.add_argument(
+        "--reg_caption2",
+        type=str,
+        default="",
+        help="path to regularization images' caption",
+    )
+    parser.add_argument(
         "--repeat",
         type=int,
         default=0,
@@ -151,20 +187,13 @@ def main():
     # Prepare output directory
     os.makedirs(args.output_dir or config.get('output_dir', 'results'), exist_ok=True)
 
-    # Parse devices
-    devices = (
-        [f'cuda:{int(d.strip())}' for d in args.devices.split(',')]
-        if args.devices
-        else [f'cuda:{int(d.strip())}' for d in config.get('devices').split(',')]
-    )
 
     # Update configuration only if arguments are explicitly provided
     for key, value in vars(args).items():
         if value is not None:  # Update only if the argument is provided
             config[key] = value
 
-    # Ensure devices are properly set
-    config['devices'] = devices
+   
     config['lr'] = float(config['lr'])
     
 

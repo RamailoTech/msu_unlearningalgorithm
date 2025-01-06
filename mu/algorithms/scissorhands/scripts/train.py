@@ -15,14 +15,20 @@ def main():
         description='Finetuning Stable Diffusion model to erase concepts using the EraseDiff method'
     )
 
-    parser.add_argument('--config_path', help='Config path for Stable Diffusion', type=str,
-                        required=True)
-    
+    parser.add_argument('--config_path', help='Config path for Stable Diffusion', type=str, required=True)
+
     # Training parameters
-    parser.add_argument('--train_method', help='method of training', type=str, default="xattn",
+    parser.add_argument('--train_method', help='method of training', type=str,
                         choices=["noxattn", "selfattn", "xattn", "full", "notime", "xlayer", "selflayer"])
     parser.add_argument('--alpha', help='Guidance of start image used to train', type=float)
     parser.add_argument('--epochs', help='Number of epochs to train', type=int)
+
+    # -------------------------------------------------------------------------
+    # Newly added parameters
+    parser.add_argument('--start_guidence', help='(newly added) Starting guidance factor', type=float)
+    parser.add_argument('--negative_guidance', help='(newly added) Negative guidance factor', type=float)
+    parser.add_argument('--Iterations', help='(newly added) Number of training iterations', type=int)
+    # -------------------------------------------------------------------------
 
     # Model configuration
     parser.add_argument('--model_config_path', help='Model Config path for Stable Diffusion', type=str)
@@ -37,11 +43,9 @@ def main():
     parser.add_argument('--template', type=str, choices=['object', 'style', 'i2p'])
     parser.add_argument('--template_name', type=str, choices=['self-harm', 'Abstractionism'])
 
-
     # Output configurations
-    parser.add_argument('--output_dir', help='Output directory to save results', type=str, required=False
-                        )
-    
+    parser.add_argument('--output_dir', help='Output directory to save results', type=str)
+
     # Sampling and image configurations
     parser.add_argument('--sparsity', help='threshold for mask', type=float)
     parser.add_argument('--project', action='store_true')
@@ -56,35 +60,39 @@ def main():
 
     args = parser.parse_args()
 
-    # Load default configuration from YAML
+    # 1) Load default configuration from YAML (train_config)
     config = load_config(args.config_path)
 
-
-    # Prepare output directory
-    output_name = os.path.join(args.output_dir or config.get('output_dir', 'results'), f"{args.template_name or config.get('template_name', 'self-harm')}.pth")
+    # 2) Prepare output directory
+    output_name = os.path.join(
+        args.output_dir or config.get('output_dir', 'results'),
+        f"{args.template_name or config.get('template_name', 'self-harm')}.pth"
+    )
     os.makedirs(args.output_dir or config.get('output_dir', 'results'), exist_ok=True)
 
-    # Parse devices
+    # 3) Parse devices
     devices = (
-        [f'cuda:{int(d.strip())}' for d in args.devices.split(',')]
-        if args.devices
+        [f'cuda:{int(d.strip())}' for d in args.devices.split(',')] if args.devices
         else [f'cuda:{int(d.strip())}' for d in config.get('devices').split(',')]
     )
 
-    # Update configuration only if arguments are explicitly provided
+    # 4) Update configuration only if arguments are explicitly provided
     for key, value in vars(args).items():
-        if value is not None:  # Update only if the argument is provided
+        if value is not None:  # Update only if the argument is provided by user
             config[key] = value
 
-    # Ensure devices are properly set
+    # 5) Ensure devices are properly set
     config['devices'] = devices
 
-    # Setup logger
-    log_file = os.path.join(logs_dir, f"erase_diff_training_{config.get('dataset_type')}_{config.get('template')}_{config.get('template_name')}.log")
+    # 6) Setup logger
+    log_file = os.path.join(
+        logs_dir,
+        f"erase_diff_training_{config.get('dataset_type')}_{config.get('template')}_{config.get('template_name')}.log"
+    )
     logger = setup_logger(log_file=log_file, level=logging.INFO)
     logger.info("Starting scissorhands Training")
 
-    # Initialize and run the EraseDiff algorithm
+    # 7) Initialize and run the EraseDiff algorithm
     algorithm = ScissorHandsAlgorithm(config)
     algorithm.run()
 

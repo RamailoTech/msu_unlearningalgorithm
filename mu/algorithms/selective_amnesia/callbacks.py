@@ -1,4 +1,4 @@
-from pytorch_lightning.callbacks import Callback
+from pytorch_lightning.callbacks import  Callback, LearningRateMonitor
 import torchvision
 import pytorch_lightning as pl
 import os 
@@ -6,8 +6,8 @@ from omegaconf import OmegaConf
 import torch
 from PIL import Image
 import time 
-from pytorch_lightning.utilities import rank_zero_info
-from pytorch_lightning.utilities.distributed import rank_zero_only
+# from pytorch_lightning.utilities import rank_zero_info, rank_zero_only
+from pytorch_lightning.utilities.distributed import rank_zero_only, rank_zero_info
 import numpy as np
 
 class SetupCallback(Callback):

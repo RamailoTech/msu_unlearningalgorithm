@@ -94,7 +94,7 @@ import torch
 from einops import rearrange, repeat
 import sys
 from stable_diffusion.ldm.models.autoencoder import AutoencoderKL, IdentityFirstStage
-from stable_diffusion.ldm.models.diffusion.ddpm import LatentDiffusion as LatentDiffusion
+from stable_diffusion.ldm.models.diffusion.ddpm_ca import LatentDiffusion as LatentDiffusion
 from stable_diffusion.ldm.modules.attention import BasicTransformerBlock as BasicTransformerBlock
 from stable_diffusion.ldm.modules.attention import CrossAttention as CrossAttention
 from stable_diffusion.ldm.util import default, instantiate_from_config, isimage, ismap, log_txt_as_img

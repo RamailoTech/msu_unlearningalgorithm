@@ -10,6 +10,7 @@ logs/*
 wandb 
 .vscode 
 cache
+.cache/
 outputs/*
 !outputs/.gitkeep
 

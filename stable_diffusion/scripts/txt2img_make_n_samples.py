@@ -16,10 +16,11 @@ from contextlib import contextmanager, nullcontext
 import sys
 sys.path.append(".")
 
-from ldm.util import instantiate_from_config
-from ldm.models.diffusion.ddim import DDIMSampler
-from ldm.models.diffusion.plms import PLMSSampler
-from ldm.models.diffusion.dpm_solver import DPMSolverSampler
+
+from stable_diffusion.ldm.util import instantiate_from_config
+from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
+from stable_diffusion.ldm.models.diffusion.plms import PLMSSampler
+from stable_diffusion.ldm.models.diffusion.dpm_solver import DPMSolverSampler
 
 from diffusers.pipelines.stable_diffusion.safety_checker import StableDiffusionSafetyChecker
 from transformers import AutoFeatureExtractor

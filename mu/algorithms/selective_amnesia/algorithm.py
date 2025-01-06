@@ -21,7 +21,7 @@ class SelectiveAmnesiaAlgorithm(BaseAlgorithm):
         self.config_path = config_path
         self.model = None
         self.trainer = None
-        self.device = torch.device(self.config.get('devices', ['cuda:0'])[0])
+        self.device = self.config.get('devices')
         self.logger = logging.getLogger(__name__)
         self._setup_components()
 
@@ -33,7 +33,8 @@ class SelectiveAmnesiaAlgorithm(BaseAlgorithm):
         self.model = SelectiveAmnesiaModel(
             model_config_path=self.config.get('model_config_path'),
             ckpt_path=self.config.get('ckpt_path'),
-            device=str(self.device)
+            device=str(self.device),
+            opt_config=self.config
         )
 
         # Initialize Trainer

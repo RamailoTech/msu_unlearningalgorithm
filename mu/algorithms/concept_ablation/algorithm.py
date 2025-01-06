@@ -28,7 +28,7 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
         self.config_path = config_path
         self.model = None
         self.trainer = None
-        self.device = torch.device(self.config.get('devices', ['cuda:0'])[0])
+        self.device = self.config.get('devices')
         self.logger = logging.getLogger(__name__)
         self._setup_components()
 

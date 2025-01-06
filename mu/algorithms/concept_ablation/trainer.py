@@ -13,7 +13,8 @@ from pytorch_lightning.trainer import Trainer
 import signal
 import pudb
 from pathlib import Path
-
+from argparse import Namespace
+import argparse
 from stable_diffusion.ldm.util import instantiate_from_config
 
 from mu.algorithms.concept_ablation.data_handler import ConceptAblationDataHandler
@@ -68,8 +69,11 @@ class ConceptAblationTrainer(BaseTrainer):
         trainer_config["accelerator"] = "gpu"
 
         trainer_config["devices"] = self.opt_config.get('devices')
+
+        
         trainer_config["strategy"] = "ddp"
         cpu = False
+        trainer_opt = argparse.Namespace(**trainer_config)
 
         lightning_config.trainer = trainer_config
 
@@ -86,11 +90,21 @@ class ConceptAblationTrainer(BaseTrainer):
             os.makedirs(gen_folder, exist_ok=True)
             ranks = [int(i) for i in trainer_config["devices"].split(',') if i != ""]
             ConceptAblationDataHandler.preprocess(self.opt_config, self.model_config_path, gen_folder, ranks)
-            config.datapath = str(gen_folder / 'images.txt')
-            config.caption = str(gen_folder / 'caption.txt')
-            if config.regularization:
-                config.datapath2 = str(gen_folder / 'images.txt')
-                config.caption2 = str(gen_folder / 'caption.txt')
+            self.opt_config['datapath'] = str(gen_folder / 'images.txt')
+            self.opt_config['caption'] = str(gen_folder / 'caption.txt')
+            if self.opt_config.get('regularization'):
+                self.opt_config['datapath2'] = str(gen_folder / 'images.txt')
+                self.opt_config['caption2'] = str(gen_folder / 'caption.txt')
+
+        config.data.params.train.params.caption = self.opt_config.get('caption')
+        config.data.params.train.params.reg_caption = self.opt_config.get('reg_caption')
+        config.data.params.train.params.datapath = self.opt_config.get('datapath')
+        config.data.params.train.params.reg_datapath = self.opt_config.get('reg_datapath')
+        if self.opt_config.get('caption2') is not None:
+            config.data.params.train2.params.caption = self.opt_config.get('caption2')
+            config.data.params.train2.params.reg_caption = self.opt_config.get('reg_caption2')
+            config.data.params.train2.params.datapath = self.opt_config.get('datapath2')
+            config.data.params.train2.params.reg_datapath = self.opt_config.get('reg_datapath2')
 
         trainer_kwargs = dict()
 
@@ -189,7 +203,7 @@ class ConceptAblationTrainer(BaseTrainer):
                 }
             },
             "learning_rate_logger": {
-                "target": "LearningRateMonitor",
+                "target": "mu.algorithms.concept_ablation.trainer.LearningRateMonitor",
                 "params": {
                     "logging_interval": "step",
                     # "log_momentum": True
@@ -225,7 +239,7 @@ class ConceptAblationTrainer(BaseTrainer):
                      }
             }
             default_callbacks_cfg.update(default_metrics_over_trainsteps_ckpt_dict)
-
+        
         callbacks_cfg = OmegaConf.merge(default_callbacks_cfg, callbacks_cfg)
         if ('ignore_keys_callback' in callbacks_cfg) and self.opt_config.get('ckpt_path'):
             callbacks_cfg.ignore_keys_callback.params['ckpt_path'] = self.opt_config.get('ckpt_path')
@@ -234,12 +248,15 @@ class ConceptAblationTrainer(BaseTrainer):
 
         trainer_kwargs["callbacks"] = [instantiate_from_config(callbacks_cfg[k]) for k in callbacks_cfg]
 
-        trainer = Trainer.from_argparse_args(**trainer_kwargs)
-
+        trainer = Trainer.from_argparse_args(trainer_opt,**trainer_kwargs)
+        # trainer = Trainer.from_argparse_args(**trainer_kwargs)
+        
         trainer.logdir = output_dir 
         
         data = instantiate_from_config(config.data)
         data.prepare_data()
+        data.setup()
+
         self.logger.info("#### Data #####")
         for k in data.datasets:
             self.logger.info(f"{k}, {data.datasets[k].__class__.__name__}, {len(data.datasets[k])}")

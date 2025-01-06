@@ -3,16 +3,16 @@ seed : 23
 scale_lr : True 
 
 # Model configuration
-model_config_path: "mu/algorithms/selective_amnesia/configs/model_config.yaml"  # Config path for Stable Diffusion
-ckpt_path: "models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
+model_config_path: "mu/algorithms/selective_amnesia/configs/model_config.yaml"
+ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
+full_fisher_dict_path : "mu/algorithms/selective_amnesia/data/full_fisher_dict.pkl"
 
 # Dataset directories
-raw_dataset_dir: "data/quick-canvas-dataset/sample"
+raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
 processed_dataset_dir: "mu/algorithms/selective_amnesia/data"
 dataset_type : "unlearncanvas"
 template : "style"
 template_name : "Abstractionism"
-
 
 # Output configurations
 output_dir: "outputs/selective_amnesia/finetuned_models"  # Output directory to save results
@@ -20,7 +20,7 @@ output_dir: "outputs/selective_amnesia/finetuned_models"  # Output directory to 
 # Sampling and image configurations
 
 # Device configuration
-devices: "0"  # CUDA devices to train on (comma-separated)
+devices: "0,"  # CUDA devices to train on (comma-separated)
 
 # Additional flags
 use_sample: True  # Use the sample dataset for training
@@ -40,27 +40,6 @@ data:
     validation:
       target: stable_diffusion.ldm.data.VisualizationDataset
       params:
-        captions:
-        - a Architectures image in Artist_Sketch style
-        - a Bears image in Artist_Sketch style
-        - a Birds image in Artist_Sketch style
-        - a Butterfly image in Artist_Sketch style
-        - a Cats image in Artist_Sketch style
-        - a Dogs image in Artist_Sketch style
-        - a Fishes image in Artist_Sketch style
-        - a Flame image in Artist_Sketch style
-        - a Flowers image in Artist_Sketch style
-        - a Frogs image in Artist_Sketch style
-        - a Horses image in Artist_Sketch style
-        - a Human image in Artist_Sketch style
-        - a Jellyfish image in Artist_Sketch style
-        - a Rabbits image in Artist_Sketch style
-        - a Sandwiches image in Artist_Sketch style
-        - a Sea image in Artist_Sketch style
-        - a Statues image in Artist_Sketch style
-        - a Towers image in Artist_Sketch style
-        - a Trees image in Artist_Sketch style
-        - a Waterfalls image in Artist_Sketch style
         output_size: 512
         n_gpus: 1 # CHANGE THIS TO NUMBER OF GPUS! small hack to sure we see all our logging samples
 

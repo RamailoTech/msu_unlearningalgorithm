@@ -17,7 +17,7 @@ class SelectiveAmnesiaModel(BaseModel):
     Loads the Stable Diffusion model and applies EWC constraints using the precomputed FIM.
     """
 
-    def __init__(self, model_config_path: str, ckpt_path: str, device: str, *args, **kwargs):
+    def __init__(self, model_config_path: str, ckpt_path: str, device: str, opt_config, *args, **kwargs):
         """
         Initialize the ConceptAblationModel.
 
@@ -31,10 +31,10 @@ class SelectiveAmnesiaModel(BaseModel):
         self.model_config_path = model_config_path
         self.config = load_config_from_yaml(model_config_path)
         self.ckpt_path = ckpt_path
-        self.model = self.load_model(self.config, self.ckpt_path)
+        self.model = self.load_model(self.config, self.ckpt_path, opt_config)
         self.logger = logging.getLogger(__name__)
 
-    def load_model(self, config, ckpt_path: str):
+    def load_model(self, config, ckpt_path: str, opt_config):
         """
         Load the Stable Diffusion model from a configuration and checkpoint.
 
@@ -46,6 +46,8 @@ class SelectiveAmnesiaModel(BaseModel):
         Returns:
             torch.nn.Module: The loaded Stable Diffusion model.
         """
+        config.model.params.full_fisher_dict_pkl_path = opt_config.get('full_fisher_dict_pkl_path')
+
         model = instantiate_from_config(config.model)
 
         if ckpt_path : 

@@ -15,10 +15,12 @@ def main():
 
     parser.add_argument('--config_path', help='Config path for Stable Diffusion', type=str,
                         required=True)
-    
+    parser.add_argument('--full_fisher_dict_pkl_path', help='Checkpoint path for Stable Diffusion', type=str, required=True)
+
     # Model configuration
     parser.add_argument('--model_config_path', help='Model Config path for Stable Diffusion', type=str)
     parser.add_argument('--ckpt_path', help='Checkpoint path for Stable Diffusion', type=str)
+
 
     # Dataset directories
     parser.add_argument('--raw_dataset_dir', type=str,
@@ -33,7 +35,8 @@ def main():
     parser.add_argument('--output_dir', help='Output directory to save results', type=str)
 
     # Device configuration
-    parser.add_argument('--devices', help='CUDA devices to train on (comma-separated)', type=str, default="0")
+    parser.add_argument('--devices', help='CUDA devices to train on (comma-separated)', type=str)
+    
 
     # Additional flags
     parser.add_argument('--use_sample', help='Use the sample dataset for training')
@@ -58,21 +61,10 @@ def main():
     # Prepare output directory
     os.makedirs(args.output_dir or config.get('output_dir', 'results'), exist_ok=True)
 
-    # Parse devices
-    devices = (
-        [f'cuda:{int(d.strip())}' for d in args.devices.split(',')]
-        if args.devices
-        else [f'cuda:{int(d.strip())}' for d in config.get('devices').split(',')]
-    )
-
     # Update configuration only if arguments are explicitly provided
     for key, value in vars(args).items():
         if value is not None:  # Update only if the argument is provided
             config[key] = value
-
-    # Ensure devices are properly set
-    config['devices'] = devices
-    
 
     # Setup logger
     log_file = os.path.join(logs_dir, f"selective_amnesia_training_{config.get('dataset_type')}_{config.get('template')}_{config.get('template_name')}.log")
