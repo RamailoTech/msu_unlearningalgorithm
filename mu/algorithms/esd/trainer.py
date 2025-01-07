@@ -52,7 +52,7 @@ class ESDTrainer(BaseTrainer):
 
     def train(self):
         """
-        Execute the training loop.
+        Execute the training loop. 
         """
         iterations = self.config['iterations']
         ddim_steps = self.config['ddim_steps']

@@ -17,6 +17,9 @@ from torchvision import transforms
 from torch.nn import functional as F
 from mu.core.base_evaluator import BaseEvaluator
 
+theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
+class_available = ['Architectures', 'Bears', 'Birds']
+
 class ESDSampler(BaseSampler):
     """ESD Image Generator class extending a hypothetical BaseImageGenerator."""
 
@@ -44,7 +47,7 @@ class ESDSampler(BaseSampler):
         """
         self.logger.info("Loading model...")
         model_ckpt_path = self.config["ckpt_path"]
-        model_config = load_config(self.config["model_config_path"])
+        model_config = load_config(self.config["model_config"])
         self.model = load_ckpt_from_config(model_config, model_ckpt_path, verbose=True)
         self.model.to(self.device)
         self.model.eval()
@@ -68,7 +71,7 @@ class ESDSampler(BaseSampler):
         self.logger.info(f"Generating images and saving to {output_dir}")
 
         seed_everything(seed)
-
+       
         for test_theme in theme_available:
             for object_class in class_available:
                 prompt = f"A {object_class} image in {test_theme.replace('_',' ')} style."
@@ -104,13 +107,17 @@ class ESDSampler(BaseSampler):
                             # Convert to uint8 image
                             x_sample = x_samples_ddim[0]
 
-                            x_sample = (255. * x_sample.numpy()).round()
+                            # x_sample = (255. * x_sample.numpy()).round()
+                            if isinstance(x_sample, torch.Tensor):
+                                x_sample = (255. * x_sample.cpu().detach().numpy()).round()
+                            else:
+                                x_sample = (255. * x_sample).round()
                             x_sample = x_sample.astype(np.uint8)
                             img = Image.fromarray(x_sample)
 
                             #save image
-                            filename = f"{test_theme}_{object_class}_seed{seed}.jpg"
-                            outpath = os.path.join(output_dir, filename)
+                            filename = f"{test_theme}_{object_class}_seed_{seed}.jpg"
+                            outpath = os.path.join(output_dir,theme, filename)
                             self.save_image(img, outpath)
 
         self.logger.info("Image generation completed.")
@@ -130,14 +137,14 @@ class ESDEvaluator(BaseEvaluator):
     Inherits from the abstract BaseEvaluator.
     """
 
-    def __init__(self, sampler: Any, config: Dict[str, Any], **kwargs):
+    def __init__(self,config: Dict[str, Any], **kwargs):
         """
         Args:
             sampler (Any): An instance of a BaseSampler-derived class (e.g., ESDSampler).
             config (Dict[str, Any]): A dict of hyperparameters / evaluation settings.
             **kwargs: Additional overrides for config.
         """
-        super().__init__(sampler, config, **kwargs)
+        super().__init__(config, **kwargs)
         self.logger = logging.getLogger(__name__)
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.sampler = ESDSampler(config)
@@ -163,10 +170,10 @@ class ESDEvaluator(BaseEvaluator):
         # Load checkpoint
         ckpt_path = self.config["classification_ckpt"]
         self.logger.info(f"Loading classification checkpoint from: {ckpt_path}")
-        checkpoint = torch.load(ckpt_path, map_location=self.device)
-        self.classification_model.load_state_dict(checkpoint["model_state_dict"])
+        #NOTE: changed model_state_dict to state_dict as it was not present and added strict=False
+        self.classification_model.load_state_dict(torch.load(ckpt_path, map_location=self.device)["state_dict"],strict=False)
         self.classification_model.eval()
-
+    
         self.logger.info("Classification model loaded successfully.")
 
     def preprocess_image(self, image: Image.Image):
@@ -198,6 +205,8 @@ class ESDEvaluator(BaseEvaluator):
 
         if theme is not None:
             input_dir = os.path.join(input_dir, theme)
+        else:
+            input_dir = os.path.join(input_dir)
         
         os.makedirs(output_dir, exist_ok=True)
         output_path = (os.path.join(output_dir, f"{theme}.pth") 
@@ -273,7 +282,7 @@ class ESDEvaluator(BaseEvaluator):
                 for seed in seed_list:
                     for idx, object_class in enumerate(class_available):
                         label_val = idx
-                        img_file = f"{test_theme}_{object_class}_seed{seed}.jpg"
+                        img_file = f"{test_theme}_{object_class}_seed_{seed}.jpg"
                         img_path = os.path.join(input_dir, img_file)
                         if not os.path.exists(img_path):
                             self.logger.warning(f"Image not found: {img_path}")
@@ -352,17 +361,26 @@ class ESDEvaluator(BaseEvaluator):
     def run(self, *args, **kwargs):
         """
         Run the complete evaluation process:
-         1) Load the classification model
-         2) Generate images (if you want to use sampler here) or skip if already generated
-         3) Calculate accuracy
-         4) calculate FID
-         5) [Save final results if needed]
+        1) Load the classification model
+        2) Generate images (using sampler)
+        3) Calculate accuracy
+        4) Calculate FID
+        5) Save final results
         """
+
+        # Call the sample method to generate images
+        # self.sampler.load_model()  
+        # self.sampler.sample()    
+
+        # Load the classification model
         self.load_model()
-        
+
+        # Proceed with accuracy and FID calculations
         self.calculate_accuracy()
         self.calculate_fid_score()
 
+        # Save results
         self.save_results(self.results, os.path.join(self.config["eval_output_dir"], "final_results.pth"))
 
         self.logger.info("Evaluation run completed.")
+

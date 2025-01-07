@@ -30,7 +30,11 @@ import multiprocessing
 from torch import nn
 from torchvision.models import inception_v3
 
-from constants.const import theme_available, class_available
+from stable_diffusion.constants.const import theme_available, class_available
+
+theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
+# class_available = ['Architectures', 'Bears', 'Birds']
+class_available = ['Architectures']
 
 
 def str2bool(v):
@@ -160,7 +164,7 @@ def load_ckpt_from_config(config, ckpt, verbose=False):
     if "global_step" in pl_sd:
         print(f"Global Step: {pl_sd['global_step']}")
     sd = pl_sd["state_dict"]
-    model = instantiate_from_config(config.model)
+    model = instantiate_from_config(config['model'])
     m, u = model.load_state_dict(sd, strict=False)
     if len(m) > 0 and verbose:
         print("missing keys:")
@@ -295,6 +299,10 @@ def preprocess_images(images, use_multiprocessing=False):
     images: (N, H, W, 3)
     Returns: torch.Tensor shape (N, 3, 299, 299)
     """
+    if str(use_multiprocessing).lower() == "true":
+        use_multiprocessing = True
+    else:
+        use_multiprocessing = False
     if use_multiprocessing:
         with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
             jobs = [pool.apply_async(preprocess_image, (im,)) for im in images]
@@ -351,7 +359,7 @@ def load_style_generated_images(path, exclude="Abstractionism", seed=[188, 288, 
     for theme in theme_tested:
         for object_class in class_tested:
             for individual in seed:
-                image_paths.append(os.path.join(path, f"{theme}_{object_class}_seed{individual}.jpg"))
+                image_paths.append(os.path.join(path,"Abstractionism", f"{theme}_{object_class}_seed_{individual}.jpg"))
     if not os.path.isfile(image_paths[0]):
         raise FileNotFoundError(f"Could not find {image_paths[0]}")
 
@@ -396,7 +404,7 @@ def load_style_ref_images(path, exclude="Seed_Images"):
     for theme in theme_tested:
         for object_class in class_tested:
             for idx in range(1, 6):
-                image_paths.append(os.path.join(path, theme, object_class, str(idx) + ".jpg"))
+                image_paths.append(os.path.join(path, "Abstractionism", object_class, str(idx) + ".jpg"))
 
     first_image = cv2.imread(image_paths[0])
     W, H = 512, 512
