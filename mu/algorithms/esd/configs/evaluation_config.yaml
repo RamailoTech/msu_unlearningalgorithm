@@ -1,4 +1,4 @@
-model_config: "configs/generate_sd.yaml"
+model_config: "mu/algorithms/esd/configs/generate_sd.yaml"
 ckpt_path: "../mu_erasing_concept_esd/results/style50/"
 theme: "Abstractionism"
 cfg_text: 9.0
@@ -7,6 +7,10 @@ ddim_steps: 100
 image_height: 512
 image_width: 512
 ddim_eta: 0.0
-output_dir: "output/eval_results/mu_results/esd/style50/"
+sampler_output_dir: "output/eval_results/mu_results/esd/"
+classification_model: "vit_large_patch16_224.augreg_in21k"
 eval_output_dir: "output/eval_results/mu_results/esd/"
-original_image_dir: "data/evaluation_images/"
+reference_dir: "data/evaluation_images/"
+forget_theme: "self-harm"
+fid_output_path: "output/eval_results/mu_results/esd/"
+multiprocessing: "False"
