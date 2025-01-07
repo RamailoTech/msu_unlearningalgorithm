@@ -19,6 +19,18 @@ from torch import nn
 from scipy import linalg
 from stable_diffusion.constants.const import theme_available, class_available
 import tqdm
+import os
+import cv2
+import torch
+import warnings
+import numpy as np
+from tqdm import tqdm
+from scipy import linalg
+import multiprocessing
+from torch import nn
+from torchvision.models import inception_v3
+
+from constants.const import theme_available, class_available
 
 
 def str2bool(v):
@@ -142,7 +154,7 @@ def rank_zero_print(*args):
     print(*args)
 
 
-def load_model_from_config(config, ckpt, verbose=False):
+def load_ckpt_from_config(config, ckpt, verbose=False):
     print(f"Loading model from {ckpt}")
     pl_sd = torch.load(ckpt, map_location="cpu")
     if "global_step" in pl_sd:
@@ -164,132 +176,155 @@ def load_model_from_config(config, ckpt, verbose=False):
 
 
 def to_cuda(elements):
-    """Transfers elements to cuda if GPU is available."""
+    """Transfers elements to CUDA if GPU is available."""
     if torch.cuda.is_available():
         return elements.to("cuda")
     return elements
 
-
 class PartialInceptionNetwork(nn.Module):
-    """A modified InceptionV3 network used for feature extraction."""
-    def __init__(self):
+    """
+    A modified InceptionV3 network used for feature extraction.
+    Captures activations from the Mixed_7c layer and outputs shape (N, 2048).
+    """
+    def __init__(self, transform_input=True):
         super().__init__()
         self.inception_network = inception_v3(pretrained=True)
+        # Register a forward hook to capture activations from Mixed_7c
         self.inception_network.Mixed_7c.register_forward_hook(self.output_hook)
+        self.transform_input = transform_input
 
     def output_hook(self, module, input, output):
-        self.mixed_7c_output = output
+        self.mixed_7c_output = output  # shape (N, 2048, 8, 8)
 
     def forward(self, x):
-        x = x * 2 - 1  # Normalize to [-1, 1]
-        self.inception_network(x)
-        activations = self.mixed_7c_output
+        """
+        x: (N, 3, 299, 299) float32 in [0,1]
+        Returns: (N, 2048) float32
+        """
+        assert x.shape[1:] == (3, 299, 299), f"Expected (N,3,299,299), got {x.shape}"
+        # Shift to [-1, 1]
+        x = x * 2 - 1
+        # Trigger output hook
+        _ = self.inception_network(x)
+        # Collect the activations
+        activations = self.mixed_7c_output  # (N, 2048, 8, 8)
         activations = torch.nn.functional.adaptive_avg_pool2d(activations, (1, 1))
         activations = activations.view(x.shape[0], 2048)
         return activations
 
-
-def preprocess_image(im):
-    """Preprocesses a single image."""
-    assert im.shape[2] == 3
-    if im.dtype == np.uint8:
-        im = im.astype(np.float32) / 255
-    im = cv2.resize(im, (299, 299))
-    im = np.rollaxis(im, axis=2)
-    im = torch.from_numpy(im).float()
-    assert im.max() <= 1.0
-    assert im.min() >= 0.0
-    return im
-
-
-def preprocess_images(images, use_multiprocessing=False):
-    """Resizes and shifts the dynamic range of image to 0-1
-    Args:
-        images: np.array, shape: (N, H, W, 3), dtype: float32 between 0-1 or np.uint8
-        use_multiprocessing: If multiprocessing should be used to pre-process the images
-    Return:
-        final_images: torch.tensor, shape: (N, 3, 299, 299), dtype: torch.float32 between 0-1
+def get_activations(images, batch_size=64):
     """
-    if use_multiprocessing:
-        with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
-            jobs = []
-            for im in images:
-                job = pool.apply_async(preprocess_image, (im,))
-                jobs.append(job)
-            final_images = torch.zeros(images.shape[0], 3, 299, 299)
-            for idx, job in enumerate(jobs):
-                im = job.get()
-                final_images[idx] = im  # job.get()
-    else:
-        final_images = torch.stack([preprocess_image(im) for im in images], dim=0)
-    assert final_images.shape == (images.shape[0], 3, 299, 299)
-    assert final_images.max() <= 1.0
-    assert final_images.min() >= 0.0
-    assert final_images.dtype == torch.float32
-    return final_images
-
-
-
-def get_activations(images, batch_size):
-    """Calculates activations for last pool layer for all images."""
+    Calculates activations for the last pool layer for all images using PartialInceptionNetwork.
+    images: shape (N, 3, 299, 299), float32 in [0,1]
+    Returns: np.array shape (N, 2048)
+    """
+    assert images.shape[1:] == (3, 299, 299)
     num_images = images.shape[0]
-    inception_network = PartialInceptionNetwork()
-    inception_network = to_cuda(inception_network)
-    inception_network.eval()
+    inception_net = PartialInceptionNetwork().eval()
+    inception_net = to_cuda(inception_net)
+
     n_batches = int(np.ceil(num_images / batch_size))
     inception_activations = np.zeros((num_images, 2048), dtype=np.float32)
 
-    for batch_idx in range(n_batches):
-        start_idx = batch_size * batch_idx
-        end_idx = batch_size * (batch_idx + 1)
-        ims = images[start_idx:end_idx].to("cuda")
+    idx = 0
+    for _ in range(n_batches):
+        start = idx
+        end = min(start + batch_size, num_images)
+        ims = images[start:end]
+        ims = to_cuda(ims)
         with torch.no_grad():
-            activations = inception_network(ims)
-        inception_activations[start_idx:end_idx, :] = activations.cpu().numpy()
-
+            batch_activations = inception_net(ims)
+        inception_activations[start:end, :] = batch_activations.cpu().numpy()
+        idx = end
     return inception_activations
 
-
-def calculate_activation_statistics(images, batch_size):
-    """Calculates mean and covariance for FID."""
-    act = get_activations(images, batch_size)
+def calculate_activation_statistics(images, batch_size=64):
+    """
+    Calculates the mean (mu) and covariance matrix (sigma) for Inception activations.
+    images: shape (N, 3, 299, 299)
+    Returns: (mu, sigma)
+    """
+    act = get_activations(images, batch_size=batch_size)
     mu = np.mean(act, axis=0)
     sigma = np.cov(act, rowvar=False)
     return mu, sigma
 
-
 def calculate_frechet_distance(mu1, sigma1, mu2, sigma2, eps=1e-6):
-    """Calculates Frechet Distance between two distributions."""
+    """
+    Computes the Frechet Distance between two multivariate Gaussians described by
+    (mu1, sigma1) and (mu2, sigma2).
+    """
+    mu1 = np.atleast_1d(mu1)
+    mu2 = np.atleast_1d(mu2)
+    sigma1 = np.atleast_2d(sigma1)
+    sigma2 = np.atleast_2d(sigma2)
+
     diff = mu1 - mu2
-    covmean, _ = linalg.sqrtm(sigma1 @ sigma2, disp=False)
+
+    # Product might be almost singular
+    covmean, _ = linalg.sqrtm(sigma1.dot(sigma2), disp=False)
     if not np.isfinite(covmean).all():
-        covmean = linalg.sqrtm((sigma1 + eps * np.eye(sigma1.shape[0])) @ 
-                               (sigma2 + eps * np.eye(sigma2.shape[0])))
+        warnings.warn("FID calculation produced singular product; adding offset to covariances.")
+        offset = np.eye(sigma1.shape[0]) * eps
+        covmean, _ = linalg.sqrtm((sigma1 + offset).dot(sigma2 + offset), disp=False)
+
     if np.iscomplexobj(covmean):
+        if not np.allclose(np.diagonal(covmean).imag, 0, atol=1e-3):
+            m = np.max(np.abs(covmean.imag))
+            raise ValueError(f"Imaginary component in sqrtm: {m}")
         covmean = covmean.real
-    tr_covmean = np.trace(covmean)
-    fid_value = diff.dot(diff) + np.trace(sigma1) + np.trace(sigma2) - 2 * tr_covmean
-    return fid_value
+
+    return diff.dot(diff) + np.trace(sigma1) + np.trace(sigma2) - 2 * np.trace(covmean)
+
+
+def preprocess_image(im):
+    """
+    Resizes to 299x299, changes dtype to float32 [0,1], and rearranges shape to (3,299,299).
+    """
+    # If im is uint8, scale to float32
+    if im.dtype == np.uint8:
+        im = im.astype(np.float32) / 255.0
+    im = cv2.resize(im, (299, 299))
+    im = np.rollaxis(im, 2, 0)  # (H, W, 3) -> (3, H, W)
+    im = torch.from_numpy(im)  # shape (3, 299, 299)
+    return im
+
+def preprocess_images(images, use_multiprocessing=False):
+    """
+    Applies `preprocess_image` to a batch of images.
+    images: (N, H, W, 3)
+    Returns: torch.Tensor shape (N, 3, 299, 299)
+    """
+    if use_multiprocessing:
+        with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
+            jobs = [pool.apply_async(preprocess_image, (im,)) for im in images]
+            final_images = torch.zeros(len(images), 3, 299, 299, dtype=torch.float32)
+            for idx, job in enumerate(jobs):
+                final_images[idx] = job.get()
+    else:
+        final_images = torch.stack([preprocess_image(im) for im in images], dim=0)
+
+    return final_images
 
 
 def calculate_fid(images1, images2, use_multiprocessing=False, batch_size=64):
-    """ Calculate FID between images1 and images2
-    Args:
-        images1: np.array, shape: (N, H, W, 3), dtype: np.float32 between 0-1 or np.uint8
-        images2: np.array, shape: (N, H, W, 3), dtype: np.float32 between 0-1 or np.uint8
-        use_multiprocessing: If multiprocessing should be used to pre-process the images
-        batch size: batch size used for inception network
-    Returns:
-        FID (scalar)
     """
+    Calculate FID between two sets of images.
+    images1, images2: np.array shape (N, H, W, 3)
+    Returns: FID (float)
+    """
+    # Preprocess to shape (N,3,299,299), float32 in [0,1]
     images1 = preprocess_images(images1, use_multiprocessing)
     images2 = preprocess_images(images2, use_multiprocessing)
-    mu1, sigma1 = calculate_activation_statistics(images1, batch_size)
-    print("mu1", mu1.shape, "sigma1", sigma1.shape)
-    mu2, sigma2 = calculate_activation_statistics(images2, batch_size)
-    print("mu2", mu2.shape, "sigma2", sigma2.shape)
+
+    # Compute mu, sigma
+    mu1, sigma1 = calculate_activation_statistics(images1, batch_size=batch_size)
+    mu2, sigma2 = calculate_activation_statistics(images2, batch_size=batch_size)
+
+    # Compute Frechet distance
     fid = calculate_frechet_distance(mu1, sigma1, mu2, sigma2)
     return fid
+
 
 def load_style_generated_images(path, exclude="Abstractionism", seed=[188, 288, 588, 688, 888]):
     """ Loads all .png or .jpg images from a given path
