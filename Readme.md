@@ -107,18 +107,33 @@ conda --version
 
 ### Downloading data and models.
 After you install the package, you can use following commands to download.
-1. **Dataset**
-<br>
+1. **Dataset** <br>
 `<dataset_type> : sample | full ` <br>
 `<dataset_source>: i2p | quick_canvas`
+
   ```
   download_data <dataset_type> <dataset_source>
   ```
   eg:  `downlaod_data sample i2p`
 
 2. **Model** <br>
-`<model_type> : compvis | diffuser`
+`<model_type> : compvis | diffuser` <br>
   ```
   download_model <model_type>
   ```
   eg: `download_model compvis`
+
+
+3. **Run Train** <br>
+Each algorithm has their own script to run the algorithm, Some also have different process all together. Follow readme for the algorithm you want to run from this repository. You will need to create a train_config and model_config file to run this.
+
+Here is an example for Erase_diff algorithm.
+1. [train_config](https://github.com/RamailoTech/msu_unlearningalgorithm/blob/main/mu/algorithms/erase_diff/configs/train_config.yaml)
+2. [model_config](https://github.com/RamailoTech/msu_unlearningalgorithm/blob/main/mu/algorithms/erase_diff/configs/model_config.yaml) 
+3. [Usage Link](https://github.com/RamailoTech/msu_unlearningalgorithm/tree/main/mu/algorithms)
+
+
+  ```
+  WANDB_MODE=offline python -m mu.algorithms.erase_diff.scripts.train \
+--config_path mu/algorithms/erase_diff/configs/train_config.yaml
+  ```

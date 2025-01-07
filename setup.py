@@ -26,7 +26,7 @@ check_conda()
 
 setup(
     name="unlearn_diff",  
-    version="0.1.6",
+    version="1.0.0",
     author="nebulaanish",
     author_email="nebulaanish@gmail.com",
     description="Unlearning Algorithms",
@@ -54,7 +54,7 @@ setup(
         'console_scripts': [
             'create_env=scripts.commands:create_env_cli',
             'download_data=scripts.commands:download_data_cli',
-            'download_models=scripts.commands:download_models_cli',
+            'download_model=scripts.commands:download_models_cli',
         ],
     },
 )
