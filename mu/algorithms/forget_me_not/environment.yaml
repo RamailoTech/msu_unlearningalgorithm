@@ -7,14 +7,14 @@ dependencies:
   - pip=20.3
   - cudatoolkit=11.3
   - pytorch=1.11.0
-  - torchvision=0.19.1
+  - torchvision=0.12.0
   - numpy=1.19.2
   - pip:
     - albumentations==0.4.3
     - datasets==2.8.0
     - diffusers==0.32.1
     - opencv-python==4.10.0.84
-    - mediapipe== 0.10.11
+    - mediapipe==0.10.11
     - pudb==2019.2
     - invisible-watermark
     - imageio==2.9.0
@@ -37,19 +37,19 @@ dependencies:
     - gradio
     - seaborn
     - git+https://github.com/crowsonkb/k-diffusion.git
-    - loguru # This is for style transfer: Style_Drop
-    - ml_collections # This is for style transfer: Style_Drop
-    - webdataset # This is for style transfer: Style_Drop
-    - ftfy # This is for style transfer: Style_Drop
-    - yacs # This is for style transfer: MAST
-    - controlnet_aux # This is for style transfer: BLIP
-    - fvcore # This is for ICL_Inpainting
-    - h5py # This is for ICL_Inpainting
-    - xtcocotools # This is for ICL_Inpainting
-    - natsort # This is for ICL_Inpainting
-    - timm==0.3.2 # This is for ICL_Inpainting
-    - git+https://github.com/cocodataset/panopticapi.git # This is for ICL_Inpainting
-    - fairscale # This is for ICL_Inpainting
-    - git+https://github.com/facebookresearch/detectron2.git # This is for ICL_Inpainting
-    - open_clip_torch # This is for ICL_Prompt_Diffusion
+    - loguru
+    - ml_collections
+    - webdataset
+    - ftfy
+    - yacs
+    - controlnet_aux
+    - fvcore
+    - h5py
+    - xtcocotools
+    - natsort
+    - timm==0.3.2
+    - git+https://github.com/cocodataset/panopticapi.git
+    - fairscale
+    - git+https://github.com/facebookresearch/detectron2.git
+    - open_clip_torch
     - unlearn_diff
