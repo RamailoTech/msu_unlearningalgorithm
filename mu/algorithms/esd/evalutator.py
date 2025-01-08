@@ -17,8 +17,8 @@ from torchvision import transforms
 from torch.nn import functional as F
 from mu.core.base_evaluator import BaseEvaluator
 
-theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
-class_available = ['Architectures', 'Bears', 'Birds']
+# theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
+# class_available = ['Architectures', 'Bears', 'Birds']
 
 class ESDSampler(BaseSampler):
     """ESD Image Generator class extending a hypothetical BaseImageGenerator."""

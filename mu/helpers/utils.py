@@ -32,9 +32,9 @@ from torchvision.models import inception_v3
 
 from stable_diffusion.constants.const import theme_available, class_available
 
-theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
-# class_available = ['Architectures', 'Bears', 'Birds']
-class_available = ['Architectures']
+# theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
+# # class_available = ['Architectures', 'Bears', 'Birds']
+# class_available = ['Architectures']
 
 
 def str2bool(v):
@@ -359,7 +359,7 @@ def load_style_generated_images(path, exclude="Abstractionism", seed=[188, 288, 
     for theme in theme_tested:
         for object_class in class_tested:
             for individual in seed:
-                image_paths.append(os.path.join(path,"Abstractionism", f"{theme}_{object_class}_seed_{individual}.jpg"))
+                image_paths.append(os.path.join(path,theme, f"{theme}_{object_class}_seed_{individual}.jpg"))
     if not os.path.isfile(image_paths[0]):
         raise FileNotFoundError(f"Could not find {image_paths[0]}")
 
@@ -404,7 +404,7 @@ def load_style_ref_images(path, exclude="Seed_Images"):
     for theme in theme_tested:
         for object_class in class_tested:
             for idx in range(1, 6):
-                image_paths.append(os.path.join(path, "Abstractionism", object_class, str(idx) + ".jpg"))
+                image_paths.append(os.path.join(path, theme, object_class, str(idx) + ".jpg"))
 
     first_image = cv2.imread(image_paths[0])
     W, H = 512, 512
