@@ -99,11 +99,18 @@ Ensure `conda` is installed on your system. You can install Miniconda or Anacond
 - **Miniconda** (recommended): [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
 - **Anaconda**: [https://www.anaconda.com/products/distribution](https://www.anaconda.com/products/distribution)
 
-After installing `conda`, ensure it is available in your PATH by running:
+After installing `conda`, ensure it is available in your PATH by running. You may require to restart the terminal session:
 
 ```bash
 conda --version
 ```
+### Create environment:
+```
+create_env <algorithm_name>
+```
+eg: ```create_env erase_diff```
+
+The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 
 ### Downloading data and models.
 After you install the package, you can use following commands to download.
@@ -124,16 +131,55 @@ After you install the package, you can use following commands to download.
   eg: `download_model compvis`
 
 
-3. **Run Train** <br>
-Each algorithm has their own script to run the algorithm, Some also have different process all together. Follow readme for the algorithm you want to run from this repository. You will need to create a train_config and model_config file to run this.
+### Run Train <br>
+Each algorithm has their own script to run the algorithm, Some also have different process all together. Follow usage section in readme for the algorithm you want to run with the help of the github repository. You will need to create a `train_config.yaml` anywhere in your machine, and pass it's path as `--config_path` parameter.
 
 Here is an example for Erase_diff algorithm.
-1. [train_config](https://github.com/RamailoTech/msu_unlearningalgorithm/blob/main/mu/algorithms/erase_diff/configs/train_config.yaml)
-2. [model_config](https://github.com/RamailoTech/msu_unlearningalgorithm/blob/main/mu/algorithms/erase_diff/configs/model_config.yaml) 
-3. [Usage Link](https://github.com/RamailoTech/msu_unlearningalgorithm/tree/main/mu/algorithms)
-
-
   ```
   WANDB_MODE=offline python -m mu.algorithms.erase_diff.scripts.train \
 --config_path mu/algorithms/erase_diff/configs/train_config.yaml
   ```
+
+The default algorithm specific `train_config.yaml` makes use of the `model_config.yaml` with default settings. You can also create your own `model_config.yaml` and update it's path in the `train_config.yaml` file to tweak the original model parameters. The details about each parameter in config files are written in the readme for each of the algorithm. 
+
+Sample `train_config.yaml`
+
+```
+# Training parameters
+train_method: "xattn"  # Choices: ["noxattn", "selfattn", "xattn", "full", "notime", "xlayer", "selflayer"]
+alpha: 0.1  # Guidance of start image used to train
+epochs: 1  # Number of epochs to train
+K_steps: 2  # Number of K steps
+lr: 5e-5  # Learning rate
+
+# Model configuration
+model_config_path: "mu/algorithms/erase_diff/configs/model_config.yaml"
+ckpt_path: "models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
+
+# Dataset directories
+raw_dataset_dir: "data/quick-canvas-dataset/sample"
+processed_dataset_dir: "mu/algorithms/erase_diff/data"
+dataset_type : "unlearncanvas"
+template : "style"
+template_name : "Abstractionism"
+
+
+# Output configurations
+output_dir: "outputs/erase_diff/finetuned_models"  # Output directory to save results
+separator: null  # Separator if you want to train multiple words separately
+
+# Sampling and image configurations
+image_size: 512  # Image size used to train
+interpolation: "bicubic"  # Choices: ["bilinear", "bicubic", "lanczos"]
+ddim_steps: 50  # DDIM steps of inference used to train
+ddim_eta: 0.0  # DDIM eta parameter
+
+# Device configuration
+devices: "0"  # CUDA devices to train on (comma-separated)
+
+# Additional flags
+use_sample: True  # Use the sample dataset for training
+num_workers: 4  # Number of workers for data loading
+pin_memory: true  # Pin memory for data loading
+
+```
