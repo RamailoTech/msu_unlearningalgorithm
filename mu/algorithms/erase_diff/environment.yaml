@@ -54,3 +54,4 @@ dependencies:
       - git+https://github.com/facebookresearch/detectron2.git
       - open_clip_torch
       - wandb==0.18.7
+      - unlearn_diff

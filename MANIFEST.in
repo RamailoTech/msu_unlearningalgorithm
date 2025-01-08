@@ -1,0 +1,6 @@
+include Readme.md
+recursive-include mu *
+recursive-include scripts *
+recursive-include stable_diffusion *
+recursive-include lora_diffusion *
+recursive-include docs *
