@@ -112,9 +112,7 @@ def sample(data, model, sampler, outpath, ddim_steps=200, n_samples=10, ddim_eta
     """
         decoupled image sampling function, including saving, visualizing and wandb logging
     """
-    # batch_size = n_samples
-    batch_size = 1
-    data = data[:3]
+    batch_size = n_samples
     sample_path = os.path.join(outpath, "samples")
     if not Path(sample_path).exists():
         Path(sample_path).mkdir()
