@@ -1,4 +1,4 @@
-name: mu_scissorhands
+name: scissorhands
 channels:
   - pytorch
   - defaults

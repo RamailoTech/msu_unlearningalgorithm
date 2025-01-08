@@ -1,4 +1,4 @@
-name: mu_uce
+name: unified_concept_editing
 channels:
   - pytorch
   - defaults

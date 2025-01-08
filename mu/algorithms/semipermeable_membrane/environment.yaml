@@ -1,4 +1,4 @@
-name: mu_spm
+name: semipermeable_membrane
 channels:
   - pytorch
   - defaults

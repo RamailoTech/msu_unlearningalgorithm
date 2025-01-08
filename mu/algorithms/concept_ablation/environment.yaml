@@ -1,4 +1,4 @@
-name: mu_concept_ablation
+name: concept_ablation
 channels:
   - pytorch
   - defaults

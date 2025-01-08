@@ -1,4 +1,4 @@
-name: mu_sa
+name: selective_amnesia
 channels:
   - pytorch
   - defaults

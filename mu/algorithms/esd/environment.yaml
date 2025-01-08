@@ -1,4 +1,4 @@
-name: mu_esd
+name: esd
 channels:
   - pytorch
   - defaults
