@@ -28,9 +28,9 @@ technique: "replace"  # Options: replace, tensor
 
 preserve_scale: 0.1  # Float value, e.g., 0.1
 preserve_number: null # Integer value, e.g., 1
-erase_scale: 0.1
+erase_scale: 1
 lamb: 0.1
-add_prompts: true
+add_prompts: false
 
 
 # Additional parameters
