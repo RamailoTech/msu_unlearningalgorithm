@@ -67,7 +67,7 @@ class ESDSampler(BaseSampler):
         ddim_eta = self.config["ddim_eta"]
         output_dir = self.config["sampler_output_dir"]
 
-        os.makedirs(output_dir, exist_ok=True)
+        os.makedirs(output_dir,theme, exist_ok=True)
         self.logger.info(f"Generating images and saving to {output_dir}")
 
         seed_everything(seed)
