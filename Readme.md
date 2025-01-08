@@ -93,6 +93,11 @@ We use the Quick Canvas benchmark dataset, available [here](https://huggingface.
 
 ## Usage
 This section contains the usage guide for the package.
+
+### Installation
+```
+pip install unlearn_diff
+```
 ### Prerequisities
 Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
 
@@ -110,25 +115,46 @@ create_env <algorithm_name>
 ```
 eg: ```create_env erase_diff```
 
+### Activate environment:
+```
+conda activate <environment_name>
+```
+eg: ```conda activate mu_erase_diff```
+
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 
 ### Downloading data and models.
-After you install the package, you can use following commands to download.
-1. **Dataset** <br>
-`<dataset_type> : sample | full ` <br>
-`<dataset_source>: i2p | quick_canvas`
+After you install the package, you can use the following commands to download.
 
-  ```
-  download_data <dataset_type> <dataset_source>
-  ```
-  eg:  `downlaod_data sample i2p`
+1. **Dataset**:
+  - **i2p**:
+    - **Sample**:
+     ```
+     download_data sample i2p
+     ```
+    - **Full**:
+     ```
+     download_data full i2p
+     ```
+  - **quick_canvas**:
+    - **Sample**:
+     ```
+     download_data sample quick_canvas
+     ```
+    - **Full**:
+     ```
+     download_data full quick_canvas
+     ```
 
-2. **Model** <br>
-`<model_type> : compvis | diffuser` <br>
-  ```
-  download_model <model_type>
-  ```
-  eg: `download_model compvis`
+2. **Model**:
+  - **compvis**:
+    ```
+    download_model compvis
+    ```
+  - **diffuser**:
+    ```
+    download_model diffuser
+    ```
 
 
 ### Run Train <br>
@@ -137,49 +163,16 @@ Each algorithm has their own script to run the algorithm, Some also have differe
 Here is an example for Erase_diff algorithm.
   ```
   WANDB_MODE=offline python -m mu.algorithms.erase_diff.scripts.train \
---config_path mu/algorithms/erase_diff/configs/train_config.yaml
+--config_path <path_to_config_in_your_machine>
   ```
 
 The default algorithm specific `train_config.yaml` makes use of the `model_config.yaml` with default settings. You can also create your own `model_config.yaml` and update it's path in the `train_config.yaml` file to tweak the original model parameters. The details about each parameter in config files are written in the readme for each of the algorithm. 
 
-Sample `train_config.yaml`
-
-```
-# Training parameters
-train_method: "xattn"  # Choices: ["noxattn", "selfattn", "xattn", "full", "notime", "xlayer", "selflayer"]
-alpha: 0.1  # Guidance of start image used to train
-epochs: 1  # Number of epochs to train
-K_steps: 2  # Number of K steps
-lr: 5e-5  # Learning rate
-
-# Model configuration
-model_config_path: "mu/algorithms/erase_diff/configs/model_config.yaml"
-ckpt_path: "models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
-
-# Dataset directories
-raw_dataset_dir: "data/quick-canvas-dataset/sample"
-processed_dataset_dir: "mu/algorithms/erase_diff/data"
-dataset_type : "unlearncanvas"
-template : "style"
-template_name : "Abstractionism"
-
-
-# Output configurations
-output_dir: "outputs/erase_diff/finetuned_models"  # Output directory to save results
-separator: null  # Separator if you want to train multiple words separately
-
-# Sampling and image configurations
-image_size: 512  # Image size used to train
-interpolation: "bicubic"  # Choices: ["bilinear", "bicubic", "lanczos"]
-ddim_steps: 50  # DDIM steps of inference used to train
-ddim_eta: 0.0  # DDIM eta parameter
-
-# Device configuration
-devices: "0"  # CUDA devices to train on (comma-separated)
-
-# Additional flags
-use_sample: True  # Use the sample dataset for training
-num_workers: 4  # Number of workers for data loading
-pin_memory: true  # Pin memory for data loading
-
+**NOTE**
+Make sure to update these parameters in `train_config.yaml`. Otherwise, the train script will not run properly. Also, update other parameters as per your usage.
+```yaml
+model_config_path: "configs/erase_diff/model_config.yaml"  # path to model_config.yaml. 
+ckpt_path: "models/compvis/style50/compvis.ckpt"  # Checkpoint path for compvis or diffuser model
+raw_dataset_dir: "data/i2p-dataset/sample" # path where your dataset was downloaded
+processed_dataset_dir: "mu/algorithms/erase_diff/data"  # path to directory, where you want the trained model data to be stored
 ```

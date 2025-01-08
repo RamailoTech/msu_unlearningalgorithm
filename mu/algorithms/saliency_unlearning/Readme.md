@@ -2,101 +2,161 @@
 
 This repository provides an implementation of the Saliency Unlearning algorithm for machine unlearning in Stable Diffusion models. The Saliency Unlearning algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.
 
-## Installation
+### Installation
+```
+pip install unlearn_diff
+```
+### Prerequisities
+Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
 
-### Create the Conda Environment
+- **Miniconda** (recommended): [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
+- **Anaconda**: [https://www.anaconda.com/products/distribution](https://www.anaconda.com/products/distribution)
 
-First, create and activate the Conda environment using the provided `environment.yaml` file:
+After installing `conda`, ensure it is available in your PATH by running. You may require to restart the terminal session:
 
 ```bash
-conda env create -f mu/algorithms/saliency_unlearning/environment.yaml -n mu_saliency_unlearning
+conda --version
 ```
-
-```bash
-conda activate mu_saliency_unlearning
+### Create environment:
 ```
+create_env <algorithm_name>
+```
+eg: ```create_env saliency_unlearning```
 
+### Activate environment:
+```
+conda activate <environment_name>
+```
+eg: ```conda activate mu_saliency_unlearning```
 
-### Download models
+The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 
-To download [models](https://huggingface.co/nebulaanish/unlearn_models/tree/main), use the following commands <br>
+### Downloading data and models.
+After you install the package, you can use the following commands to download.
 
-1. Compvis (Size 3.84 GB):
+1. **Dataset**:
+  - **i2p**:
+    - **Sample**:
+     ```
+     download_data sample i2p
+     ```
+    - **Full**:
+     ```
+     download_data full i2p
+     ```
+  - **quick_canvas**:
+    - **Sample**:
+     ```
+     download_data sample quick_canvas
+     ```
+    - **Full**:
+     ```
+     download_data full quick_canvas
+     ```
 
-    * Make it executable:
+2. **Model**:
+  - **compvis**:
+    ```
+    download_model compvis
+    ```
+  - **diffuser**:
+    ```
+    download_model diffuser
+    ```
 
-        `chmod +x scripts/download_models.sh`
-
-    * Run the script:
-        ```scripts/download_models.sh compvis```
-
-2. Diffuser (24.1 GB): 
-
-    * Make it executable:
-
-        `chmod +x scripts/download_models.sh`
-
-    * Run the script: 
-        ```scripts/download_models.sh diffuser```
-
-**Notes:**
-
-1. The script ensures that directories are automatically created if they don’t exist.
-2. The downloaded ZIP file will be extracted to the respective folder, and the ZIP file will be removed after extraction.
-
-
-**Verify Downloads**
-
-After downloading, you can verify the extracted files in their respective directories:
-
-`ls -lh ../models/compvis/`
-
-`ls -lh ../models/diffuser/`
-
-### Download datasets
-
-1. Download unlearn canvas dataset:
-
-    * Make it executable:
-
-        `chmod +x scripts/download_quick_canvas_dataset.sh`
-
-    * Download the sample dataset (smaller size):
-
-        `scripts/download_quick_canvas_dataset.sh sample`
-
-    * Download the full dataset:
-
-        `scripts/download_quick_canvas_dataset.sh full`
-
-2. Download the i2p dataset
-
-    * Make it executable:
-
-        `chmod +x scripts/download_i2p_dataset.sh`
-
-    * Download the sample dataset (smaller size):
-
-        `scripts/download_i2p_dataset.sh sample`
-
-    * Download the full dataset:
-
-        `scripts/download_i2p_dataset.sh full`
-
-**Notes:**
-
-1. The script automatically creates the required directories if they don't exist.
-2. Ensure curl and unzip are installed on your system.
-
-**Verify the Downloaded files**
+**Verify the Downloaded Files**
 
 After downloading, verify that the datasets have been correctly extracted:
+```bash
+ls -lh ./data/i2p-dataset/sample/
+ls -lh ./data/quick-canvas-dataset/sample/
+```
+---
 
-`ls -lh ./data/i2p-dataset/sample/`
+## Usage
 
-`ls -lh ./data/quick-canvas-dataset/sample/`
+To train the saliency unlearning algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
+
+**Step 1: Generate mask**
+
+```bash
+python -m mu.algorithms.saliency_unlearning.scripts.generate_mask \
+--config_path mu/algorithms/saliency_unlearning/configs/mask_config.yaml
+```
+
+**Running the Script in Offline Mode**
+
+```bash
+WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.generate_mask \
+--config_path mu/algorithms/saliency_unlearning/configs/mask_config.yaml
+```
+
+**Step 2: Unlearn the weights**
+
+- Add the generated mask path to the `train_config.yaml` file or you can override it by passing them directly as arguments during runtime.
+
+- Run the script:
+
+```bash
+python -m mu.algorithms.saliency_unlearning.scripts.train \
+--config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml
+```
+
+**Running the Script in Offline Mode**
+```bash
+WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.train \
+--config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml
+```
 
 
+**Passing Arguments via the Command Line**
+
+The `train.py` script allows you to override configuration parameters specified in the `train_config.yaml` file by passing them directly as arguments during runtime. This can be useful for quick experimentation without modifying the configuration file.
+
+
+**Example Usage with Command-Line Arguments**
+
+```bash
+python -m mu.algorithms.saliency_unlearning.scripts.train \
+--config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml \
+--mask_path /path/to/mask.pt \
+--alpha 0.1 \
+--epochs 10 \
+--raw_dataset_dir /path/to/raw_dataset \
+--output_dir outputs/experiment_1
+```
+
+**Explanation of the Example**
+
+* --config_path: Specifies the YAML configuration file to load default values.
+* --mask_path: Path of the generated mask.
+* --alpha: Sets the guidance strength for the starting image to 0.2.
+* --epochs: Increases the number of training epochs to 10.
+* --lr: Updates the learning rate to 1e-4.
+* --raw_dataset_dir: Changes the raw dataset directory.
+* --output_dir: Sets a custom output directory for this run.
+
+**Similarly, you can pass arguments during runtime to generate mask.**
+
+**How It Works** 
+* Default Values: The script first loads default values from the YAML file specified by --config_path.
+
+* Command-Line Overrides: Any arguments passed on the command line will override the corresponding keys in the YAML configuration file.
+
+* Final Configuration: The script merges the YAML file and command-line arguments into a single configuration dictionary and uses it for training.
+
+
+### Directory Structure
+
+- `algorithm.py`: Implementation of the SaliencyUnlearnAlgorithm class.
+- `configs/`: Contains configuration files for training and generation.
+- `model.py`: Implementation of the SaliencyUnlearnModel class.
+- `scripts/train.py`: Script to train the SaliencyUnlearn algorithm.
+- `trainer.py`: Implementation of the SaliencyUnlearnTrainer class.
+- `utils.py`: Utility functions used in the project.
+- `data_handler.py` : Implementation of DataHandler class
+
+---
 <br>
 
 **The unlearning has two stages:**
@@ -284,88 +344,5 @@ The `scripts/train.py` script is used to fine-tune the Stable Diffusion model to
     * Type: str
     * Example: 
 
-
-## Usage
-
-To train the saliency unlearning algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
-
-**Step 1: Generate mask**
-
-```bash
-python -m mu.algorithms.saliency_unlearning.scripts.generate_mask \
---config_path mu/algorithms/saliency_unlearning/configs/mask_config.yaml
-```
-
-**Running the Script in Offline Mode**
-
-```bash
-WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.generate_mask \
---config_path mu/algorithms/saliency_unlearning/configs/mask_config.yaml
-```
-
-**Step 2: Unlearn the weights**
-
-- Add the generated mask path to the `train_config.yaml` file or you can override it by passing them directly as arguments during runtime.
-
-- Run the script:
-
-```bash
-python -m mu.algorithms.saliency_unlearning.scripts.train \
---config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml
-```
-
-**Running the Script in Offline Mode**
-```bash
-WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.train \
---config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml
-```
-
-
-**Passing Arguments via the Command Line**
-
-The `train.py` script allows you to override configuration parameters specified in the `train_config.yaml` file by passing them directly as arguments during runtime. This can be useful for quick experimentation without modifying the configuration file.
-
-
-**Example Usage with Command-Line Arguments**
-
-```bash
-python -m mu.algorithms.saliency_unlearning.scripts.train \
---config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml \
---mask_path /path/to/mask.pt \
---alpha 0.1 \
---epochs 10 \
---raw_dataset_dir /path/to/raw_dataset \
---output_dir outputs/experiment_1
-```
-
-**Explanation of the Example**
-
-* --config_path: Specifies the YAML configuration file to load default values.
-* --mask_path: Path of the generated mask.
-* --alpha: Sets the guidance strength for the starting image to 0.2.
-* --epochs: Increases the number of training epochs to 10.
-* --lr: Updates the learning rate to 1e-4.
-* --raw_dataset_dir: Changes the raw dataset directory.
-* --output_dir: Sets a custom output directory for this run.
-
-**Similarly, you can pass arguments during runtime to generate mask.**
-
-**How It Works** 
-* Default Values: The script first loads default values from the YAML file specified by --config_path.
-
-* Command-Line Overrides: Any arguments passed on the command line will override the corresponding keys in the YAML configuration file.
-
-* Final Configuration: The script merges the YAML file and command-line arguments into a single configuration dictionary and uses it for training.
-
-
-### Directory Structure
-
-- `algorithm.py`: Implementation of the SaliencyUnlearnAlgorithm class.
-- `configs/`: Contains configuration files for training and generation.
-- `model.py`: Implementation of the SaliencyUnlearnModel class.
-- `scripts/train.py`: Script to train the SaliencyUnlearn algorithm.
-- `trainer.py`: Implementation of the SaliencyUnlearnTrainer class.
-- `utils.py`: Utility functions used in the project.
-- `data_handler.py` : Implementation of DataHandler class
 
 
