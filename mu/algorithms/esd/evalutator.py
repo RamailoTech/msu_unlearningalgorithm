@@ -369,8 +369,8 @@ class ESDEvaluator(BaseEvaluator):
         """
 
         # Call the sample method to generate images
-        # self.sampler.load_model()  
-        # self.sampler.sample()    
+        self.sampler.load_model()  
+        self.sampler.sample()    
 
         # Load the classification model
         self.load_model()
