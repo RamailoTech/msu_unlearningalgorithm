@@ -27,7 +27,7 @@ eg: ```create_env unified_concept_editing```
 ```
 conda activate <environment_name>
 ```
-eg: ```conda activate mu_uce```
+eg: ```conda activate unified_concept_editing```
 
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 

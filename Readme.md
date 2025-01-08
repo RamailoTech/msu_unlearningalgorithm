@@ -16,17 +16,15 @@ Unlearn is an open-source Python package designed to streamline the development 
 
 The initial version includes established methods benchmarked in UnlearnCanvas and defensive unlearning techniques:
 
+- **CA** (Concept Ablation)
+- **ED** (Erase Diff)
 - **ESD** (Efficient Substitution Distillation)
-- **CA**
-- **UCE**
-- **FMN**
-- **SalUn**
-- **SEOT**
-- **SPM**
-- **EDiff**
-- **ScissorHands**
-- *...and more*
-
+- **FMN** (Forget Me Not)
+- **SU** (Saliency Unlearning)
+- **SH** (ScissorHands)
+- **SA** (Selective Amnesia)
+- **SPM** (Semi Permeable Membrane)
+- **UCE** (Unified Concept Editing)
 For detailed information on each algorithm, please refer to the respective `README.md` files located inside `mu/algorithms`.
 
 ## Project Architecture
@@ -34,15 +32,17 @@ For detailed information on each algorithm, please refer to the respective `READ
 The project is organized to facilitate scalability and maintainability.
 
 - **`data/`**: Stores data-related files.
-  - **`processed_data/`**: Preprocessed data ready for models.
-  - **`raw_data/`**: Original datasets.
-  - **`results/`**: Outputs from algorithms.
-    - **`esd/`**: Results specific to the ESD algorithm.
-    - **`algorithm_2/`**: Results from other algorithms.
-  - **`images/`**: Generated or processed images.
-  - **`models/`**: Saved model checkpoints.
+  - **`i2p-dataset/`**: contains i2p-dataset
+    - **`sample/`**: Sample dataset
+    - **`full/`**: Full dataset
+
+  - **`quick-canvas-dataset/`**: contains quick canvas dataset
+    - **`sample/`**: Sample dataset
+    - **`full/`**: Full dataset
 
 - **`docs/`**: Documentation, including API references and user guides.
+
+- **`outputs/`**: Outputs of the trained algorithms.
 
 - **`examples/`**: Sample code and notebooks demonstrating usage.
 
@@ -83,6 +83,8 @@ The project is organized to facilitate scalability and maintainability.
     - `path_setup.py`: Path configurations and environment setup.
 
 - **`tests/`**: Test suites for ensuring code reliability.
+- **`stable_diffusion/`**: Components for stable diffusion.
+- **`lora_diffusion/`**: Components for the LoRA Diffusion.
 
 ## Datasets
 

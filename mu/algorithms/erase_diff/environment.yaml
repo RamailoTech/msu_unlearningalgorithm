@@ -1,4 +1,4 @@
-name: mu_erase_diff
+name: erase_diff
 channels:
   - pytorch
   - defaults

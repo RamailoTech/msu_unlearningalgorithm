@@ -29,7 +29,7 @@ eg: ```create_env concept_ablation```
 ```
 conda activate <environment_name>
 ```
-eg: ```conda activate mu_concept_ablation```
+eg: ```conda activate concept_ablation```
 
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 

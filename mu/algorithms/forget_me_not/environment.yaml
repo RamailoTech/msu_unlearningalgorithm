@@ -1,4 +1,4 @@
-name: mu_forget_me_not
+name: forget_me_not
 channels:
   - pytorch
   - defaults

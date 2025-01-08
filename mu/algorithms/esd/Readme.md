@@ -28,7 +28,7 @@ eg: ```create_env esd```
 ```
 conda activate <environment_name>
 ```
-eg: ```conda activate mu_esd```
+eg: ```conda activate esd```
 
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 

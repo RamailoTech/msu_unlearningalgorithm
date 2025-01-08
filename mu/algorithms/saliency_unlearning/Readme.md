@@ -27,7 +27,7 @@ eg: ```create_env saliency_unlearning```
 ```
 conda activate <environment_name>
 ```
-eg: ```conda activate mu_saliency_unlearning```
+eg: ```conda activate saliency_unlearning```
 
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 
