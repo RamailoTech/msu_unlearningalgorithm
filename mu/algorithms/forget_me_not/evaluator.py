@@ -1,15 +1,12 @@
 import os
 import logging
 import torch
-import numpy as np
 from PIL import Image
-from torch import autocast
-from pytorch_lightning import seed_everything
 from mu.core.base_sampler import BaseSampler        
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 from stable_diffusion.constants.const import theme_available, class_available
-from mu.helpers import load_config
-from mu.helpers.utils import load_ckpt_from_config,load_style_generated_images,load_style_ref_images,calculate_fid
+from diffusers import StableDiffusionPipeline
+from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid
 import timm
 from tqdm import tqdm
 from typing import Any, Dict
@@ -20,12 +17,12 @@ from mu.core.base_evaluator import BaseEvaluator
 theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
 class_available = ['Architectures', 'Bears', 'Birds']
 
-class ESDSampler(BaseSampler):
-    """ESD Image Generator class extending a hypothetical BaseImageGenerator."""
+class ForgetMeNotSampler(BaseSampler):
+    """ForgetMeNot Image Generator class extending a hypothetical BaseImageGenerator."""
 
     def __init__(self, config: dict, **kwargs):
         """
-        Initialize the ESDSampler with a YAML config (or dict).
+        Initialize the ForgetMeNotSampler with a YAML config (or dict).
         
         Args:
             config (Dict[str, Any]): Dictionary of hyperparams / settings.
@@ -35,7 +32,7 @@ class ESDSampler(BaseSampler):
 
         self.config = config
         self.device = config.get("device", "cuda" if torch.cuda.is_available() else "cpu")
-        self.model = None
+        self.pipe = None
         self.sampler = None
         self.logger = logging.getLogger(__name__)
 
@@ -45,12 +42,18 @@ class ESDSampler(BaseSampler):
         """
         self.logger.info("Loading model...")
         model_ckpt_path = self.config["ckpt_path"]
-        model_config = load_config(self.config["model_config"])
-        self.model = load_ckpt_from_config(model_config, model_ckpt_path, verbose=True)
-        self.model.to(self.device)
-        self.model.eval()
-        self.sampler = DDIMSampler(self.model)
+        seed = self.config['seed']
+
+         # Set seed
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        self.pipe = StableDiffusionPipeline.from_pretrained(model_ckpt_path, torch_dtype=torch.float16).to("cuda")
+
         self.logger.info("Model loaded and sampler initialized successfully.")
+
+    def dummy(images, **kwargs):
+            return images, [False]
 
     def sample(self) -> None:
         """
@@ -58,7 +61,7 @@ class ESDSampler(BaseSampler):
         """
         steps = self.config["ddim_steps"]
         theme = self.config["theme"]         
-        cfg_text = self.config["cfg_text"]    
+        cfg_text_list = self.config["cfg_text_list"]    
         seed = self.config["seed"]
         H = self.config["image_height"]
         W = self.config["image_width"]
@@ -67,56 +70,18 @@ class ESDSampler(BaseSampler):
 
         os.makedirs(output_dir,theme, exist_ok=True)
         self.logger.info(f"Generating images and saving to {output_dir}")
-
-        seed_everything(seed)
        
         for test_theme in theme_available:
             for object_class in class_available:
-                prompt = f"A {object_class} image in {test_theme.replace('_',' ')} style."
-                self.logger.info(f"Sampling prompt: {prompt}")
-                
-                with torch.no_grad():
-                    with autocast(self.device):
-                        with self.model.ema_scope():
-                            uc = self.model.get_learned_conditioning([""])  
-                            c  = self.model.get_learned_conditioning(prompt)
-                            shape = [4, H // 8, W // 8]
-                            # Generate samples
-                            samples_ddim, _ = self.sampler.sample(
-                                S=steps,
-                                conditioning=c,
-                                batch_size=1,
-                                shape=shape,
-                                verbose=False,
-                                unconditional_guidance_scale=cfg_text,
-                                unconditional_conditioning=uc,
-                                eta=ddim_eta,
-                                x_T=None
-                            )
-
-                            # Convert to numpy image
-                            x_samples_ddim = self.model.decode_first_stage(samples_ddim)
-                            x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
-                            x_samples_ddim = x_samples_ddim.cpu().permute(0, 2, 3, 1).numpy()
-
-                            assert len(x_samples_ddim) == 1
-
-
-                            # Convert to uint8 image
-                            x_sample = x_samples_ddim[0]
-
-                            # x_sample = (255. * x_sample.numpy()).round()
-                            if isinstance(x_sample, torch.Tensor):
-                                x_sample = (255. * x_sample.cpu().detach().numpy()).round()
-                            else:
-                                x_sample = (255. * x_sample).round()
-                            x_sample = x_sample.astype(np.uint8)
-                            img = Image.fromarray(x_sample)
-
-                            #save image
-                            filename = f"{test_theme}_{object_class}_seed_{seed}.jpg"
-                            outpath = os.path.join(output_dir,theme, filename)
-                            self.save_image(img, outpath)
+                for cfg_text in cfg_text_list:
+                    output_path = os.path.join(output_dir, f"{test_theme}_{object_class}_seed_{seed}.jpg")
+                    if os.path.exists(output_path):
+                        self.logger.info(f"Detected! Skipping: {output_path}!")
+                        continue
+                    prompt = f"A {object_class} image in {test_theme} style"
+                    self.logger.info(f"Generating: {prompt}")
+                    image = self.pipe(prompt=prompt, width=W, height=H, num_inference_steps=steps, guidance_scale=cfg_text).images[0]
+                    self.save_image(image, output_path)
 
         self.logger.info("Image generation completed.")
 
@@ -129,7 +94,7 @@ class ESDSampler(BaseSampler):
 
 
 
-class ESDEvaluator(BaseEvaluator):
+class ForgetMeNotEvaluator(BaseEvaluator):
     """
     Example evaluator that calculates classification accuracy on generated images.
     Inherits from the abstract BaseEvaluator.
@@ -138,14 +103,14 @@ class ESDEvaluator(BaseEvaluator):
     def __init__(self,config: Dict[str, Any], **kwargs):
         """
         Args:
-            sampler (Any): An instance of a BaseSampler-derived class (e.g., ESDSampler).
+            sampler (Any): An instance of a BaseSampler-derived class (e.g., ForgetMeNotSampler).
             config (Dict[str, Any]): A dict of hyperparameters / evaluation settings.
             **kwargs: Additional overrides for config.
         """
         super().__init__(config, **kwargs)
         self.logger = logging.getLogger(__name__)
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.sampler = ESDSampler(config)
+        self.sampler = ForgetMeNotSampler(config)
         self.classification_model = None
         self.results = {}
 
@@ -315,7 +280,7 @@ class ESDEvaluator(BaseEvaluator):
     def calculate_fid_score(self, *args, **kwargs):
         """
         Calculate the Fréchet Inception Distance (FID) score using the images 
-        generated by ESDSampler vs. some reference images. 
+        generated by ForgetMeNotSampler vs. some reference images. 
         """
         self.logger.info("Starting FID calculation...")
 

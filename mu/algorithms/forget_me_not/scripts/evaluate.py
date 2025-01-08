@@ -1,17 +1,16 @@
 from argparse import ArgumentParser
 from mu.helpers import load_config
-from mu.algorithms.esd import ESDEvaluator
+from mu.algorithms.concept_ablation import ConceptAblationEvaluator
 
 def main():
     """Main entry point for running the entire pipeline."""
-    parser = ArgumentParser(description="Unified ESD Evaluation and Sampling")
+    parser = ArgumentParser(description="Unified ConceptAblation Evaluation and Sampling")
     parser.add_argument('--config_path', required=True, help="Path to the YAML config file.")
 
     # Below: optional overrides for your config dictionary
-    parser.add_argument('--model_config', type=str, help="Path for model_config")
-    parser.add_argument('--ckpt_path', type=str, help="checkpoint path")
     parser.add_argument('--theme', type=str, help="theme")
-    parser.add_argument('--cfg_text_list', type=float, help="(guidance scale)")
+    parser.add_argument('--ckpt_path', type=str, help="checkpoint path")
+    parser.add_argument('--cfg_text_list', type=float, help="(guidance scale)",nargs="+")
     parser.add_argument('--seed', type=int, help="seed")
     parser.add_argument('--ddim_steps', type=int, help="number of ddim_steps")
     parser.add_argument('--image_height', type=int, help="image height")
@@ -22,7 +21,7 @@ def main():
     parser.add_argument('--eval_output_dir', type=str, help="evaluation output directory")
     parser.add_argument('--reference_dir', type=str, help="reference images directory")
     parser.add_argument('--forget_theme', type=str, help="forget_theme setting")
-    parser.add_argument('--multiprocessing', type=bool, help="multiprocessing flag (True/False)")
+    parser.add_argument('--multiprocessing', float, help="multiprocessing flag (True/False)")
     parser.add_argument('--batch_size', type=int, help="FID batch_size")
 
     args = parser.parse_args()
@@ -30,14 +29,12 @@ def main():
     config = load_config(args.config_path)
 
     #  Override config fields if CLI arguments are provided
-    if args.model_config is not None:
-        config["model_config"] = args.model_config
     if args.ckpt_path is not None:
         config["ckpt_path"] = args.ckpt_path
     if args.theme is not None:
         config["theme"] = args.theme
     if args.cfg_text_list is not None:
-        config["cfg_text_list: [9.0]"] = args.cfg_text_list
+        config["cfg_text_list"] = args.cfg_text_list
     if args.seed is not None:
         config["seed"] = args.seed
     if args.ddim_steps is not None:
@@ -63,7 +60,7 @@ def main():
     if args.batch_size is not None:
         config["batch_size"] = args.batch_size
 
-    evaluator = ESDEvaluator(config)
+    evaluator = ConceptAblationEvaluator(config)
     evaluator.run()
 
 if __name__ == "__main__":

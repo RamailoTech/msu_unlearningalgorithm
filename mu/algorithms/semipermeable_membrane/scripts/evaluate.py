@@ -1,22 +1,43 @@
 from argparse import ArgumentParser
 from mu.helpers import load_config
-from mu.algorithms.esd import ESDEvaluator
+from mu.algorithms.semipermeable_membrane import SemipermeableMembraneEvaluator
 
 def main():
     """Main entry point for running the entire pipeline."""
-    parser = ArgumentParser(description="Unified ESD Evaluation and Sampling")
+    parser = ArgumentParser(description="Unified SemipermeableMembrane Evaluation and Sampling")
     parser.add_argument('--config_path', required=True, help="Path to the YAML config file.")
 
     # Below: optional overrides for your config dictionary
+    parser.add_argument(
+        "--spm_multiplier",
+        nargs="*",
+        type=float,
+        help="Assign multipliers for SPM model or set to `None` to use Facilitated Transport.",
+    )
+    parser.add_argument(
+        "--matching_metric",
+        type=str,
+        help="matching metric for prompt vs erased concept",
+    )
+    parser.add_argument(
+        "--base_model",
+        type=str,
+        help="Base model for generation.",
+    )
+    parser.add_argument(
+        "--v2",
+        action="store_true",
+        help="Use the 2.x version of the SD.",
+    )
+    parser.add_argument(
+        "--precision",
+        type=str,
+        help="Precision for the base model.",
+    )
     parser.add_argument('--model_config', type=str, help="Path for model_config")
-    parser.add_argument('--ckpt_path', type=str, help="checkpoint path")
+    parser.add_argument('--base_model', type=str, help="base model path")
     parser.add_argument('--theme', type=str, help="theme")
-    parser.add_argument('--cfg_text_list', type=float, help="(guidance scale)")
     parser.add_argument('--seed', type=int, help="seed")
-    parser.add_argument('--ddim_steps', type=int, help="number of ddim_steps")
-    parser.add_argument('--image_height', type=int, help="image height")
-    parser.add_argument('--image_width', type=int, help="image width")
-    parser.add_argument('--ddim_eta', type=float, help="DDIM eta")
     parser.add_argument('--sampler_output_dir', type=str, help="output directory for sampler")
     parser.add_argument('--classification_model', type=str, help="classification model name")
     parser.add_argument('--eval_output_dir', type=str, help="evaluation output directory")
@@ -63,7 +84,7 @@ def main():
     if args.batch_size is not None:
         config["batch_size"] = args.batch_size
 
-    evaluator = ESDEvaluator(config)
+    evaluator = SemipermeableMembraneEvaluator(config)
     evaluator.run()
 
 if __name__ == "__main__":

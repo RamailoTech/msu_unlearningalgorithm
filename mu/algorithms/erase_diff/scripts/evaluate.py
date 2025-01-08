@@ -1,17 +1,17 @@
 from argparse import ArgumentParser
 from mu.helpers import load_config
-from mu.algorithms.esd import ESDEvaluator
+from mu.algorithms.erase_diff import EraseDiffEvaluator
 
 def main():
     """Main entry point for running the entire pipeline."""
-    parser = ArgumentParser(description="Unified ESD Evaluation and Sampling")
+    parser = ArgumentParser(description="Unified Erase diff Evaluation and Sampling")
     parser.add_argument('--config_path', required=True, help="Path to the YAML config file.")
 
     # Below: optional overrides for your config dictionary
     parser.add_argument('--model_config', type=str, help="Path for model_config")
     parser.add_argument('--ckpt_path', type=str, help="checkpoint path")
     parser.add_argument('--theme', type=str, help="theme")
-    parser.add_argument('--cfg_text_list', type=float, help="(guidance scale)")
+    parser.add_argument('--cfg_text', type=float, help="(guidance scale)")
     parser.add_argument('--seed', type=int, help="seed")
     parser.add_argument('--ddim_steps', type=int, help="number of ddim_steps")
     parser.add_argument('--image_height', type=int, help="image height")
@@ -36,8 +36,8 @@ def main():
         config["ckpt_path"] = args.ckpt_path
     if args.theme is not None:
         config["theme"] = args.theme
-    if args.cfg_text_list is not None:
-        config["cfg_text_list: [9.0]"] = args.cfg_text_list
+    if args.cfg_text is not None:
+        config["cfg_text"] = args.cfg_text
     if args.seed is not None:
         config["seed"] = args.seed
     if args.ddim_steps is not None:
@@ -63,7 +63,7 @@ def main():
     if args.batch_size is not None:
         config["batch_size"] = args.batch_size
 
-    evaluator = ESDEvaluator(config)
+    evaluator = EraseDiffEvaluator(config)
     evaluator.run()
 
 if __name__ == "__main__":

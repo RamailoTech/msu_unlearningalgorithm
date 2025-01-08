@@ -1,22 +1,22 @@
 from argparse import ArgumentParser
 from mu.helpers import load_config
-from mu.algorithms.esd import ESDEvaluator
+from mu.algorithms.unified_concept_editing import UnifiedConceptEditingEvaluator
 
 def main():
     """Main entry point for running the entire pipeline."""
-    parser = ArgumentParser(description="Unified ESD Evaluation and Sampling")
+    parser = ArgumentParser(description="Unified Concept Editing Evaluation and Sampling")
     parser.add_argument('--config_path', required=True, help="Path to the YAML config file.")
 
     # Below: optional overrides for your config dictionary
-    parser.add_argument('--model_config', type=str, help="Path for model_config")
     parser.add_argument('--ckpt_path', type=str, help="checkpoint path")
-    parser.add_argument('--theme', type=str, help="theme")
-    parser.add_argument('--cfg_text_list', type=float, help="(guidance scale)")
-    parser.add_argument('--seed', type=int, help="seed")
-    parser.add_argument('--ddim_steps', type=int, help="number of ddim_steps")
+    parser.add_argument('--num_samples', help='number of samples to be generated (batch_size)', type=str)
+    parser.add_argument('--pipeline_path', help='path to pipeline', type=str)
+    parser.add_argument('--theme', type=str, help="theme", required=True)
+    parser.add_argument('--cfg_text', type=float, help="(guidance scale)")
+    parser.add_argument('--seed', type=int, help="seed",required=False)
+    parser.add_argument('--ddim_steps', type=int, help="number of ddim_steps",required=False)
     parser.add_argument('--image_height', type=int, help="image height")
     parser.add_argument('--image_width', type=int, help="image width")
-    parser.add_argument('--ddim_eta', type=float, help="DDIM eta")
     parser.add_argument('--sampler_output_dir', type=str, help="output directory for sampler")
     parser.add_argument('--classification_model', type=str, help="classification model name")
     parser.add_argument('--eval_output_dir', type=str, help="evaluation output directory")
@@ -30,14 +30,16 @@ def main():
     config = load_config(args.config_path)
 
     #  Override config fields if CLI arguments are provided
-    if args.model_config is not None:
-        config["model_config"] = args.model_config
+    if args.pipeline_path is not None:
+        config["pipeline_path"] = args.pipeline_path
+    if args.num_samples is not None:
+        config["num_samples"] = args.num_samples
     if args.ckpt_path is not None:
         config["ckpt_path"] = args.ckpt_path
     if args.theme is not None:
         config["theme"] = args.theme
-    if args.cfg_text_list is not None:
-        config["cfg_text_list: [9.0]"] = args.cfg_text_list
+    if args.cfg_text is not None:
+        config["cfg_text"] = args.cfg_text
     if args.seed is not None:
         config["seed"] = args.seed
     if args.ddim_steps is not None:
@@ -46,8 +48,6 @@ def main():
         config["image_height"] = args.image_height
     if args.image_width is not None:
         config["image_width"] = args.image_width
-    if args.ddim_eta is not None:
-        config["ddim_eta"] = args.ddim_eta
     if args.sampler_output_dir is not None:
         config["sampler_output_dir"] = args.sampler_output_dir
     if args.classification_model is not None:
@@ -63,7 +63,7 @@ def main():
     if args.batch_size is not None:
         config["batch_size"] = args.batch_size
 
-    evaluator = ESDEvaluator(config)
+    evaluator = UnifiedConceptEditingEvaluator(config)
     evaluator.run()
 
 if __name__ == "__main__":

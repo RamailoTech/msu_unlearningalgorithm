@@ -1,14 +1,13 @@
-model_config: "mu/algorithms/esd/configs/generate_sd.yaml"
-ckpt_path: "outputs/esd/finetuned_models/esd_Abstractionism_model.pth"
+precision: "fp32"
+spm_multiplier: 1.0
+v2: false
+matching_metric: "clipcos_tokenuni"
+model_config: "mu/algorithms/semipermeable_membrane/config"
+base_model: "path to base model"
 theme: "Abstractionism"
-cfg_text: 9.0
 seed: 188
 task: "class"
-ddim_steps: 100
-image_height: 512
-image_width: 512
-ddim_eta: 0.0
-sampler_output_dir: "outputs/eval_results/mu_results/esd/"
+sampler_output_dir: "outputs/eval_results/mu_results/ca/"
 seed_list: ["188"]
 # classification_model: "vit_large_patch16_224.augreg_in21k"
 classification_model: "vit_large_patch16_224"
@@ -17,4 +16,4 @@ eval_output_dir: "outputs/eval_results/mu_results/esd/"
 reference_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
 forget_theme: "Abstractionism"
 fid_output_path: "outputs/eval_results/mu_results/esd/"
-multiprocessing: False
+multiprocessing: false

@@ -1,20 +1,20 @@
 model_config: "mu/algorithms/esd/configs/generate_sd.yaml"
-ckpt_path: "outputs/esd/finetuned_models/esd_Abstractionism_model.pth"
+ckpt_path: "outputs/forget_me_not/finetuned_models/forget_me_not_Abstractionism_model.pth"
 theme: "Abstractionism"
-cfg_text: 9.0
+cfg_text_list: [9.0]
 seed: 188
 task: "class"
 ddim_steps: 100
 image_height: 512
 image_width: 512
 ddim_eta: 0.0
-sampler_output_dir: "outputs/eval_results/mu_results/esd/"
+sampler_output_dir: "outputs/eval_results/mu_results/forget_me_not/"
 seed_list: ["188"]
 # classification_model: "vit_large_patch16_224.augreg_in21k"
 classification_model: "vit_large_patch16_224"
-classification_ckpt: "outputs/esd/finetuned_models/esd_Abstractionism_model.pth"
-eval_output_dir: "outputs/eval_results/mu_results/esd/"
+classification_ckpt: "outputs/forget_me_not/finetuned_models/forget_me_not_Abstractionism_model.pth"
+eval_output_dir: "outputs/eval_results/mu_results/forget_me_not/"
 reference_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
 forget_theme: "Abstractionism"
-fid_output_path: "outputs/eval_results/mu_results/esd/"
+fid_output_path: "outputs/eval_results/mu_results/forget_me_not/"
 multiprocessing: False
