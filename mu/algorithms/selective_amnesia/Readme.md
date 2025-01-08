@@ -29,7 +29,7 @@ eg: ```create_env selective_amnesia```
 ```
 conda activate <environment_name>
 ```
-eg: ```conda activate mu_sa```
+eg: ```conda activate selective_amnesia```
 
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 

@@ -27,7 +27,7 @@ eg: ```create_env erase_diff```
 ```
 conda activate <environment_name>
 ```
-eg: ```conda activate mu_erase_diff```
+eg: ```conda activate erase_diff```
 
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 

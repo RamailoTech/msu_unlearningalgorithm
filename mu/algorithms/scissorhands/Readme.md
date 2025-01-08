@@ -27,7 +27,7 @@ eg: ```create_env scissorhands```
 ```
 conda activate <environment_name>
 ```
-eg: ```conda activate mu_scissorhands```
+eg: ```conda activate scissorhands```
 
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 

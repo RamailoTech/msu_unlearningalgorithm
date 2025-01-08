@@ -27,7 +27,7 @@ eg: ```create_env forget_me_not```
 ```
 conda activate <environment_name>
 ```
-eg: ```conda activate mu_forget_me_not```
+eg: ```conda activate forget_me_not```
 
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 

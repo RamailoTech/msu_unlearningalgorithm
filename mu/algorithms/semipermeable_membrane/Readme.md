@@ -28,7 +28,7 @@ eg: ```create_env semipermeable_membrane```
 ```
 conda activate <environment_name>
 ```
-eg: ```conda activate mu_spm```
+eg: ```conda activate semipermeable_membrane```
 
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 
