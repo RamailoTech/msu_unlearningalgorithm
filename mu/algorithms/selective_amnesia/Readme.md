@@ -88,13 +88,13 @@ wget https://huggingface.co/ajrheng/selective-amnesia/resolve/main/full_fisher_d
 
 2. Run the script 
 ```
-python -m mu.algorithms.selective_amnesia.scripts.train --config_path mu/algorithms/selective_amnesia/configs/train_config.yaml 
+python -m mu.algorithms.selective_amnesia.scripts.train --config_path mu/algorithms/selective_amnesia/configs/train_config.yaml --full_fisher_dict_pkl_path /path/full_fisher_dict.pkl
 ```
 
 ### Running the Training Script in Offline Mode
 
 ```
-WANDB_MODE=offline python -m mu.algorithms.selective_amnesia.scripts.train --config_path mu/algorithms/selective_amnesia/configs/train_config.yaml 
+WANDB_MODE=offline python -m mu.algorithms.selective_amnesia.scripts.train --config_path mu/algorithms/selective_amnesia/configs/train_config.yaml --full_fisher_dict_pkl_path /path/full_fisher_dict.pkl
 ```
 
 ### Overriding Configuration via Command Line

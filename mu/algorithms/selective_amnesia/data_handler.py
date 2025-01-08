@@ -11,12 +11,11 @@ from typing import Any
 
 from stable_diffusion.ldm.util import instantiate_from_config
 from stable_diffusion.ldm.data.base import Txt2ImgIterableBaseDataset
-
+from stable_diffusion.scripts.txt2img_make_n_samples import main as f_txt_2_img_n_samples
 from mu.algorithms.selective_amnesia.utils import worker_init_fn
 from mu.algorithms.selective_amnesia.datasets import WrappedDataset
 
 from mu.datasets.constants import * 
-import subprocess
 
 class SelectiveAmnesiaDataHandler(pl.LightningDataModule):
     """
@@ -99,35 +98,28 @@ class SelectiveAmnesiaDataHandler(pl.LightningDataModule):
         n_samples = 10 if use_sample else 1000
         model_config_path = config.model_config_path
         ckpt_path = config.ckpt_path
-        SelectiveAmnesiaDataHandler.generate_dataset(f"{processed_dataset_dir}/{template_name}", config.data.params.train.forget_prompt, n_samples, model_config_path, ckpt_path)
+        SelectiveAmnesiaDataHandler.generate_dataset(outdir=f"{processed_dataset_dir}/{template_name}",prompt=config.data.params.train.forget_prompt,n_samples=n_samples,model_config_path=model_config_path, ckpt_path=ckpt_path)
 
+        os.makedirs(f"{processed_dataset_dir}/replay_dataset", exist_ok=True)
+        SelectiveAmnesiaDataHandler.generate_dataset(outdir=f"{processed_dataset_dir}/replay_dataset",from_file= config.replay_prompt_path,model_config_path=model_config_path, ckpt_path=ckpt_path)
         config.data.params.train.params.forget_dataset_path = f"{processed_dataset_dir}/{template_name}"
-        config.data.params.train.params.replay_dataset_path = f"{processed_dataset_dir}/{template_name}"
-        config.data.params.train.params.replay_prompt_path = f"{processed_dataset_dir}/fim_prompts.txt"
+        config.data.params.train.params.replay_dataset_path = f"{processed_dataset_dir}/replay_dataset"
+        config.data.params.train.params.replay_prompt_path = config.replay_prompt_path
 
         return config
 
     @staticmethod
-    def generate_dataset(outdir, prompt, n_samples, model_config_path, ckpt_path):
+    def generate_dataset(outdir, model_config_path, ckpt_path, from_file=None,prompt=None, n_samples=10):
         """
         Generate dataset based on the dataset type
         """
-        
-        # Construct the command
-        command = [
-            "python",
-            "stable_diffusion/scripts/txt2img_make_n_samples.py",
-            "--outdir", outdir,
-            "--prompt", prompt,
-            "--n_samples", str(2),
-            "--config", model_config_path,
-            "--ckpt", ckpt_path
-        ]
-        
-        # Run the command
+                
         try:
-            subprocess.run(command, check=True)
-        except subprocess.CalledProcessError as e:
+            if from_file: 
+                f_txt_2_img_n_samples(outdir=outdir,config=model_config_path,ckpt=ckpt_path,from_file=from_file)
+            else:
+                f_txt_2_img_n_samples(outdir=outdir, prompt=prompt, n_samples= n_samples, config=model_config_path,ckpt=ckpt_path)
+        except Exception as e:
             logging.error(f"Failed to generate dataset: {e}")
             raise
 
