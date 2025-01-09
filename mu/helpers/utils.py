@@ -32,8 +32,9 @@ from torchvision.models import inception_v3
 
 from stable_diffusion.constants.const import theme_available, class_available
 
-# theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
-# # class_available = ['Architectures', 'Bears', 'Birds']
+#TODO remove this
+theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
+class_available = ['Architectures']
 # class_available = ['Architectures']
 
 
@@ -382,7 +383,6 @@ def load_style_ref_images(path, exclude="Seed_Images"):
         final_images: np.array of image dtype and shape.
     """
     image_paths = []
-
     if exclude is not None:
         # assert exclude in theme_available, f"{exclude} not in {theme_available}"
         if exclude in theme_available:

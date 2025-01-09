@@ -1,97 +1,24 @@
+# mu/algorithms/forget_me_not/evaluator.py
+
 import os
 import logging
 import torch
-from PIL import Image
-from mu.core.base_sampler import BaseSampler        
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
-from stable_diffusion.constants.const import theme_available, class_available
-from diffusers import StableDiffusionPipeline
-from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid
 import timm
 from tqdm import tqdm
 from typing import Any, Dict
+
+from PIL import Image
 from torchvision import transforms
 from torch.nn import functional as F
-from mu.core.base_evaluator import BaseEvaluator
 
+from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid
+from stable_diffusion.constants.const import theme_available, class_available
+from mu.core.base_evaluator import BaseEvaluator
+from mu.algorithms.forget_me_not import ForgetMeNotSampler
+
+#TODO to remove this
 theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
 class_available = ['Architectures', 'Bears', 'Birds']
-
-class ForgetMeNotSampler(BaseSampler):
-    """ForgetMeNot Image Generator class extending a hypothetical BaseImageGenerator."""
-
-    def __init__(self, config: dict, **kwargs):
-        """
-        Initialize the ForgetMeNotSampler with a YAML config (or dict).
-        
-        Args:
-            config (Dict[str, Any]): Dictionary of hyperparams / settings.
-            **kwargs: Additional keyword arguments that can override config entries.
-        """
-        super().__init__()
-
-        self.config = config
-        self.device = config.get("device", "cuda" if torch.cuda.is_available() else "cpu")
-        self.pipe = None
-        self.sampler = None
-        self.logger = logging.getLogger(__name__)
-
-    def load_model(self) -> None:
-        """
-        Load the model using `config` and initialize the sampler.
-        """
-        self.logger.info("Loading model...")
-        model_ckpt_path = self.config["ckpt_path"]
-        seed = self.config['seed']
-
-         # Set seed
-        torch.manual_seed(seed)
-        torch.cuda.manual_seed(seed)
-        torch.cuda.manual_seed_all(seed)
-        self.pipe = StableDiffusionPipeline.from_pretrained(model_ckpt_path, torch_dtype=torch.float16).to("cuda")
-
-        self.logger.info("Model loaded and sampler initialized successfully.")
-
-    def dummy(images, **kwargs):
-            return images, [False]
-
-    def sample(self) -> None:
-        """
-        Sample (generate) images using the loaded model and sampler, based on the config.
-        """
-        steps = self.config["ddim_steps"]
-        theme = self.config["theme"]         
-        cfg_text_list = self.config["cfg_text_list"]    
-        seed = self.config["seed"]
-        H = self.config["image_height"]
-        W = self.config["image_width"]
-        ddim_eta = self.config["ddim_eta"]
-        output_dir = self.config["sampler_output_dir"]
-
-        os.makedirs(output_dir,theme, exist_ok=True)
-        self.logger.info(f"Generating images and saving to {output_dir}")
-       
-        for test_theme in theme_available:
-            for object_class in class_available:
-                for cfg_text in cfg_text_list:
-                    output_path = os.path.join(output_dir, f"{test_theme}_{object_class}_seed_{seed}.jpg")
-                    if os.path.exists(output_path):
-                        self.logger.info(f"Detected! Skipping: {output_path}!")
-                        continue
-                    prompt = f"A {object_class} image in {test_theme} style"
-                    self.logger.info(f"Generating: {prompt}")
-                    image = self.pipe(prompt=prompt, width=W, height=H, num_inference_steps=steps, guidance_scale=cfg_text).images[0]
-                    self.save_image(image, output_path)
-
-        self.logger.info("Image generation completed.")
-
-    def save_image(self, image: Image.Image, file_path: str) -> None:
-        """
-        Save an image to the specified path.
-        """
-        image.save(file_path)
-        self.logger.info(f"Image saved at: {file_path}")
-
 
 
 class ForgetMeNotEvaluator(BaseEvaluator):
@@ -108,11 +35,15 @@ class ForgetMeNotEvaluator(BaseEvaluator):
             **kwargs: Additional overrides for config.
         """
         super().__init__(config, **kwargs)
-        self.logger = logging.getLogger(__name__)
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.config = config
+        self.device = self.config['device']
         self.sampler = ForgetMeNotSampler(config)
         self.classification_model = None
+        self.fid_path = None
         self.results = {}
+
+        self.logger = logging.getLogger(__name__)
+
 
     def load_model(self, *args, **kwargs):
         """
@@ -238,7 +169,7 @@ class ForgetMeNotEvaluator(BaseEvaluator):
                         self.results["misclassified"][test_theme][misclassified_as] += 1
 
                 if not dry_run:
-                    self.save_results(self.results, output_path)
+                    self.save_results(output_path=output_path)
 
         else: # task == "class"
             for test_theme in tqdm(theme_available, total=len(theme_available)):
@@ -273,14 +204,14 @@ class ForgetMeNotEvaluator(BaseEvaluator):
                         self.results["misclassified"][object_class][misclassified_as] += 1
 
                 if not dry_run:
-                    self.save_results(self.results, output_path)
+                    self.save_results(output_path=output_path)
 
         self.logger.info("Accuracy calculation completed.")
 
     def calculate_fid_score(self, *args, **kwargs):
         """
         Calculate the Fréchet Inception Distance (FID) score using the images 
-        generated by ForgetMeNotSampler vs. some reference images. 
+        generated by EraseDiffSampler vs. some reference images. 
         """
         self.logger.info("Starting FID calculation...")
 
@@ -310,25 +241,25 @@ class ForgetMeNotEvaluator(BaseEvaluator):
         )
         self.logger.info(f"Calculated FID: {fid_value}")
         self.results["FID"] = fid_value
-        fid_path = os.path.join(output_dir, "fid_value.pth")
-        torch.save({"FID": fid_value}, fid_path)
-        self.logger.info(f"FID results saved to: {fid_path}")
+        self.fid_path = os.path.join(output_dir, "fid_value.pth")
 
-    def save_results(self, results: dict, output_path: str):
+
+    def save_results(self, output_path: Optional[str] = None, *args, **kwargs):
         """
         Save evaluation results to a file. You can also do JSON or CSV if desired.
         """
-        torch.save(results, output_path)
+        torch.save(self.results, output_path)
         self.logger.info(f"Results saved to: {output_path}")
 
     def run(self, *args, **kwargs):
         """
-        Run the complete evaluation process:
-        1) Load the classification model
+       Run the complete evaluation process:
+        1) Load the model checkpoint
         2) Generate images (using sampler)
-        3) Calculate accuracy
-        4) Calculate FID
-        5) Save final results
+        3) Load the classification model
+        4) Calculate accuracy
+        5) Calculate FID
+        6) Save final results
         """
 
         # Call the sample method to generate images
@@ -343,7 +274,8 @@ class ForgetMeNotEvaluator(BaseEvaluator):
         self.calculate_fid_score()
 
         # Save results
-        self.save_results(self.results, os.path.join(self.config["eval_output_dir"], "final_results.pth"))
+        output_path = self.fid_path
+        self.save_results(output_path =output_path)
 
         self.logger.info("Evaluation run completed.")
 

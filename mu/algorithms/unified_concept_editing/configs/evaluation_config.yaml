@@ -1,10 +1,10 @@
-model_config: "mu/algorithms/uce/configs/generate_sd.yaml"
-ckpt_path: "outputs/uce/finetuned_models/uce_Abstractionism_model.pth"
+ckpt_path: "outputs/uce/finetuned_models/uce_Abstractionism_model.pth/model_index.json"
+pipeline_path: "CompVis/stable-diffusion-v1-4"
 theme: "Abstractionism"
-cfg_text_list: 9.0
+cfg_text: 9.0
 seed: 188
-task: "class"
-pipeline_path: ""
+task: "style"
+devices: "0"
 ddim_steps: 100
 image_height: 512
 image_width: 512
@@ -14,7 +14,7 @@ seed_list: ["188"]
 num_samples: 1
 # classification_model: "vit_large_patch16_224.augreg_in21k"
 classification_model: "vit_large_patch16_224"
-classification_ckpt: "outputs/uce/finetuned_models/uce_Abstractionism_model.pth"
+classification_ckpt: "outputs/uce/finetuned_models/"
 eval_output_dir: "outputs/eval_results/mu_results/uce/"
 reference_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
 forget_theme: "Abstractionism"

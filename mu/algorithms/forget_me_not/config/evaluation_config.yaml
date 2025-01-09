@@ -1,5 +1,4 @@
-model_config: "mu/algorithms/esd/configs/generate_sd.yaml"
-ckpt_path: "outputs/forget_me_not/finetuned_models/forget_me_not_Abstractionism_model.pth"
+ckpt_path: "outputs/forget_me_not/finetuned_models"
 theme: "Abstractionism"
 cfg_text_list: [9.0]
 seed: 188
@@ -8,6 +7,7 @@ ddim_steps: 100
 image_height: 512
 image_width: 512
 ddim_eta: 0.0
+devices: "0"
 sampler_output_dir: "outputs/eval_results/mu_results/forget_me_not/"
 seed_list: ["188"]
 # classification_model: "vit_large_patch16_224.augreg_in21k"

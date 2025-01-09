@@ -1,4 +1,4 @@
-from typing import Literal, Union, Optional
+from typing import Literal, Union, Optional,Tuple,List
 
 import torch
 from transformers import CLIPTextModel, CLIPTokenizer, CLIPTextModelWithProjection
@@ -6,7 +6,7 @@ from diffusers import (
     UNet2DConditionModel,
     SchedulerMixin,
     StableDiffusionPipeline,
-    StableDiffusionXLPipeline,
+    # StableDiffusionXLPipeline,
     AltDiffusionPipeline,
     DiffusionPipeline,
 )
@@ -33,7 +33,7 @@ def load_diffusers_model(
     v2: bool = False,
     clip_skip: Optional[int] = None,
     weight_dtype: torch.dtype = torch.float32,
-) -> tuple[CLIPTokenizer, CLIPTextModel, UNet2DConditionModel,]:
+) -> Tuple[CLIPTokenizer, CLIPTextModel, UNet2DConditionModel,]:
 
     if v2:
         tokenizer = CLIPTokenizer.from_pretrained(
@@ -81,7 +81,7 @@ def load_checkpoint_model(
     clip_skip: Optional[int] = None,
     weight_dtype: torch.dtype = torch.float32,
     device = "cuda",
-) -> tuple[CLIPTokenizer, CLIPTextModel, UNet2DConditionModel, DiffusionPipeline]:
+) -> Tuple[CLIPTokenizer, CLIPTextModel, UNet2DConditionModel, DiffusionPipeline]:
     print(f"Loading checkpoint from {checkpoint_path}")
     if checkpoint_path == "BAAI/AltDiffusion":
         pipe = AltDiffusionPipeline.from_pretrained(
@@ -118,7 +118,7 @@ def load_models(
     v2: bool = False,
     v_pred: bool = False,
     weight_dtype: torch.dtype = torch.float32,
-) -> tuple[CLIPTokenizer, CLIPTextModel, UNet2DConditionModel, SchedulerMixin, DiffusionPipeline, ]:
+) -> Tuple[CLIPTokenizer, CLIPTextModel, UNet2DConditionModel, SchedulerMixin, DiffusionPipeline, ]:
     tokenizer, text_encoder, unet, pipe = load_checkpoint_model(
         pretrained_model_name_or_path, v2=v2, weight_dtype=weight_dtype
     )
@@ -134,7 +134,7 @@ def load_models(
 def load_diffusers_model_xl(
     pretrained_model_name_or_path: str,
     weight_dtype: torch.dtype = torch.float32,
-) -> tuple[list[CLIPTokenizer], list[SDXL_TEXT_ENCODER_TYPE], UNet2DConditionModel,]:
+) -> Tuple[list[CLIPTokenizer], list[SDXL_TEXT_ENCODER_TYPE], UNet2DConditionModel,]:
     # returns tokenizer, tokenizer_2, text_encoder, text_encoder_2, unet
 
     tokenizers = [
@@ -178,48 +178,48 @@ def load_diffusers_model_xl(
     return tokenizers, text_encoders, unet, None
 
 
-def load_checkpoint_model_xl(
-    checkpoint_path: str,
-    weight_dtype: torch.dtype = torch.float32,
-    device = "cuda",
-) -> tuple[list[CLIPTokenizer], list[SDXL_TEXT_ENCODER_TYPE], UNet2DConditionModel, DiffusionPipeline, ]:
-    pipe = StableDiffusionXLPipeline.from_pretrained(
-        checkpoint_path,
-        torch_dtype=weight_dtype,
-        cache_dir=DIFFUSERS_CACHE_DIR,
-        local_files_only=LOCAL_ONLY,
-    ).to(device)
+# def load_checkpoint_model_xl(
+#     checkpoint_path: str,
+#     weight_dtype: torch.dtype = torch.float32,
+#     device = "cuda",
+# ) -> tuple[list[CLIPTokenizer], list[SDXL_TEXT_ENCODER_TYPE], UNet2DConditionModel, DiffusionPipeline, ]:
+#     pipe = StableDiffusionXLPipeline.from_pretrained(
+#         checkpoint_path,
+#         torch_dtype=weight_dtype,
+#         cache_dir=DIFFUSERS_CACHE_DIR,
+#         local_files_only=LOCAL_ONLY,
+#     ).to(device)
 
-    unet = pipe.unet
-    tokenizers = [pipe.tokenizer, pipe.tokenizer_2]
-    text_encoders = [pipe.text_encoder, pipe.text_encoder_2]
-    if len(text_encoders) == 2:
-        text_encoders[1].pad_token_id = 0
+#     unet = pipe.unet
+#     tokenizers = [pipe.tokenizer, pipe.tokenizer_2]
+#     text_encoders = [pipe.text_encoder, pipe.text_encoder_2]
+#     if len(text_encoders) == 2:
+#         text_encoders[1].pad_token_id = 0
 
-    return tokenizers, text_encoders, unet, pipe
+#     return tokenizers, text_encoders, unet, pipe
 
 
-def load_models_xl(
-    pretrained_model_name_or_path: str,
-    scheduler_name: AVAILABLE_SCHEDULERS,
-    weight_dtype: torch.dtype = torch.float32,
-) -> tuple[
-    list[CLIPTokenizer],
-    list[SDXL_TEXT_ENCODER_TYPE],
-    UNet2DConditionModel,
-    SchedulerMixin,
-    DiffusionPipeline,
-]:
-    (
-        tokenizers,
-        text_encoders,
-        unet,
-        pipe,
-    ) = load_checkpoint_model_xl(pretrained_model_name_or_path, weight_dtype)
+# def load_models_xl(
+#     pretrained_model_name_or_path: str,
+#     scheduler_name: AVAILABLE_SCHEDULERS,
+#     weight_dtype: torch.dtype = torch.float32,
+# ) -> tuple[
+#     list[CLIPTokenizer],
+#     list[SDXL_TEXT_ENCODER_TYPE],
+#     UNet2DConditionModel,
+#     SchedulerMixin,
+#     DiffusionPipeline,
+# ]:
+#     (
+#         tokenizers,
+#         text_encoders,
+#         unet,
+#         pipe,
+#     ) = load_checkpoint_model_xl(pretrained_model_name_or_path, weight_dtype)
 
-    scheduler = create_noise_scheduler(scheduler_name)
+#     scheduler = create_noise_scheduler(scheduler_name)
 
-    return tokenizers, text_encoders, unet, scheduler, pipe
+#     return tokenizers, text_encoders, unet, scheduler, pipe
 
 
 def create_noise_scheduler(

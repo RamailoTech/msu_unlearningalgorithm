@@ -1,6 +1,7 @@
-model_config: "mu/algorithms/esd/configs/generate_sd.yaml"
+model_config: "mu/algorithms/esd/configs/model_config.yaml"
 ckpt_path: "outputs/esd/finetuned_models/esd_Abstractionism_model.pth"
-theme: "Abstractionism"
+theme: "Bricks"
+devices: "cuda"
 cfg_text: 9.0
 seed: 188
 task: "class"

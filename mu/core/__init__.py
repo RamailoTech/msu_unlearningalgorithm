@@ -3,6 +3,7 @@ from .base_data_handler import BaseDataHandler
 from .base_model import BaseModel
 from .base_sampler import BaseSampler
 from .base_trainer import BaseTrainer
+from .base_evaluator import BaseEvaluator
 
 #TODO Add BaseEvaluator to __all__
 
@@ -11,5 +12,6 @@ __all__ = [
     "BaseDataHandler",
     "BaseModel",
     "BaseSampler",
-    "BaseTrainer"
+    "BaseTrainer",
+    "BaseEvaluator"
     ]

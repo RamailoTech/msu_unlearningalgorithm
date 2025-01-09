@@ -1,137 +1,23 @@
-#TODO : Add file path #mu/algorithms/erase_diff/evaluator.py
-# TODO : Sort the imports
+#mu/algorithms/erase_diff/evaluator.py
 import os
 import logging
-import torch
-import numpy as np
-from PIL import Image
-from torch import autocast
-from pytorch_lightning import seed_everything
-from mu.core.base_sampler import BaseSampler        
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
-from stable_diffusion.constants.const import theme_available, class_available
-from mu.helpers import load_config
-from mu.helpers.utils import load_ckpt_from_config,load_style_generated_images,load_style_ref_images,calculate_fid
 import timm
 from tqdm import tqdm
 from typing import Any, Dict
+
+import torch
+from PIL import Image
 from torchvision import transforms
 from torch.nn import functional as F
+   
+
+from stable_diffusion.constants.const import theme_available, class_available
 from mu.core.base_evaluator import BaseEvaluator
+from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid
+from mu.algorithms.erase_diff import EraseDiffSampler
 
-
-#TODO : Remove the below theme and class available and import from stable_diffusion.constants.const
 theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
 class_available = ['Architectures', 'Bears', 'Birds']
-
-#TODO : Move EraseDiffSampler to sampler.py file
-class EraseDiffSampler(BaseSampler):
-    """EraseDiff Image Generator class extending a hypothetical BaseImageGenerator."""
-
-    def __init__(self, config: dict, **kwargs):
-        """
-        Initialize the EraseDiffSampler with a YAML config (or dict).
-        
-        Args:
-            config (Dict[str, Any]): Dictionary of hyperparams / settings.
-            **kwargs: Additional keyword arguments that can override config entries.
-        """
-        super().__init__()
-
-        self.config = config
-        self.device = config.get("device", "cuda" if torch.cuda.is_available() else "cpu")
-        self.model = None
-        self.sampler = None
-        self.logger = logging.getLogger(__name__)
-
-    def load_model(self) -> None:
-        """
-        Load the model using `config` and initialize the sampler.
-        """
-        self.logger.info("Loading model...")
-        model_ckpt_path = self.config["ckpt_path"]
-        model_config = load_config(self.config["model_config"])
-        self.model = load_ckpt_from_config(model_config, model_ckpt_path, verbose=True)
-        self.model.to(self.device)
-        self.model.eval()
-        self.sampler = DDIMSampler(self.model)
-        self.logger.info("Model loaded and sampler initialized successfully.")
-
-    def sample(self) -> None:
-        """
-        Sample (generate) images using the loaded model and sampler, based on the config.
-        """
-        steps = self.config["ddim_steps"]
-        theme = self.config["theme"]         
-        cfg_text = self.config["cfg_text"]    
-        seed = self.config["seed"]
-        H = self.config["image_height"]
-        W = self.config["image_width"]
-        ddim_eta = self.config["ddim_eta"]
-        output_dir = self.config["sampler_output_dir"]
-
-        os.makedirs(output_dir,theme, exist_ok=True)
-        self.logger.info(f"Generating images and saving to {output_dir}")
-
-        seed_everything(seed)
-       
-        for test_theme in theme_available:
-            for object_class in class_available:
-                prompt = f"A {object_class} image in {test_theme.replace('_',' ')} style."
-                self.logger.info(f"Sampling prompt: {prompt}")
-                
-                with torch.no_grad():
-                    with autocast(self.device):
-                        with self.model.ema_scope():
-                            uc = self.model.get_learned_conditioning([""])  
-                            c  = self.model.get_learned_conditioning(prompt)
-                            shape = [4, H // 8, W // 8]
-                            # Generate samples
-                            samples_ddim, _ = self.sampler.sample(
-                                S=steps,
-                                conditioning=c,
-                                batch_size=1,
-                                shape=shape,
-                                verbose=False,
-                                unconditional_guidance_scale=cfg_text,
-                                unconditional_conditioning=uc,
-                                eta=ddim_eta,
-                                x_T=None
-                            )
-
-                            # Convert to numpy image
-                            x_samples_ddim = self.model.decode_first_stage(samples_ddim)
-                            x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
-                            x_samples_ddim = x_samples_ddim.cpu().permute(0, 2, 3, 1).numpy()
-
-                            assert len(x_samples_ddim) == 1
-
-
-                            # Convert to uint8 image
-                            x_sample = x_samples_ddim[0]
-
-                            # x_sample = (255. * x_sample.numpy()).round()
-                            if isinstance(x_sample, torch.Tensor):
-                                x_sample = (255. * x_sample.cpu().detach().numpy()).round()
-                            else:
-                                x_sample = (255. * x_sample).round()
-                            x_sample = x_sample.astype(np.uint8)
-                            img = Image.fromarray(x_sample)
-
-                            #save image
-                            filename = f"{test_theme}_{object_class}_seed_{seed}.jpg"
-                            outpath = os.path.join(output_dir,theme, filename)
-                            self.save_image(img, outpath)
-
-        self.logger.info("Image generation completed.")
-
-    def save_image(self, image: Image.Image, file_path: str) -> None:
-        """
-        Save an image to the specified path.
-        """
-        image.save(file_path)
-        self.logger.info(f"Image saved at: {file_path}")
-
 
 
 class EraseDiffEvaluator(BaseEvaluator):
@@ -148,11 +34,15 @@ class EraseDiffEvaluator(BaseEvaluator):
             **kwargs: Additional overrides for config.
         """
         super().__init__(config, **kwargs)
-        self.logger = logging.getLogger(__name__)
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.config = config
+        self.device = self.config['device']
         self.sampler = EraseDiffSampler(config)
         self.classification_model = None
+        self.fid_path = None
         self.results = {}
+
+        self.logger = logging.getLogger(__name__)
+
 
     def load_model(self, *args, **kwargs):
         """
@@ -278,7 +168,7 @@ class EraseDiffEvaluator(BaseEvaluator):
                         self.results["misclassified"][test_theme][misclassified_as] += 1
 
                 if not dry_run:
-                    self.save_results(self.results, output_path)
+                    self.save_results(output_path=output_path)
 
         else: # task == "class"
             for test_theme in tqdm(theme_available, total=len(theme_available)):
@@ -313,7 +203,7 @@ class EraseDiffEvaluator(BaseEvaluator):
                         self.results["misclassified"][object_class][misclassified_as] += 1
 
                 if not dry_run:
-                    self.save_results(self.results, output_path)
+                    self.save_results(output_path=output_path)
 
         self.logger.info("Accuracy calculation completed.")
 
@@ -350,26 +240,25 @@ class EraseDiffEvaluator(BaseEvaluator):
         )
         self.logger.info(f"Calculated FID: {fid_value}")
         self.results["FID"] = fid_value
-        fid_path = os.path.join(output_dir, "fid_value.pth")
-        torch.save({"FID": fid_value}, fid_path)
-        self.logger.info(f"FID results saved to: {fid_path}")
+        self.fid_path = os.path.join(output_dir, "fid_value.pth")
 
-    #TODO: Add *args, **kwargs to all these methods
-    def save_results(self, results: dict, output_path: str):
+
+    def save_results(self, output_path: Optional[str] = None, *args, **kwargs):
         """
         Save evaluation results to a file. You can also do JSON or CSV if desired.
         """
-        torch.save(results, output_path)
+        torch.save(self.results, output_path)
         self.logger.info(f"Results saved to: {output_path}")
 
     def run(self, *args, **kwargs):
         """
-        Run the complete evaluation process:
-        1) Load the classification model
+       Run the complete evaluation process:
+        1) Load the model checkpoint
         2) Generate images (using sampler)
-        3) Calculate accuracy
-        4) Calculate FID
-        5) Save final results
+        3) Load the classification model
+        4) Calculate accuracy
+        5) Calculate FID
+        6) Save final results
         """
 
         # Call the sample method to generate images
@@ -384,8 +273,8 @@ class EraseDiffEvaluator(BaseEvaluator):
         self.calculate_fid_score()
 
         # Save results
-        #TODO : Check if pth is the correct format
-        self.save_results(self.results, os.path.join(self.config["eval_output_dir"], "final_results.pth"))
+        output_path = self.fid_path
+        self.save_results(output_path =output_path)
 
         self.logger.info("Evaluation run completed.")
 

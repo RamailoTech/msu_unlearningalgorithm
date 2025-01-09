@@ -1,5 +1,11 @@
+#mu/algorithms/semipermeable_membrane/scripts/evaluate.py
+
+import os
+import logging
 from argparse import ArgumentParser
-from mu.helpers import load_config
+
+from mu.helpers import load_config, setup_logger
+from mu.helpers.path_setup import logs_dir
 from mu.algorithms.semipermeable_membrane import SemipermeableMembraneEvaluator
 
 def main():
@@ -34,7 +40,6 @@ def main():
         type=str,
         help="Precision for the base model.",
     )
-    parser.add_argument('--model_config', type=str, help="Path for model_config")
     parser.add_argument('--base_model', type=str, help="base model path")
     parser.add_argument('--theme', type=str, help="theme")
     parser.add_argument('--seed', type=int, help="seed")
@@ -50,39 +55,23 @@ def main():
 
     config = load_config(args.config_path)
 
+    devices = (
+        [f'cuda:{int(d.strip())}' for d in args.devices.split(',')]
+        if args.devices
+        else [f'cuda:{int(d.strip())}' for d in config.get('devices').split(',')]
+    )
+
     #  Override config fields if CLI arguments are provided
-    if args.model_config is not None:
-        config["model_config"] = args.model_config
-    if args.ckpt_path is not None:
-        config["ckpt_path"] = args.ckpt_path
-    if args.theme is not None:
-        config["theme"] = args.theme
-    if args.cfg_text_list is not None:
-        config["cfg_text_list: [9.0]"] = args.cfg_text_list
-    if args.seed is not None:
-        config["seed"] = args.seed
-    if args.ddim_steps is not None:
-        config["ddim_steps"] = args.ddim_steps
-    if args.image_height is not None:
-        config["image_height"] = args.image_height
-    if args.image_width is not None:
-        config["image_width"] = args.image_width
-    if args.ddim_eta is not None:
-        config["ddim_eta"] = args.ddim_eta
-    if args.sampler_output_dir is not None:
-        config["sampler_output_dir"] = args.sampler_output_dir
-    if args.classification_model is not None:
-        config["classification_model"] = args.classification_model
-    if args.eval_output_dir is not None:
-        config["eval_output_dir"] = args.eval_output_dir
-    if args.reference_dir is not None:
-        config["reference_dir"] = args.reference_dir
-    if args.forget_theme is not None:
-        config["forget_theme"] = args.forget_theme
-    if args.multiprocessing is not None:
-        config["multiprocessing"] = args.multiprocessing
-    if args.batch_size is not None:
-        config["batch_size"] = args.batch_size
+    for key, value in vars(args).items():
+        if value is not None:  # Update only if the argument is provided
+            config[key] = value
+
+    config['devices'] = devices
+
+    #logger setuup
+    log_file = os.path.join(logs_dir, f"semipermeable_membrane_evalaute_{config.get('theme')}.log")
+    logger = setup_logger(log_file=log_file, level=logging.INFO)
+    logger.info("Starting semipermeable membrane Evalution Framework")
 
     evaluator = SemipermeableMembraneEvaluator(config)
     evaluator.run()
