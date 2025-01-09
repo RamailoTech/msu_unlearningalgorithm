@@ -4,6 +4,8 @@ from .base_model import BaseModel
 from .base_sampler import BaseSampler
 from .base_trainer import BaseTrainer
 
+#TODO Add BaseEvaluator to __all__
+
 __all__ = [
     "BaseAlgorithm",
     "BaseDataHandler",

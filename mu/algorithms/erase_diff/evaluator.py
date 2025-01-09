@@ -1,3 +1,5 @@
+#TODO : Add file path #mu/algorithms/erase_diff/evaluator.py
+# TODO : Sort the imports
 import os
 import logging
 import torch
@@ -17,9 +19,12 @@ from torchvision import transforms
 from torch.nn import functional as F
 from mu.core.base_evaluator import BaseEvaluator
 
+
+#TODO : Remove the below theme and class available and import from stable_diffusion.constants.const
 theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
 class_available = ['Architectures', 'Bears', 'Birds']
 
+#TODO : Move EraseDiffSampler to sampler.py file
 class EraseDiffSampler(BaseSampler):
     """EraseDiff Image Generator class extending a hypothetical BaseImageGenerator."""
 
@@ -349,6 +354,7 @@ class EraseDiffEvaluator(BaseEvaluator):
         torch.save({"FID": fid_value}, fid_path)
         self.logger.info(f"FID results saved to: {fid_path}")
 
+    #TODO: Add *args, **kwargs to all these methods
     def save_results(self, results: dict, output_path: str):
         """
         Save evaluation results to a file. You can also do JSON or CSV if desired.
@@ -378,6 +384,7 @@ class EraseDiffEvaluator(BaseEvaluator):
         self.calculate_fid_score()
 
         # Save results
+        #TODO : Check if pth is the correct format
         self.save_results(self.results, os.path.join(self.config["eval_output_dir"], "final_results.pth"))
 
         self.logger.info("Evaluation run completed.")

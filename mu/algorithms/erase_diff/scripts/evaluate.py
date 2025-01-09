@@ -28,6 +28,10 @@ def main():
     args = parser.parse_args()
 
     config = load_config(args.config_path)
+    #TODO For overriding use same logic as in train.py
+    #TODO Add devices here itself as in train.py
+    #TODO: Setup logger here itself as in train.py
+    #TODO:
 
     #  Override config fields if CLI arguments are provided
     if args.model_config is not None:
