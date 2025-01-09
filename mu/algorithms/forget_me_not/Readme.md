@@ -2,100 +2,153 @@
 
 This repository provides an implementation of the erase diff algorithm for machine unlearning in Stable Diffusion models. The Forget Me Not algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.
 
-## Installation
+### Installation
+```
+pip install unlearn_diff
+```
+### Prerequisities
+Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
 
+- **Miniconda** (recommended): [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
+- **Anaconda**: [https://www.anaconda.com/products/distribution](https://www.anaconda.com/products/distribution)
 
-### Create the Conda Environment
-
-First, create and activate the Conda environment using the provided `environment.yaml` file:
+After installing `conda`, ensure it is available in your PATH by running. You may require to restart the terminal session:
 
 ```bash
-conda env create -f mu/algorithms/forget_me_not/environment.yaml -n mu_forget_me_not
+conda --version
 ```
-
-```bash
-conda activate mu_forget_me_not
+### Create environment:
 ```
+create_env <algorithm_name>
+```
+eg: ```create_env forget_me_not```
 
-### Download models
+### Activate environment:
+```
+conda activate <environment_name>
+```
+eg: ```conda activate forget_me_not```
 
-To download [models](https://huggingface.co/nebulaanish/unlearn_models/tree/main), use the following commands <br>
+The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 
-1. Compvis (Size 3.84 GB):
+### Downloading data and models.
+After you install the package, you can use the following commands to download.
 
-    * Make it executable:
+1. **Dataset**:
+  - **i2p**:
+    - **Sample**:
+     ```
+     download_data sample i2p
+     ```
+    - **Full**:
+     ```
+     download_data full i2p
+     ```
+  - **quick_canvas**:
+    - **Sample**:
+     ```
+     download_data sample quick_canvas
+     ```
+    - **Full**:
+     ```
+     download_data full quick_canvas
+     ```
 
-        `chmod +x scripts/download_models.sh`
+2. **Model**:
+  - **compvis**:
+    ```
+    download_model compvis
+    ```
+  - **diffuser**:
+    ```
+    download_model diffuser
+    ```
 
-    * Run the script:
-        ```scripts/download_models.sh compvis```
-
-2. Diffuser (24.1 GB): 
-
-    * Make it executable:
-
-        `chmod +x scripts/download_models.sh`
-
-    * Run the script: 
-        ```scripts/download_models.sh diffuser```
-
-**Notes:**
-
-1. The script ensures that directories are automatically created if they don’t exist.
-2. The downloaded ZIP file will be extracted to the respective folder, and the ZIP file will be removed after extraction.
-
-
-**Verify Downloads**
-
-After downloading, you can verify the extracted files in their respective directories:
-
-`ls -lh ../models/compvis/`
-
-`ls -lh ../models/diffuser/`
-
-### Download datasets
-
-1. Download unlearn canvas dataset:
-
-    * Make it executable:
-
-        `chmod +x scripts/download_quick_canvas_dataset.sh`
-
-    * Download the sample dataset (smaller size):
-
-        `scripts/download_quick_canvas_dataset.sh sample`
-
-    * Download the full dataset:
-
-        `scripts/download_quick_canvas_dataset.sh full`
-
-2. Download the i2p dataset
-
-    * Make it executable:
-
-        `chmod +x scripts/download_i2p_dataset.sh`
-
-    * Download the sample dataset (smaller size):
-
-        `scripts/download_i2p_dataset.sh sample`
-
-    * Download the full dataset:
-
-        `scripts/download_i2p_dataset.sh full`
-
-**Notes:**
-
-1. The script automatically creates the required directories if they don't exist.
-2. Ensure curl and unzip are installed on your system.
-
-**Verify the Downloaded files**
+**Verify the Downloaded Files**
 
 After downloading, verify that the datasets have been correctly extracted:
+```bash
+ls -lh ./data/i2p-dataset/sample/
+ls -lh ./data/quick-canvas-dataset/sample/
+```
+---
 
-`ls -lh ./data/i2p-dataset/sample/`
+### Example Command
 
-`ls -lh ./data/quick-canvas-dataset/sample/`
+1. **Train a Text Inversion**
 
+```bash
+python -m mu.algorithms.forget_me_not.scripts.train_ti \
+--config_path mu/algorithms/forget_me_not/config/train_ti_config.yaml
+```
+
+**Running the Script in Offline Mode**
+
+```bash
+WANDB_MODE=offline python -m mu.algorithms.forget_me_not.scripts.train_ti \
+--config_path mu/algorithms/forget_me_not/config/train_ti_config.yaml
+```
+
+2. **Perform Unlearning**
+
+Before running the train_attn.py script, update the ti_weights_path parameter in the configuration file to point to the output generated from the Text Inversion (train_ti.py) stage.
+
+Example:
+`ti_weights_path: "outputs/forget_me_not/ti_models/step_inv_10.safetensors"`
+
+Run unlearning script:
+
+```bash
+python -m mu.algorithms.forget_me_not.scripts.train_attn \
+--config_path mu/algorithms/forget_me_not/config/train_attn_config.yaml
+```
+
+**Running the Script in Offline Mode**
+
+```bash
+WANDB_MODE=offline python -m mu.algorithms.forget_me_not.scripts.train_attn \
+--config_path mu/algorithms/forget_me_not/config/train_attn_config.yaml
+```
+
+**Passing Arguments via the Command Line**
+
+The `train_ti.py` and `train_attn.py` script allows you to override configuration parameters specified in the `train_ti_config.yaml` and `train_attn_config.yaml` files by passing them directly as arguments during runtime. This can be useful for quick experimentation without modifying the configuration file.
+
+**Example Usage with Command-Line Arguments**
+
+```bash
+python -m mu.algorithms.forget_me_not.scripts.train_ti \
+    --config_path mu/algorithms/forget_me_not/config/train_ti_config.yaml \
+    --ckpt_path /path/to/style50 \
+    --raw_dataset_dir /path/to/raw_dataset \
+```
+
+**Explanation of the Example**
+
+    * --config_path: Path to the pretrained model's checkpoint file for Stable Diffusion.
+
+    * --raw_dataset_dir: Directory containing the original dataset organized by themes and classes.
+
+
+**How It Works** 
+* Default Values: The script first loads default values from the YAML file specified by --config_path.
+
+* Command-Line Overrides: Any arguments passed on the command line will override the corresponding keys in the YAML configuration file.
+
+* Final Configuration: The script merges the YAML file and command-line arguments into a single configuration dictionary and uses it for training.
+
+
+## Directory Structure
+
+- `algorithm.py`: Implementation of the Forget Me NotAlgorithm class.
+- `configs/`: Contains configuration files for training and generation.
+- `model.py`: Implementation of the Forget Me NotModel class.
+- `scripts/train.py`: Script to train the Forget Me Not algorithm.
+- `trainer.py`: Implementation of the Forget Me NotTrainer class.
+- `utils.py`: Utility functions used in the project.
+- `data_handler.py` : Implementation of DataHandler class
+
+---
 
 **This method involves two stages:**
 
@@ -214,84 +267,6 @@ After downloading, verify that the datasets have been correctly extracted:
 
 
 
-## Usage
-
-To train the forget_me_not algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train_ti.py` and `train_attn.py` script located in the `scripts` directory.
-
-### Example Command
-
-1. **Train a Text Inversion**
-
-```bash
-python -m mu.algorithms.forget_me_not.scripts.train_ti \
---config_path mu/algorithms/forget_me_not/config/train_ti_config.yaml
-```
-
-**Running the Script in Offline Mode**
-
-```bash
-WANDB_MODE=offline python -m mu.algorithms.forget_me_not.scripts.train_ti \
---config_path mu/algorithms/forget_me_not/config/train_ti_config.yaml
-```
-
-2. **Perform Unlearning**
-
-Before running the train_attn.py script, update the ti_weights_path parameter in the configuration file to point to the output generated from the Text Inversion (train_ti.py) stage.
-
-Example:
-`ti_weights_path: "outputs/forget_me_not/ti_models/step_inv_10.safetensors"`
-
-Run unlearning script:
-
-```bash
-python -m mu.algorithms.forget_me_not.scripts.train_attn \
---config_path mu/algorithms/forget_me_not/config/train_attn_config.yaml
-```
-
-**Running the Script in Offline Mode**
-
-```bash
-WANDB_MODE=offline python -m mu.algorithms.forget_me_not.scripts.train_attn \
---config_path mu/algorithms/forget_me_not/config/train_attn_config.yaml
-```
-
-**Passing Arguments via the Command Line**
-
-The `train_ti.py` and `train_attn.py` script allows you to override configuration parameters specified in the `train_ti_config.yaml` and `train_attn_config.yaml` files by passing them directly as arguments during runtime. This can be useful for quick experimentation without modifying the configuration file.
-
-**Example Usage with Command-Line Arguments**
-
-```bash
-python -m mu.algorithms.forget_me_not.scripts.train_ti \
-    --config_path mu/algorithms/forget_me_not/config/train_ti_config.yaml \
-    --ckpt_path /path/to/style50 \
-    --raw_dataset_dir /path/to/raw_dataset \
-```
-
-**Explanation of the Example**
-
-    * --config_path: Path to the pretrained model's checkpoint file for Stable Diffusion.
-
-    * --raw_dataset_dir: Directory containing the original dataset organized by themes and classes.
-
-
-**How It Works** 
-* Default Values: The script first loads default values from the YAML file specified by --config_path.
-
-* Command-Line Overrides: Any arguments passed on the command line will override the corresponding keys in the YAML configuration file.
-
-* Final Configuration: The script merges the YAML file and command-line arguments into a single configuration dictionary and uses it for training.
-
-
-## Directory Structure
-
-- `algorithm.py`: Implementation of the Forget Me NotAlgorithm class.
-- `configs/`: Contains configuration files for training and generation.
-- `model.py`: Implementation of the Forget Me NotModel class.
-- `scripts/train.py`: Script to train the Forget Me Not algorithm.
-- `trainer.py`: Implementation of the Forget Me NotTrainer class.
-- `utils.py`: Utility functions used in the project.
-- `data_handler.py` : Implementation of DataHandler class
 
 
 

@@ -1,4 +1,4 @@
-name: mu_concept_ablation
+name: concept_ablation
 channels:
   - pytorch
   - defaults
@@ -31,3 +31,4 @@ dependencies:
     - wandb
     - -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
     - -e git+https://github.com/openai/CLIP.git@main#egg=clip
+    - unlearn_diff

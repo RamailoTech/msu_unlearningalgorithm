@@ -315,11 +315,11 @@ class SemipermeableMembraneTrainer(BaseTrainer):
         self.logger.info("Saving...")
 
         # Create output directory if it doesn't exist
-        output_dir = Path(getattr(self.config, "output_dir", "./outputs"))
+        output_dir = Path(self.config.get("output_dir", "./outputs"))
 
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        output_name = output_dir / f"semipermeable_membrane_{getattr(self.config, 'template_name', 'default_template')}_last.safetensors"
+        output_name = output_dir / f"semipermeable_membrane_{self.config.get('template_name')}_last.safetensors"
 
 
         self.model.save_model(

@@ -2,100 +2,152 @@
 
 This repository provides an implementation of the semipermeable membrane algorithm for machine unlearning in Stable Diffusion models. The semipermeable membrane algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.
 
-## Installation
 
-### Create the Conda Environment
+### Installation
+```
+pip install unlearn_diff
+```
+### Prerequisities
+Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
 
-First, create and activate the Conda environment using the provided `environment.yaml` file:
+- **Miniconda** (recommended): [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
+- **Anaconda**: [https://www.anaconda.com/products/distribution](https://www.anaconda.com/products/distribution)
+
+After installing `conda`, ensure it is available in your PATH by running. You may require to restart the terminal session:
 
 ```bash
-conda env create -f mu/algorithms/semipermeable_membrane/environment.yaml -n mu_semipermeable_membrane
+conda --version
 ```
-
-```bash
-conda activate mu_semipermeable_membrane
+### Create environment:
 ```
+create_env <algorithm_name>
+```
+eg: ```create_env semipermeable_membrane```
 
-### Download models
+### Activate environment:
+```
+conda activate <environment_name>
+```
+eg: ```conda activate semipermeable_membrane```
 
-To download [models](https://huggingface.co/nebulaanish/unlearn_models/tree/main), use the following commands <br>
+The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 
-1. Compvis (Size 3.84 GB):
+### Downloading data and models.
+After you install the package, you can use the following commands to download.
 
-    * Make it executable:
+1. **Dataset**:
+  - **i2p**:
+    - **Sample**:
+     ```
+     download_data sample i2p
+     ```
+    - **Full**:
+     ```
+     download_data full i2p
+     ```
+  - **quick_canvas**:
+    - **Sample**:
+     ```
+     download_data sample quick_canvas
+     ```
+    - **Full**:
+     ```
+     download_data full quick_canvas
+     ```
 
-        `chmod +x scripts/download_models.sh`
+2. **Model**:
+  - **compvis**:
+    ```
+    download_model compvis
+    ```
+  - **diffuser**:
+    ```
+    download_model diffuser
+    ```
 
-    * Run the script:
-        ```scripts/download_models.sh compvis```
-
-2. Diffuser (24.1 GB): 
-
-    * Make it executable:
-
-        `chmod +x scripts/download_models.sh`
-
-    * Run the script: 
-        ```scripts/download_models.sh diffuser```
-
-**Notes:**
-
-1. The script ensures that directories are automatically created if they don’t exist.
-2. The downloaded ZIP file will be extracted to the respective folder, and the ZIP file will be removed after extraction.
-
-
-**Verify Downloads**
-
-After downloading, you can verify the extracted files in their respective directories:
-
-`ls -lh ../models/compvis/`
-
-`ls -lh ../models/diffuser/`
-
-### Download datasets
-
-1. Download unlearn canvas dataset:
-
-    * Make it executable:
-
-        `chmod +x scripts/download_quick_canvas_dataset.sh`
-
-    * Download the sample dataset (smaller size):
-
-        `scripts/download_quick_canvas_dataset.sh sample`
-
-    * Download the full dataset:
-
-        `scripts/download_quick_canvas_dataset.sh full`
-
-2. Download the i2p dataset
-
-    * Make it executable:
-
-        `chmod +x scripts/download_i2p_dataset.sh`
-
-    * Download the sample dataset (smaller size):
-
-        `scripts/download_i2p_dataset.sh sample`
-
-    * Download the full dataset:
-
-        `scripts/download_i2p_dataset.sh full`
-
-**Notes:**
-
-1. The script automatically creates the required directories if they don't exist.
-2. Ensure curl and unzip are installed on your system.
-
-**Verify the Downloaded files**
+**Verify the Downloaded Files**
 
 After downloading, verify that the datasets have been correctly extracted:
+```bash
+ls -lh ./data/i2p-dataset/sample/
+ls -lh ./data/quick-canvas-dataset/sample/
+```
+---
+## Usage
 
-`ls -lh ./data/i2p-dataset/sample/`
+To train the Semi Permeable Membrane algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
 
-`ls -lh ./data/quick-canvas-dataset/sample/`
+### Example Command
+
+```bash
+python -m mu.algorithms.semipermeable_membrane.scripts.train \
+--config_path mu/algorithms/semipermeable_membrane/config/train_config.yaml
+```
+
+**Running the Script in Offline Mode**
+
+```bash
+WANDB_MODE=offline python -m mu.algorithms.semipermeable_membrane.scripts.train \
+--config_path mu/algorithms/semipermeable_membrane/config/train_config.yaml
+```
 
 
+
+**Passing Arguments via the Command Line**
+
+The `train.py` script allows you to override configuration parameters specified in the `train_config.yaml` file by passing them directly as arguments during runtime. This can be useful for quick experimentation without modifying the configuration file.
+
+
+
+**Example Usage with Command-Line Arguments**
+
+```bash
+python -m mu.algorithms.semipermeable_membrane.scripts.train \
+--config_path mu/algorithms/semipermeable_membrane/config/train_config.yaml \
+--dataset_type unlearncanvas \
+--template object \
+--template_name self-harm \
+--devices 0,1 \
+--output_dir outputs/experiment_1 \
+--use_sample
+```
+
+
+**Explanation of the Example**
+
+* --config_path: Specifies the YAML configuration file to load default values.
+
+* --dataset_type: Defines the dataset type (e.g., unlearncanvas or i2p).
+
+* --template: Specifies the template to use (e.g., object, style, or i2p).
+
+* --template_name: The specific name for the template being used (e.g., self-harm, Abstractionism).
+
+* --devices: Comma-separated list of CUDA devices to use for training (e.g., 0,1 for using GPU 0 and GPU 1).
+
+* --output_dir: Sets a custom output directory for the results of this run.
+
+* --use_sample: Specifies whether to use a sample dataset for training.
+
+
+**How It Works** 
+* Default Values: The script first loads default values from the YAML file specified by --config_path.
+
+* Command-Line Overrides: Any arguments passed on the command line will override the corresponding keys in the YAML configuration file.
+
+* Final Configuration: The script merges the YAML file and command-line arguments into a single configuration dictionary and uses it for training.
+
+## Directory Structure
+
+- `algorithm.py`: Implementation of the Semi Permeable MembraneAlgorithm class.
+- `configs/`: Contains configuration files for training and generation.
+- `model.py`: Implementation of the Semi Permeable MembraneModel class.
+- `scripts/train.py`: Script to train the Semi Permeable Membrane algorithm.
+- `trainer.py`: Implementation of the Semi Permeable MembraneTrainer class.
+- `utils.py`: Utility functions used in the project.
+- `data_handler.py` : Implementation of DataHandler class
+
+---
 ### Description of Arguments in train_config.yaml
 
 **pretrained_model**
@@ -216,78 +268,5 @@ After downloading, verify that the datasets have been correctly extracted:
 
 * Boolean flag for verbose logging during training.
 
-## Usage
-
-To train the Semi Permeable Membrane algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
-
-### Example Command
-
-```bash
-python -m mu.algorithms.semipermeable_membrane.scripts.train \
---config_path mu/algorithms/semipermeable_membrane/config/train_config.yaml
-```
-
-**Running the Script in Offline Mode**
-
-```bash
-WANDB_MODE=offline python -m mu.algorithms.semipermeable_membrane.scripts.train \
---config_path mu/algorithms/semipermeable_membrane/config/train_config.yaml
-```
-
-
-
-**Passing Arguments via the Command Line**
-
-The `train.py` script allows you to override configuration parameters specified in the `train_config.yaml` file by passing them directly as arguments during runtime. This can be useful for quick experimentation without modifying the configuration file.
-
-
-
-**Example Usage with Command-Line Arguments**
-
-```bash
-python -m mu.algorithms.semipermeable_membrane.scripts.train \
---config_path mu/algorithms/semipermeable_membrane/config/train_config.yaml \
---dataset_type unlearncanvas \
---template object \
---template_name self-harm \
---devices 0,1 \
---output_dir outputs/experiment_1 \
---use_sample
-```
-
-
-**Explanation of the Example**
-
-* --config_path: Specifies the YAML configuration file to load default values.
-
-* --dataset_type: Defines the dataset type (e.g., unlearncanvas or i2p).
-
-* --template: Specifies the template to use (e.g., object, style, or i2p).
-
-* --template_name: The specific name for the template being used (e.g., self-harm, Abstractionism).
-
-* --devices: Comma-separated list of CUDA devices to use for training (e.g., 0,1 for using GPU 0 and GPU 1).
-
-* --output_dir: Sets a custom output directory for the results of this run.
-
-* --use_sample: Specifies whether to use a sample dataset for training.
-
-
-**How It Works** 
-* Default Values: The script first loads default values from the YAML file specified by --config_path.
-
-* Command-Line Overrides: Any arguments passed on the command line will override the corresponding keys in the YAML configuration file.
-
-* Final Configuration: The script merges the YAML file and command-line arguments into a single configuration dictionary and uses it for training.
-
-## Directory Structure
-
-- `algorithm.py`: Implementation of the Semi Permeable MembraneAlgorithm class.
-- `configs/`: Contains configuration files for training and generation.
-- `model.py`: Implementation of the Semi Permeable MembraneModel class.
-- `scripts/train.py`: Script to train the Semi Permeable Membrane algorithm.
-- `trainer.py`: Implementation of the Semi Permeable MembraneTrainer class.
-- `utils.py`: Utility functions used in the project.
-- `data_handler.py` : Implementation of DataHandler class
 
 

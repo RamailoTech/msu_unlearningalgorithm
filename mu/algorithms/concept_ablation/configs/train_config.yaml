@@ -4,7 +4,7 @@ scale_lr : True
 caption_target : "Abstractionism Style"
 regularization : True 
 n_samples : 10 
-train_size : 1000 
+train_size : 200
 base_lr : 2.0e-06
 
 # Model configuration

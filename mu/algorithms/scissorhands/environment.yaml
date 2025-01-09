@@ -1,4 +1,4 @@
-name: mu_scissorhands
+name: scissorhands
 channels:
   - pytorch
   - defaults
@@ -51,3 +51,4 @@ dependencies:
       - git+https://github.com/facebookresearch/detectron2.git
       - open_clip_torch
       - quadprog
+      - unlearn_diff
