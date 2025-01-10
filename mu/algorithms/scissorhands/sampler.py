@@ -16,6 +16,8 @@ from mu.helpers import load_config
 from mu.helpers.utils import load_ckpt_from_config
 
 
+
+#TODO remove this
 theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
 class_available = ['Architectures', 'Bears', 'Birds']
 
@@ -33,7 +35,7 @@ class ScissorHandsSampler(BaseSampler):
         super().__init__()
 
         self.config = config
-        self.device = config.get("device")
+        self.device = self.config["devices"][0]
         self.model = None
         self.sampler = None
         self.logger = logging.getLogger(__name__)

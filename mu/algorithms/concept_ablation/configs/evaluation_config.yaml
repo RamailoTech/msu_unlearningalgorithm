@@ -1,7 +1,8 @@
 model_config: "mu/algorithms/concept_ablation/configs/model_config.yaml"
-ckpt_path: "outputs/esd/finetuned_models/esd_Abstractionism_model.pth"
+ckpt_path: "outputs/concept_ablation/finetuned_models/checkpoints/last-v2.ckpt"
 theme: "Bricks"
 cfg_text: 9.0
+devices: "0"
 seed: 188
 task: "class"
 ddim_steps: 100
@@ -12,9 +13,8 @@ sampler_output_dir: "outputs/eval_results/mu_results/ca/"
 seed_list: ["188"]
 # classification_model: "vit_large_patch16_224.augreg_in21k"
 classification_model: "vit_large_patch16_224"
-classification_ckpt: "outputs/esd/finetuned_models/esd_Abstractionism_model.pth"
-eval_output_dir: "outputs/eval_results/mu_results/esd/"
+eval_output_dir: "outputs/eval_results/mu_results/ca/"
 reference_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
-forget_theme: "Abstractionism"
-fid_output_path: "outputs/eval_results/mu_results/esd/"
+forget_theme: "Bricks"
+fid_output_path: "outputs/eval_results/mu_results/ca/"
 multiprocessing: False

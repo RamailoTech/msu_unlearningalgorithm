@@ -43,18 +43,18 @@ def main():
 
     config = load_config(args.config_path)
 
-    # devices = (
-    #     [f'cuda:{int(d.strip())}' for d in args.devices.split(',')]
-    #     if args.devices
-    #     else [f'cuda:{int(d.strip())}' for d in config.get('devices').split(',')]
-    # )
+    devices = (
+        [f'cuda:{int(d.strip())}' for d in args.devices.split(',')]
+        if args.devices
+        else [f'cuda:{int(d.strip())}' for d in config.get('devices').split(',')]
+    )
 
     #  Override config fields if CLI arguments are provided
     for key, value in vars(args).items():
         if value is not None:  # Update only if the argument is provided
             config[key] = value
 
-    # config['devices'] = devices
+    config['devices'] = devices
 
     #logger setuup
     log_file = os.path.join(logs_dir, f"esd_evalaute_{config.get('theme')}.log")

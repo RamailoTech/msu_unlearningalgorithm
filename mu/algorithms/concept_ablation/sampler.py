@@ -16,6 +16,11 @@ from mu.helpers import load_config
 from mu.helpers.utils import load_ckpt_from_config
 
 
+
+#TODO remove this
+theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
+class_available = ['Architectures', 'Bears', 'Birds']
+
 class ConceptAblationSampler(BaseSampler):
     """Concept Ablation Image Generator class extending a hypothetical BaseImageGenerator."""
 

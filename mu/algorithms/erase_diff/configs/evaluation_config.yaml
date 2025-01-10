@@ -1,6 +1,7 @@
-model_config: "mu/algorithms/esd/configs/model_config.yaml"
+model_config: "mu/algorithms/erase_diff/configs/model_config.yaml"
 ckpt_path: "outputs/erase_diff/finetuned_models/erase_diff_Abstractionism_model.pth"
 theme: "Bricks"
+devices: "0"
 cfg_text: 9.0
 seed: 188
 task: "class"
@@ -12,7 +13,6 @@ sampler_output_dir: "outputs/eval_results/mu_results/erase_diff/"
 seed_list: ["188"]
 # classification_model: "vit_large_patch16_224.augreg_in21k"
 classification_model: "vit_large_patch16_224"
-classification_ckpt: "outputs/erase_diff/finetuned_models/erase_diff_Abstractionism_model.pth"
 eval_output_dir: "outputs/eval_results/mu_results/erase_diff/"
 reference_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
 forget_theme: "Bricks"

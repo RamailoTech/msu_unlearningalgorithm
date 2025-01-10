@@ -133,7 +133,7 @@ class ESDEvaluatorSampler(BaseSampler):
                             # Prepare conditioning
                             uc = self.model.get_learned_conditioning([""])  
                             c  = self.model.get_learned_conditioning(prompt)
-                            shape = [4, H // 8, W // 8]
+                            shape = [4, H // 8, W // 8] # downsampling factor 8
 
                             # Generate samples using the sampler
                             samples_ddim, _ = self.sampler.sample(
