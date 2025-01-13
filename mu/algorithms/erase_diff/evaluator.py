@@ -52,7 +52,7 @@ class EraseDiffEvaluator(BaseEvaluator):
         We assume your config has 'ckpt_path' and 'task' keys, etc.
         """
         self.logger.info("Loading classification model...")
-        model = self.config.get("model")
+        model = self.config.get("classification_model")
         self.model = timm.create_model(
             model, 
             pretrained=True
@@ -62,7 +62,7 @@ class EraseDiffEvaluator(BaseEvaluator):
         self.model.head = torch.nn.Linear(1024, num_classes).to(self.device)
 
         # Load checkpoint
-        ckpt_path = self.config["ckpt_path"]
+        ckpt_path = self.config["model_ckpt_path"]
         self.logger.info(f"Loading classification checkpoint from: {ckpt_path}")
         #NOTE: changed model_state_dict to state_dict as it was not present and added strict=False
         self.model.load_state_dict(torch.load(ckpt_path, map_location=self.device)["state_dict"],strict=False)

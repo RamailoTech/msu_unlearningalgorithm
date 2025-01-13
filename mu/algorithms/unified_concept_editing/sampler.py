@@ -13,6 +13,9 @@ from diffusers import LMSDiscreteScheduler
 from mu.core.base_sampler import BaseSampler        
 from stable_diffusion.constants.const import theme_available, class_available
 
+#TODO remove this
+theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
+class_available = ['Architectures', 'Bears', 'Birds']
 
 class UnifiedConceptEditingSampler(BaseSampler):
     """Unified Concept editing Image Generator class extending a hypothetical BaseImageGenerator."""
@@ -28,7 +31,7 @@ class UnifiedConceptEditingSampler(BaseSampler):
         super().__init__()
 
         self.config = config
-        self.device = config.get("device", "cuda" if torch.cuda.is_available() else "cpu")
+        self.device = self.config['devices'][0]
         self.model = None
         self.sampler = None
         self.tokenizer = None
@@ -77,7 +80,7 @@ class UnifiedConceptEditingSampler(BaseSampler):
         """
         steps = self.config["ddim_steps"]
         theme = self.config["theme"]  
-        batch_size = self.config["num_samples"]       
+        batch_size = self.config["batch_size"]       
         cfg_text = self.config["cfg_text"]    
         seed = self.config["seed"]
         height = self.config["image_height"]
@@ -85,12 +88,15 @@ class UnifiedConceptEditingSampler(BaseSampler):
         ddim_eta = self.config["ddim_eta"]
         output_dir = self.config["sampler_output_dir"]
 
-        os.makedirs(output_dir,theme, exist_ok=True)
+        for test_theme in theme_available:
+            theme_path = os.path.join(output_dir, test_theme)
+            os.makedirs(theme_path, exist_ok=True)
         self.logger.info(f"Generating images and saving to {output_dir}")
        
         for test_theme in theme_available:
             for object_class in class_available:
-                output_path = f"{output_dir}/{test_theme}_{object_class}_seed{seed}.jpg"
+                filename = f"{test_theme}_{object_class}_seed_{seed}.jpg"
+                output_path = os.path.join(output_dir, test_theme, filename)
                 if os.path.exists(output_path):
                     print(f"Detected! Skipping {output_path}")
                     continue

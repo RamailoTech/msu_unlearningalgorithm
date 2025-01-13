@@ -4,15 +4,16 @@ import os
 import logging
 from typing import Literal
 from PIL import Image
+from pathlib import Path
 
 from pytorch_lightning import seed_everything
 import torch
-from pytorch_lightning import seed_everything
 
 from transformers import CLIPTextModel, CLIPTokenizer  
 
 from stable_diffusion.constants.const import theme_available, class_available
 from mu.core.base_sampler import BaseSampler  
+from mu.algorithms.semipermeable_membrane.src.configs.generation_config import GenerationConfig, load_config_from_yaml
 from mu.algorithms.semipermeable_membrane.src.models.spm import SPMNetwork, SPMLayer 
 from mu.algorithms.semipermeable_membrane.src.models.model_util import load_checkpoint_model
 from mu.algorithms.semipermeable_membrane.src.engine.train_util import encode_prompts
@@ -43,7 +44,9 @@ class SemipermeableMembraneSampler(BaseSampler):
         super().__init__()
 
         self.config = config
-        self.device = config.get("device", "cuda" if torch.cuda.is_available() else "cpu")
+        self.device = self.config['devices'][0]
+        model_config = f"{self.config['model_config']}/{self.config['theme']}/config.yaml"
+        self.model_config: GenerationConfig = load_config_from_yaml(model_config)
         self.model = None
         self.sampler = None
         self.network = None
@@ -60,14 +63,13 @@ class SemipermeableMembraneSampler(BaseSampler):
         self.erased_prompt_tokens = None
         self.logger = logging.getLogger(__name__)
 
-    def _parse_precision(precision: str) -> torch.dtype:
-        if precision == "fp32" or precision == "float32":
+    def _parse_precision(self, precision: str) -> torch.dtype:
+        if precision in ["fp32", "float32"]:
             return torch.float32
-        elif precision == "fp16" or precision == "float16":
+        elif precision in ["fp16", "float16"]:
             return torch.float16
-        elif precision == "bf16" or precision == "bfloat16":
+        elif precision in ["bf16", "bfloat16"]:
             return torch.bfloat16
-
         raise ValueError(f"Invalid precision type: {precision}")
     
     def _text_tokenize(
@@ -130,11 +132,15 @@ class SemipermeableMembraneSampler(BaseSampler):
         """
         self.logger.info("Loading model...")
         base_model = self.config["base_model"]
-        spm_paths = self.config["spm_paths"]
+        spm_paths = self.config["spm_path"]
         v2 = self.config['v2']
-        seed_everything(self.seed)
+        seed_everything(self.config['seed'])
 
-        spm_model_paths = [lp / f"{lp.name}_last.safetensors" if lp.is_dir() else lp for lp in spm_paths]
+        # spm_model_paths = [lp / f"{lp.name}_last.safetensors" if lp.is_dir() else lp for lp in spm_paths]
+        spm_model_paths = [
+            Path(lp) / f"{Path(lp).stem}_last.safetensors" if Path(lp).is_dir() else Path(lp)
+            for lp in spm_paths
+        ]
         self.weight_dtype = self._parse_precision(self.config["precision"])
         
         # load the pretrained SD
@@ -188,8 +194,6 @@ class SemipermeableMembraneSampler(BaseSampler):
         self.erased_prompt_embeds = erased_prompt_embeds
         self.erased_prompt_tokens = erased_prompt_tokens
 
-
-            
         self.logger.info("Model loaded and sampler initialized successfully.")
 
     def sample(self) -> None:
@@ -199,12 +203,12 @@ class SemipermeableMembraneSampler(BaseSampler):
         assigned_multipliers = self.config["spm_multiplier"]
         theme = self.config["theme"]           
         seed = self.config["seed"]
-        output_dir = self.config["sampler_output_dir"]
+        output_dir = f"{self.config['sampler_output_dir']}/{theme}"
 
         #make config directory
         config = f"{self.config['model_config']}/{self.config['theme']}/config.yaml"
 
-        os.makedirs(output_dir,theme, exist_ok=True)
+        os.makedirs(output_dir,exist_ok=True)
         self.logger.info(f"Generating images and saving to {output_dir}")
 
         seed_everything(seed)
@@ -214,13 +218,13 @@ class SemipermeableMembraneSampler(BaseSampler):
                 for object_class in class_available:
                     prompt = f"A {object_class} image in {test_theme.replace('_', ' ')} style."
 
-                    prompt += config.unconditional_prompt
+                    prompt += self.model_config.unconditional_prompt
                     self.logger.info(f"Generating for prompt: {prompt}")
                     prompt_embeds, prompt_tokens = encode_prompts(
                         self.tokenizer, self.text_encoder, [prompt], return_tokens=True
                         )
                     if assigned_multipliers is not None:
-                        multipliers = torch.tensor(assigned_multipliers).to("cpu", dtype=weight_dtype)
+                        multipliers = torch.tensor(assigned_multipliers).to("cpu", dtype=self.weight_dtype)
                         if assigned_multipliers == [0,0,0]:
                             matching_metric = "aazeros"
                         elif assigned_multipliers == [1,1,1]:
@@ -247,16 +251,16 @@ class SemipermeableMembraneSampler(BaseSampler):
                             else:
                                 weighted_spm[key] += value * max_multiplier
                         used_multipliers.append(max_multiplier.item())
-                    self.network.load_state_dict(weighted_spm)
+                    self.network.load_state_dict(weighted_spm,strict=False)
                     with self.network:
                         image = self.pipe(
-                            negative_prompt=config.negative_prompt,
-                            width=config.widcth,
-                            height=config.height,
-                            num_inference_steps=config.num_inference_steps,
-                            guidance_scale=config.guidance_scale,
+                            negative_prompt=self.model_config.negative_prompt,
+                            width=self.model_config.width,
+                            height=self.model_config.height,
+                            num_inference_steps=self.model_config.num_inference_steps,
+                            guidance_scale=self.model_config.guidance_scale,
                             generator=torch.cuda.manual_seed(seed),
-                            num_images_per_prompt=config.generate_num,
+                            num_images_per_prompt=self.model_config.generate_num,
                             prompt_embeds=prompt_embeds,
                         ).images[0]
                         

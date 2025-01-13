@@ -4,7 +4,7 @@ import os
 import logging
 from argparse import ArgumentParser
 
-from mu.helpers import load_config, setup_logger
+from mu.helpers import setup_logger,load_config
 from mu.helpers.path_setup import logs_dir
 from mu.algorithms.semipermeable_membrane import SemipermeableMembraneEvaluator
 
@@ -31,6 +31,11 @@ def main():
         help="Base model for generation.",
     )
     parser.add_argument(
+        "--spm_path",
+        type=list,
+        help="paths to model checkpoints",
+    )
+    parser.add_argument(
         "--v2",
         action="store_true",
         help="Use the 2.x version of the SD.",
@@ -40,8 +45,8 @@ def main():
         type=str,
         help="Precision for the base model.",
     )
-    parser.add_argument('--base_model', type=str, help="base model path")
     parser.add_argument('--theme', type=str, help="theme")
+    parser.add_argument('--devices', type=str, help="device")
     parser.add_argument('--seed', type=int, help="seed")
     parser.add_argument('--sampler_output_dir', type=str, help="output directory for sampler")
     parser.add_argument('--classification_model', type=str, help="classification model name")

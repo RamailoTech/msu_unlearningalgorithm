@@ -36,10 +36,10 @@ class ForgetMeNotEvaluator(BaseEvaluator):
         """
         super().__init__(config, **kwargs)
         self.config = config
-        self.device = self.config['device']
+        self.device = self.config['devices'][0]
         self.sampler = ForgetMeNotSampler(config)
-        self.classification_model = None
-        self.fid_path = None
+        self.model = None
+        self.eval_output_path = None
         self.results = {}
 
         self.logger = logging.getLogger(__name__)
@@ -49,24 +49,24 @@ class ForgetMeNotEvaluator(BaseEvaluator):
         """
         Load the classification model for evaluation, using 'timm' 
         or any approach you prefer. 
-        We assume your config has 'classification_ckpt' and 'task' keys, etc.
+        We assume your config has 'ckpt_path' and 'task' keys, etc.
         """
         self.logger.info("Loading classification model...")
         model = self.config.get("classification_model")
-        self.classification_model = timm.create_model(
+        self.model = timm.create_model(
             model, 
             pretrained=True
         ).to(self.device)
         task = self.config['task'] # "style" or "class"
         num_classes = len(theme_available) if task == "style" else len(class_available)
-        self.classification_model.head = torch.nn.Linear(1024, num_classes).to(self.device)
+        self.model.head = torch.nn.Linear(1024, num_classes).to(self.device)
 
         # Load checkpoint
-        ckpt_path = self.config["classification_ckpt"]
+        ckpt_path = self.config['model_ckpt_path']
         self.logger.info(f"Loading classification checkpoint from: {ckpt_path}")
         #NOTE: changed model_state_dict to state_dict as it was not present and added strict=False
-        self.classification_model.load_state_dict(torch.load(ckpt_path, map_location=self.device)["state_dict"],strict=False)
-        self.classification_model.eval()
+        self.model.load_state_dict(torch.load(ckpt_path, map_location=self.device)['state_dict'],strict=False)
+        self.model.eval()
     
         self.logger.info("Classification model loaded successfully.")
 
@@ -103,7 +103,7 @@ class ForgetMeNotEvaluator(BaseEvaluator):
             input_dir = os.path.join(input_dir)
         
         os.makedirs(output_dir, exist_ok=True)
-        output_path = (os.path.join(output_dir, f"{theme}.pth") 
+        self.eval_output_path = (os.path.join(output_dir, f"{theme}.pth") 
                        if theme is not None 
                        else os.path.join(output_dir, "result.pth"))
 
@@ -145,31 +145,29 @@ class ForgetMeNotEvaluator(BaseEvaluator):
                         # Preprocess
                         image = Image.open(img_path)
                         tensor_img = self.preprocess_image(image)
-                        label = torch.tensor([theme_label]).to(self.device)
 
                         # Forward pass
                         with torch.no_grad():
-                            res = self.classification_model(tensor_img)
+                            res = self.model(tensor_img)
+                            label = torch.tensor([theme_label]).to(self.device)
+                            loss = F.cross_entropy(res, label)
 
-                        # Compute losses
-                        loss = F.cross_entropy(res, label)
-                        res_softmax = F.softmax(res, dim=1)
-                        pred_loss_val = res_softmax[0][theme_label].item()
-                        pred_label = torch.argmax(res).item()
-                        pred_success = (pred_label == theme_label)
+                            # Compute losses
+                            res_softmax = F.softmax(res, dim=1)
+                            pred_loss_val = res_softmax[0][theme_label]
+                            pred_label = torch.argmax(res)
+                            pred_success = (pred_label == theme_label).sum()
 
                         # Accumulate stats
                         self.results["loss"][test_theme] += loss.item()
                         self.results["pred_loss"][test_theme] += pred_loss_val
-                        # Probability of success is 1 if pred_success else 0,
-                        # but for your code, you were dividing by total. So let's keep a sum for now:
-                        self.results["acc"][test_theme] += (1 if pred_success else 0)
+                        self.results["acc"][test_theme] += (pred_success * 1.0 / (len(class_available) * len(self.config['seed_list'])))
 
-                        misclassified_as = theme_available[pred_label]
+                        misclassified_as = theme_available[pred_label.item()]
                         self.results["misclassified"][test_theme][misclassified_as] += 1
 
                 if not dry_run:
-                    self.save_results(output_path=output_path)
+                    self.save_results()
 
         else: # task == "class"
             for test_theme in tqdm(theme_available, total=len(theme_available)):
@@ -188,23 +186,27 @@ class ForgetMeNotEvaluator(BaseEvaluator):
                         label = torch.tensor([label_val]).to(self.device)
 
                         with torch.no_grad():
-                            res = self.classification_model(tensor_img)
+                            res = self.model(tensor_img)
+                            label = torch.tensor([label_val]).to(self.device)
+                            loss = F.cross_entropy(res, label)
 
-                        loss = F.cross_entropy(res, label)
-                        res_softmax = F.softmax(res, dim=1)
-                        pred_loss_val = res_softmax[0][label_val].item()
-                        pred_label = torch.argmax(res).item()
-                        pred_success = (pred_label == label_val)
+                            # Compute losses
+                            res_softmax = F.softmax(res, dim=1)
+                            pred_loss_val = res_softmax[0][label_val]
+                            pred_label = torch.argmax(res)
+                            pred_success = (pred_label == label_val).sum()
 
+                        # Accumulate stats
                         self.results["loss"][object_class] += loss.item()
                         self.results["pred_loss"][object_class] += pred_loss_val
-                        self.results["acc"][object_class] += (1 if pred_success else 0)
+                        self.results["acc"][object_class] += (pred_success * 1.0 / (len(class_available) * len(self.config['seed_list'])))
 
-                        misclassified_as = class_available[pred_label]
+                        misclassified_as = class_available[pred_label.item()]
                         self.results["misclassified"][object_class][misclassified_as] += 1
 
+
                 if not dry_run:
-                    self.save_results(output_path=output_path)
+                    self.save_results()
 
         self.logger.info("Accuracy calculation completed.")
 
@@ -241,15 +243,15 @@ class ForgetMeNotEvaluator(BaseEvaluator):
         )
         self.logger.info(f"Calculated FID: {fid_value}")
         self.results["FID"] = fid_value
-        self.fid_path = os.path.join(output_dir, "fid_value.pth")
+        self.eval_output_path = os.path.join(output_dir, "fid_value.pth")
 
 
-    def save_results(self, output_path: Optional[str] = None, *args, **kwargs):
+    def save_results(self,*args, **kwargs):
         """
         Save evaluation results to a file. You can also do JSON or CSV if desired.
         """
-        torch.save(self.results, output_path)
-        self.logger.info(f"Results saved to: {output_path}")
+        torch.save(self.results, self.eval_output_path)
+        self.logger.info(f"Results saved to: {self.eval_output_path}")
 
     def run(self, *args, **kwargs):
         """
@@ -274,8 +276,7 @@ class ForgetMeNotEvaluator(BaseEvaluator):
         self.calculate_fid_score()
 
         # Save results
-        output_path = self.fid_path
-        self.save_results(output_path =output_path)
+        self.save_results()
 
         self.logger.info("Evaluation run completed.")
 

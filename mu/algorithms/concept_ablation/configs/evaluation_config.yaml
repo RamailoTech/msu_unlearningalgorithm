@@ -1,5 +1,6 @@
 model_config: "mu/algorithms/concept_ablation/configs/model_config.yaml"
 ckpt_path: "outputs/concept_ablation/finetuned_models/checkpoints/last-v2.ckpt"
+model_ckpt_path : "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
 theme: "Bricks"
 cfg_text: 9.0
 devices: "0"

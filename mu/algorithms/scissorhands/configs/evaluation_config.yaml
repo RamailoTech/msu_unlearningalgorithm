@@ -1,5 +1,6 @@
 model_config: "mu/algorithms/scissorhands/configs/model_config.yaml"
 ckpt_path: "outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth"
+model_ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" 
 theme: "Bricks"
 cfg_text: 9.0
 seed: 188

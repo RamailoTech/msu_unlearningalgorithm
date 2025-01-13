@@ -30,7 +30,7 @@ class ForgetMeNotSampler(BaseSampler):
         super().__init__()
 
         self.config = config
-        self.device = config.get("device", "cuda" if torch.cuda.is_available() else "cpu")
+        self.device = self.config['devices'][0]
         self.pipe = None
         self.sampler = None
         self.logger = logging.getLogger(__name__)
@@ -53,12 +53,9 @@ class ForgetMeNotSampler(BaseSampler):
 
         self.logger.info("Model loaded and sampler initialized successfully.")
 
-    def _dummy(images, **kwargs):
-            return images, [False]
 
-    # def _dummy(*args, **kwargs):
-    #     images = args[0]  # Access the first argument as 'images'
-    #     return images, [False]
+    def dummy(self,images, **kwargs):
+        return images, [False]
 
     def sample(self) -> None:
         steps = self.config["ddim_steps"]
@@ -75,8 +72,7 @@ class ForgetMeNotSampler(BaseSampler):
         self.logger.info(f"Generating images and saving to {output_dir}")
 
         # Disable NSFW checker
-        self.pipe.safety_checker = self._dummy
-        # transform = transforms.ToTensor()  # Convert PIL image to tensor
+        self.pipe.safety_checker = self.dummy
 
         for test_theme in theme_available:
             for object_class in class_available:

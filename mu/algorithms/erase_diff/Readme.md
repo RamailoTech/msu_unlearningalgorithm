@@ -330,6 +330,10 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
    - *Type:* `str`  
    - *Example:* `"vit_large_patch16_224"`
 
+- model_ckpt_path: Path to pretrained Stable Diffusion model.
+   - *Type*: `str`
+   - *Example*: `models/compvis/style50/compvis.ckpt`
+
 ---
 
 ### **Training and Sampling Parameters:**

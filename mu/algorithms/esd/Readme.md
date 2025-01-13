@@ -304,6 +304,10 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 - classification_model : Specifies the classification model used for evaluating the generated outputs.  
    - *Type:* `str`  
    - *Example:* `"vit_large_patch16_224"`
+   
+- model_ckpt_path: Path to pretrained Stable Diffusion model.
+   - *Type*: `str`
+   - *Example*: `models/compvis/style50/compvis.ckpt`
 
 ---
 

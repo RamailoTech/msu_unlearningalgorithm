@@ -1,19 +1,24 @@
 precision: "fp32"
-spm_multiplier: 1.0
-v2: false
+spm_multiplier: [1.0,]
+v2: False
 matching_metric: "clipcos_tokenuni"
-model_config: "mu/algorithms/semipermeable_membrane/config"
-base_model: "path to base model"
-theme: "Abstractionism"
+# model_config: "mu/algorithms/semipermeable_membrane/config" 
+model_config: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/mu_semipermeable_membrane_spm/configs"
+base_model: "CompVis/stable-diffusion-v1-4"
+spm_path: ["outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"]
+ckpt_path: "outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"
+# model_ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" 
+model_ckpt_path: "CompVis/stable-diffusion-v1-4"
+theme: "Bricks"
 seed: 188
+devices: "0"
 task: "class"
-sampler_output_dir: "outputs/eval_results/mu_results/ca/"
-seed_list: ["188"]
+sampler_output_dir: "outputs/eval_results/mu_results/semipermeable_membrane/"
+seed_list: [188,]
 # classification_model: "vit_large_patch16_224.augreg_in21k"
 classification_model: "vit_large_patch16_224"
-classification_ckpt: "outputs/esd/finetuned_models/esd_Abstractionism_model.pth"
-eval_output_dir: "outputs/eval_results/mu_results/esd/"
+eval_output_dir: "outputs/eval_results/mu_results/semipermeable_membrane/"
 reference_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
-forget_theme: "Abstractionism"
-fid_output_path: "outputs/eval_results/mu_results/esd/"
+forget_theme: "Bricks"
+fid_output_path: "outputs/eval_results/mu_results/semipermeable_membrane/"
 multiprocessing: false

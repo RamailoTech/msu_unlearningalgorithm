@@ -6,9 +6,8 @@ channels:
 dependencies:
   - python
   - pip=20.3
-  - cudatoolkit=11.3
-  - pytorch=1.11.0
-  - torchvision=0.12.0
+  - pytorch
+  - torchvision
   - numpy=1.19.2
   - pip:
     - albumentations==0.4.3
@@ -48,7 +47,7 @@ dependencies:
     - h5py
     - xtcocotools
     - natsort
-    - timm==0.3.2
+    - timm==0.6.7
     - git+https://github.com/cocodataset/panopticapi.git
     - fairscale
     - git+https://github.com/facebookresearch/detectron2.git
