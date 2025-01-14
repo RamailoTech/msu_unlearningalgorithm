@@ -41,6 +41,7 @@ dependencies:
     - xformers==0.0.29
     - clean-fid
     - lightning
+    - timm==0.6.7
     - nudenet==3.0.8
     - -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
     - -e git+https://github.com/openai/CLIP.git@main#egg=clip

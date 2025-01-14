@@ -1,7 +1,9 @@
 ckpt_path: "models/diffuser/style50"
+# ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
 
 # Dataset directories
 raw_dataset_dir: "data/quick-canvas-dataset/sample"
+# raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
 processed_dataset_dir: "mu/algorithms/forget_me_not/data"
 dataset_type: "unlearncanvas"
 template: "style"

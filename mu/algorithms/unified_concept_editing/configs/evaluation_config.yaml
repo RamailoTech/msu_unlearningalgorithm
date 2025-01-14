@@ -1,0 +1,22 @@
+ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/results/style50/Abstractionism.pth"
+# pipeline_path: "CompVis/stable-diffusion-v1-4"
+pipeline_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
+model_ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
+theme: "Bricks"
+cfg_text: 9.0
+seed: 188
+task: "style"
+devices: "0"
+ddim_steps: 100
+image_height: 512
+image_width: 512
+ddim_eta: 0.0
+sampler_output_dir: "outputs/eval_results/mu_results/uce/"
+seed_list: ["188"]
+batch_size: 1
+# classification_model: "vit_large_patch16_224.augreg_in21k"
+classification_model: "vit_large_patch16_224"
+eval_output_dir: "outputs/eval_results/mu_results/uce/"
+reference_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+forget_theme: "Bricks"
+multiprocessing: false

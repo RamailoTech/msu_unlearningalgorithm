@@ -1,7 +1,7 @@
 # ref: 
 # - https://github.com/p1atdev/LECO/blob/main/train_util.py
 
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 import ast
 import importlib
@@ -66,7 +66,7 @@ def get_initial_latents(
 
 def text_tokenize(
     tokenizer: CLIPTokenizer,  # 普通ならひとつ、XLならふたつ！
-    prompts: list[str],
+    prompts: List[str],
 ):
     return tokenizer(
         prompts,

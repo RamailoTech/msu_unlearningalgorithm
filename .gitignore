@@ -20,6 +20,7 @@ models/*
 !mu/algorithms/erase_diff/.gitignore
 
 venv/
-build
-dist
-*.egg-info
+
+build/*
+dist/*
+unlearn_diff.egg-info/*

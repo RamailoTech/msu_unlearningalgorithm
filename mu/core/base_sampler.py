@@ -18,3 +18,12 @@ class BaseSampler(ABC):
             Any: Generated samples.
         """
         pass
+
+    def load_model(self, *args, **kwargs):
+        """Load an image."""
+        pass
+
+    def save_image(self, *args, **kwargs):
+        """Save an image."""
+        pass
+

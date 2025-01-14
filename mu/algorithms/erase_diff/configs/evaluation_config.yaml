@@ -1,0 +1,20 @@
+model_config: "mu/algorithms/erase_diff/configs/model_config.yaml" #path to model config
+ckpt_path: "outputs/erase_diff/finetuned_models/erase_diff_Abstractionism_model.pth" #path to finetuned model checkpoint
+model_ckpt_path : "models/compvis/style50/compvis.ckpt"
+theme: "Bricks"
+devices: "0"
+cfg_text: 9.0
+seed: 188
+task: "class"
+ddim_steps: 100
+image_height: 512
+image_width: 512
+ddim_eta: 0.0
+sampler_output_dir: "outputs/eval_results/mu_results/erase_diff/"
+seed_list: ["188"]
+# classification_model: "vit_large_patch16_224.augreg_in21k"
+classification_model: "vit_large_patch16_224"
+eval_output_dir: "outputs/eval_results/mu_results/erase_diff/"  #path to save your evaluationr results
+reference_dir: "data/quick-canvas-dataset/sample/"  #path to orignal dataset
+forget_theme: "Bricks"
+multiprocessing: False

@@ -1,0 +1,20 @@
+model_config: "mu/algorithms/esd/configs/model_config.yaml"
+ckpt_path: "outputs/esd/finetuned_models/esd_Abstractionism_model.pth"
+model_ckpt_path : "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
+theme: "Bricks"
+devices: "0"
+cfg_text: 9.0
+seed: 188
+task: "class"
+ddim_steps: 100
+image_height: 512
+image_width: 512
+ddim_eta: 0.0
+sampler_output_dir: "outputs/eval_results/mu_results/esd/"
+seed_list: ["188"]
+# classification_model: "vit_large_patch16_224.augreg_in21k"
+classification_model: "vit_large_patch16_224"
+eval_output_dir: "outputs/eval_results/mu_results/esd/"
+reference_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+forget_theme: "Bricks"
+multiprocessing: False

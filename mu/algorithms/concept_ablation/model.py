@@ -73,7 +73,6 @@ class ConceptAblationModel(BaseModel):
         config.model.params.loss_type_reverse = loss_type_reverse
 
         model = instantiate_from_config(config.model)
-
         if ckpt_path : 
             st = torch.load(ckpt_path, map_location='cpu')["state_dict"]
             token_weights = st["cond_stage_model.transformer.text_model.embeddings.token_embedding.weight"]

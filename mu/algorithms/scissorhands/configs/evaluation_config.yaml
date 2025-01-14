@@ -1,0 +1,19 @@
+model_config: "mu/algorithms/scissorhands/configs/model_config.yaml"
+ckpt_path: "outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth"
+model_ckpt_path: "models/compvis/style50/compvis.ckpt" 
+cfg_text: 9.0
+seed: 188
+task: "class"
+devices: "0"
+ddim_steps: 100
+image_height: 512
+image_width: 512
+ddim_eta: 0.0
+sampler_output_dir: "outputs/eval_results/mu_results/erase_diff/"
+seed_list: ["188"]
+# classification_model: "vit_large_patch16_224.augreg_in21k"
+classification_model: "vit_large_patch16_224"
+eval_output_dir: "outputs/eval_results/mu_results/scissorhands/"
+reference_dir: "data/quick-canvas-dataset/sample/"
+forget_theme: "Bricks"
+multiprocessing: False
