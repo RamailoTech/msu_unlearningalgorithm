@@ -16,7 +16,6 @@ def main():
     # Below: optional overrides for your config dictionary
     parser.add_argument('--model_config', type=str, help="Path for model_config")
     parser.add_argument('--devices', type=str, help='CUDA devices to train on (comma-separated)')
-    parser.add_argument('--theme', type=str, help="theme")
     
     #model path
     parser.add_argument('--ckpt_path', type=str, help="checkpoint path")
@@ -42,10 +41,6 @@ def main():
     args = parser.parse_args()
 
     config = load_config(args.config_path)
-    #TODO For overriding use same logic as in train.py
-    #TODO Add devices here itself as in train.py
-    #TODO: Setup logger here itself as in train.py
-    #TODO:
 
     devices = (
         [f'cuda:{int(d.strip())}' for d in args.devices.split(',')]

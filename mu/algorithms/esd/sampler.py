@@ -103,8 +103,7 @@ class ESDEvaluatorSampler(BaseSampler):
         """
         Sample (generate) images using the loaded model and sampler, based on the config.
         """
-        steps = self.config["ddim_steps"]
-        theme = self.config["theme"]         
+        steps = self.config["ddim_steps"]       
         cfg_text = self.config["cfg_text"]    
         seed = self.config["seed"]
         H = self.config["image_height"]

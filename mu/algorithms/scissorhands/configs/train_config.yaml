@@ -6,11 +6,9 @@ epochs: 5
 # Model configuration
 model_config_path: "mu/algorithms/scissorhands/configs/model_config.yaml"  # Config path for Stable Diffusion
 ckpt_path: "models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
-# ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
 
 # Dataset directories
 raw_dataset_dir: "data/quick-canvas-dataset/sample"
-# raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
 processed_dataset_dir: "mu/algorithms/scissorhands/data"
 dataset_type : "unlearncanvas"
 template : "style"

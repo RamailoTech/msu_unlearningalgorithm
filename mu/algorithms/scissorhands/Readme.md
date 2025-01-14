@@ -256,7 +256,7 @@ conda activate <env_name>
 ```
 
 ```bash
-python -m mu.algorithms.scissorshands.scripts.evaluate \
+python -m mu.algorithms.scissorhands.scripts.evaluate \
 --config_path mu/algorithms/scissorshands/configs/evaluation_config.yaml
 ```
 
@@ -264,7 +264,7 @@ python -m mu.algorithms.scissorshands.scripts.evaluate \
 **Running in Offline Mode:**
 
 ```bash
-WANDB_MODE=offline python -m mu.algorithms.scissorshands.scripts.evaluate \
+WANDB_MODE=offline python -m mu.algorithms.scissorhands.scripts.evaluate \
 --config_path mu/algorithms/scissorshands/configs/evaluation_config.yaml
 ```
 

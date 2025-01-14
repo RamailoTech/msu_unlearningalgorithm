@@ -16,7 +16,6 @@ def main():
     # Below: optional overrides for your config dictionary
     parser.add_argument('--model_config', type=str, help="Path for model_config")
     parser.add_argument('--devices', type=str, help='CUDA devices to train on (comma-separated)')
-    parser.add_argument('--theme', type=str, help="theme")
     
     #model path
     parser.add_argument('--ckpt_path', type=str, help="checkpoint path")

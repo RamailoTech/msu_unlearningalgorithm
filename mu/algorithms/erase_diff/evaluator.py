@@ -13,7 +13,7 @@ from torch.nn import functional as F
    
 from stable_diffusion.constants.const import theme_available, class_available
 from mu.core import BaseEvaluator
-from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid
+from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid, tensor_to_float
 from mu.algorithms.erase_diff import EraseDiffSampler
 
 
@@ -91,7 +91,7 @@ class EraseDiffEvaluator(BaseEvaluator):
         self.logger.info("Starting accuracy calculation...")
 
         # Pull relevant config
-        theme = self.config.get("theme", None)
+        theme = self.config.get("forget_theme", None)
         input_dir = self.config['sampler_output_dir']
         output_dir = self.config["eval_output_dir"]
         seed_list = self.config.get("seed_list", [188, 288, 588, 688, 888])
@@ -223,7 +223,6 @@ class EraseDiffEvaluator(BaseEvaluator):
         forget_theme = self.config.get("forget_theme", None) 
         use_multiprocessing = self.config.get("multiprocessing", False)
         batch_size = self.config.get("batch_size", 64)
-        os.makedirs(output_dir, exist_ok=True)
 
         images_generated = load_style_generated_images(
             path=generated_path, 
@@ -243,23 +242,16 @@ class EraseDiffEvaluator(BaseEvaluator):
         )
         self.logger.info(f"Calculated FID: {fid_value}")
         self.results["FID"] = fid_value
-        # self.eval_output_path = os.path.join(output_dir, "fid_value.pth")
-
-
-    # def save_results(self,*args, **kwargs):
-    #     """
-    #     Save evaluation results to a file. You can also do JSON or CSV if desired.
-    #     """
-    #     torch.save(self.results, self.eval_output_path)
-    #     self.logger.info(f"Results saved to: {self.eval_output_path}")
 
     def save_results(self, *args, **kwargs):
         """
         Save whatever is present in `self.results` to a JSON file.
         """
         try:
+            # Convert all tensors before saving
+            converted_results = tensor_to_float(self.results)
             with open(self.eval_output_path, 'w') as json_file:
-                json.dump(self.results, json_file, indent=4)
+                json.dump(converted_results, json_file, indent=4)
             self.logger.info(f"Results saved to: {self.eval_output_path}")
         except Exception as e:
             self.logger.error(f"Failed to save results to JSON file: {e}")
@@ -276,8 +268,8 @@ class EraseDiffEvaluator(BaseEvaluator):
         """
 
         # Call the sample method to generate images
-        self.sampler.load_model()  
-        self.sampler.sample()    
+        # self.sampler.load_model()  
+        # self.sampler.sample()    
 
         # Load the classification model
         self.load_model()

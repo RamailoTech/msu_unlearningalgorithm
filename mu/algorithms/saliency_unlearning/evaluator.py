@@ -15,7 +15,7 @@ from torch.nn import functional as F
 from mu.core.base_evaluator import BaseEvaluator
 from mu.algorithms.saliency_unlearning import SaliencyUnlearningSampler
 from stable_diffusion.constants.const import theme_available, class_available
-from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid
+from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid, tensor_to_float
 
 #TODO remove this
 theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
@@ -91,7 +91,7 @@ class SaliencyUnlearningEvaluator(BaseEvaluator):
         self.logger.info("Starting accuracy calculation...")
 
         # Pull relevant config
-        theme = self.config.get("theme", None)
+        theme = self.config.get("forget_theme", None)
         input_dir = self.config['sampler_output_dir']
         output_dir = self.config["eval_output_dir"]
         seed_list = self.config.get("seed_list", [188, 288, 588, 688, 888])
@@ -244,20 +244,15 @@ class SaliencyUnlearningEvaluator(BaseEvaluator):
         self.results["FID"] = fid_value
 
 
-    # def save_results(self,*args, **kwargs):
-    #     """
-    #     Save evaluation results to a file. You can also do JSON or CSV if desired.
-    #     """
-    #     torch.save(self.results, self.eval_output_path)
-    #     self.logger.info(f"Results saved to: {self.eval_output_path}")
-
     def save_results(self, *args, **kwargs):
         """
         Save whatever is present in `self.results` to a JSON file.
         """
         try:
+            # Convert all tensors before saving
+            converted_results = tensor_to_float(self.results)
             with open(self.eval_output_path, 'w') as json_file:
-                json.dump(self.results, json_file, indent=4)
+                json.dump(converted_results, json_file, indent=4)
             self.logger.info(f"Results saved to: {self.eval_output_path}")
         except Exception as e:
             self.logger.error(f"Failed to save results to JSON file: {e}")
@@ -274,8 +269,8 @@ class SaliencyUnlearningEvaluator(BaseEvaluator):
         """
 
         # Call the sample method to generate images
-        self.sampler.load_model()  
-        self.sampler.sample()    
+        # self.sampler.load_model()  
+        # self.sampler.sample()    
 
         # Load the classification model
         self.load_model()
