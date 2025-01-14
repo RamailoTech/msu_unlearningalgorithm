@@ -17,5 +17,4 @@ classification_model: "vit_large_patch16_224"
 eval_output_dir: "outputs/eval_results/mu_results/scissorhands/"
 reference_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
 forget_theme: "Bricks"
-fid_output_path: "outputs/eval_results/mu_results/scirssorhands/"
 multiprocessing: False

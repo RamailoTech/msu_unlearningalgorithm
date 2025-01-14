@@ -377,10 +377,6 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
    - *Type:* `str`  
    - *Example:* `"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
 
-- fid_output_path : File path to store the FID (Fréchet Inception Distance) score and other evaluation metrics.  
-   - *Type:* `str`  
-   - *Example:* `"outputs/eval_results/mu_results/forget_me_not/"`
-
 ---
 
 ### **Performance and Efficiency Parameters:**

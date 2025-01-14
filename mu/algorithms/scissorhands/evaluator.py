@@ -3,6 +3,7 @@
 import os
 import logging
 import timm
+import json
 from tqdm import tqdm
 from typing import Any, Dict
 
@@ -103,9 +104,9 @@ class ScissorHandsEvaluator(BaseEvaluator):
             input_dir = os.path.join(input_dir)
         
         os.makedirs(output_dir, exist_ok=True)
-        self.eval_output_path = (os.path.join(output_dir, f"{theme}.pth") 
+        self.eval_output_path = (os.path.join(output_dir, f"{theme}.json") 
                        if theme is not None 
-                       else os.path.join(output_dir, "result.pth"))
+                       else os.path.join(output_dir, "result.json"))
 
         # Initialize results dictionary
         self.results = {
@@ -222,8 +223,6 @@ class ScissorHandsEvaluator(BaseEvaluator):
         forget_theme = self.config.get("forget_theme", None) 
         use_multiprocessing = self.config.get("multiprocessing", False)
         batch_size = self.config.get("batch_size", 64)
-        output_dir = self.config["fid_output_path"]
-        os.makedirs(output_dir, exist_ok=True)
 
         images_generated = load_style_generated_images(
             path=generated_path, 
@@ -243,15 +242,25 @@ class ScissorHandsEvaluator(BaseEvaluator):
         )
         self.logger.info(f"Calculated FID: {fid_value}")
         self.results["FID"] = fid_value
-        self.eval_output_path = os.path.join(output_dir, "fid_value.pth")
 
 
-    def save_results(self,*args, **kwargs):
+    # def save_results(self,*args, **kwargs):
+    #     """
+    #     Save evaluation results to a file. You can also do JSON or CSV if desired.
+    #     """
+    #     torch.save(self.results, self.eval_output_path)
+    #     self.logger.info(f"Results saved to: {self.eval_output_path}")
+
+    def save_results(self, *args, **kwargs):
         """
-        Save evaluation results to a file. You can also do JSON or CSV if desired.
+        Save whatever is present in `self.results` to a JSON file.
         """
-        torch.save(self.results, self.eval_output_path)
-        self.logger.info(f"Results saved to: {self.eval_output_path}")
+        try:
+            with open(self.eval_output_path, 'w') as json_file:
+                json.dump(self.results, json_file, indent=4)
+            self.logger.info(f"Results saved to: {self.eval_output_path}")
+        except Exception as e:
+            self.logger.error(f"Failed to save results to JSON file: {e}")
 
     def run(self, *args, **kwargs):
         """

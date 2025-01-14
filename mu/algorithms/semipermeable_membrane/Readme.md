@@ -382,9 +382,6 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
    - *Type:* `str`  
    - *Example:* `"outputs/eval_results/mu_results/semipermeable_membrane/"`  
 
-- fid_output_path : Path where the Fréchet Inception Distance (FID) scores will be saved.  
-   - *Type:* `str`  
-   - *Example:* `"outputs/eval_results/mu_results/semipermeable_membrane/"`  
 
 ---
 
