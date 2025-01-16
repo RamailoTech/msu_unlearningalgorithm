@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Semi Permeable Membrane - Unlearn Diff</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Semi Permeable Membrane";
+        var mkdocs_page_input_path = "algorithms/semi_permeable.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Unlearn Diff
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Algorithms</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../concept_ablation/">Concept Ablation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../erase_diff/">Erase Diff</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../esd/">ESD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../forget_me_not/">Forget Me Not</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../saliency/">Saliency Unlearning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../scissorhands/">Scissor Hands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../selective_amnesia/">Selective Amnesia</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Semi Permeable Membrane</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#prerequisities">Prerequisities</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#create-environment">Create environment:</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#activate-environment">Activate environment:</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#downloading-data-and-models">Downloading data and models.</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#example-command">Example Command</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#directory-structure">Directory Structure</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#description-of-arguments-in-train_configyaml">Description of Arguments in train_config.yaml</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#semipermeable-membrane-evaluation-framework">Semipermeable membrane Evaluation Framework</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#running-the-evaluation-framework">Running the Evaluation Framework</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#basic-command-to-run-evaluation">Basic Command to Run Evaluation:</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#description-of-parameters-in-evaluation_configyaml">Description of parameters in evaluation_config.yaml</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#model-configuration-parameters">Model Configuration Parameters:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#sampling-parameters">Sampling Parameters:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#output-parameters">Output Parameters:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#dataset-and-classification-parameters">Dataset and Classification Parameters:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#performance-parameters">Performance Parameters:</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../uce/">Unified Concept Editing</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Unlearn Diff</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Algorithms</li>
+      <li class="breadcrumb-item active">Semi Permeable Membrane</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="semi-permeable-membrane-algorithm-for-machine-unlearning">Semi Permeable Membrane Algorithm for Machine Unlearning</h1>
+<p>This repository provides an implementation of the semipermeable membrane algorithm for machine unlearning in Stable Diffusion models. The semipermeable membrane algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.</p>
+<h3 id="installation">Installation</h3>
+<pre><code>pip install unlearn_diff
+</code></pre>
+<h3 id="prerequisities">Prerequisities</h3>
+<p>Ensure <code>conda</code> is installed on your system. You can install Miniconda or Anaconda:</p>
+<ul>
+<li><strong>Miniconda</strong> (recommended): <a href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a></li>
+<li><strong>Anaconda</strong>: <a href="https://www.anaconda.com/products/distribution">https://www.anaconda.com/products/distribution</a></li>
+</ul>
+<p>After installing <code>conda</code>, ensure it is available in your PATH by running. You may require to restart the terminal session:</p>
+<pre><code class="language-bash">conda --version
+</code></pre>
+<h3 id="create-environment">Create environment:</h3>
+<pre><code>create_env &lt;algorithm_name&gt;
+</code></pre>
+<p>eg: <code>create_env semipermeable_membrane</code></p>
+<h3 id="activate-environment">Activate environment:</h3>
+<pre><code>conda activate &lt;environment_name&gt;
+</code></pre>
+<p>eg: <code>conda activate semipermeable_membrane</code></p>
+<p>The <algorithm_name> has to be one of the folders in the <code>mu/algorithms</code> folder.</p>
+<h3 id="downloading-data-and-models">Downloading data and models.</h3>
+<p>After you install the package, you can use the following commands to download.</p>
+<ol>
+<li><strong>Dataset</strong>:</li>
+<li><strong>i2p</strong>:<ul>
+<li><strong>Sample</strong>:
+ <code>download_data sample i2p</code></li>
+<li><strong>Full</strong>:
+ <code>download_data full i2p</code></li>
+</ul>
+</li>
+<li>
+<p><strong>quick_canvas</strong>:</p>
+<ul>
+<li><strong>Sample</strong>:
+ <code>download_data sample quick_canvas</code></li>
+<li><strong>Full</strong>:
+ <code>download_data full quick_canvas</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Model</strong>:</p>
+</li>
+<li><strong>compvis</strong>:
+    <code>download_model compvis</code></li>
+<li><strong>diffuser</strong>:
+    <code>download_model diffuser</code></li>
+</ol>
+<p><strong>Verify the Downloaded Files</strong></p>
+<p>After downloading, verify that the datasets have been correctly extracted:</p>
+<pre><code class="language-bash">ls -lh ./data/i2p-dataset/sample/
+ls -lh ./data/quick-canvas-dataset/sample/
+</code></pre>
+<hr />
+<h2 id="usage">Usage</h2>
+<p>To train the Semi Permeable Membrane algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the <code>train.py</code> script located in the <code>scripts</code> directory.</p>
+<h3 id="example-command">Example Command</h3>
+<pre><code class="language-bash">python -m mu.algorithms.semipermeable_membrane.scripts.train \
+--config_path mu/algorithms/semipermeable_membrane/config/train_config.yaml
+</code></pre>
+<p><strong>Running the Script in Offline Mode</strong></p>
+<pre><code class="language-bash">WANDB_MODE=offline python -m mu.algorithms.semipermeable_membrane.scripts.train \
+--config_path mu/algorithms/semipermeable_membrane/config/train_config.yaml
+</code></pre>
+<p><strong>Passing Arguments via the Command Line</strong></p>
+<p>The <code>train.py</code> script allows you to override configuration parameters specified in the <code>train_config.yaml</code> file by passing them directly as arguments during runtime. This can be useful for quick experimentation without modifying the configuration file.</p>
+<p><strong>Example Usage with Command-Line Arguments</strong></p>
+<pre><code class="language-bash">python -m mu.algorithms.semipermeable_membrane.scripts.train \
+--config_path mu/algorithms/semipermeable_membrane/config/train_config.yaml \
+--dataset_type unlearncanvas \
+--template object \
+--template_name self-harm \
+--devices 0,1 \
+--output_dir outputs/experiment_1 \
+--use_sample
+</code></pre>
+<p><strong>Explanation of the Example</strong></p>
+<ul>
+<li>
+<p>--config_path: Specifies the YAML configuration file to load default values.</p>
+</li>
+<li>
+<p>--dataset_type: Defines the dataset type (e.g., unlearncanvas or i2p).</p>
+</li>
+<li>
+<p>--template: Specifies the template to use (e.g., object, style, or i2p).</p>
+</li>
+<li>
+<p>--template_name: The specific name for the template being used (e.g., self-harm, Abstractionism).</p>
+</li>
+<li>
+<p>--devices: Comma-separated list of CUDA devices to use for training (e.g., 0,1 for using GPU 0 and GPU 1).</p>
+</li>
+<li>
+<p>--output_dir: Sets a custom output directory for the results of this run.</p>
+</li>
+<li>
+<p>--use_sample: Specifies whether to use a sample dataset for training.</p>
+</li>
+</ul>
+<p><strong>How It Works</strong> 
+* Default Values: The script first loads default values from the YAML file specified by --config_path.</p>
+<ul>
+<li>
+<p>Command-Line Overrides: Any arguments passed on the command line will override the corresponding keys in the YAML configuration file.</p>
+</li>
+<li>
+<p>Final Configuration: The script merges the YAML file and command-line arguments into a single configuration dictionary and uses it for training.</p>
+</li>
+</ul>
+<h2 id="directory-structure">Directory Structure</h2>
+<ul>
+<li><code>algorithm.py</code>: Implementation of the Semi Permeable MembraneAlgorithm class.</li>
+<li><code>configs/</code>: Contains configuration files for training and generation.</li>
+<li><code>model.py</code>: Implementation of the Semi Permeable MembraneModel class.</li>
+<li><code>scripts/train.py</code>: Script to train the Semi Permeable Membrane algorithm.</li>
+<li><code>trainer.py</code>: Implementation of the Semi Permeable MembraneTrainer class.</li>
+<li><code>utils.py</code>: Utility functions used in the project.</li>
+<li><code>data_handler.py</code> : Implementation of DataHandler class</li>
+</ul>
+<hr />
+<h3 id="description-of-arguments-in-train_configyaml">Description of Arguments in train_config.yaml</h3>
+<p><strong>pretrained_model</strong></p>
+<ul>
+<li>
+<p>ckpt_path: File path to the pretrained model's checkpoint file.</p>
+</li>
+<li>
+<p>v2: Boolean indicating whether the pretrained model is version 2 or not.</p>
+</li>
+<li>
+<p>v_pred: Boolean to enable/disable "v-prediction" mode for diffusion models.</p>
+</li>
+<li>
+<p>clip_skip: Number of CLIP layers to skip during inference.</p>
+</li>
+</ul>
+<p><strong>network</strong></p>
+<ul>
+<li>
+<p>rank: Rank of the low-rank adaptation network.</p>
+</li>
+<li>
+<p>alpha: Scaling factor for the network during training.</p>
+</li>
+</ul>
+<p><strong>train</strong></p>
+<ul>
+<li>
+<p>precision: Numerical precision to use during training (e.g., float32 or float16).</p>
+</li>
+<li>
+<p>noise_scheduler: Type of noise scheduler to use in the training loop (e.g., ddim).</p>
+</li>
+<li>
+<p>iterations: Number of training iterations.</p>
+</li>
+<li>
+<p>batch_size: Batch size for training.</p>
+</li>
+<li>
+<p>lr: Learning rate for the training optimizer.</p>
+</li>
+<li>
+<p>unet_lr: Learning rate for the U-Net model.</p>
+</li>
+<li>
+<p>text_encoder_lr: Learning rate for the text encoder.</p>
+</li>
+<li>
+<p>optimizer_type: Optimizer to use for training (e.g., AdamW8bit).</p>
+</li>
+<li>
+<p>lr_scheduler: Learning rate scheduler to apply during training.</p>
+</li>
+<li>
+<p>lr_warmup_steps: Number of steps for linear warmup of the learning rate.</p>
+</li>
+<li>
+<p>lr_scheduler_num_cycles: Number of cycles for a cosine-with-restarts scheduler.</p>
+</li>
+<li>
+<p>max_denoising_steps: Maximum denoising steps to use during training.</p>
+</li>
+</ul>
+<p><strong>save</strong></p>
+<ul>
+<li>
+<p>per_steps: Frequency of saving the model (in steps).</p>
+</li>
+<li>
+<p>precision: Numerical precision for saved model weights</p>
+</li>
+</ul>
+<p><strong>other</strong></p>
+<ul>
+<li>
+<p>use_xformers: Boolean to enable xformers memory-efficient attention.</p>
+</li>
+<li>
+<p>wandb_project and wandb_run</p>
+</li>
+<li>
+<p>Configuration for tracking the training progress using Weights &amp; Biases.</p>
+</li>
+<li>
+<p>wandb_project: Project name in W&amp;B.</p>
+</li>
+<li>
+<p>wandb_run: Specific run name in the W&amp;B dashboard.</p>
+</li>
+</ul>
+<p><strong>use_sample</strong></p>
+<ul>
+<li>Boolean to indicate whether to use the sample dataset for training.</li>
+</ul>
+<p><strong>dataset_type</strong></p>
+<ul>
+<li>Type of dataset to use, options are unlearncanvas or i2p.</li>
+</ul>
+<p><strong>template</strong>
+* Specifies the template type, choices are:
+    * object: Focus on specific objects.
+    * style: Focus on artistic styles.
+    * i2p: Intermediate style processing.</p>
+<p><strong>template_name</strong></p>
+<ul>
+<li>Name of the template, choices are:<ul>
+<li>self-harm</li>
+<li>Abstractionism</li>
+</ul>
+</li>
+</ul>
+<p><strong>prompt</strong></p>
+<ul>
+<li>
+<p>target: Target template or concept to guide training (references template_name).</p>
+</li>
+<li>
+<p>positive: Positive prompt based on the template.</p>
+</li>
+<li>
+<p>unconditional: Unconditional prompt text.</p>
+</li>
+<li>
+<p>neutral: Neutral prompt text.</p>
+</li>
+<li>
+<p>action: Specifies the action applied to the prompt (e.g., erase_with_la).</p>
+</li>
+<li>
+<p>guidance_scale: Guidance scale for classifier-free guidance.</p>
+</li>
+<li>
+<p>resolution: Image resolution for training.</p>
+</li>
+<li>
+<p>batch_size: Batch size for generating prompts.</p>
+</li>
+<li>
+<p>dynamic_resolution: Boolean to allow dynamic resolution.</p>
+</li>
+<li>
+<p>la_strength: Strength of local adaptation.</p>
+</li>
+<li>
+<p>sampling_batch_size: Batch size for sampling images.</p>
+</li>
+</ul>
+<p><strong>devices</strong></p>
+<ul>
+<li>CUDA devices to use for training (specified as a comma-separated list, e.g., "0,1").</li>
+</ul>
+<p><strong>output_dir</strong></p>
+<ul>
+<li>Directory to save the fine-tuned model and other outputs.</li>
+</ul>
+<p><strong>verbose</strong></p>
+<ul>
+<li>Boolean flag for verbose logging during training.</li>
+</ul>
+<h4 id="semipermeable-membrane-evaluation-framework">Semipermeable membrane Evaluation Framework</h4>
+<p>This section provides instructions for running the <strong>evaluation framework</strong> for the Semipermeable membrane algorithm on Stable Diffusion models. The evaluation framework is used to assess the performance of models after applying machine unlearning.</p>
+<h4 id="running-the-evaluation-framework"><strong>Running the Evaluation Framework</strong></h4>
+<p>You can run the evaluation framework using the <code>evaluate.py</code> script located in the <code>mu/algorithms/semipermeable_membrane/scripts/</code> directory.</p>
+<h3 id="basic-command-to-run-evaluation"><strong>Basic Command to Run Evaluation:</strong></h3>
+<pre><code class="language-bash">conda activate &lt;env_name&gt;
+</code></pre>
+<pre><code class="language-bash">python -m mu.algorithms.semipermeable_membrane.scripts.evaluate \
+--config_path mu/algorithms/semipermeable_membrane/configs/evaluation_config.yaml
+</code></pre>
+<p><strong>Running in Offline Mode:</strong></p>
+<pre><code class="language-bash">WANDB_MODE=offline python -m mu.algorithms.semipermeable_membrane.scripts.evaluate \
+--config_path mu/algorithms/semipermeable_membrane/configs/evaluation_config.yaml
+</code></pre>
+<p><strong>Example with CLI Overrides:</strong></p>
+<pre><code class="language-bash">python -m mu.algorithms.semipermeable_membrane.scripts.evaluate \
+    --config_path mu/algorithms/semipermeable_membrane/configs/evaluation_config.yaml \
+    --devices &quot;0&quot; \
+    --seed 123 \
+    --cfg_text 8.5 \
+    --batch_size 16
+</code></pre>
+<h4 id="description-of-parameters-in-evaluation_configyaml"><strong>Description of parameters in evaluation_config.yaml</strong></h4>
+<p>The <code>evaluation_config.yaml</code> file contains the necessary parameters for running the Semipermeable membrane evaluation framework. Below is a detailed description of each parameter along with examples.</p>
+<hr />
+<h3 id="model-configuration-parameters"><strong>Model Configuration Parameters:</strong></h3>
+<ul>
+<li>spm_path: paths to finetuned model checkpoint.</li>
+<li><em>Type:</em> <code>list</code></li>
+<li>
+<p><em>Example:</em> <code>outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors</code></p>
+</li>
+<li>
+<p>base_model : Path to the pre-trained base model used for image generation.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"path/to/base/model.pth"</code>  </p>
+</li>
+<li>
+<p>precision : Specifies the numerical precision for model computation.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li><em>Options:</em> <code>"fp32"</code>, <code>"fp16"</code>, <code>"bf16"</code>  </li>
+<li>
+<p><em>Example:</em> <code>"fp32"</code>  </p>
+</li>
+<li>
+<p>spm_multiplier:  Specifies the multiplier for Semipermeable Membrane (SPM) model.  </p>
+</li>
+<li><em>Type:</em> <code>float</code>  </li>
+<li>
+<p><em>Example:</em> <code>1.0</code>  </p>
+</li>
+<li>
+<p>v2 : Specifies whether to use version 2.x of the model.  </p>
+</li>
+<li><em>Type:</em> <code>bool</code>  </li>
+<li>
+<p><em>Example:</em> <code>false</code>  </p>
+</li>
+<li>
+<p>matching_metric : Metric used for evaluating the similarity between generated prompts and erased concepts.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li><em>Options:</em> <code>"clipcos"</code>, <code>"clipcos_tokenuni"</code>, <code>"tokenuni"</code>  </li>
+<li>
+<p><em>Example:</em> <code>"clipcos_tokenuni"</code>  </p>
+</li>
+<li>
+<p>model_config : Path to the model configuration YAML file.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"mu/algorithms/semipermeable_membrane/config"</code>  </p>
+</li>
+<li>
+<p>model_ckpt_path: Path to pretrained Stable Diffusion model.</p>
+</li>
+<li><em>Type</em>: <code>str</code></li>
+<li><em>Example</em>: <code>models/diffuser/style50</code></li>
+</ul>
+<hr />
+<h3 id="sampling-parameters"><strong>Sampling Parameters:</strong></h3>
+<ul>
+<li>theme : Specifies the theme for the evaluation process.  </li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"Bricks"</code>  </p>
+</li>
+<li>
+<p>seed : Random seed for reproducibility of the evaluation process.  </p>
+</li>
+<li><em>Type:</em> <code>int</code>  </li>
+<li>
+<p><em>Example:</em> <code>188</code>  </p>
+</li>
+<li>
+<p>devices : Specifies the CUDA devices for running the model.  </p>
+</li>
+<li><em>Type:</em> <code>str</code> (Comma-separated for multiple devices)  </li>
+<li>
+<p><em>Example:</em> <code>"0"</code>  </p>
+</li>
+<li>
+<p>task : Specifies the task type for the evaluation process.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li><em>Options:</em> <code>"class"</code>, <code>"style"</code>  </li>
+<li><em>Example:</em> <code>"class"</code>  </li>
+</ul>
+<hr />
+<h3 id="output-parameters"><strong>Output Parameters:</strong></h3>
+<ul>
+<li>sampler_output_dir : Directory where generated images will be saved during the sampling process.  </li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"outputs/eval_results/mu_results/semipermeable_membrane/"</code>  </p>
+</li>
+<li>
+<p>eval_output_dir : Directory where evaluation metrics and results will be stored.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li><em>Example:</em> <code>"outputs/eval_results/mu_results/semipermeable_membrane/"</code>  </li>
+</ul>
+<hr />
+<h3 id="dataset-and-classification-parameters"><strong>Dataset and Classification Parameters:</strong></h3>
+<ul>
+<li>reference_dir : Path to the reference dataset used for evaluation and comparison.  </li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"</code>  </p>
+</li>
+<li>
+<p>classification_model : Specifies the classification model used for the evaluation.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"vit_large_patch16_224"</code>  </p>
+</li>
+<li>
+<p>forget_theme : Specifies the theme to be forgotten during the unlearning process.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li><em>Example:</em> <code>"Bricks"</code>  </li>
+</ul>
+<hr />
+<h3 id="performance-parameters"><strong>Performance Parameters:</strong></h3>
+<ul>
+<li>multiprocessing : Enables multiprocessing for faster evaluation.  </li>
+<li><em>Type:</em> <code>bool</code>  </li>
+<li>
+<p><em>Example:</em> <code>false</code>  </p>
+</li>
+<li>
+<p>seed_list :  List of random seeds for multiple evaluation trials.  </p>
+</li>
+<li><em>Type:</em> <code>list</code>  </li>
+<li><em>Example:</em> <code>["188"]</code>  </li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../selective_amnesia/" class="btn btn-neutral float-left" title="Selective Amnesia"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../uce/" class="btn btn-neutral float-right" title="Unified Concept Editing">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../selective_amnesia/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../uce/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

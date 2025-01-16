@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Unlearn Diff</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Home";
+        var mkdocs_page_input_path = "README.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> Unlearn Diff
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#features">Features</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#supported-algorithms">Supported Algorithms</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#project-architecture">Project Architecture</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#datasets">Datasets</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prerequisities">Prerequisities</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#create-environment">Create environment:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#activate-environment">Activate environment:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#downloading-data-and-models">Downloading data and models.</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#run-train">Run Train</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Algorithms</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="algorithms/concept_ablation/">Concept Ablation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="algorithms/erase_diff/">Erase Diff</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="algorithms/esd/">ESD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="algorithms/forget_me_not/">Forget Me Not</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="algorithms/saliency/">Saliency Unlearning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="algorithms/scissorhands/">Scissor Hands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="algorithms/selective_amnesia/">Selective Amnesia</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="algorithms/semi_permeable/">Semi Permeable Membrane</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="algorithms/uce/">Unified Concept Editing</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="algorithms/contributing/">Contributing</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">Unlearn Diff</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Home</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="unlearn">Unlearn</h1>
+<p>Unlearn is an open-source Python package designed to streamline the development of unlearning algorithms and establish a standardized evaluation pipeline for diffusion models. It provides researchers and practitioners with tools to implement, evaluate, and extend unlearning algorithms effectively.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>
+<p><strong>Comprehensive Algorithm Support</strong>: Includes commonly used concept erasing and machine unlearning algorithms tailored for diffusion models. Each algorithm is encapsulated and standardized in terms of input-output formats.</p>
+</li>
+<li>
+<p><strong>Automated Evaluation</strong>: Supports automatic evaluation on datasets like UnlearnCanvas or IP2P. Performs standard and adversarial evaluations, outputting metrics as detailed in UnlearnCanvas and UnlearnDiffAtk.</p>
+</li>
+<li>
+<p><strong>Extensibility</strong>: Designed for easy integration of new unlearning algorithms, attack methods, defense mechanisms, and datasets with minimal modifications.</p>
+</li>
+</ul>
+<h3 id="supported-algorithms">Supported Algorithms</h3>
+<p>The initial version includes established methods benchmarked in UnlearnCanvas and defensive unlearning techniques:</p>
+<ul>
+<li><strong>CA</strong> (Concept Ablation)</li>
+<li><strong>ED</strong> (Erase Diff)</li>
+<li><strong>ESD</strong> (Efficient Substitution Distillation)</li>
+<li><strong>FMN</strong> (Forget Me Not)</li>
+<li><strong>SU</strong> (Saliency Unlearning)</li>
+<li><strong>SH</strong> (ScissorHands)</li>
+<li><strong>SA</strong> (Selective Amnesia)</li>
+<li><strong>SPM</strong> (Semi Permeable Membrane)</li>
+<li><strong>UCE</strong> (Unified Concept Editing)
+For detailed information on each algorithm, please refer to the respective <code>README.md</code> files located inside <code>mu/algorithms</code>.</li>
+</ul>
+<h2 id="project-architecture">Project Architecture</h2>
+<p>The project is organized to facilitate scalability and maintainability.</p>
+<ul>
+<li><strong><code>data/</code></strong>: Stores data-related files.</li>
+<li>
+<p><strong><code>i2p-dataset/</code></strong>: contains i2p-dataset</p>
+<ul>
+<li><strong><code>sample/</code></strong>: Sample dataset</li>
+<li><strong><code>full/</code></strong>: Full dataset</li>
+</ul>
+</li>
+<li>
+<p><strong><code>quick-canvas-dataset/</code></strong>: contains quick canvas dataset</p>
+<ul>
+<li><strong><code>sample/</code></strong>: Sample dataset</li>
+<li><strong><code>full/</code></strong>: Full dataset</li>
+</ul>
+</li>
+<li>
+<p><strong><code>docs/</code></strong>: Documentation, including API references and user guides.</p>
+</li>
+<li>
+<p><strong><code>outputs/</code></strong>: Outputs of the trained algorithms.</p>
+</li>
+<li>
+<p><strong><code>examples/</code></strong>: Sample code and notebooks demonstrating usage.</p>
+</li>
+<li>
+<p><strong><code>logs/</code></strong>: Log files for debugging and auditing.</p>
+</li>
+<li>
+<p><strong><code>models/</code></strong>: Repository of trained models and checkpoints.</p>
+</li>
+<li>
+<p><strong><code>mu/</code></strong>: Core source code.</p>
+</li>
+<li><strong><code>algorithms/</code></strong>: Implementation of various algorithms. Each algorithm has its own subdirectory containing code and a <code>README.md</code> with detailed documentation.<ul>
+<li><strong><code>esd/</code></strong>: ESD algorithm components.</li>
+<li><code>README.md</code>: Documentation specific to the ESD algorithm.</li>
+<li><code>algorithm.py</code>: Core implementation of ESD.</li>
+<li><code>configs/</code>: Configuration files for training and generation tasks.</li>
+<li><code>constants/const.py</code>: Constant values used across the ESD algorithm.</li>
+<li><code>environment.yaml</code>: Environment setup for ESD.</li>
+<li><code>model.py</code>: Model architectures specific to ESD.</li>
+<li><code>sampler.py</code>: Sampling methods used during training or inference.</li>
+<li><code>scripts/train.py</code>: Training script for ESD.</li>
+<li><code>trainer.py</code>: Training routines and optimization strategies.</li>
+<li><code>utils.py</code>: Utility functions and helpers.</li>
+<li><strong><code>ca/</code></strong>: Components for the CA algorithm.</li>
+<li><code>README.md</code>: Documentation specific to the CA algorithm.</li>
+<li><em>...and so on for other algorithms</em></li>
+</ul>
+</li>
+<li><strong><code>core/</code></strong>: Foundational classes and utilities.<ul>
+<li><code>base_algorithm.py</code>: Abstract base class for algorithm implementations.</li>
+<li><code>base_data_handler.py</code>: Base class for data handling.</li>
+<li><code>base_model.py</code>: Base class for model definitions.</li>
+<li><code>base_sampler.py</code>: Base class for sampling methods.</li>
+<li><code>base_trainer.py</code>: Base class for training routines.</li>
+</ul>
+</li>
+<li><strong><code>datasets/</code></strong>: Dataset management and utilities.<ul>
+<li><code>__init__.py</code>: Initializes the dataset package.</li>
+<li><code>dataset.py</code>: Dataset classes and methods.</li>
+<li><code>helpers/</code>: Helper functions for data processing.</li>
+<li><code>unlearning_canvas_dataset.py</code>: Specific dataset class for unlearning tasks.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>helpers/</code></strong>: Utility functions and helpers.</p>
+<ul>
+<li><code>helper.py</code>: General-purpose helper functions.</li>
+<li><code>logger.py</code>: Logging utilities to standardize logging practices.</li>
+<li><code>path_setup.py</code>: Path configurations and environment setup.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>tests/</code></strong>: Test suites for ensuring code reliability.</p>
+</li>
+<li><strong><code>stable_diffusion/</code></strong>: Components for stable diffusion.</li>
+<li><strong><code>lora_diffusion/</code></strong>: Components for the LoRA Diffusion.</li>
+</ul>
+<h2 id="datasets">Datasets</h2>
+<p>We use the Quick Canvas benchmark dataset, available <a href="https://huggingface.co/datasets/nebulaanish/quick-canvas-benchmark">here</a>. Currently, the algorithms are trained using 5 images belonging to the themes of <strong>Abstractionism</strong> and <strong>Architectures</strong>.</p>
+<h2 id="usage">Usage</h2>
+<p>This section contains the usage guide for the package.</p>
+<h3 id="installation">Installation</h3>
+<pre><code>pip install unlearn_diff
+</code></pre>
+<h3 id="prerequisities">Prerequisities</h3>
+<p>Ensure <code>conda</code> is installed on your system. You can install Miniconda or Anaconda:</p>
+<ul>
+<li><strong>Miniconda</strong> (recommended): <a href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a></li>
+<li><strong>Anaconda</strong>: <a href="https://www.anaconda.com/products/distribution">https://www.anaconda.com/products/distribution</a></li>
+</ul>
+<p>After installing <code>conda</code>, ensure it is available in your PATH by running. You may require to restart the terminal session:</p>
+<pre><code class="language-bash">conda --version
+</code></pre>
+<h3 id="create-environment">Create environment:</h3>
+<pre><code>create_env &lt;algorithm_name&gt;
+</code></pre>
+<p>eg: <code>create_env erase_diff</code></p>
+<h3 id="activate-environment">Activate environment:</h3>
+<pre><code>conda activate &lt;environment_name&gt;
+</code></pre>
+<p>eg: <code>conda activate mu_erase_diff</code></p>
+<p>The <algorithm_name> has to be one of the folders in the <code>mu/algorithms</code> folder.</p>
+<h3 id="downloading-data-and-models">Downloading data and models.</h3>
+<p>After you install the package, you can use the following commands to download.</p>
+<ol>
+<li><strong>Dataset</strong>:</li>
+<li><strong>i2p</strong>:<ul>
+<li><strong>Sample</strong>:
+ <code>download_data sample i2p</code></li>
+<li><strong>Full</strong>:
+ <code>download_data full i2p</code></li>
+</ul>
+</li>
+<li>
+<p><strong>quick_canvas</strong>:</p>
+<ul>
+<li><strong>Sample</strong>:
+ <code>download_data sample quick_canvas</code></li>
+<li><strong>Full</strong>:
+ <code>download_data full quick_canvas</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Model</strong>:</p>
+</li>
+<li><strong>compvis</strong>:
+    <code>download_model compvis</code></li>
+<li><strong>diffuser</strong>:
+    <code>download_model diffuser</code></li>
+</ol>
+<h3 id="run-train">Run Train <br></h3>
+<p>Each algorithm has their own script to run the algorithm, Some also have different process all together. Follow usage section in readme for the algorithm you want to run with the help of the github repository. You will need to create a <code>train_config.yaml</code> anywhere in your machine, and pass it's path as <code>--config_path</code> parameter.</p>
+<p>Here is an example for Erase_diff algorithm.
+  <code>WANDB_MODE=offline python -m mu.algorithms.erase_diff.scripts.train \
+--config_path &lt;path_to_config_in_your_machine&gt;</code></p>
+<p>The default algorithm specific <code>train_config.yaml</code> makes use of the <code>model_config.yaml</code> with default settings. You can also create your own <code>model_config.yaml</code> and update it's path in the <code>train_config.yaml</code> file to tweak the original model parameters. The details about each parameter in config files are written in the readme for each of the algorithm. </p>
+<p><strong>NOTE</strong>
+Make sure to update these parameters in <code>train_config.yaml</code>. Otherwise, the train script will not run properly. Also, update other parameters as per your usage.</p>
+<pre><code class="language-yaml">model_config_path: &quot;configs/erase_diff/model_config.yaml&quot;  # path to model_config.yaml. 
+ckpt_path: &quot;models/compvis/style50/compvis.ckpt&quot;  # Checkpoint path for compvis or diffuser model
+raw_dataset_dir: &quot;data/i2p-dataset/sample&quot; # path where your dataset was downloaded
+processed_dataset_dir: &quot;mu/algorithms/erase_diff/data&quot;  # path to directory, where you want the trained model data to be stored
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="algorithms/concept_ablation/" class="btn btn-neutral float-right" title="Concept Ablation">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+      <span><a href="algorithms/concept_ablation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.6.1
+Build Date UTC : 2025-01-16 11:40:38.388288+00:00
+-->
