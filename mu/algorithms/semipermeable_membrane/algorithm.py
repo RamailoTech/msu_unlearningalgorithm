@@ -9,8 +9,11 @@ from pathlib import Path
 from mu.core import BaseAlgorithm
 
 from mu.algorithms.semipermeable_membrane.model import SemipermeableMembraneModel
-from mu.algorithms.semipermeable_membrane.data_handler import SemipermeableMembraneDataHandler
+from mu.algorithms.semipermeable_membrane.data_handler import (
+    SemipermeableMembraneDataHandler,
+)
 from mu.algorithms.semipermeable_membrane.trainer import SemipermeableMembraneTrainer
+
 
 class SemipermeableMembraneAlgorithm(BaseAlgorithm):
     """
@@ -25,6 +28,7 @@ class SemipermeableMembraneAlgorithm(BaseAlgorithm):
             config (Dict): Configuration dictionary.
         """
         self.config = config
+        self._parse_config()
         self.model = None
         self.trainer = None
         self.data_handler = None
@@ -32,6 +36,8 @@ class SemipermeableMembraneAlgorithm(BaseAlgorithm):
         self._setup_components()
         self.device = self.model.device
 
+    def _parse_config(self):
+        return super()._parse_config()
 
     def _setup_components(self):
         """
@@ -41,10 +47,10 @@ class SemipermeableMembraneAlgorithm(BaseAlgorithm):
 
         # Initialize Data Handler
         self.data_handler = SemipermeableMembraneDataHandler(
-            template=self.config.get('template', ''),
-            template_name=self.config.get('template_name', ''),
-            dataset_type=self.config.get('dataset_type', 'unlearncanvas'),
-            use_sample=self.config.get('use_sample', False)
+            template=self.config.get("template", ""),
+            template_name=self.config.get("template_name", ""),
+            dataset_type=self.config.get("dataset_type", "unlearncanvas"),
+            use_sample=self.config.get("use_sample", False),
         )
 
         # Initialize Model
@@ -55,7 +61,7 @@ class SemipermeableMembraneAlgorithm(BaseAlgorithm):
             model=self.model,
             config=self.config,
             device=str(self.model.device),
-            data_handler=self.data_handler
+            data_handler=self.data_handler,
         )
 
     def run(self):
@@ -65,9 +71,11 @@ class SemipermeableMembraneAlgorithm(BaseAlgorithm):
         try:
             # Initialize WandB with configurable project/run names
             wandb_config = {
-                "project": self.config.get("wandb_project", "quick-canvas-machine-unlearning"),
+                "project": self.config.get(
+                    "wandb_project", "quick-canvas-machine-unlearning"
+                ),
                 "name": self.config.get("wandb_run", "Semipermeable Membrane"),
-                "config": self.config
+                "config": self.config,
             }
             wandb.init(**wandb_config)
             self.logger.info("Initialized WandB for logging.")
@@ -80,16 +88,18 @@ class SemipermeableMembraneAlgorithm(BaseAlgorithm):
                 # Start training
                 self.trainer.train()
 
-                output_name = output_dir / self.config.get("output_name", f"semipermeable_membrane_{self.config.get('template_name')}_model.pth")
-                
+                output_name = output_dir / self.config.get(
+                    "output_name",
+                    f"semipermeable_membrane_{self.config.get('template_name')}_model.pth",
+                )
+
                 # Save to WandB
                 wandb.save(str(output_name))
-                
 
             except Exception as e:
                 self.logger.error(f"Error during training: {str(e)}")
                 raise
-                
+
         except Exception as e:
             self.logger.error(f"Failed to initialize training: {str(e)}")
             raise
@@ -99,4 +109,3 @@ class SemipermeableMembraneAlgorithm(BaseAlgorithm):
             if wandb.run is not None:
                 wandb.finish()
             self.logger.info("Training complete. WandB logging finished.")
-
