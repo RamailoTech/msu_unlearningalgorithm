@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict
 
+
 class BaseAlgorithm(ABC):
     """
     Abstract base class for the overall unlearning algorithm, combining the model, trainer, and sampler.
@@ -17,7 +18,17 @@ class BaseAlgorithm(ABC):
         Args:
             config (Dict): Configuration parameters for the algorithm.
         """
-        pass
+        self.config = config
+
+    def _parse_config(self):
+        """
+        Parse the configuration parameters for the algorithm.
+        """
+        # Parse devices
+        devices = [
+            f"cuda:{int(d.strip())}" for d in self.config.get("devices", "0").split(",")
+        ]
+        self.config["devices"] = devices
 
     @abstractmethod
     def _setup_components(self):
