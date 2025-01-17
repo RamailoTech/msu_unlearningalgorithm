@@ -1,0 +1,19 @@
+site_name: Unlearn Diff
+docs_dir: docs  
+site_dir: docs_build  
+
+nav:
+  - Home: README.md
+  - Algorithms:
+    - Concept Ablation: algorithms/concept_ablation.md
+    - Erase Diff: algorithms/erase_diff.md 
+    - ESD: algorithms/esd.md
+    - Forget Me Not: algorithms/forget_me_not.md
+    - Saliency Unlearning: algorithms/saliency.md
+    - Scissor Hands: algorithms/scissorhands.md
+    - Selective Amnesia: algorithms/selective_amnesia.md
+    - Semi Permeable Membrane: algorithms/semi_permeable.md
+    - Unified Concept Editing: algorithms/uce.md
+  - Contributing: algorithms/contributing.md
+theme:
+  name: readthedocs  
