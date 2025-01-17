@@ -27,7 +27,8 @@ class ESDAlgorithm(BaseAlgorithm):
         self._setup_components()
 
     def _parse_config(self):
-        prompt = f"An image of {self.config.get('template_name', "")}."
+        template_name = self.config.get("template_name", "")
+        prompt = f"An image of {template_name}."
         self.config["prompt"] = prompt
         return super()._parse_config()
 
