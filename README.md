@@ -1,8 +1,10 @@
-# Unlearn
+# Unlearn Diff
 
-Unlearn is an open-source Python package designed to streamline the development of unlearning algorithms and establish a standardized evaluation pipeline for diffusion models. It provides researchers and practitioners with tools to implement, evaluate, and extend unlearning algorithms effectively.
+Unlearn Diff is an open-source Python package designed to streamline the development of unlearning algorithms and establish a standardized evaluation pipeline for diffusion models. It provides researchers and practitioners with tools to implement, evaluate, and extend unlearning algorithms effectively.
 
-
+### [**Documentation**](https://ramailotech.github.io/msu_unlearningalgorithm/)
+You can find the full documentation for this project at the url given below.
+https://ramailotech.github.io/msu_unlearningalgorithm/
 ## Features
 
 - **Comprehensive Algorithm Support**: Includes commonly used concept erasing and machine unlearning algorithms tailored for diffusion models. Each algorithm is encapsulated and standardized in terms of input-output formats.
