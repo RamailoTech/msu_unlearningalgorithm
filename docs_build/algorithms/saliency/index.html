@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Saliency Unlearning - Unlearn Diff</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Saliency Unlearning";
+        var mkdocs_page_input_path = "algorithms/saliency.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Unlearn Diff
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Algorithms</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../concept_ablation/">Concept Ablation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../erase_diff/">Erase Diff</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../esd/">ESD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../forget_me_not/">Forget Me Not</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Saliency Unlearning</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#prerequisities">Prerequisities</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#create-environment">Create environment:</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#activate-environment">Activate environment:</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#downloading-data-and-models">Downloading data and models.</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#directory-structure">Directory Structure</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#description-of-arguments-in-mask_configyaml">Description of Arguments in mask_config.yaml</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#description-of-arguments-train_configyaml">Description of Arguments train_config.yaml</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#saliency-unlearning-evaluation-framework">Saliency Unlearning Evaluation Framework</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#running-the-evaluation-framework">Running the Evaluation Framework</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#basic-command-to-run-evaluation">Basic Command to Run Evaluation:</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#description-of-parameters-in-evaluation_configyaml">Description of parameters in evaluation_config.yaml</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#model-configuration">Model Configuration:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#training-and-sampling-parameters">Training and Sampling Parameters:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#output-and-logging-parameters">Output and Logging Parameters:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#performance-and-efficiency-parameters">Performance and Efficiency Parameters:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optimization-parameters">Optimization Parameters:</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../scissorhands/">Scissor Hands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../selective_amnesia/">Selective Amnesia</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../semi_permeable/">Semi Permeable Membrane</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../uce/">Unified Concept Editing</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Unlearn Diff</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Algorithms</li>
+      <li class="breadcrumb-item active">Saliency Unlearning</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="saliency-unlearning-algorithm-for-machine-unlearning">Saliency Unlearning Algorithm for Machine Unlearning</h1>
+<p>This repository provides an implementation of the Saliency Unlearning algorithm for machine unlearning in Stable Diffusion models. The Saliency Unlearning algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.</p>
+<h3 id="installation">Installation</h3>
+<pre><code>pip install unlearn_diff
+</code></pre>
+<h3 id="prerequisities">Prerequisities</h3>
+<p>Ensure <code>conda</code> is installed on your system. You can install Miniconda or Anaconda:</p>
+<ul>
+<li><strong>Miniconda</strong> (recommended): <a href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a></li>
+<li><strong>Anaconda</strong>: <a href="https://www.anaconda.com/products/distribution">https://www.anaconda.com/products/distribution</a></li>
+</ul>
+<p>After installing <code>conda</code>, ensure it is available in your PATH by running. You may require to restart the terminal session:</p>
+<pre><code class="language-bash">conda --version
+</code></pre>
+<h3 id="create-environment">Create environment:</h3>
+<pre><code>create_env &lt;algorithm_name&gt;
+</code></pre>
+<p>eg: <code>create_env saliency_unlearning</code></p>
+<h3 id="activate-environment">Activate environment:</h3>
+<pre><code>conda activate &lt;environment_name&gt;
+</code></pre>
+<p>eg: <code>conda activate saliency_unlearning</code></p>
+<p>The <algorithm_name> has to be one of the folders in the <code>mu/algorithms</code> folder.</p>
+<h3 id="downloading-data-and-models">Downloading data and models.</h3>
+<p>After you install the package, you can use the following commands to download.</p>
+<ol>
+<li><strong>Dataset</strong>:</li>
+<li><strong>i2p</strong>:<ul>
+<li><strong>Sample</strong>:
+ <code>download_data sample i2p</code></li>
+<li><strong>Full</strong>:
+ <code>download_data full i2p</code></li>
+</ul>
+</li>
+<li>
+<p><strong>quick_canvas</strong>:</p>
+<ul>
+<li><strong>Sample</strong>:
+ <code>download_data sample quick_canvas</code></li>
+<li><strong>Full</strong>:
+ <code>download_data full quick_canvas</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Model</strong>:</p>
+</li>
+<li><strong>compvis</strong>:
+    <code>download_model compvis</code></li>
+<li><strong>diffuser</strong>:
+    <code>download_model diffuser</code></li>
+</ol>
+<p><strong>Verify the Downloaded Files</strong></p>
+<p>After downloading, verify that the datasets have been correctly extracted:</p>
+<pre><code class="language-bash">ls -lh ./data/i2p-dataset/sample/
+ls -lh ./data/quick-canvas-dataset/sample/
+</code></pre>
+<hr />
+<h2 id="usage">Usage</h2>
+<p>To train the saliency unlearning algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the <code>train.py</code> script located in the <code>scripts</code> directory.</p>
+<p><strong>Step 1: Generate mask</strong></p>
+<pre><code class="language-bash">python -m mu.algorithms.saliency_unlearning.scripts.generate_mask \
+--config_path mu/algorithms/saliency_unlearning/configs/mask_config.yaml
+</code></pre>
+<p><strong>Running the Script in Offline Mode</strong></p>
+<pre><code class="language-bash">WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.generate_mask \
+--config_path mu/algorithms/saliency_unlearning/configs/mask_config.yaml
+</code></pre>
+<p><strong>Step 2: Unlearn the weights</strong></p>
+<ul>
+<li>
+<p>Add the generated mask path to the <code>train_config.yaml</code> file or you can override it by passing them directly as arguments during runtime.</p>
+</li>
+<li>
+<p>Run the script:</p>
+</li>
+</ul>
+<pre><code class="language-bash">python -m mu.algorithms.saliency_unlearning.scripts.train \
+--config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml
+</code></pre>
+<p><strong>Running the Script in Offline Mode</strong></p>
+<pre><code class="language-bash">WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.train \
+--config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml
+</code></pre>
+<p><strong>Passing Arguments via the Command Line</strong></p>
+<p>The <code>train.py</code> script allows you to override configuration parameters specified in the <code>train_config.yaml</code> file by passing them directly as arguments during runtime. This can be useful for quick experimentation without modifying the configuration file.</p>
+<p><strong>Example Usage with Command-Line Arguments</strong></p>
+<pre><code class="language-bash">python -m mu.algorithms.saliency_unlearning.scripts.train \
+--config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml \
+--mask_path /path/to/mask.pt \
+--alpha 0.1 \
+--epochs 10 \
+--raw_dataset_dir /path/to/raw_dataset \
+--output_dir outputs/experiment_1
+</code></pre>
+<p><strong>Explanation of the Example</strong></p>
+<ul>
+<li>--config_path: Specifies the YAML configuration file to load default values.</li>
+<li>--mask_path: Path of the generated mask.</li>
+<li>--alpha: Sets the guidance strength for the starting image to 0.2.</li>
+<li>--epochs: Increases the number of training epochs to 10.</li>
+<li>--lr: Updates the learning rate to 1e-4.</li>
+<li>--raw_dataset_dir: Changes the raw dataset directory.</li>
+<li>--output_dir: Sets a custom output directory for this run.</li>
+</ul>
+<p><strong>Similarly, you can pass arguments during runtime to generate mask.</strong></p>
+<p><strong>How It Works</strong> 
+* Default Values: The script first loads default values from the YAML file specified by --config_path.</p>
+<ul>
+<li>
+<p>Command-Line Overrides: Any arguments passed on the command line will override the corresponding keys in the YAML configuration file.</p>
+</li>
+<li>
+<p>Final Configuration: The script merges the YAML file and command-line arguments into a single configuration dictionary and uses it for training.</p>
+</li>
+</ul>
+<h3 id="directory-structure">Directory Structure</h3>
+<ul>
+<li><code>algorithm.py</code>: Implementation of the SaliencyUnlearnAlgorithm class.</li>
+<li><code>configs/</code>: Contains configuration files for training and generation.</li>
+<li><code>model.py</code>: Implementation of the SaliencyUnlearnModel class.</li>
+<li><code>scripts/train.py</code>: Script to train the SaliencyUnlearn algorithm.</li>
+<li><code>trainer.py</code>: Implementation of the SaliencyUnlearnTrainer class.</li>
+<li><code>utils.py</code>: Utility functions used in the project.</li>
+<li><code>data_handler.py</code> : Implementation of DataHandler class</li>
+</ul>
+<hr />
+<p><br></p>
+<p><strong>The unlearning has two stages:</strong></p>
+<ol>
+<li>
+<p>Generate the mask </p>
+</li>
+<li>
+<p>Unlearn the weights.</p>
+</li>
+</ol>
+<p><br></p>
+<h3 id="description-of-arguments-in-mask_configyaml">Description of Arguments in mask_config.yaml</h3>
+<p>The <code>config/mask_config.yaml</code> file is a configuration file for generating saliency masks using the <code>scripts/generate_mask.py</code> script. It defines various parameters related to the model, dataset, output, and training. Below is a detailed description of each section and parameter:</p>
+<p><strong>Model Configuration</strong></p>
+<p>These parameters specify settings for the Stable Diffusion model and guidance configurations.</p>
+<ul>
+<li>
+<p>c_guidance: Guidance scale used during loss computation in the model. Higher values may emphasize certain features in mask generation.</p>
+<ul>
+<li>Type: float</li>
+<li>Example: 7.5</li>
+</ul>
+</li>
+<li>
+<p>batch_size: Number of images processed in a single batch.</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 4</li>
+</ul>
+</li>
+<li>
+<p>ckpt_path: Path to the model checkpoint file for Stable Diffusion.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: /path/to/compvis.ckpt</li>
+</ul>
+</li>
+<li>
+<p>model_config_path: Path to the model configuration YAML file for Stable Diffusion.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: /path/to/model_config.yaml</li>
+</ul>
+</li>
+<li>
+<p>num_timesteps: Number of timesteps used in the diffusion process.</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 1000</li>
+</ul>
+</li>
+<li>
+<p>image_size: Size of the input images used for training and mask generation (in pixels).</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 512</li>
+</ul>
+</li>
+</ul>
+<p><strong>Dataset Configuration</strong></p>
+<p>These parameters define the dataset paths and settings for mask generation.</p>
+<ul>
+<li>
+<p>raw_dataset_dir: Path to the directory containing the original dataset, organized by themes and classes.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: /path/to/raw/dataset</li>
+</ul>
+</li>
+<li>
+<p>processed_dataset_dir: Path to the directory where processed datasets will be saved after mask generation.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: /path/to/processed/dataset</li>
+</ul>
+</li>
+<li>
+<p>dataset_type: Type of dataset being used.</p>
+<ul>
+<li>Choices: unlearncanvas, i2p</li>
+<li>Type: str</li>
+<li>Example: i2p</li>
+</ul>
+</li>
+<li>
+<p>template: Type of template for mask generation.</p>
+<ul>
+<li>Choices: object, style, i2p</li>
+<li>Type: str</li>
+<li>Example: style</li>
+</ul>
+</li>
+<li>
+<p>template_name: Specific template name for the mask generation process.</p>
+<ul>
+<li>Example Choices: self-harm, Abstractionism</li>
+<li>Type: str</li>
+<li>Example: Abstractionism</li>
+</ul>
+</li>
+<li>
+<p>threshold: Threshold value for mask generation to filter salient regions.</p>
+<ul>
+<li>Type: float</li>
+<li>Example: 0.5</li>
+</ul>
+</li>
+</ul>
+<p><strong>Output Configuration</strong></p>
+<p>These parameters specify the directory where the results are saved.</p>
+<ul>
+<li>
+<p>output_dir: Directory where the generated masks will be saved.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: outputs/saliency_unlearning/masks</li>
+</ul>
+</li>
+</ul>
+<p><strong>Training Configuration</strong></p>
+<p>These parameters control the training process for mask generation.</p>
+<ul>
+<li>
+<p>lr: Learning rate used for training the masking algorithm.</p>
+<ul>
+<li>Type: float</li>
+<li>Example: 0.00001</li>
+</ul>
+</li>
+<li>
+<p>devices: CUDA devices used for training, specified as a comma-separated list.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: 0</li>
+</ul>
+</li>
+<li>
+<p>use_sample: Flag indicating whether to use a sample dataset for training and mask generation.</p>
+<ul>
+<li>Type: bool</li>
+<li>Example: True</li>
+</ul>
+</li>
+</ul>
+<h3 id="description-of-arguments-train_configyaml">Description of Arguments train_config.yaml</h3>
+<p>The <code>scripts/train.py</code> script is used to fine-tune the Stable Diffusion model to perform saliency-based unlearning. This script relies on a configuration file (<code>config/train_config.yaml</code>) and supports additional runtime arguments for further customization. Below is a detailed description of each argument:</p>
+<p><strong>General Arguments</strong></p>
+<ul>
+<li>
+<p>alpha: Guidance scale used to balance the loss components during training.</p>
+<ul>
+<li>Type: float</li>
+<li>Example: 0.1</li>
+</ul>
+</li>
+<li>
+<p>epochs: Number of epochs to train the model.</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 5</li>
+</ul>
+</li>
+<li>
+<p>train_method: Specifies the training method or strategy to be used.</p>
+<ul>
+<li>Choices: noxattn, selfattn, xattn, full, notime, xlayer, selflayer</li>
+<li>Type: str</li>
+<li>Example: noxattn</li>
+</ul>
+</li>
+<li>
+<p>model_config_path: Path to the model configuration YAML file for Stable Diffusion.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: 'mu/algorithms/saliency_unlearning/configs/model_config.yaml'</li>
+</ul>
+</li>
+</ul>
+<p><strong>Dataset Arguments</strong></p>
+<ul>
+<li>
+<p>raw_dataset_dir: Path to the directory containing the raw dataset, organized by themes and classes.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: 'path/raw_dataset/'</li>
+</ul>
+</li>
+<li>
+<p>processed_dataset_dir: Path to the directory where the processed dataset will be saved.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: 'path/processed_dataset_dir'</li>
+</ul>
+</li>
+<li>
+<p>dataset_type: Specifies the type of dataset to use for training.</p>
+<ul>
+<li>Choices: unlearncanvas, i2p</li>
+<li>Type: str</li>
+<li>Example: i2p</li>
+</ul>
+</li>
+<li>
+<p>template: Specifies the template type for training.</p>
+<ul>
+<li>Choices: object, style, i2p</li>
+<li>Type: str</li>
+<li>Example: style</li>
+</ul>
+</li>
+<li>
+<p>template_name: Name of the specific template used for training.</p>
+<ul>
+<li>Example Choices: self-harm, Abstractionism</li>
+<li>Type: str</li>
+<li>Example: Abstractionism</li>
+</ul>
+</li>
+</ul>
+<p><strong>Output Arguments</strong></p>
+<ul>
+<li>
+<p>output_dir: Directory where the fine-tuned model and training outputs will be saved.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: 'output/folder_name'</li>
+</ul>
+</li>
+<li>
+<p>mask_path: Path to the saliency mask file used during training.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: </li>
+</ul>
+</li>
+</ul>
+<h4 id="saliency-unlearning-evaluation-framework">Saliency Unlearning Evaluation Framework</h4>
+<p>This section provides instructions for running the <strong>evaluation framework</strong> for the Saliency Unlearning algorithm on Stable Diffusion models. The evaluation framework is used to assess the performance of models after applying machine unlearning.</p>
+<h4 id="running-the-evaluation-framework"><strong>Running the Evaluation Framework</strong></h4>
+<p>You can run the evaluation framework using the <code>evaluate.py</code> script located in the <code>mu/algorithms/saliency_unlearning/scripts/</code> directory.</p>
+<h3 id="basic-command-to-run-evaluation"><strong>Basic Command to Run Evaluation:</strong></h3>
+<pre><code class="language-bash">conda activate &lt;env_name&gt;
+</code></pre>
+<pre><code class="language-bash">python -m mu.algorithms.saliency_unlearning.scripts.evaluate \
+--config_path mu/algorithms/saliency_unlearning/configs/evaluation_config.yaml
+</code></pre>
+<p><strong>Running in Offline Mode:</strong></p>
+<pre><code class="language-bash">WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.evaluate \
+--config_path mu/algorithms/saliency_unlearning/configs/evaluation_config.yaml
+</code></pre>
+<p><strong>Example with CLI Overrides:</strong></p>
+<pre><code class="language-bash">python -m mu.algorithms.saliency_unlearning.scripts.evaluate \
+    --config_path mu/algorithms/saliency_unlearning/configs/evaluation_config.yaml \
+    --devices &quot;0&quot; \
+    --seed 123 \
+    --cfg_text 8.5 \
+    --batch_size 16
+</code></pre>
+<h4 id="description-of-parameters-in-evaluation_configyaml"><strong>Description of parameters in evaluation_config.yaml</strong></h4>
+<p>The <code>evaluation_config.yaml</code> file contains the necessary parameters for running the Saliency Unlearning evaluation framework. Below is a detailed description of each parameter along with examples.</p>
+<hr />
+<h3 id="model-configuration"><strong>Model Configuration:</strong></h3>
+<ul>
+<li>model_config : Path to the YAML file specifying the model architecture and settings.  </li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"mu/algorithms/saliency_unlearning/configs/model_config.yaml"</code></p>
+</li>
+<li>
+<p>ckpt_path : Path to the finetuned Stable Diffusion checkpoint file to be evaluated.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"outputs/saliency_unlearning/finetuned_models/saliency_unlearning_Abstractionism_model.pth"</code></p>
+</li>
+<li>
+<p>classification_model : Specifies the classification model used for evaluating the generated outputs.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"vit_large_patch16_224"</code></p>
+</li>
+<li>
+<p>model_ckpt_path: Path to pretrained Stable Diffusion model.</p>
+</li>
+<li><em>Type</em>: <code>str</code></li>
+<li><em>Example</em>: <code>models/compvis/style50/compvis.ckpt</code></li>
+</ul>
+<hr />
+<h3 id="training-and-sampling-parameters"><strong>Training and Sampling Parameters:</strong></h3>
+<ul>
+<li>theme : Specifies the theme or concept being evaluated for removal from the model's outputs.  </li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"Bricks"</code></p>
+</li>
+<li>
+<p>devices : CUDA device IDs to be used for the evaluation process.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"0"</code>  </p>
+</li>
+<li>
+<p>cfg_text : Classifier-free guidance scale value for image generation. Higher values increase the strength of the conditioning prompt.  </p>
+</li>
+<li><em>Type:</em> <code>float</code>  </li>
+<li>
+<p><em>Example:</em> <code>9.0</code>  </p>
+</li>
+<li>
+<p>seed : Random seed for reproducibility of results.  </p>
+</li>
+<li><em>Type:</em> <code>int</code>  </li>
+<li>
+<p><em>Example:</em> <code>188</code></p>
+</li>
+<li>
+<p>ddim_steps : Number of steps for the DDIM (Denoising Diffusion Implicit Models) sampling process.  </p>
+</li>
+<li><em>Type:</em> <code>int</code>  </li>
+<li>
+<p><em>Example:</em> <code>100</code></p>
+</li>
+<li>
+<p>ddim_eta : DDIM eta value for controlling the amount of randomness during sampling. Set to <code>0</code> for deterministic sampling.  </p>
+</li>
+<li><em>Type:</em> <code>float</code>  </li>
+<li>
+<p><em>Example:</em> <code>0.0</code></p>
+</li>
+<li>
+<p>image_height : Height of the generated images in pixels.  </p>
+</li>
+<li><em>Type:</em> <code>int</code>  </li>
+<li>
+<p><em>Example:</em> <code>512</code></p>
+</li>
+<li>
+<p>image_width : Width of the generated images in pixels.  </p>
+</li>
+<li><em>Type:</em> <code>int</code>  </li>
+<li><em>Example:</em> <code>512</code></li>
+</ul>
+<hr />
+<h3 id="output-and-logging-parameters"><strong>Output and Logging Parameters:</strong></h3>
+<ul>
+<li>sampler_output_dir : Directory where generated images will be saved during evaluation.  </li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"outputs/eval_results/mu_results/saliency_unlearning/"</code></p>
+</li>
+<li>
+<p>eval_output_dir : Directory where evaluation metrics and results will be stored.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"outputs/eval_results/mu_results/saliency_unlearning/"</code></p>
+</li>
+<li>
+<p>reference_dir : Directory containing original images for comparison during evaluation.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li><em>Example:</em> <code>"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"</code></li>
+</ul>
+<hr />
+<h3 id="performance-and-efficiency-parameters"><strong>Performance and Efficiency Parameters:</strong></h3>
+<ul>
+<li>multiprocessing : Enables multiprocessing for faster evaluation for FID score. Recommended for large datasets.  </li>
+<li><em>Type:</em> <code>bool</code>  </li>
+<li>
+<p><em>Example:</em> <code>False</code>  </p>
+</li>
+<li>
+<p>batch_size : Batch size used during FID computation and evaluation.  </p>
+</li>
+<li><em>Type:</em> <code>int</code>  </li>
+<li><em>Example:</em> <code>16</code>  </li>
+</ul>
+<hr />
+<h3 id="optimization-parameters"><strong>Optimization Parameters:</strong></h3>
+<ul>
+<li>forget_theme : Concept or style intended for removal in the evaluation process.  </li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"Bricks"</code></p>
+</li>
+<li>
+<p>seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  </p>
+</li>
+<li><em>Type:</em> <code>list</code>  </li>
+<li><em>Example:</em> <code>["188"]</code></li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../forget_me_not/" class="btn btn-neutral float-left" title="Forget Me Not"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../scissorhands/" class="btn btn-neutral float-right" title="Scissor Hands">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../forget_me_not/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../scissorhands/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
