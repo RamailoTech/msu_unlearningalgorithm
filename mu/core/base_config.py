@@ -8,5 +8,5 @@ class BaseConfig(ABC):
         pass
 
     @abstractmethod
-    def _validate(self):
+    def validate_config(self):
         pass
