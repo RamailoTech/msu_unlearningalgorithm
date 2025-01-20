@@ -11,13 +11,14 @@ from mu.algorithms.forget_me_not.data_handler import ForgetMeNotDataHandler
 from mu.algorithms.forget_me_not.trainer import ForgetMeNotTrainer
 from mu.algorithms.forget_me_not.model import ForgetMeNotModel
 
+
 class ForgetMeNotAlgorithm(BaseAlgorithm):
     """
     Algorithm class orchestrating the Forget Me Not unlearning process.
     Handles both textual inversion (TI) and attention-based unlearning steps.
     """
 
-    def __init__(self, config: Dict):
+    def __init__(self, config: Dict = {}, train_type="train_ti"):
         """
         Initialize the ForgetMeNotAlgorithm.
 
@@ -25,14 +26,19 @@ class ForgetMeNotAlgorithm(BaseAlgorithm):
             config (Dict): Configuration dictionary containing all parameters required for training.
         """
         self.config = config
+        self.type = train_type
+        self._parse_config()
         self.model = None
         self.trainer = None
         self.data_handler = None
         self.logger = logging.getLogger(__name__)
         self.device = self._get_device()
         self._setup_components()
-        
-    
+
+    def _parse_config(self):
+        self.config["type"] = self.type
+        return super()._parse_config()
+
     def _get_device(self):
         """
         Determine the device to use for training.
@@ -47,14 +53,21 @@ class ForgetMeNotAlgorithm(BaseAlgorithm):
         Setup data handler, model, and trainer.
         """
         self.logger.info("Setting up components for Forget Me Not Algorithm...")
-        
+
         # Initialize model
         self.model = ForgetMeNotModel(self.config)
 
-        self.data_handler = ForgetMeNotDataHandler(config=self.config, tokenizer=self.model.tokenizer)
+        self.data_handler = ForgetMeNotDataHandler(
+            config=self.config, tokenizer=self.model.tokenizer
+        )
 
         # Initialize trainer
-        self.trainer = ForgetMeNotTrainer(config=self.config, data_handler=self.data_handler, model=self.model, device=self.device)
+        self.trainer = ForgetMeNotTrainer(
+            config=self.config,
+            data_handler=self.data_handler,
+            model=self.model,
+            device=self.device,
+        )
 
     def run_ti_training(self):
         """
@@ -72,16 +85,18 @@ class ForgetMeNotAlgorithm(BaseAlgorithm):
         self.logger.info("Starting Attention Training...")
         self.trainer.train_attn()
 
-    def run(self, train_type : str, *args, **kwargs ):
+    def run(self, train_type: str, *args, **kwargs):
         """
         Execute the Forget Me Not unlearning process.
         """
         try:
             # Initialize WandB with configurable project/run names
             wandb_config = {
-                "project": self.config.get("wandb_project", "quick-canvas-machine-unlearning"),
+                "project": self.config.get(
+                    "wandb_project", "quick-canvas-machine-unlearning"
+                ),
                 "name": self.config.get("wandb_run", "Forget Me Not"),
-                "config": self.config
+                "config": self.config,
             }
             wandb.init(**wandb_config)
             self.logger.info("Initialized WandB for logging.")
@@ -91,23 +106,27 @@ class ForgetMeNotAlgorithm(BaseAlgorithm):
             output_dir.mkdir(parents=True, exist_ok=True)
 
             try:
-                if train_type == 'train_ti':
+                if train_type == "train_ti":
                     self.run_ti_training()
-                elif train_type == 'train_attn':
+                elif train_type == "train_attn":
                     self.run_attn_training()
                 else:
-                    raise ValueError(f"Invalid training type: {train_type}. Please choose either 'ti' or 'attn'.")
-                
-                output_name = output_dir / self.config.get("output_name", f"forget_me_not_{self.config.get('template_name')}_model.pth")
-                
+                    raise ValueError(
+                        f"Invalid training type: {train_type}. Please choose either 'ti' or 'attn'."
+                    )
+
+                output_name = output_dir / self.config.get(
+                    "output_name",
+                    f"forget_me_not_{self.config.get('template_name')}_model.pth",
+                )
+
                 # Save to WandB
                 wandb.save(str(output_name))
-                
 
             except Exception as e:
                 self.logger.error(f"Error during training: {str(e)}")
                 raise
-                
+
         except Exception as e:
             self.logger.error(f"Failed to initialize training: {str(e)}")
             raise
@@ -117,4 +136,3 @@ class ForgetMeNotAlgorithm(BaseAlgorithm):
             if wandb.run is not None:
                 wandb.finish()
             self.logger.info("Training complete. WandB logging finished.")
-
