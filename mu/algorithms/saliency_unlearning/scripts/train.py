@@ -8,6 +8,7 @@ import logging
 from mu.algorithms.saliency_unlearning.algorithm import SaliencyUnlearnAlgorithm
 from mu.helpers import setup_logger, load_config
 from mu.helpers.path_setup import *
+from mu.algorithms.saliency_unlearning.configs import SaliencyUnlearningConfig
 
 
 def main():
@@ -108,6 +109,7 @@ def main():
     logger = setup_logger(log_file=log_file, level=logging.INFO)
     logger.info("Starting Saliency Unlearning Masking")
 
+    config = SaliencyUnlearningConfig(**config)
     algorithm = SaliencyUnlearnAlgorithm(config)
     algorithm.run()
 
