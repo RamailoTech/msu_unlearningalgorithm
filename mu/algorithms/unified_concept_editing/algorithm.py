@@ -12,6 +12,7 @@ from mu.algorithms.unified_concept_editing.trainer import UnifiedConceptEditingT
 from mu.algorithms.unified_concept_editing.data_handler import (
     UnifiedConceptEditingDataHandler,
 )
+from mu.algorithms.unified_concept_editing.configs import UnifiedConceptEditingConfig
 
 
 class UnifiedConceptEditingAlgorithm(BaseAlgorithm):
@@ -19,19 +20,23 @@ class UnifiedConceptEditingAlgorithm(BaseAlgorithm):
     UnifiedConceptEditingAlgorithm orchestrates the training process for the Unified Concept Editing method.
     """
 
-    def __init__(self, config: Dict):
+    def __init__(self, config: UnifiedConceptEditingConfig, **kwargs):
         """
         Initialize the UnifiedConceptEditingAlgorithm.
 
         Args:
             config (Dict): Configuration dictionary.
         """
-        self.config = config
+        self.config = config.__dict__
+        for key, value in kwargs.items():
+            setattr(config, key, value)
+
         self._parse_config()
+        config.validate_config()
         self.model = None
         self.trainer = None
         self.data_handler = None
-        self.device = torch.device(self.config.get("devices", ["cuda:0"])[0])
+        self.device = torch.device(self.config.devices[0])
         self.logger = logging.getLogger(__name__)
         self._setup_components()
 

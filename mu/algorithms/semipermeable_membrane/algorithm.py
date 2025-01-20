@@ -13,6 +13,7 @@ from mu.algorithms.semipermeable_membrane.data_handler import (
     SemipermeableMembraneDataHandler,
 )
 from mu.algorithms.semipermeable_membrane.trainer import SemipermeableMembraneTrainer
+from mu.algorithms.semipermeable_membrane.configs import SemipermeableMembraneConfig
 
 
 class SemipermeableMembraneAlgorithm(BaseAlgorithm):
@@ -20,15 +21,20 @@ class SemipermeableMembraneAlgorithm(BaseAlgorithm):
     SemipermeableMembraneAlgorithm orchestrates the setup and training of the SPM method.
     """
 
-    def __init__(self, config: Dict):
+    def __init__(self, config: SemipermeableMembraneConfig, **kwargs):
         """
         Initialize the SemipermeableMembraneAlgorithm.
 
         Args:
             config (Dict): Configuration dictionary.
         """
-        self.config = config
+
+        self.config = config.__dict__
+        for key, value in kwargs.items():
+            setattr(config, key, value)
+
         self._parse_config()
+        config.validate_config()
         self.model = None
         self.trainer = None
         self.data_handler = None

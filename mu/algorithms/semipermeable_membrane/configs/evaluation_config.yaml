@@ -1,0 +1,23 @@
+precision: "fp32"
+spm_multiplier: [1.0,]
+v2: False
+matching_metric: "clipcos_tokenuni"
+# model_config: "mu/algorithms/semipermeable_membrane/config" 
+model_config: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/mu_semipermeable_membrane_spm/configs"
+base_model: "CompVis/stable-diffusion-v1-4"
+spm_path: ["outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"]
+ckpt_path: "outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"
+# model_ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt" 
+model_ckpt_path: "CompVis/stable-diffusion-v1-4"
+theme: "Bricks"
+seed: 188
+devices: "0"
+task: "class"
+sampler_output_dir: "outputs/eval_results/mu_results/semipermeable_membrane/"
+seed_list: [188,]
+# classification_model: "vit_large_patch16_224.augreg_in21k"
+classification_model: "vit_large_patch16_224"
+eval_output_dir: "outputs/eval_results/mu_results/semipermeable_membrane/"
+reference_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+forget_theme: "Bricks"
+multiprocessing: false

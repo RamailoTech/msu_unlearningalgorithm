@@ -19,7 +19,6 @@ output_dir: "outputs/scissorhands/finetuned_models"  # Output directory to save 
 
 # Sampling and image configurations
 sparsity: 0.90 # threshold for mask
-sparsity: 0.90 # threshold for mask
 project: false
 memory_num: 1
 prune_num: 10
