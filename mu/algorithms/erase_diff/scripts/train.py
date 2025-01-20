@@ -8,7 +8,7 @@ import logging
 from mu.algorithms.erase_diff.algorithm import EraseDiffAlgorithm
 from mu.algorithms.erase_diff.configs.train_config import (
     EraseDiffConfig,
-    erase_diff_train_config,
+    erase_diff_train_config_quick_canvas,
 )
 from mu.helpers import setup_logger, load_config
 from mu.helpers.path_setup import logs_dir
@@ -116,7 +116,7 @@ def main():
     )
 
     args = parser.parse_args()
-    config = erase_diff_train_config
+    config = erase_diff_train_config_quick_canvas
 
     # Prepare output directory
     output_name = os.path.join(

@@ -7,6 +7,7 @@ import logging
 from mu.algorithms.esd.algorithm import ESDAlgorithm
 from mu.helpers import setup_logger, load_config, setup_logger
 from mu.helpers.path_setup import *
+from mu.algorithms.esd.configs import ESDConfig
 
 
 def main():
@@ -120,6 +121,7 @@ def main():
     logger.info("Starting EraseDiff Training")
 
     # Initialize and run the EraseDiff algorithm
+    config = ESDConfig(**config)
     algorithm = ESDAlgorithm(config)
     algorithm.run()
 
