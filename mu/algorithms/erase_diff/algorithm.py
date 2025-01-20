@@ -31,6 +31,7 @@ class EraseDiffAlgorithm(BaseAlgorithm):
             setattr(config, key, value)
 
         self._parse_config()
+        config.validate_config()
         self.model = None
         self.trainer = None
         self.data_handler = None

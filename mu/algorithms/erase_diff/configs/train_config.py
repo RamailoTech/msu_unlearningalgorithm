@@ -31,9 +31,7 @@ class EraseDiffConfig(BaseConfig):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-        self._validate()
-
-    def _validate(self):
+    def validate_config(self):
         """
         Perform basic validation on the config parameters.
         """
@@ -77,4 +75,12 @@ class EraseDiffConfig(BaseConfig):
             raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
 
 
-erase_diff_train_config = EraseDiffConfig()
+erase_diff_train_config_quick_canvas = EraseDiffConfig()
+erase_diff_train_config_quick_canvas.dataset_type = "unlearncanvas"
+erase_diff_train_config_quick_canvas.raw_dataset_dir = (
+    "data/quick-canvas-dataset/sample"
+)
+
+erase_diff_train_config_i2p = EraseDiffConfig()
+erase_diff_train_config_i2p.dataset_type = "i2p"
+erase_diff_train_config_i2p.raw_dataset_dir = "data/i2p/sample"
