@@ -6,6 +6,7 @@ from pathlib import Path
 import logging
 
 from mu.algorithms.erase_diff.algorithm import EraseDiffAlgorithm
+from mu.algorithms.erase_diff.configs.train_config import EraseDiffConfig
 from mu.helpers import setup_logger, load_config
 from mu.helpers.path_setup import logs_dir
 
@@ -115,7 +116,6 @@ def main():
 
     # Load default configuration from YAML
     config = load_config(args.config_path)
-
     # Prepare output directory
     output_name = os.path.join(
         args.output_dir or config.get("output_dir", "results"),
@@ -136,7 +136,7 @@ def main():
     logger = setup_logger(log_file=log_file, level=logging.INFO)
     logger.info("Starting EraseDiff Training")
 
-    # Initialize and run the EraseDiff algorithm
+    config = EraseDiffConfig(**config)
     algorithm = EraseDiffAlgorithm(config)
     algorithm.run()
 
