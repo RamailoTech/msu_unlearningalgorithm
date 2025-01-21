@@ -8,6 +8,7 @@ import logging
 from mu.algorithms.scissorhands.algorithm import ScissorHandsAlgorithm
 from mu.helpers import setup_logger, load_config
 from mu.helpers.path_setup import *
+from mu.algorithms.scissorhands.configs import ScissorHandsConfig
 
 
 def main():
@@ -125,6 +126,7 @@ def main():
     logger = setup_logger(log_file=log_file, level=logging.INFO)
     logger.info("Starting scissorhands Training")
 
+    config = ScissorHandsConfig(**config)
     # 7) Initialize and run the EraseDiff algorithm
     algorithm = ScissorHandsAlgorithm(config)
     algorithm.run()

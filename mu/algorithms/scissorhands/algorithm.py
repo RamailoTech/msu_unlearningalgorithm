@@ -8,6 +8,7 @@ from mu.core import BaseAlgorithm
 from mu.algorithms.scissorhands.model import ScissorHandsModel
 from mu.algorithms.scissorhands.trainer import ScissorHandsTrainer
 from mu.algorithms.scissorhands.data_handler import ScissorHandsDataHandler
+from mu.algorithms.scissorhands.configs import ScissorHandsConfig
 
 
 class ScissorHandsAlgorithm(BaseAlgorithm):
@@ -15,9 +16,12 @@ class ScissorHandsAlgorithm(BaseAlgorithm):
     ScissorhandsAlgorithm orchestrates the training process for the Scissorhands method.
     """
 
-    def __init__(self, config: Dict):
-        self.config = config
+    def __init__(self, config: ScissorHandsConfig, **kwargs):
+        self.config = config.__dict__
+        for key, value in kwargs.items():
+            setattr(config, key, value)
         self._parse_config()
+        config.validate_config()
         self.device = torch.device(self.config.get("devices", ["cuda:0"])[0])
         self.logger = logging.getLogger(__name__)
         self._setup_components()

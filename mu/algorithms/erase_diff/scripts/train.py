@@ -6,6 +6,10 @@ from pathlib import Path
 import logging
 
 from mu.algorithms.erase_diff.algorithm import EraseDiffAlgorithm
+from mu.algorithms.erase_diff.configs.train_config import (
+    EraseDiffConfig,
+    erase_diff_train_config_quick_canvas,
+)
 from mu.helpers import setup_logger, load_config
 from mu.helpers.path_setup import logs_dir
 
@@ -112,16 +116,14 @@ def main():
     )
 
     args = parser.parse_args()
-
-    # Load default configuration from YAML
-    config = load_config(args.config_path)
+    config = erase_diff_train_config_quick_canvas
 
     # Prepare output directory
     output_name = os.path.join(
-        args.output_dir or config.get("output_dir", "results"),
-        f"{args.template_name or config.get('template_name', 'self-harm')}.pth",
+        args.output_dir or config.output_dir or "results",
+        f"{args.template_name or config.template_name or  'self-harm'}.pth",
     )
-    os.makedirs(args.output_dir or config.get("output_dir", "results"), exist_ok=True)
+    os.makedirs(args.output_dir or config.output_dir or "results", exist_ok=True)
 
     # Update configuration only if arguments are explicitly provided
     for key, value in vars(args).items():
@@ -131,12 +133,11 @@ def main():
     # Setup logger
     log_file = os.path.join(
         logs_dir,
-        f"erase_diff_training_{config.get('dataset_type')}_{config.get('template')}_{config.get('template_name')}.log",
+        f"erase_diff_training_{config.dataset_type}_{config.template}_{config.template_name}.log",
     )
     logger = setup_logger(log_file=log_file, level=logging.INFO)
     logger.info("Starting EraseDiff Training")
 
-    # Initialize and run the EraseDiff algorithm
     algorithm = EraseDiffAlgorithm(config)
     algorithm.run()
 

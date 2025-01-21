@@ -10,6 +10,7 @@ from mu.core import BaseAlgorithm
 from mu.algorithms.erase_diff.model import EraseDiffModel
 from mu.algorithms.erase_diff.trainer import EraseDiffTrainer
 from mu.algorithms.erase_diff.data_handler import EraseDiffDataHandler
+from mu.algorithms.erase_diff.configs import EraseDiffConfig
 
 
 class EraseDiffAlgorithm(BaseAlgorithm):
@@ -17,15 +18,20 @@ class EraseDiffAlgorithm(BaseAlgorithm):
     EraseDiffAlgorithm orchestrates the training process for the EraseDiff method.
     """
 
-    def __init__(self, config: Dict):
+    def __init__(self, config: EraseDiffConfig, **kwargs):
         """
         Initialize the EraseDiffAlgorithm.
 
         Args:
             config (Dict): Configuration dictionary.
         """
-        self.config = config
+
+        self.config = config.__dict__
+        for key, value in kwargs.items():
+            setattr(config, key, value)
+
         self._parse_config()
+        config.validate_config()
         self.model = None
         self.trainer = None
         self.data_handler = None

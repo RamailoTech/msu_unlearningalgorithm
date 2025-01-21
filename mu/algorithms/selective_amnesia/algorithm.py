@@ -9,6 +9,8 @@ from pathlib import Path
 from mu.core import BaseAlgorithm
 from mu.algorithms.selective_amnesia.model import SelectiveAmnesiaModel
 from mu.algorithms.selective_amnesia.trainer import SelectiveAmnesiaTrainer
+from mu.algorithms.selective_amnesia.configs import SelectiveAmnesiaConfig
+
 
 class SelectiveAmnesiaAlgorithm(BaseAlgorithm):
     """
@@ -16,12 +18,16 @@ class SelectiveAmnesiaAlgorithm(BaseAlgorithm):
     Sets up model, data handler, and trainer, then runs training.
     """
 
-    def __init__(self, config: Dict, config_path: str):
-        self.config = config
+    def __init__(self, config: SelectiveAmnesiaConfig, config_path: str, **kwargs):
+        self.config = config.__dict__
+        for key, value in kwargs.items():
+            setattr(config, key, value)
+        self._parse_config()
+        config.validate_config()
         self.config_path = config_path
         self.model = None
         self.trainer = None
-        self.device = self.config.get('devices')
+        self.device = self.config.devices
         self.logger = logging.getLogger(__name__)
         self._setup_components()
 
@@ -31,10 +37,10 @@ class SelectiveAmnesiaAlgorithm(BaseAlgorithm):
         # Model: Load SD model and FIM
         # Initialize Model
         self.model = SelectiveAmnesiaModel(
-            model_config_path=self.config.get('model_config_path'),
-            ckpt_path=self.config.get('ckpt_path'),
+            model_config_path=self.config.get("model_config_path"),
+            ckpt_path=self.config.get("ckpt_path"),
             device=str(self.device),
-            opt_config=self.config
+            opt_config=self.config,
         )
 
         # Initialize Trainer
@@ -42,16 +48,18 @@ class SelectiveAmnesiaAlgorithm(BaseAlgorithm):
             model=self.model,
             config=self.config,
             device=str(self.device),
-            config_path = self.config_path
+            config_path=self.config_path,
         )
 
     def run(self):
         try:
             # Initialize WandB with configurable project/run names
             wandb_config = {
-                "project": self.config.get("wandb_project", "quick-canvas-machine-unlearning"),
+                "project": self.config.get(
+                    "wandb_project", "quick-canvas-machine-unlearning"
+                ),
                 "name": self.config.get("wandb_run", "Selective Amnesia"),
-                "config": self.config
+                "config": self.config,
             }
             wandb.init(**wandb_config)
             self.logger.info("Initialized WandB for logging.")
@@ -62,12 +70,12 @@ class SelectiveAmnesiaAlgorithm(BaseAlgorithm):
 
             try:
                 # Start training
-                self.trainer.train()                
+                self.trainer.train()
 
             except Exception as e:
                 self.logger.error(f"Error during training: {str(e)}")
                 raise
-                
+
         except Exception as e:
             self.logger.error(f"Failed to initialize training: {str(e)}")
             raise

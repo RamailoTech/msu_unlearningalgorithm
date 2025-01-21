@@ -13,6 +13,7 @@ from mu.algorithms.saliency_unlearning.masking import (
     accumulate_gradients_for_mask,
     save_mask,
 )
+from mu.algorithms.saliency_unlearning.configs import SaliencyUnlearningConfig
 
 
 class SaliencyUnlearnAlgorithm(BaseAlgorithm):
@@ -20,15 +21,19 @@ class SaliencyUnlearnAlgorithm(BaseAlgorithm):
     SaliencyUnlearnAlgorithm orchestrates the training process for the SaliencyUnlearn method.
     """
 
-    def __init__(self, config: Dict):
+    def __init__(self, config: SaliencyUnlearningConfig, **kwargs):
         """
         Initialize the SaliencyUnlearnAlgorithm.
 
         Args:
             config (Dict): Configuration dictionary.
         """
-        self.config = config
+        self.config = config.__dict__
+        for key, value in kwargs.items():
+            setattr(config, key, value)
+
         self._parse_config()
+        config.validate_config()
         self.model = None
         self.trainer = None
         self.data_handler = None

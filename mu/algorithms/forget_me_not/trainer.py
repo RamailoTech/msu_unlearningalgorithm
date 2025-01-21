@@ -461,7 +461,7 @@ class ForgetMeNotTrainer(BaseTrainer):
             # print("only optimize cross attention...")
         else:
             params_to_optimize = (
-                itertools.chain(self.model.unet.parameters(), self.model.text_encoder.parameters()) if train_text_encoder else self.mdoel.unet.parameters()
+                itertools.chain(self.model.unet.parameters(), self.model.text_encoder.parameters()) if train_text_encoder else self.model.unet.parameters()
             )
             # print("optimize unet...")
         optimizer = optimizer_class(

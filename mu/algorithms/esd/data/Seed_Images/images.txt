@@ -1,0 +1,3 @@
+/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample/Seed_Images/Architectures/1.jpg
+/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample/Seed_Images/Architectures/2.jpg
+/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample/Seed_Images/Architectures/3.jpg

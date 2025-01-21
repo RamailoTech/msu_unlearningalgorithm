@@ -6,8 +6,16 @@ nav:
   - Home: README.md
   - Algorithms:
     - Concept Ablation: algorithms/concept_ablation.md
-    - Erase Diff: algorithms/erase_diff.md 
-    - ESD: algorithms/esd.md
+    - Erase Diff: 
+      - Usage: algorithms/erase_diff.md 
+      - Examples: examples/erase_diff.md
+      - Configs: configs/erase_diff.md
+
+    - ESD: 
+      - Usage: algorithms/esd.md
+      - Examples: examples/esd.md
+      - Configs: configs/esd.md
+      
     - Forget Me Not: algorithms/forget_me_not.md
     - Saliency Unlearning: algorithms/saliency.md
     - Scissor Hands: algorithms/scissorhands.md

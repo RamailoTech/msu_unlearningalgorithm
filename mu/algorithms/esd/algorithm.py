@@ -8,6 +8,7 @@ from mu.core import BaseAlgorithm
 from mu.algorithms.esd.model import ESDModel
 from mu.algorithms.esd.trainer import ESDTrainer
 from mu.algorithms.esd.sampler import ESDSampler
+from mu.algorithms.esd.configs import ESDConfig
 
 
 class ESDAlgorithm(BaseAlgorithm):
@@ -15,9 +16,13 @@ class ESDAlgorithm(BaseAlgorithm):
     ESD Algorithm for machine unlearning.
     """
 
-    def __init__(self, config: Dict):
-        self.config = config
+    def __init__(self, config: ESDConfig, **kwargs):
+        self.config = config.__dict__
+        for key, value in kwargs.items():
+            setattr(config, key, value)
+
         self._parse_config()
+        config.validate_config()
         self.model = None
         self.trainer = None
         self.sampler = None
