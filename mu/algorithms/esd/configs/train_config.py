@@ -1,5 +1,8 @@
 import os
 from mu.core.base_config import BaseConfig
+from pathlib import Path
+
+current_dir = Path(__file__).parent
 
 
 class ESDConfig(BaseConfig):
@@ -17,7 +20,7 @@ class ESDConfig(BaseConfig):
         self.ddim_steps = 50  # Optional: DDIM steps of inference
 
         # Model configuration
-        self.model_config_path = "mu/algorithms/esd/configs/model_config.yaml"
+        self.model_config_path = current_dir / "model_config.yaml"
         self.ckpt_path = "models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
 
         # Dataset directories

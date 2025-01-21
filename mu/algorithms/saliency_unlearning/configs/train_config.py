@@ -1,5 +1,8 @@
 import os
 from mu.core.base_config import BaseConfig
+from pathlib import Path
+
+current_dir = Path(__file__).parent
 
 
 class SaliencyUnlearningConfig(BaseConfig):
@@ -11,7 +14,7 @@ class SaliencyUnlearningConfig(BaseConfig):
             "xattn"  # Attention method: ["noxattn", "selfattn", "xattn", "full"]
         )
         self.ckpt_path = "models/compvis/style50/compvis.ckpt"  # Path to the checkpoint
-        self.model_config_path = "mu/algorithms/saliency_unlearning/configs/model_config.yaml"  # Path to the model config
+        self.model_config_path = current_dir / "model_config.yaml"
 
         # Dataset directories
         self.raw_dataset_dir = (

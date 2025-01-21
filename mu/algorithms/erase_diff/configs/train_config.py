@@ -1,5 +1,8 @@
 import os
 from mu.core.base_config import BaseConfig
+from pathlib import Path
+
+current_dir = Path(__file__).parent
 
 
 class EraseDiffConfig(BaseConfig):
@@ -10,7 +13,7 @@ class EraseDiffConfig(BaseConfig):
         self.epochs = 1
         self.K_steps = 2
         self.lr = 5e-5
-        self.model_config_path = "mu/algorithms/erase_diff/configs/model_config.yaml"
+        self.model_config_path = current_dir / "model_config.yaml"
         self.ckpt_path = "models/compvis/style50/compvis.ckpt"
         self.raw_dataset_dir = "data/quick-canvas-dataset/sample"
         self.processed_dataset_dir = "mu/algorithms/erase_diff/data"
