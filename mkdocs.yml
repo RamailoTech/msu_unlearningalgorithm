@@ -16,10 +16,17 @@ nav:
       - Examples: examples/esd.md
       - Configs: configs/esd.md
       
-    - Forget Me Not: algorithms/forget_me_not.md
+    - Forget Me Not: 
+      - Usage: algorithms/forget_me_not.md
+      - Examples: examples/forget_me_not.md
+      - Configs: configs/forget_me_not.md
+
     - Saliency Unlearning: algorithms/saliency.md
     - Scissor Hands: algorithms/scissorhands.md
-    - Selective Amnesia: algorithms/selective_amnesia.md
+    - Selective Amnesia: 
+      - Usage: algorithms/selective_amnesia.md
+      - Examples: examples/selective_amnesia.md
+      - Configs: configs/selective_amnesia.md
     - Semi Permeable Membrane: algorithms/semi_permeable.md
     - Unified Concept Editing: algorithms/uce.md
   - Contributing: algorithms/contributing.md

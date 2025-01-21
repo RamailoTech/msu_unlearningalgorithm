@@ -8,7 +8,7 @@ algorithm = ESDAlgorithm(esd_train_config_quick_canvas)
 algorithm.run()
 ```
 
-## Modify some train parameters in pre defined config class.
+### Modify some train parameters in pre defined config class.
 ```python
 from mu.algorithms.esd.algorithm import ESDAlgorithm
 from mu.algorithms.esd.configs import (
