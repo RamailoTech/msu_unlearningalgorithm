@@ -1,5 +1,8 @@
 import os
 from mu.core.base_config import BaseConfig
+from pathlib import Path
+
+current_dir = Path(__file__).parent
 
 
 class ForgetMeNotAttnConfig(BaseConfig):
@@ -97,7 +100,9 @@ class ForgetMeNotAttnConfig(BaseConfig):
         numerical hyperparameters are within a valid range.
         """
         if not os.path.exists(self.raw_dataset_dir):
-            raise FileNotFoundError(f"Directory '{self.raw_dataset_dir}' does not exist.")
+            raise FileNotFoundError(
+                f"Directory '{self.raw_dataset_dir}' does not exist."
+            )
 
         if not os.path.exists(self.processed_dataset_dir):
             raise FileNotFoundError(
@@ -168,7 +173,9 @@ class ForgetMeNotTiConfig(BaseConfig):
         Add any custom validation logic for the configuration here.
         """
         if not os.path.exists(self.raw_dataset_dir):
-            raise FileNotFoundError(f"Directory '{self.raw_dataset_dir}' does not exist.")
+            raise FileNotFoundError(
+                f"Directory '{self.raw_dataset_dir}' does not exist."
+            )
         if not os.path.exists(self.processed_dataset_dir):
             raise FileNotFoundError(
                 f"Directory '{self.processed_dataset_dir}' does not exist."
@@ -183,7 +190,6 @@ class ForgetMeNotTiConfig(BaseConfig):
             raise ValueError("Learning rate must be positive.")
         if self.train_batch_size <= 0:
             raise ValueError("Train batch size must be positive.")
-
 
 
 ForgetMeNotAttnConfig
