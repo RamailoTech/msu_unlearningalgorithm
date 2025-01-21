@@ -10,6 +10,7 @@ from mu.core import BaseAlgorithm
 from mu.algorithms.forget_me_not.data_handler import ForgetMeNotDataHandler
 from mu.algorithms.forget_me_not.trainer import ForgetMeNotTrainer
 from mu.algorithms.forget_me_not.model import ForgetMeNotModel
+from mu.algorithms.forget_me_not.configs import ForgetMeNotTiConfig
 
 
 class ForgetMeNotAlgorithm(BaseAlgorithm):
@@ -18,14 +19,18 @@ class ForgetMeNotAlgorithm(BaseAlgorithm):
     Handles both textual inversion (TI) and attention-based unlearning steps.
     """
 
-    def __init__(self, config: Dict = {}, train_type="train_ti"):
+    def __init__(self, config: ForgetMeNotTiConfig, train_type="train_ti", **kwargs):
         """
         Initialize the ForgetMeNotAlgorithm.
 
         Args:
             config (Dict): Configuration dictionary containing all parameters required for training.
         """
-        self.config = config
+        self.config = config.__dict__
+        for key, value in kwargs.items():
+            setattr(config, key, value)
+        print(f"Config = {self.config}")
+        config.validate_config()
         self.type = train_type
         self._parse_config()
         self.model = None
@@ -112,7 +117,7 @@ class ForgetMeNotAlgorithm(BaseAlgorithm):
                     self.run_attn_training()
                 else:
                     raise ValueError(
-                        f"Invalid training type: {train_type}. Please choose either 'ti' or 'attn'."
+                        f"Invalid training type: {train_type}. Please choose either 'train_ti' or 'train_attn'."
                     )
 
                 output_name = output_dir / self.config.get(
