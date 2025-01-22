@@ -89,14 +89,6 @@ class ScissorHandsConfig(BaseConfig):
                 f"Invalid train method {self.train_method}. Choose from {TRAIN_METHODS}"
             )
 
-        # Check if devices are valid
-        devices = self.devices.split(",")
-        for device in devices:
-            if not device.isdigit():
-                raise ValueError(
-                    f"Invalid device {device}. Devices should be integers representing CUDA device IDs."
-                )
-
         # Validate sparsity
         if not (0 <= self.sparsity <= 1):
             raise ValueError(
@@ -120,12 +112,10 @@ class ScissorHandsConfig(BaseConfig):
             )
 
 
-scissorhands_train_config_quick_canvas = ScissorHandsConfig()
-scissorhands_train_config_quick_canvas.dataset_type = "unlearncanvas"
-scissorhands_train_config_quick_canvas.raw_dataset_dir = (
-    "data/quick-canvas-dataset/sample"
-)
+scissorhands_train_mu = ScissorHandsConfig()
+scissorhands_train_mu.dataset_type = "unlearncanvas"
+scissorhands_train_mu.raw_dataset_dir = "data/quick-canvas-dataset/sample"
 
-scissorhands_train_config_i2p = ScissorHandsConfig()
-scissorhands_train_config_i2p.dataset_type = "i2p"
-scissorhands_train_config_i2p.raw_dataset_dir = "data/i2p-dataset/sample"
+scissorhands_train_i2p = ScissorHandsConfig()
+scissorhands_train_i2p.dataset_type = "i2p"
+scissorhands_train_i2p.raw_dataset_dir = "data/i2p-dataset/sample"

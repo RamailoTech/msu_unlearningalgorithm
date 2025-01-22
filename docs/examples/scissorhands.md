@@ -1,4 +1,4 @@
-Train your model by using Erase Diff Algorithm. Import pre defined config classes or create your own object.
+Train your model by using ScissorHands Algorithm. Import pre defined config classes or create your own object.
 Refer the config docs for details about the parameters that you can use.
 
 To test the below code snippet, you can create a file, copy the below code in eg, `my_trainer.py`
@@ -6,65 +6,63 @@ and execute it with `python my_trainer.py` or use `WANDB_MODE=offline python my_
 
 ### Use pre defined config
 ```python
-from mu.algorithms.erase_diff.algorithm import EraseDiffAlgorithm
-from mu.algorithms.erase_diff.configs import erase_diff_train_mu
-
-algorithm = EraseDiffAlgorithm(erase_diff_train_mu)
+from mu.algorithms.scissorhands.algorithm import ScissorHandsAlgorithm
+from mu.algorithms.scissorhands.configs import scissorhands_train_mu
+algorithm = ScissorHandsAlgorithm(scissorhands_train_mu)
 algorithm.run()
 ```
 
 ### Modify some train parameters in pre defined config class.
 View the config docs to see a list of available parameters.
 ```python
-from mu.algorithms.erase_diff.algorithm import EraseDiffAlgorithm
-from mu.algorithms.erase_diff.configs import (
-    erase_diff_train_mu,
+from mu.algorithms.scissorhands.algorithm import ScissorHandsAlgorithm
+from mu.algorithms.scissorhands.configs import (
+    scissorhands_train_mu,
 )
 
-algorithm = EraseDiffAlgorithm(
-    erase_diff_train_mu,
+algorithm = ScissorHandsAlgorithm(
+    scissorhands_train_mu,
     ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
     raw_dataset_dir=(
         "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
     ),
+    output_dir="/opt/dlami/nvme/outputs",
 )
 algorithm.run()
 ```
 
 ### Create your own config object
 ```python
-from mu.algorithms.erase_diff.algorithm import EraseDiffAlgorithm
-from mu.algorithms.erase_diff.configs import (
-    EraseDiffConfig,
+from mu.algorithms.scissorhands.algorithm import ScissorHandsAlgorithm
+from mu.algorithms.scissorhands.configs import (
+    ScissorHandsConfig,
 )
 
-myconfig = EraseDiffConfig()
+myconfig = ScissorHandsConfig()
 myconfig.ckpt_path = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
 myconfig.raw_dataset_dir = (
     "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
 )
 
-algorithm = EraseDiffAlgorithm(myconfig)
+algorithm = ScissorHandsAlgorithm(myconfig)
 algorithm.run()
-
 ```
 
 ### Override the Config class itself.
-
 ```python
-from mu.algorithms.erase_diff.algorithm import EraseDiffAlgorithm
-from mu.algorithms.erase_diff.configs import (
-    EraseDiffConfig,
+from mu.algorithms.scissorhands.algorithm import ScissorHandsAlgorithm
+from mu.algorithms.scissorhands.configs import (
+    ScissorHandsConfig,
 )
 
 
-class MyNewConfigClass(EraseDiffConfig):
+class MyNewConfigClass(ScissorHandsConfig):
     def __init__(self, *args, **kwargs):
         self.new_parameter = kwargs.get("new_parameter")
         super().__init__()
 
-new_config_object = MyNewConfigClass()
-algorithm = EraseDiffAlgorithm(new_config_object)
-algorithm.run()
 
+new_config_object = MyNewConfigClass()
+algorithm = ScissorHandsAlgorithm(new_config_object)
+algorithm.run()
 ```
