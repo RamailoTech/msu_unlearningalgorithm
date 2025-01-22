@@ -194,22 +194,18 @@ class ForgetMeNotTiConfig(BaseConfig):
 
 ForgetMeNotAttnConfig
 
-forget_me_not_train_ti_config_quick_canvas = ForgetMeNotAttnConfig()
-forget_me_not_train_ti_config_quick_canvas.dataset_type = "unlearncanvas"
-forget_me_not_train_ti_config_quick_canvas.raw_dataset_dir = (
-    "data/quick-canvas-dataset/sample"
-)
+forget_me_not_train_ti_mu = ForgetMeNotAttnConfig()
+forget_me_not_train_ti_mu.dataset_type = "unlearncanvas"
+forget_me_not_train_ti_mu.raw_dataset_dir = "data/quick-canvas-dataset/sample"
 
-forget_me_not_train_attn_config_quick_canvas = ForgetMeNotAttnConfig()
-forget_me_not_train_attn_config_quick_canvas.dataset_type = "unlearncanvas"
-forget_me_not_train_attn_config_quick_canvas.raw_dataset_dir = (
-    "data/quick-canvas-dataset/sample"
-)
+forget_me_not_train_attn_mu = ForgetMeNotAttnConfig()
+forget_me_not_train_attn_mu.dataset_type = "unlearncanvas"
+forget_me_not_train_attn_mu.raw_dataset_dir = "data/quick-canvas-dataset/sample"
 
-forget_me_not_train_ti_config_i2p = ForgetMeNotTiConfig()
-forget_me_not_train_ti_config_i2p.dataset_type = "i2p"
-forget_me_not_train_ti_config_i2p.raw_dataset_dir = "data/i2p-dataset/sample"
+forget_me_not_train_ti_i2p = ForgetMeNotTiConfig()
+forget_me_not_train_ti_i2p.dataset_type = "i2p"
+forget_me_not_train_ti_i2p.raw_dataset_dir = "data/i2p-dataset/sample"
 
-forget_me_not_train_attn_config_i2p = ForgetMeNotAttnConfig()
-forget_me_not_train_attn_config_i2p.dataset_type = "i2p"
-forget_me_not_train_attn_config_i2p.raw_dataset_dir = "data/i2p-dataset/sample"
+forget_me_not_train_attn_i2p = ForgetMeNotAttnConfig()
+forget_me_not_train_attn_i2p.dataset_type = "i2p"
+forget_me_not_train_attn_i2p.raw_dataset_dir = "data/i2p-dataset/sample"

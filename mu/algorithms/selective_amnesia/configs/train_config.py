@@ -1,5 +1,8 @@
 import os
 from mu.core.base_config import BaseConfig
+from pathlib import Path
+
+current_dir = Path(__file__).parent
 
 
 class SelectiveAmnesiaConfig(BaseConfig):
@@ -9,7 +12,9 @@ class SelectiveAmnesiaConfig(BaseConfig):
         self.scale_lr = True  # Flag for scaling learning rate
 
         # Model configuration
-        self.model_config_path = "mu/algorithms/selective_amnesia/configs/model_config.yaml"  # Config path for model
+        self.model_config_path = (
+            current_dir / "model_config.yaml"
+        )  # Config path for model
         self.ckpt_path = "models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
         self.full_fisher_dict_path = "mu/algorithms/selective_amnesia/data/full_fisher_dict.pkl"  # Path for Fisher dict
 
@@ -27,7 +32,7 @@ class SelectiveAmnesiaConfig(BaseConfig):
         self.output_dir = "outputs/selective_amnesia/finetuned_models"  # Output directory to save results
 
         # Device configuration
-        self.devices = "0,"  # CUDA devices (comma-separated)
+        self.devices = "0"  # CUDA devices (comma-separated)
 
         # Additional flags
         self.use_sample = True  # Use sample dataset for training
@@ -136,14 +141,6 @@ class SelectiveAmnesiaConfig(BaseConfig):
             raise ValueError(
                 f"Invalid dataset type {self.dataset_type}. Choose from ['unlearncanvas', 'i2p']"
             )
-
-        # Validate devices
-        devices = self.devices.split(",")
-        for device in devices:
-            if not device.isdigit():
-                raise ValueError(
-                    f"Invalid device {device}. Devices should be integers representing CUDA device IDs."
-                )
 
         # Validate batch sizes
         if self.data["params"]["train_batch_size"] <= 0:

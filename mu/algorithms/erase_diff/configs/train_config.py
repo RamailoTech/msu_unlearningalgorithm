@@ -78,12 +78,10 @@ class EraseDiffConfig(BaseConfig):
             raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
 
 
-erase_diff_train_config_quick_canvas = EraseDiffConfig()
-erase_diff_train_config_quick_canvas.dataset_type = "unlearncanvas"
-erase_diff_train_config_quick_canvas.raw_dataset_dir = (
-    "data/quick-canvas-dataset/sample"
-)
+erase_diff_train_mu = EraseDiffConfig()
+erase_diff_train_mu.dataset_type = "unlearncanvas"
+erase_diff_train_mu.raw_dataset_dir = "data/quick-canvas-dataset/sample"
 
-erase_diff_train_config_i2p = EraseDiffConfig()
-erase_diff_train_config_i2p.dataset_type = "i2p"
-erase_diff_train_config_i2p.raw_dataset_dir = "data/i2p-dataset/sample"
+erase_diff_train_i2p = EraseDiffConfig()
+erase_diff_train_i2p.dataset_type = "i2p"
+erase_diff_train_i2p.raw_dataset_dir = "data/i2p-dataset/sample"

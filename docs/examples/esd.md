@@ -1,10 +1,16 @@
+Train your model by using Esd Algorithm. Import pre defined config classes or create your own object.
+Refer the config docs for details about the parameters that you can use.
+
+To test the below code snippet, you can create a file, copy the below code in eg, `my_trainer.py`
+and execute it with `python my_trainer.py` or use `WANDB_MODE=offline python my_trainer.py` for offline mode.
+
 ### Use pre defined config
 
 ```python
 from mu.algorithms.esd.algorithm import ESDAlgorithm
-from mu.algorithms.esd.configs import esd_train_config_quick_canvas
+from mu.algorithms.esd.configs import esd_train_mu
 
-algorithm = ESDAlgorithm(esd_train_config_quick_canvas)
+algorithm = ESDAlgorithm(esd_train_mu)
 algorithm.run()
 ```
 
@@ -12,11 +18,11 @@ algorithm.run()
 ```python
 from mu.algorithms.esd.algorithm import ESDAlgorithm
 from mu.algorithms.esd.configs import (
-    esd_train_config_quick_canvas,
+    esd_train_mu,
 )
 
 algorithm = ESDAlgorithm(
-    esd_train_config_quick_canvas,
+    esd_train_mu,
     ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
     raw_dataset_dir=(
         "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
@@ -46,11 +52,11 @@ algorithm.run()
 ```python
 from mu.algorithms.esd.algorithm import ESDAlgorithm
 from mu.algorithms.esd.configs import (
-    esd_train_config_quick_canvas,
+    ESDConfig,
 )
 
 
-class MyNewConfigClass(ESDAlgorithm):
+class MyNewConfigClass(ESDConfig):
     def __init__(self, *args, **kwargs):
         self.new_parameter = kwargs.get("new_parameter")
         super().__init__()
