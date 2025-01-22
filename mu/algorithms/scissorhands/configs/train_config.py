@@ -1,5 +1,8 @@
 import os
 from mu.core.base_config import BaseConfig
+from pathlib import Path
+
+current_dir = Path(__file__).parent
 
 
 class ScissorHandsConfig(BaseConfig):
@@ -10,7 +13,9 @@ class ScissorHandsConfig(BaseConfig):
         self.epochs = 5  # Number of training epochs
 
         # Model configuration
-        self.model_config_path = "mu/algorithms/scissorhands/configs/model_config.yaml"  # Config path for model
+        self.model_config_path = (
+            current_dir / "model_config.yaml"
+        )  # Config path for model
         self.ckpt_path = "models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
 
         # Dataset directories
