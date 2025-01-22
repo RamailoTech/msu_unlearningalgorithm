@@ -94,25 +94,11 @@ class SemipermeableMembraneConfig(BaseConfig):
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 
-        # Validate pretrained model paths
-        if not os.path.exists(self.pretrained_model["ckpt_path"]):
-            raise FileNotFoundError(
-                f"Checkpoint path {self.pretrained_model['ckpt_path']} does not exist."
-            )
-
         # Validate dataset type
         if self.dataset_type not in ["unlearncanvas", "i2p"]:
             raise ValueError(
                 f"Invalid dataset type {self.dataset_type}. Choose from ['unlearncanvas', 'i2p']"
             )
-
-        # Validate devices
-        devices = self.devices.split(",")
-        for device in devices:
-            if not device.isdigit():
-                raise ValueError(
-                    f"Invalid device {device}. Devices should be integers representing CUDA device IDs."
-                )
 
         # Validate training settings
         if self.train["iterations"] <= 0:
@@ -150,13 +136,11 @@ class SemipermeableMembraneConfig(BaseConfig):
             raise ValueError("guidance_scale should be a string.")
 
 
-semipermiable_membrane_train_config_quick_canvas = SemipermeableMembraneConfig()
-semipermiable_membrane_train_config_quick_canvas.dataset_type = "unlearncanvas"
-semipermiable_membrane_train_config_quick_canvas.raw_dataset_dir = (
-    "datasets/quick-canvas-dataset/sample"
-)
+semipermiable_membrane_train_mu = SemipermeableMembraneConfig()
+semipermiable_membrane_train_mu.dataset_type = "unlearncanvas"
+semipermiable_membrane_train_mu.raw_dataset_dir = "datasets/quick-canvas-dataset/sample"
 
 
-semipermiable_membrane_train_config_i2p = SemipermeableMembraneConfig()
-semipermiable_membrane_train_config_i2p.dataset_type = "i2p"
-semipermiable_membrane_train_config_i2p.raw_dataset_dir = "datasets/i2p-dataset/sample"
+semipermiable_membrane_train_i2p = SemipermeableMembraneConfig()
+semipermiable_membrane_train_i2p.dataset_type = "i2p"
+semipermiable_membrane_train_i2p.raw_dataset_dir = "datasets/i2p-dataset/sample"

@@ -1,5 +1,34 @@
-### Sample Model Config
+### Erase Diff Config Class
+```python
+class EraseDiffConfig(BaseConfig):
+
+    def __init__(self, **kwargs):
+        self.train_method = "xattn"
+        self.alpha = 0.1
+        self.epochs = 1
+        self.K_steps = 2
+        self.lr = 5e-5
+        self.model_config_path = current_dir / "model_config.yaml"
+        self.ckpt_path = "models/compvis/style50/compvis.ckpt"
+        self.raw_dataset_dir = "data/quick-canvas-dataset/sample"
+        self.processed_dataset_dir = "mu/algorithms/erase_diff/data"
+        self.dataset_type = "unlearncanvas"
+        self.template = "style"
+        self.template_name = "Abstractionism"
+        self.output_dir = "outputs/erase_diff/finetuned_models"
+        self.separator = None
+        self.image_size = 512
+        self.interpolation = "bicubic"
+        self.ddim_steps = 50
+        self.ddim_eta = 0.0
+        self.devices = "0"
+        self.use_sample = True
+        self.num_workers = 4
+        self.pin_memory = True
 ```
+
+### Sample Model Config
+```yaml
 model:
 
   base_learning_rate: 1.0e-04
