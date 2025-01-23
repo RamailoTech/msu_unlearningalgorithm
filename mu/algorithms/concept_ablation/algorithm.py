@@ -20,18 +20,12 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
     """
 
     def __init__(self, config: ConceptAblationConfig, **kwargs):
-        """
-        Initialize the ConceptAblationAlgorithm.
-
-        Args:
-            config (Dict): Configuration dictionary
-        """
-        self.config = config.__dict__
         for key, value in kwargs.items():
             setattr(config, key, value)
 
-        self._parse_config()
         config.validate_config()
+        self.config = config.to_dict()
+        self._parse_config()
         self.config_path = self.config.get("config_path")
         self.model = None
         self.trainer = None
