@@ -1,5 +1,8 @@
 import os
 from mu.core.base_config import BaseConfig
+from pathlib import Path
+
+current_dir = Path(__file__).parent
 
 
 class ConceptAblationConfig(BaseConfig):
@@ -14,7 +17,10 @@ class ConceptAblationConfig(BaseConfig):
         self.base_lr = 2.0e-06  # Base learning rate
 
         # Model configuration
-        self.model_config_path = "mu/algorithms/concept_ablation/configs/model_config.yaml"  # Path to model config
+        self.config_path = current_dir / "train_config.yaml"
+        self.model_config_path = (
+            current_dir / "model_config.yaml"
+        )  # Path to model config
         self.ckpt_path = (
             "models/compvis/style50/compvis.ckpt"  # Path to model checkpoint
         )
@@ -48,8 +54,8 @@ class ConceptAblationConfig(BaseConfig):
         self.data = {
             "target": "mu.algorithms.concept_ablation.data_handler.ConceptAblationDataHandler",
             "params": {
-                "batch_size": 4,  # Batch size for training
-                "num_workers": 4,  # Number of workers for loading data
+                "batch_size": 1,  # Batch size for training
+                "num_workers": 1,  # Number of workers for loading data
                 "wrap": False,  # Whether to wrap the dataset
                 "train": {
                     "target": "mu.algorithms.concept_ablation.src.finetune_data.MaskBase",
@@ -83,6 +89,8 @@ class ConceptAblationConfig(BaseConfig):
             "trainer": {"max_steps": 2000},  # Maximum number of training steps
         }
 
+        self.prompts = "mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt"
+
         # Update properties based on provided kwargs
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -104,14 +112,6 @@ class ConceptAblationConfig(BaseConfig):
         # Validate checkpoint path
         if not os.path.exists(self.ckpt_path):
             raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
-
-        # Validate device configuration
-        devices = self.devices.split(",")
-        for device in devices:
-            if not device.isdigit():
-                raise ValueError(
-                    f"Invalid device {device}. Devices should be integers representing CUDA device IDs."
-                )
 
         # Validate learning rate
         if self.lr <= 0:
