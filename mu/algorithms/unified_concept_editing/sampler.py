@@ -63,6 +63,7 @@ class UnifiedConceptEditingSampler(BaseSampler):
 
         # 3. The UNet model for generating the latents.
         self.unet = UNet2DConditionModel.from_pretrained(pipeline_path, subfolder="unet", cache_dir="./cache", torch_dtype=torch.float16)
+        #NOTE removed this line
         # self.unet.load_state_dict(torch.load(model_ckpt_path, map_location=self.device))
         self.unet.to(torch.float16)
 

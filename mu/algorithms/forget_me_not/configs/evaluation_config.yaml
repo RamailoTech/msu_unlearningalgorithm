@@ -1,7 +1,6 @@
 ckpt_path: "outputs/forget_me_not/finetuned_models"
 classifier_ckpt_path: "models/classifier_ckpt_path/style50_cls.pth"
-theme: "Abstractionism" #load finetuned model for this theme
-forget_theme: "Bricks"
+forget_theme: "Bricks" #load finetuned model for this theme
 cfg_text_list: [9.0]
 seed: 188
 task: "class"

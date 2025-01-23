@@ -41,7 +41,7 @@ class ForgetMeNotSampler(BaseSampler):
         """
         self.logger.info("Loading model...")
         
-        model_ckpt_path = f"{self.config['ckpt_path']}/{self.config['theme']}"
+        model_ckpt_path = f"{self.config['ckpt_path']}/{self.config['forget_theme']}"
 
         seed = self.config['seed']
 
