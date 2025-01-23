@@ -5,15 +5,17 @@ This repository provides an implementation of the Concept Ablation algorithm for
 
 ---
 
-## Installation
-
-### Create the Conda Environment
-
-First, create and activate the Conda environment using the provided `environment.yaml` file:
-
-```bash
-conda env create -f mu/algorithms/concept_ablation/environment.yaml -n mu_concept_ablation
+### Installation
 ```
+pip install unlearn_diff
+```
+### Prerequisities
+Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
+
+- **Miniconda** (recommended): [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
+- **Anaconda**: [https://www.anaconda.com/products/distribution](https://www.anaconda.com/products/distribution)
+
+After installing `conda`, ensure it is available in your PATH by running. You may require to restart the terminal session:
 
 ```bash
 conda --version
@@ -22,7 +24,7 @@ conda --version
 ```
 create_env <algorithm_name>
 ```
-eg: ```create_env concept_ablation```
+eg: ```create_env erase_diff```
 
 ### Activate environment:
 ```

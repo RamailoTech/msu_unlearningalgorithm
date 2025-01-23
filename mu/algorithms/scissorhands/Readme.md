@@ -77,54 +77,39 @@ ls -lh ./data/quick-canvas-dataset/sample/
 
 To train the ScissorHands algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
 
-**Example Command**
+## Run Train
+Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
-```bash
-python -m mu.algorithms.scissorhands.scripts.train \
---config_path mu/algorithms/scissorhands/configs/train_config.yaml
+**Example Code**
+```python
+from mu.algorithms.scissorhands.algorithm import ScissorHandsAlgorithm
+from mu.algorithms.scissorhands.configs import (
+    scissorhands_train_mu,
+)
+
+algorithm = ScissorHandsAlgorithm(
+    scissorhands_train_mu,
+    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
+    raw_dataset_dir=(
+        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+    ),
+    output_dir="/opt/dlami/nvme/outputs",
+)
+algorithm.run()
 ```
 
 **Running the Training Script in Offline Mode**
 
 ```bash
-WANDB_MODE=offline python -m mu.algorithms.scissorhands.scripts.train \
---config_path mu/algorithms/scissorhands/configs/train_config.yaml
+WANDB_MODE=offline python my_trainer.py
 ```
-
-**Passing Arguments via the Command Line**
-
-The `train.py` script allows you to override configuration parameters specified in the `train_config.yaml` file by passing them directly as arguments during runtime. This can be useful for quick experimentation without modifying the configuration file.
-
-
-**Example Usage with Command-Line Arguments**
-
-```bash
-python -m mu.algorithms.scissorhands.scripts.train \
---config_path mu/algorithms/scissorhands/configs/train_config.yaml \
---train_method xattn \
---alpha 0.2 \
---devices 0,1 \
---raw_dataset_dir /path/to/raw_dataset \
---output_dir outputs/experiment_1
-```
-
-**Explanation of the Example**
-
-* --config_path: Specifies the YAML configuration file to load default values.
-* --train_method: Overrides the training method ("xattn").
-* --alpha: Sets the guidance strength for the starting image to 0.2.
-* --devices: Specifies the GPUs (e.g., device 0 and 1) for training.
-* --raw_dataset_dir: Changes the raw dataset directory.
-* --output_dir: Sets a custom output directory for this run.
-
 
 **How It Works** 
-* Default Values: The script first loads default values from the YAML file specified by --config_path.
+* Default Values: The script first loads default values from the train config file as in configs section.
 
-* Command-Line Overrides: Any arguments passed on the command line will override the corresponding keys in the YAML configuration file.
+* Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
 
-* Final Configuration: The script merges the YAML file and command-line arguments into a single configuration dictionary and uses it for training.
-
+* Final Configuration: The script merges the configs and convert them into dictionary to proceed with the training. 
 
 ### Directory Structure
 

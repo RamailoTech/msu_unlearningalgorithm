@@ -77,66 +77,40 @@ ls -lh ./data/quick-canvas-dataset/sample/
 
 To train the Semi Permeable Membrane algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
 
-### Example Command
+## Run Train
+Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
-```bash
-python -m mu.algorithms.semipermeable_membrane.scripts.train \
---config_path mu/algorithms/semipermeable_membrane/config/train_config.yaml
+**Example Code**
+```python
+
+from mu.algorithms.semipermeable_membrane.algorithm import (
+    SemipermeableMembraneAlgorithm,
+)
+from mu.algorithms.semipermeable_membrane.configs import (
+    semipermiable_membrane_train_mu,
+    SemipermeableMembraneConfig,
+)
+
+algorithm = SemipermeableMembraneAlgorithm(
+    semipermiable_membrane_train_mu,
+    output_dir="/opt/dlami/nvme/outputs",
+    train={"iterations": 2},
+)
+algorithm.run()
 ```
 
-**Running the Script in Offline Mode**
+**Running the Training Script in Offline Mode**
 
 ```bash
-WANDB_MODE=offline python -m mu.algorithms.semipermeable_membrane.scripts.train \
---config_path mu/algorithms/semipermeable_membrane/config/train_config.yaml
+WANDB_MODE=offline python my_trainer.py
 ```
-
-
-
-**Passing Arguments via the Command Line**
-
-The `train.py` script allows you to override configuration parameters specified in the `train_config.yaml` file by passing them directly as arguments during runtime. This can be useful for quick experimentation without modifying the configuration file.
-
-
-
-**Example Usage with Command-Line Arguments**
-
-```bash
-python -m mu.algorithms.semipermeable_membrane.scripts.train \
---config_path mu/algorithms/semipermeable_membrane/config/train_config.yaml \
---dataset_type unlearncanvas \
---template object \
---template_name self-harm \
---devices 0,1 \
---output_dir outputs/experiment_1 \
---use_sample
-```
-
-
-**Explanation of the Example**
-
-* --config_path: Specifies the YAML configuration file to load default values.
-
-* --dataset_type: Defines the dataset type (e.g., unlearncanvas or i2p).
-
-* --template: Specifies the template to use (e.g., object, style, or i2p).
-
-* --template_name: The specific name for the template being used (e.g., self-harm, Abstractionism).
-
-* --devices: Comma-separated list of CUDA devices to use for training (e.g., 0,1 for using GPU 0 and GPU 1).
-
-* --output_dir: Sets a custom output directory for the results of this run.
-
-* --use_sample: Specifies whether to use a sample dataset for training.
-
 
 **How It Works** 
-* Default Values: The script first loads default values from the YAML file specified by --config_path.
+* Default Values: The script first loads default values from the train config file as in configs section.
 
-* Command-Line Overrides: Any arguments passed on the command line will override the corresponding keys in the YAML configuration file.
+* Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
 
-* Final Configuration: The script merges the YAML file and command-line arguments into a single configuration dictionary and uses it for training.
-
+* Final Configuration: The script merges the configs and convert them into dictionary to proceed with the training. 
 ## Directory Structure
 
 - `algorithm.py`: Implementation of the Semi Permeable MembraneAlgorithm class.

@@ -74,51 +74,39 @@ ls -lh ./data/quick-canvas-dataset/sample/
 ```
 ---
 
-## **Example Command**
 
-```bash
-python -m mu.algorithms.esd.scripts.train \
---config_path mu/algorithms/esd/configs/train_config.yaml
+## Run Train
+Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
+
+**Example Code**
+```python
+from mu.algorithms.esd.algorithm import ESDAlgorithm
+from mu.algorithms.esd.configs import (
+    esd_train_mu,
+)
+
+algorithm = ESDAlgorithm(
+    esd_train_mu,
+    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
+    raw_dataset_dir=(
+        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+    ),
+)
+algorithm.run()
 ```
 
-**Running the Script in Offline Mode**
-```bash
-WANDB_MODE=offline python -m mu.algorithms.esd.scripts.train \
---config_path mu/algorithms/esd/configs/train_config.yaml
-```
-
-
-**Passing Arguments via the Command Line**
-
-The `train.py` script allows you to override configuration parameters specified in the `train_config.yaml` file by passing them directly as arguments during runtime. This can be useful for quick experimentation without modifying the configuration file.
-
+**Running the Training Script in Offline Mode**
 
 ```bash
-python mu/algorithms/esd/scripts/train.py \
-    --config_path train_config.yaml \
-    --train_method "xattn" \
-    --start_guidance 0.1 \
-    --negative_guidance 0.0 \
-    --iterations 1000 \
-    --lr 5e-5 
+WANDB_MODE=offline python my_trainer.py
 ```
-
-
-**Explanation of the Example**
-
-* train_method: Specifies which model layers to update during training.
-* start_guidance: Guidance scale for generating initial images.
-* negative_guidance: Guidance scale for erasing the target concept.
-* iterations: Number of training iterations (epochs).
-* lr: Learning rate for the optimizer.
 
 **How It Works** 
-* Default Values: The script first loads default values from the YAML file specified by --config_path.
+* Default Values: The script first loads default values from the train config file as in configs section.
 
-* Command-Line Overrides: Any arguments passed on the command line will override the corresponding keys in the YAML configuration file.
+* Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
 
-* Final Configuration: The script merges the YAML file and command-line arguments into a single configuration dictionary and uses it for training.
-
+* Final Configuration: The script merges the configs and convert them into dictionary to proceed with the training. 
 
 ## Directory Structure
 

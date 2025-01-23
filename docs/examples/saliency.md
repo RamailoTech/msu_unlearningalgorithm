@@ -6,20 +6,20 @@ and execute it with `python my_trainer.py` or use `WANDB_MODE=offline python my_
 
 ### Use Pre-defined config class
 ```python
-from mlexperts.unlearningalgorithm.saliency_unlearning.algorithm import (
+from mu.algorithms.saliency_unlearning.algorithm import (
     SaliencyUnlearningAlgorithm,
 )
-from mlexperts.unlearningalgorithm.saliency_unlearning.configs import saliency_unlearning_train_mu
+from mu.algorithms.saliency_unlearning.configs import saliency_unlearning_train_mu
 algorithm = SaliencyUnlearningAlgorithm(saliency_unlearning_train_mu)
 algorithm.run()
 ```
 
 ### Modify some parameters in pre-defined config class
 ```python
-from mlexperts.unlearningalgorithm.saliency_unlearning.algorithm import (
+from mu.algorithms.saliency_unlearning.algorithm import (
     SaliencyUnlearningAlgorithm,
 )
-from mlexperts.unlearningalgorithm.saliency_unlearning.configs import (
+from mu.algorithms.saliency_unlearning.configs import (
     saliency_unlearning_train_mu,
 )
 
@@ -32,8 +32,8 @@ algorithm.run()
 
 ### Create your own config object
 ```python
-from mlexperts.unlearningalgorithm.saliency_unlearning.algorithm import SaliencyUnlearningAlgorithm
-from mlexperts.unlearningalgorithm.saliency_unlearning.configs import (
+from mu.algorithms.saliency_unlearning.algorithm import SaliencyUnlearningAlgorithm
+from mu.algorithms.saliency_unlearning.configs import (
     SaliencyUnlearningConfig,
 )
 
@@ -48,8 +48,8 @@ algorithm.run()
 
 ### Override the Config class itself
 ```python
-from mlexperts.unlearningalgorithm.saliency_unlearning.algorithm import SaliencyUnlearningAlgorithm
-from mlexperts.unlearningalgorithm.saliency_unlearning.configs import (
+from mu.algorithms.saliency_unlearning.algorithm import SaliencyUnlearningAlgorithm
+from mu.algorithms.saliency_unlearning.configs import (
     SaliencyUnlearningConfig,
 )
 
