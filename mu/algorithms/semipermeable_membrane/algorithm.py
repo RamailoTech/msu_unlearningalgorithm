@@ -1,5 +1,6 @@
 # mu/algorithms/semipermeable_membrane/algorithm.py
 
+from mu.core.base_config import BaseConfig
 import torch
 import wandb
 from typing import Dict
@@ -28,12 +29,23 @@ class SemipermeableMembraneAlgorithm(BaseAlgorithm):
         Args:
             config (Dict): Configuration dictionary.
         """
-        for key, value in kwargs.items():
-            setattr(config, key, value)
 
-        config.validate_config()
+        for key, value in kwargs.items():
+            if not hasattr(config, key):
+                setattr(config, key, value)
+                continue
+            config_attr = getattr(config, key)
+            if isinstance(config_attr, BaseConfig) and isinstance(value, dict):
+                for sub_key, sub_val in value.items():
+                    setattr(config_attr, sub_key, sub_val)
+            elif isinstance(config_attr, dict) and isinstance(value, dict):
+                config_attr.update(value)
+            else:
+                setattr(config, key, value)
         self.config = config.to_dict()
+
         self._parse_config()
+        config.validate_config()
         self.model = None
         self.trainer = None
         self.data_handler = None

@@ -7,7 +7,6 @@ class BaseConfig(ABC):
     def __init__(self):
         pass
 
-    @abstractmethod
     def validate_config(self):
         pass
 
