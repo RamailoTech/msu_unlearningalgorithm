@@ -285,10 +285,15 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
    - *Type:* `str`  
    - *Example:* `"vit_large_patch16_224"`
 
+- classifier_ckpt_path: Path to classifer checkpoint.
+   - *Type*: `str`
+   - *Example*: `models/classifier_ckpt_path/style50_cls.pth`
+
 ---
 
 ### **Training and Sampling Parameters:**
-- theme : Specifies the theme or concept being evaluated for removal from the model's outputs.  
+
+- forget_theme : Concept or style intended for removal in the evaluation process.  
    - *Type:* `str`  
    - *Example:* `"Bricks"`
 
@@ -333,7 +338,7 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 
 - reference_dir : Directory containing original images for comparison during evaluation.  
    - *Type:* `str`  
-   - *Example:* `"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
+   - *Example:* `"data/quick-canvas-dataset/sample/"`
 
 
 ---
@@ -350,9 +355,6 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 ---
 
 ### **Optimization Parameters:**
-- forget_theme : Concept or style intended for removal in the evaluation process.  
-   - *Type:* `str`  
-   - *Example:* `"Bricks"`
 
 - seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  
    - *Type:* `list`  

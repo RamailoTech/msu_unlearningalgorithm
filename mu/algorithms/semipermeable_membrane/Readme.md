@@ -291,9 +291,13 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 ---
 
 ### **Model Configuration Parameters:**
+- ckpt_path: paths to finetuned model checkpoint.
+   - *Type:* `str`
+   - *Example:* `outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors`
+
 - spm_path: paths to finetuned model checkpoint.
    - *Type:* `list`
-   - *Example:* `outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors`
+   - *Example:* `["outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"]`
 
 - base_model : Path to the pre-trained base model used for image generation.  
    - *Type:* `str`  
@@ -321,9 +325,13 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
    - *Type:* `str`  
    - *Example:* `"mu/algorithms/semipermeable_membrane/config"`  
 
-- model_ckpt_path: Path to pretrained Stable Diffusion model.
+- classification_model : Specifies the classification model used for evaluating the generated outputs.  
+   - *Type:* `str`  
+   - *Example:* `"vit_large_patch16_224"`
+
+- classifier_ckpt_path: Path to classifer checkpoint.
    - *Type*: `str`
-   - *Example*: `models/diffuser/style50`
+   - *Example*: `models/classifier_ckpt_path/style50_cls.pth`
 
 ---
 
@@ -362,11 +370,7 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 ### **Dataset and Classification Parameters:**
 - reference_dir : Path to the reference dataset used for evaluation and comparison.  
    - *Type:* `str`  
-   - *Example:* `"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`  
-
-- classification_model : Specifies the classification model used for the evaluation.  
-   - *Type:* `str`  
-   - *Example:* `"vit_large_patch16_224"`  
+   - *Example:* `"data/quick-canvas-dataset/sample/"`  
 
 - forget_theme : Specifies the theme to be forgotten during the unlearning process.  
    - *Type:* `str`  

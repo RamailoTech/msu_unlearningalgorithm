@@ -12,14 +12,10 @@ from PIL import Image
 from torchvision import transforms
 from torch.nn import functional as F
 
-from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid
+from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid,tensor_to_float
 from stable_diffusion.constants.const import theme_available, class_available
 from mu.core.base_evaluator import BaseEvaluator
 from mu.algorithms.forget_me_not import ForgetMeNotSampler
-
-#TODO to remove this
-theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
-class_available = ['Architectures', 'Bears', 'Birds']
 
 
 class ForgetMeNotEvaluator(BaseEvaluator):
@@ -63,10 +59,9 @@ class ForgetMeNotEvaluator(BaseEvaluator):
         self.model.head = torch.nn.Linear(1024, num_classes).to(self.device)
 
         # Load checkpoint
-        ckpt_path = self.config['model_ckpt_path']
+        ckpt_path = self.config["classifier_ckpt_path"]
         self.logger.info(f"Loading classification checkpoint from: {ckpt_path}")
-        #NOTE: changed model_state_dict to state_dict as it was not present and added strict=False
-        self.model.load_state_dict(torch.load(ckpt_path, map_location=self.device)['state_dict'],strict=False)
+        self.model.load_state_dict(torch.load(ckpt_path, map_location=self.device)["model_state_dict"])
         self.model.eval()
     
         self.logger.info("Classification model loaded successfully.")
@@ -91,7 +86,7 @@ class ForgetMeNotEvaluator(BaseEvaluator):
         self.logger.info("Starting accuracy calculation...")
 
         # Pull relevant config
-        theme = self.config.get("theme", None)
+        theme = self.config.get("forget_theme", None)
         input_dir = self.config['sampler_output_dir']
         output_dir = self.config["eval_output_dir"]
         seed_list = self.config.get("seed_list", [188, 288, 588, 688, 888])
@@ -242,23 +237,17 @@ class ForgetMeNotEvaluator(BaseEvaluator):
         )
         self.logger.info(f"Calculated FID: {fid_value}")
         self.results["FID"] = fid_value
-        self.eval_output_path = os.path.join(output_dir, "fid_value.pth")
 
-
-    # def save_results(self,*args, **kwargs):
-    #     """
-    #     Save evaluation results to a file. You can also do JSON or CSV if desired.
-    #     """
-    #     torch.save(self.results, self.eval_output_path)
-    #     self.logger.info(f"Results saved to: {self.eval_output_path}")
 
     def save_results(self, *args, **kwargs):
         """
         Save whatever is present in `self.results` to a JSON file.
         """
         try:
+            # Convert all tensors before saving
+            converted_results = tensor_to_float(self.results)
             with open(self.eval_output_path, 'w') as json_file:
-                json.dump(self.results, json_file, indent=4)
+                json.dump(converted_results, json_file, indent=4)
             self.logger.info(f"Results saved to: {self.eval_output_path}")
         except Exception as e:
             self.logger.error(f"Failed to save results to JSON file: {e}")

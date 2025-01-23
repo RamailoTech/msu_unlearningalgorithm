@@ -14,14 +14,11 @@ from torch.nn import functional as F
 from safetensors.torch import load_file
 
 from stable_diffusion.constants.const import theme_available, class_available
-from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid
+from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid, tensor_to_float
 from mu.core.base_evaluator import BaseEvaluator
 from mu.algorithms.semipermeable_membrane import SemipermeableMembraneSampler
 
 
-#TODO to remove this
-theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
-class_available = ['Architectures', 'Bears', 'Birds']
 
 class SemipermeableMembraneEvaluator(BaseEvaluator):
     """
@@ -64,13 +61,9 @@ class SemipermeableMembraneEvaluator(BaseEvaluator):
         self.model.head = torch.nn.Linear(1024, num_classes).to(self.device)
 
         # Load checkpoint
-        ckpt_path = self.config["ckpt_path"]
-        state_dict = load_file(ckpt_path)
-        converted_ckpt_path = os.path.splitext(ckpt_path)[0] + "_converted_checkpoint.pth"
-        torch.save(state_dict, converted_ckpt_path)
-        self.logger.info(f"Loading classification checkpoint from: {converted_ckpt_path}")
-        #NOTE: changed model_state_dict to state_dict as it was not present and added strict=False
-        self.model.load_state_dict(torch.load(converted_ckpt_path, map_location=self.device),strict=False)
+        ckpt_path = self.config["classifier_ckpt_path"]
+        self.logger.info(f"Loading classification checkpoint from: {ckpt_path}")
+        self.model.load_state_dict(torch.load(ckpt_path, map_location=self.device)["model_state_dict"])
         self.model.eval()
     
         self.logger.info("Classification model loaded successfully.")
@@ -95,7 +88,7 @@ class SemipermeableMembraneEvaluator(BaseEvaluator):
         self.logger.info("Starting accuracy calculation...")
 
         # Pull relevant config
-        theme = self.config.get("theme", None)
+        theme = self.config.get("forget_theme", None)
         input_dir = self.config['sampler_output_dir']
         output_dir = self.config["eval_output_dir"]
         seed_list = self.config.get("seed_list", [188, 288, 588, 688, 888])
@@ -227,7 +220,6 @@ class SemipermeableMembraneEvaluator(BaseEvaluator):
         forget_theme = self.config.get("forget_theme", None) 
         use_multiprocessing = self.config.get("multiprocessing", False)
         batch_size = self.config.get("batch_size", 64)
-        self.theme = self.config["theme"]
 
         images_generated = load_style_generated_images(
             path=generated_path, 
@@ -249,20 +241,15 @@ class SemipermeableMembraneEvaluator(BaseEvaluator):
         self.results["FID"] = fid_value
 
 
-    # def save_results(self,*args, **kwargs):
-    #     """
-    #     Save evaluation results to a file. You can also do JSON or CSV if desired.
-    #     """
-    #     torch.save(self.results, self.eval_output_path)
-    #     self.logger.info(f"Results saved to: {self.eval_output_path}")
-
     def save_results(self, *args, **kwargs):
         """
         Save whatever is present in `self.results` to a JSON file.
         """
         try:
+            # Convert all tensors before saving
+            converted_results = tensor_to_float(self.results)
             with open(self.eval_output_path, 'w') as json_file:
-                json.dump(self.results, json_file, indent=4)
+                json.dump(converted_results, json_file, indent=4)
             self.logger.info(f"Results saved to: {self.eval_output_path}")
         except Exception as e:
             self.logger.error(f"Failed to save results to JSON file: {e}")

@@ -18,10 +18,6 @@ from stable_diffusion.constants.const import theme_available, class_available
 from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid,tensor_to_float
 
 
-#TODO remove this
-theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
-class_available = ['Architectures', 'Bears', 'Birds']
-
 class ConceptAblationEvaluator(BaseEvaluator):
     """
     Example evaluator that calculates classification accuracy on generated images.
@@ -63,9 +59,9 @@ class ConceptAblationEvaluator(BaseEvaluator):
         self.model.head = torch.nn.Linear(1024, num_classes).to(self.device)
 
         # Load checkpoint
-        ckpt_path = self.config["model_ckpt_path"]
+        ckpt_path = self.config["classifier_ckpt_path"]
         self.logger.info(f"Loading classification checkpoint from: {ckpt_path}")
-        self.model.load_state_dict(torch.load(ckpt_path, map_location=self.device)["state_dict"],strict=False)
+        self.model.load_state_dict(torch.load(ckpt_path, map_location=self.device)["model_state_dict"])
         self.model.eval()
     
         self.logger.info("Classification model loaded successfully.")
@@ -241,15 +237,7 @@ class ConceptAblationEvaluator(BaseEvaluator):
         )
         self.logger.info(f"Calculated FID: {fid_value}")
         self.results["FID"] = fid_value
-        # self.eval_output_path = os.path.join(output_dir, "fid_value.pth")
 
-
-    # def save_results(self,*args, **kwargs):
-    #     """
-    #     Save evaluation results to a file. You can also do JSON or CSV if desired.
-    #     """
-    #     torch.save(self.results, self.eval_output_path)
-    #     self.logger.info(f"Results saved to: {self.eval_output_path}")
 
     def save_results(self, *args, **kwargs):
         """

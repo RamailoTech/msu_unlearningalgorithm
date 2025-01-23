@@ -67,8 +67,9 @@ class ForgetMeNotSampler(BaseSampler):
         ddim_eta = self.config["ddim_eta"]
         output_dir = self.config["sampler_output_dir"]
 
-        output_path = os.path.join(output_dir, theme)
-        os.makedirs(output_path, exist_ok=True)
+        for test_theme in theme_available:
+            theme_path = os.path.join(output_dir, test_theme)
+            os.makedirs(theme_path, exist_ok=True)
         self.logger.info(f"Generating images and saving to {output_dir}")
 
         # Disable NSFW checker
@@ -77,16 +78,13 @@ class ForgetMeNotSampler(BaseSampler):
         for test_theme in theme_available:
             for object_class in class_available:
                 for cfg_text in cfg_text_list:
-                    output_path = os.path.join(output_dir, f"{test_theme}_{object_class}_seed_{seed}.jpg")
-                    if os.path.exists(output_path):
-                        self.logger.info(f"Detected! Skipping: {output_path}!")
-                        continue
                     prompt = f"A {object_class} image in {test_theme} style"
                     self.logger.info(f"Generating: {prompt}")
                     
                     # Generate the image using the pipeline
                     generated_image = self.pipe(prompt=prompt, width=W, height=H, num_inference_steps=steps, guidance_scale=cfg_text).images[0]
-                    
+                    filename = f"{test_theme}_{object_class}_seed_{seed}.jpg"
+                    output_path = os.path.join(output_dir, test_theme, filename)
                     self.save_image(generated_image, output_path)
 
         self.logger.info("Image generation completed.")

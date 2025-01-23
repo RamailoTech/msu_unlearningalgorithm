@@ -19,10 +19,6 @@ from mu.helpers.utils import load_style_generated_images,load_style_ref_images,c
 from mu.core import BaseEvaluator
 
 
-#TODO remove this
-theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
-class_available = ['Architectures', 'Bears', 'Birds']
-
 class ESDEvaluator(BaseEvaluator):
     """
     Example evaluator that calculates classification accuracy on generated images.
@@ -64,10 +60,9 @@ class ESDEvaluator(BaseEvaluator):
         self.model.head = torch.nn.Linear(1024, num_classes).to(self.device)
 
         # Load checkpoint
-        ckpt_path = self.config["model_ckpt_path"]
+        ckpt_path = self.config["classifier_ckpt_path"]
         self.logger.info(f"Loading classification checkpoint from: {ckpt_path}")
-        #NOTE: changed model_state_dict to state_dict as it was not present and added strict=False
-        self.model.load_state_dict(torch.load(ckpt_path, map_location=self.device)["state_dict"],strict=False)
+        self.model.load_state_dict(torch.load(ckpt_path, map_location=self.device)["model_state_dict"])
         self.model.eval()
     
         self.logger.info("Classification model loaded successfully.")

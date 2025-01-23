@@ -1,7 +1,7 @@
 ckpt_path: "outputs/forget_me_not/finetuned_models"
-model_ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
-# model_ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
-theme: "Abstractionism"
+classifier_ckpt_path: "models/classifier_ckpt_path/style50_cls.pth"
+theme: "Abstractionism" #load finetuned model for this theme
+forget_theme: "Bricks"
 cfg_text_list: [9.0]
 seed: 188
 task: "class"
@@ -15,6 +15,5 @@ seed_list: ["188"]
 # classification_model: "vit_large_patch16_224.augreg_in21k"
 classification_model: "vit_large_patch16_224"
 eval_output_dir: "outputs/eval_results/mu_results/forget_me_not/"
-reference_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
-forget_theme: "Bricks"
+reference_dir: "data/quick-canvas-dataset/sample/"
 multiprocessing: False

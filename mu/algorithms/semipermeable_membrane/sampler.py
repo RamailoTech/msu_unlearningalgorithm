@@ -45,7 +45,7 @@ class SemipermeableMembraneSampler(BaseSampler):
 
         self.config = config
         self.device = self.config['devices'][0]
-        model_config = f"{self.config['model_config']}/{self.config['theme']}/config.yaml"
+        model_config = f"{self.config['model_config']}/{self.config['forget_theme']}/config.yaml"
         self.model_config: GenerationConfig = load_config_from_yaml(model_config)
         self.model = None
         self.sampler = None
@@ -201,14 +201,16 @@ class SemipermeableMembraneSampler(BaseSampler):
         Sample (generate) images using the loaded model and sampler, based on the config.
         """
         assigned_multipliers = self.config["spm_multiplier"]
-        theme = self.config["theme"]           
+        theme = self.config["forget_theme"]           
         seed = self.config["seed"]
-        output_dir = f"{self.config['sampler_output_dir']}/{theme}"
+        output_dir = f"{self.config['sampler_output_dir']}"
 
         #make config directory
         config = f"{self.config['model_config']}/{self.config['theme']}/config.yaml"
 
-        os.makedirs(output_dir,exist_ok=True)
+        for test_theme in theme_available:
+            theme_path = os.path.join(output_dir, test_theme)
+            os.makedirs(theme_path, exist_ok=True)
         self.logger.info(f"Generating images and saving to {output_dir}")
 
         seed_everything(seed)
@@ -263,8 +265,9 @@ class SemipermeableMembraneSampler(BaseSampler):
                             num_images_per_prompt=self.model_config.generate_num,
                             prompt_embeds=prompt_embeds,
                         ).images[0]
-                        
-                    self.save_image(image, os.path.join(output_dir, f"{test_theme}_{object_class}_seed_{seed}.jpg"))
+                    filename = f"{test_theme}_{object_class}_seed_{seed}.jpg"
+                    output_path = os.path.join(output_dir, test_theme, filename)
+                    self.save_image(image, output_path)
 
 
         self.logger.info("Image generation completed.")
