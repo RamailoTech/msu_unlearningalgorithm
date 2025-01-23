@@ -73,70 +73,69 @@ ls -lh ./data/quick-canvas-dataset/sample/
 ```
 ---
 
-### Example Command
+## Run Train
+Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
 1. **Train a Text Inversion**
 
-```bash
-python -m mu.algorithms.forget_me_not.scripts.train_ti \
---config_path mu/algorithms/forget_me_not/config/train_ti_config.yaml
+```python
+
+from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from mu.algorithms.forget_me_not.configs import (
+    forget_me_not_train_ti_mu,
+)
+
+algorithm = ForgetMeNotAlgorithm(
+    forget_me_not_train_ti_mu,
+    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50",
+    raw_dataset_dir=(
+        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+    ), 
+    steps=10
+)
+algorithm.run(train_type="train_ti")
 ```
 
 **Running the Script in Offlikne Mode**
 
 ```bash
-WANDB_MODE=offline python -m mu.algorithms.forget_me_not.scripts.train_ti \
---config_path mu/algorithms/forget_me_not/config/train_ti_config.yaml
+WANDB_MODE=offline python my_trainer_ti.py
 ```
 
 2. **Perform Unlearning**
 
-Before running the train_attn.py script, update the ti_weights_path parameter in the configuration file to point to the output generated from the Text Inversion (train_ti.py) stage.
+Before running the `train_attn` script, update the `ti_weights_path` parameter in the configuration file to point to the output generated from the Text Inversion (train_ti.py) stage
 
-Example:
-`ti_weights_path: "outputs/forget_me_not/ti_models/step_inv_10.safetensors"`
+```python
+from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from mu.algorithms.forget_me_not.configs import (
+    forget_me_not_train_attn_mu,
+)
 
-Run unlearning script:
-
-```bash
-python -m mu.algorithms.forget_me_not.scripts.train_attn \
---config_path mu/algorithms/forget_me_not/config/train_attn_config.yaml
+algorithm = ForgetMeNotAlgorithm(
+    forget_me_not_train_attn_mu,
+    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50",
+    raw_dataset_dir=(
+        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+    ),
+    steps=10,
+    ti_weights_path="outputs/forget_me_not/finetuned_models/Abstractionism/step_inv_10.safetensors"
+)
+algorithm.run(train_type="train_attn")
 ```
 
-**Running the Script in Offline Mode**
+**Running the Script in Offlikne Mode**
 
 ```bash
-WANDB_MODE=offline python -m mu.algorithms.forget_me_not.scripts.train_attn \
---config_path mu/algorithms/forget_me_not/config/train_attn_config.yaml
+WANDB_MODE=offline python my_trainer_attn.py
 ```
-
-**Passing Arguments via the Command Line**
-
-The `train_ti.py` and `train_attn.py` script allows you to override configuration parameters specified in the `train_ti_config.yaml` and `train_attn_config.yaml` files by passing them directly as arguments during runtime. This can be useful for quick experimentation without modifying the configuration file.
-
-**Example Usage with Command-Line Arguments**
-
-```bash
-python -m mu.algorithms.forget_me_not.scripts.train_ti \
-    --config_path mu/algorithms/forget_me_not/config/train_ti_config.yaml \
-    --ckpt_path /path/to/style50 \
-    --raw_dataset_dir /path/to/raw_dataset \
-```
-
-**Explanation of the Example**
-
-    * --config_path: Path to the pretrained model's checkpoint file for Stable Diffusion.
-
-    * --raw_dataset_dir: Directory containing the original dataset organized by themes and classes.
-
 
 **How It Works** 
-* Default Values: The script first loads default values from the YAML file specified by --config_path.
+* Default Values: The script first loads default values from the train config file as in configs section.
 
-* Command-Line Overrides: Any arguments passed on the command line will override the corresponding keys in the YAML configuration file.
+* Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
 
-* Final Configuration: The script merges the YAML file and command-line arguments into a single configuration dictionary and uses it for training.
-
+* Final Configuration: The script merges the configs and convert them into dictionary to proceed with the training. 
 
 ## Directory Structure
 

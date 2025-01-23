@@ -83,58 +83,38 @@ To train the saliency unlearning algorithm to unlearn a specific concept or styl
 python -m mu.algorithms.saliency_unlearning.scripts.generate_mask \
 --config_path mu/algorithms/saliency_unlearning/configs/mask_config.yaml
 ```
+### Run Train
+Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
-**Running the Script in Offline Mode**
+**Example Code**
+```python
+from mu.algorithms.saliency_unlearning.algorithm import (
+    SaliencyUnlearningAlgorithm,
+)
+from mu.algorithms.saliency_unlearning.configs import (
+    saliency_unlearning_train_mu,
+)
 
-```bash
-WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.generate_mask \
---config_path mu/algorithms/saliency_unlearning/configs/mask_config.yaml
+algorithm = SaliencyUnlearningAlgorithm(
+    saliency_unlearning_train_mu,
+    output_dir="/opt/dlami/nvme/outputs",
+)
+algorithm.run()
 ```
 
-**Step 2: Unlearn the weights**
-
-- Add the generated mask path to the `train_config.yaml` file or you can override it by passing them directly as arguments during runtime.
-
-- Run the script:
+**Running the Training Script in Offline Mode**
 
 ```bash
-python -m mu.algorithms.saliency_unlearning.scripts.train \
---config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml
+WANDB_MODE=offline python my_trainer.py
 ```
 
-**Running the Script in Offline Mode**
-```bash
-WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.train \
---config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml
-```
+**How It Works** 
+* Default Values: The script first loads default values from the train config file as in configs section.
 
+* Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
 
-**Passing Arguments via the Command Line**
+* Final Configuration: The script merges the configs and convert them into dictionary to proceed with the training. 
 
-The `train.py` script allows you to override configuration parameters specified in the `train_config.yaml` file by passing them directly as arguments during runtime. This can be useful for quick experimentation without modifying the configuration file.
-
-
-**Example Usage with Command-Line Arguments**
-
-```bash
-python -m mu.algorithms.saliency_unlearning.scripts.train \
---config_path mu/algorithms/saliency_unlearning/configs/train_config.yaml \
---mask_path /path/to/mask.pt \
---alpha 0.1 \
---epochs 10 \
---raw_dataset_dir /path/to/raw_dataset \
---output_dir outputs/experiment_1
-```
-
-**Explanation of the Example**
-
-* --config_path: Specifies the YAML configuration file to load default values.
-* --mask_path: Path of the generated mask.
-* --alpha: Sets the guidance strength for the starting image to 0.2.
-* --epochs: Increases the number of training epochs to 10.
-* --lr: Updates the learning rate to 1e-4.
-* --raw_dataset_dir: Changes the raw dataset directory.
-* --output_dir: Sets a custom output directory for this run.
 
 **Similarly, you can pass arguments during runtime to generate mask.**
 
