@@ -1,0 +1,30 @@
+{
+    "overall": {
+        "task": "classifier",
+        "attacker": "random",
+        "logger": "json",
+        "resume": null
+    },
+    "task": {
+        "concept": "church",
+        "diffusers_model_name_or_path": "outputs/semipermeable_membrane/finetuned_models/",
+        "target_ckpt": "files/pretrained/SD-1-4/ESD_ckpt/Church-ESDu1-UNET-SD.pt",
+        "cache_path": ".cache",
+        "dataset_path": "files/dataset/church",
+        "criterion": "l2",
+        "backend": "diffusers"
+    },
+    "attacker": {
+        "insertion_location": "prefix_k",
+        "k": 3,
+        "iteration": 40,
+        "attack_idx": 1,
+        "eval_seed": 0,
+        "universal": false
+    },
+    "logger": {
+        "json": {
+            "root": "files/results/random_esd_church"
+        }
+    }
+}

@@ -1,0 +1,15 @@
+asr:
+  root: "results/random_esd_nudity/Hard Prompt"
+  root-no-attack: "results/no_attack_esd_nudity/NoAttackEsdNudity"
+
+clip:
+  image_path: "results/random_esd_nudity/Hard Prompt/images"
+  devices: "0"
+  log_path: "results/random_esd_nudity/Hard Prompt/log.json"
+  model_name_or_path: "openai/clip-vit-base-patch32"
+
+fid:
+  ref_batch_path: "results/hard_prompt_esd_nudity_P4D/P4d/images"
+  sample_batch_path: "outputs/dataset/i2p_nude/imgs"
+
+output_path: "results/evaluation/results.json"

@@ -1,0 +1,33 @@
+{
+    "overall": {
+        "task": "classifier",
+        "attacker": "no_attack",
+        "logger": "json",
+        "resume": null
+    },
+    "task": {
+        "concept": "church",
+        "compvis_ckpt_path": "outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
+        "compvis_config_path":"mu/algorithms/scissorhands/configs/model_config.yaml",
+        "cache_path": ".cache",
+        "dataset_path": "files/dataset/church",
+        "criterion": "l1",
+        "backend": "compvis"
+    },
+    "attacker": {
+        "insertion_location": "prefix_k",
+        "k": 3,
+        "iteration": 40,
+        "attack_idx": 1,
+        "eval_seed": 0,
+        "universal": false,
+        "no_attack":{
+            "dataset_path": "files/dataset/church"
+        }
+    },
+    "logger": {
+        "json": {
+            "root": "files/results/no_attack_esd_church_scissorhands"
+        }
+    }
+}

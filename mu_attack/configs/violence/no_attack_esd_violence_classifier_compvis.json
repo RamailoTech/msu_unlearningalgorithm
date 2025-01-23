@@ -1,0 +1,36 @@
+{
+    "overall": {
+        "task": "classifier",
+        "attacker": "no_attack",
+        "logger": "json",
+        "resume": null
+    },
+    "task": {
+        "concept": "harm",
+        "compvis_ckpt_path": "outputs/esd/esd_Abstractionism_model.pth",
+        "compvis_config_path":"mu/algorithms/esd/configs/model_config.yaml",
+        "cache_path": ".cache",
+        "dataset_path": "files/dataset/Violence",
+        "criterion": "l2",
+        "classifier_dir": null,
+        "backend": "diffusers"
+    },
+    "attacker": {
+        "insertion_location": "prefix_k",
+        "k": 5,
+        "iteration": 40,
+        "seed_iteration": 1,
+        "attack_idx": 0,
+        "eval_seed": 0,
+        "universal": false,
+        "sequential": true,
+        "no_attack": {
+            "dataset_path": "files/dataset/Violence"
+        }
+    },
+    "logger": {
+        "json": {
+            "root": "files/results/no_attack_esd_violence"
+        }
+    }
+}
