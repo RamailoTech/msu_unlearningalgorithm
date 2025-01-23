@@ -1,105 +1,157 @@
 import os
-from mu.core.base_config import BaseConfig
 from pathlib import Path
 
-current_dir = Path(__file__).parent
+from mu.core.base_config import BaseConfig
+
+
+class DataHandlerSubConfig(BaseConfig):
+    def __init__(self, target: str, size: int = 512):
+        self.target = target
+        self.params = {"size": size}
+
+
+class DataHandlerParamsConfig(BaseConfig):
+    def __init__(
+        self,
+        batch_size: int = 1,
+        num_workers: int = 1,
+        wrap: bool = False,
+        train: DataHandlerSubConfig = None,
+        train2: DataHandlerSubConfig = None,
+    ):
+        self.batch_size = batch_size
+        self.num_workers = num_workers
+        self.wrap = wrap
+        self.train = train
+        self.train2 = train2
+
+
+class DataConfig(BaseConfig):
+    def __init__(
+        self,
+        target: str = "mu.algorithms.concept_ablation.data_handler.ConceptAblationDataHandler",
+        params: DataHandlerParamsConfig = None,
+    ):
+        self.target = target
+        self.params = params
+
+
+class ImageLoggerCallbackParams(BaseConfig):
+    def __init__(
+        self,
+        batch_frequency: int = 20000,
+        save_freq: int = 10000,
+        max_images: int = 8,
+        increase_log_steps: bool = False,
+    ):
+        self.batch_frequency = batch_frequency
+        self.save_freq = save_freq
+        self.max_images = max_images
+        self.increase_log_steps = increase_log_steps
+
+
+class ImageLoggerCallbackConfig(BaseConfig):
+    def __init__(
+        self,
+        target: str = "mu.algorithms.concept_ablation.callbacks.ImageLogger",
+        params: ImageLoggerCallbackParams = None,
+    ):
+        self.target = target
+        self.params = params
+
+
+class ModelCheckpointParamsConfig(BaseConfig):
+    def __init__(self, every_n_train_steps: int = 10000):
+        self.every_n_train_steps = every_n_train_steps
+
+
+class ModelCheckpointConfig(BaseConfig):
+    def __init__(self, params: ModelCheckpointParamsConfig = None):
+        self.params = params
+
+
+class TrainerConfig(BaseConfig):
+    def __init__(self, max_steps: int = 2000):
+        self.max_steps = max_steps
+
+
+class CallbacksConfig(BaseConfig):
+    def __init__(self, image_logger: ImageLoggerCallbackConfig = None):
+        self.image_logger = image_logger
+
+
+class LightningConfig(BaseConfig):
+    def __init__(
+        self,
+        callbacks: CallbacksConfig = None,
+        modelcheckpoint: ModelCheckpointConfig = None,
+        trainer: TrainerConfig = None,
+    ):
+        self.callbacks = callbacks
+        self.modelcheckpoint = modelcheckpoint
+        self.trainer = trainer
 
 
 class ConceptAblationConfig(BaseConfig):
     def __init__(self, **kwargs):
-        # Training parameters
-        self.seed = 23  # Seed for random number generators
-        self.scale_lr = True  # Flag to scale the learning rate
-        self.caption_target = "Abstractionism Style"  # Caption target for the training
-        self.regularization = True  # Whether to apply regularization
-        self.n_samples = 10  # Number of samples to generate
-        self.train_size = 200  # Number of training samples
-        self.base_lr = 2.0e-06  # Base learning rate
-
-        # Model configuration
+        current_dir = Path(__file__).parent
+        self.seed = 23
+        self.scale_lr = True
+        self.caption_target = "Abstractionism Style"
+        self.regularization = True
+        self.n_samples = 10
+        self.train_size = 200
+        self.base_lr = 2.0e-06
         self.config_path = current_dir / "train_config.yaml"
-        self.model_config_path = (
-            current_dir / "model_config.yaml"
-        )  # Path to model config
-        self.ckpt_path = (
-            "models/compvis/style50/compvis.ckpt"  # Path to model checkpoint
+        self.model_config_path = current_dir / "model_config.yaml"
+        self.ckpt_path = "models/compvis/style50/compvis.ckpt"
+        self.raw_dataset_dir = "data/quick-canvas-dataset/sample"
+        self.processed_dataset_dir = "mu/algorithms/concept_ablation/data"
+        self.dataset_type = "unlearncanvas"
+        self.template = "style"
+        self.template_name = "Abstractionism"
+        self.lr = 5e-5
+        self.output_dir = "outputs/concept_ablation/finetuned_models"
+        self.devices = "0"
+        self.use_sample = True
+        self.data = DataConfig(
+            target="mu.algorithms.concept_ablation.data_handler.ConceptAblationDataHandler",
+            params=DataHandlerParamsConfig(
+                batch_size=1,
+                num_workers=1,
+                wrap=False,
+                train=DataHandlerSubConfig(
+                    target="mu.algorithms.concept_ablation.src.finetune_data.MaskBase",
+                    size=512,
+                ),
+                train2=DataHandlerSubConfig(
+                    target="mu.algorithms.concept_ablation.src.finetune_data.MaskBase",
+                    size=512,
+                ),
+            ),
         )
-
-        # Dataset directories
-        self.raw_dataset_dir = (
-            "data/quick-canvas-dataset/sample"  # Raw dataset directory
+        self.lightning = LightningConfig(
+            callbacks=CallbacksConfig(
+                image_logger=ImageLoggerCallbackConfig(
+                    target="mu.algorithms.concept_ablation.callbacks.ImageLogger",
+                    params=ImageLoggerCallbackParams(
+                        batch_frequency=20000,
+                        save_freq=10000,
+                        max_images=8,
+                        increase_log_steps=False,
+                    ),
+                )
+            ),
+            modelcheckpoint=ModelCheckpointConfig(
+                params=ModelCheckpointParamsConfig(every_n_train_steps=10000)
+            ),
+            trainer=TrainerConfig(max_steps=2000),
         )
-        self.processed_dataset_dir = (
-            "mu/algorithms/concept_ablation/data"  # Processed dataset directory
-        )
-        self.dataset_type = "unlearncanvas"  # Dataset type
-        self.template = "style"  # Template used for training
-        self.template_name = "Abstractionism"  # Template name
-
-        # Learning rate for training
-        self.lr = 5e-5  # Learning rate
-
-        # Output directory for saving models
-        self.output_dir = (
-            "outputs/concept_ablation/finetuned_models"  # Output directory for results
-        )
-
-        # Device configuration
-        self.devices = "0"  # CUDA devices (comma-separated)
-
-        # Additional flags
-        self.use_sample = True  # Whether to use the sample dataset for training
-
-        # Data configuration
-        self.data = {
-            "target": "mu.algorithms.concept_ablation.data_handler.ConceptAblationDataHandler",
-            "params": {
-                "batch_size": 1,  # Batch size for training
-                "num_workers": 1,  # Number of workers for loading data
-                "wrap": False,  # Whether to wrap the dataset
-                "train": {
-                    "target": "mu.algorithms.concept_ablation.src.finetune_data.MaskBase",
-                    "params": {"size": 512},  # Image size for the training set
-                },
-                "train2": {
-                    "target": "mu.algorithms.concept_ablation.src.finetune_data.MaskBase",
-                    "params": {"size": 512},  # Image size for the second training set
-                },
-            },
-        }
-
-        # Lightning configuration
-        self.lightning = {
-            "callbacks": {
-                "image_logger": {
-                    "target": "mu.algorithms.concept_ablation.callbacks.ImageLogger",
-                    "params": {
-                        "batch_frequency": 20000,  # Frequency to log images
-                        "save_freq": 10000,  # Frequency to save images
-                        "max_images": 8,  # Maximum number of images to log
-                        "increase_log_steps": False,  # Whether to increase the logging steps
-                    },
-                }
-            },
-            "modelcheckpoint": {
-                "params": {
-                    "every_n_train_steps": 10000  # Save the model every N training steps
-                }
-            },
-            "trainer": {"max_steps": 2000},  # Maximum number of training steps
-        }
-
         self.prompts = "mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt"
-
-        # Update properties based on provided kwargs
         for key, value in kwargs.items():
             setattr(self, key, value)
 
     def validate_config(self):
-        """
-        Perform basic validation on the config parameters.
-        """
-        # Check if directories exist
         if not os.path.exists(self.raw_dataset_dir):
             raise FileNotFoundError(f"Directory {self.raw_dataset_dir} does not exist.")
         if not os.path.exists(self.processed_dataset_dir):
@@ -108,44 +160,20 @@ class ConceptAblationConfig(BaseConfig):
             )
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
-
-        # Validate checkpoint path
         if not os.path.exists(self.ckpt_path):
             raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
-
-        # Validate learning rate
         if self.lr <= 0:
             raise ValueError("Learning rate (lr) should be positive.")
-
-        # Validate model and data handler paths
-        if not isinstance(self.data, dict):
-            raise ValueError("Data configuration should be a dictionary.")
-        if not isinstance(self.data["params"], dict):
-            raise ValueError("Data parameters should be a dictionary.")
-
-        # Validate Lightning configuration
-        if not isinstance(self.lightning, dict):
-            raise ValueError("Lightning configuration should be a dictionary.")
-        if "callbacks" not in self.lightning or not isinstance(
-            self.lightning["callbacks"], dict
-        ):
-            raise ValueError("Lightning callbacks should be a dictionary.")
-        if "trainer" not in self.lightning or not isinstance(
-            self.lightning["trainer"], dict
-        ):
-            raise ValueError("Lightning trainer should be a dictionary.")
-
-        # Check if the model checkpoint exists
         if not os.path.exists(self.model_config_path):
             raise FileNotFoundError(
                 f"Model config file {self.model_config_path} does not exist."
             )
 
 
-concept_ablation_train_mu = ConceptAblationConfig()
-concept_ablation_train_mu.dataset_type = "unlearncanvas"
-concept_ablation_train_mu.raw_dataset_dir = "data/quick-canvas-dataset/sample"
+concept_ablation_train_mu = ConceptAblationConfig(
+    dataset_type="unlearncanvas", raw_dataset_dir="data/quick-canvas-dataset/sample"
+)
 
-concept_ablation_train_i2p = ConceptAblationConfig()
-concept_ablation_train_i2p.dataset_type = "i2p"
-concept_ablation_train_i2p.raw_dataset_dir = "data/i2p-dataset/sample"
+concept_ablation_train_i2p = ConceptAblationConfig(
+    dataset_type="i2p", raw_dataset_dir="data/i2p-dataset/sample"
+)
