@@ -12,9 +12,11 @@ from PIL import Image
 from torchvision import transforms
 from torch.nn import functional as F
 
+from stable_diffusion.constants.const import theme_available, class_available
+
 from mu.core.base_evaluator import BaseEvaluator
 from mu.algorithms.saliency_unlearning import SaliencyUnlearningSampler
-from stable_diffusion.constants.const import theme_available, class_available
+from mu.algorithms.saliency_unlearning.configs import SaliencyUnlearningEvaluationConfig
 from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid, tensor_to_float
 
 
@@ -25,7 +27,7 @@ class SaliencyUnlearningEvaluator(BaseEvaluator):
     Inherits from the abstract BaseEvaluator.
     """
 
-    def __init__(self,config: Dict[str, Any], **kwargs):
+    def __init__(self,config:SaliencyUnlearningEvaluationConfig, **kwargs):
         """
         Args:
             sampler (Any): An instance of a BaseSampler-derived class (e.g., SaliencyUnlearningSampler).
@@ -33,7 +35,12 @@ class SaliencyUnlearningEvaluator(BaseEvaluator):
             **kwargs: Additional overrides for config.
         """
         super().__init__(config, **kwargs)
-        self.config = config
+        self.config = config.__dict__
+        for key, value in kwargs.items():
+            setattr(config, key, value)
+        self._parse_config()
+        config.validate_config()
+        self.config = config.to_dict()
         self.sampler = SaliencyUnlearningSampler(config)
         self.device = self.config['devices'][0]
         self.model = None

@@ -13,8 +13,10 @@ from PIL import Image
 from torchvision import transforms
 from torch.nn import functional as F
 
-from mu.algorithms.esd import ESDEvaluatorSampler
 from stable_diffusion.constants.const import theme_available, class_available
+
+from mu.algorithms.esd.configs import ESDEvaluationConfig
+from mu.algorithms.esd import ESDEvaluatorSampler
 from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid, tensor_to_float
 from mu.core import BaseEvaluator
 
@@ -25,7 +27,7 @@ class ESDEvaluator(BaseEvaluator):
     Inherits from the abstract BaseEvaluator.
     """
 
-    def __init__(self,config: Dict[str, Any], **kwargs):
+    def __init__(self,config: ESDEvaluationConfig, **kwargs):
         """
         Args:
             sampler (Any): An instance of a BaseSampler-derived class (e.g., ESDSampler).
@@ -33,7 +35,12 @@ class ESDEvaluator(BaseEvaluator):
             **kwargs: Additional overrides for config.
         """
         super().__init__(config, **kwargs)
-        self.config = config
+        self.config = config.__dict__
+        for key, value in kwargs.items():
+            setattr(config, key, value)
+        self._parse_config()
+        config.validate_config()
+        self.config = config.to_dict()
         self.sampler = ESDEvaluatorSampler(config)
         self.device = self.config['devices'][0]
         self.model = None

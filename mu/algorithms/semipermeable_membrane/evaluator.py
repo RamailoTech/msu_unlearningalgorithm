@@ -14,6 +14,8 @@ from torch.nn import functional as F
 from safetensors.torch import load_file
 
 from stable_diffusion.constants.const import theme_available, class_available
+
+from mu.algorithms.semipermeable_membrane.configs import SemipermeableMembraneEvaluationConfig
 from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid, tensor_to_float
 from mu.core.base_evaluator import BaseEvaluator
 from mu.algorithms.semipermeable_membrane import SemipermeableMembraneSampler
@@ -26,7 +28,7 @@ class SemipermeableMembraneEvaluator(BaseEvaluator):
     Inherits from the abstract BaseEvaluator.
     """
 
-    def __init__(self,config: Dict[str, Any], **kwargs):
+    def __init__(self,config: SemipermeableMembraneEvaluationConfig, **kwargs):
         """
         Args:
             sampler (Any): An instance of a BaseSampler-derived class (e.g., SemipermeableMembraneSampler).
@@ -34,7 +36,12 @@ class SemipermeableMembraneEvaluator(BaseEvaluator):
             **kwargs: Additional overrides for config.
         """
         super().__init__(config, **kwargs)
-        self.config = config
+        self.config = config.__dict__
+        for key, value in kwargs.items():
+            setattr(config, key, value)
+        self._parse_config()
+        config.validate_config()
+        self.config = config.to_dict()
         self.sampler = SemipermeableMembraneSampler(config)
         self.device = self.config['devices'][0]
         self.model = None
