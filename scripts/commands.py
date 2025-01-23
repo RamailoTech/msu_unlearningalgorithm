@@ -46,8 +46,11 @@ def download_models(model_name):
 
 def env_manager(algorithm, env_name=None):
     """Creates a Conda environment for a specific algorithm."""
-    env_file = os.path.join(BASE_DIR, '..', 'mu', 'algorithms', algorithm, 'environment.yaml')
-
+    if not str(algorithm).lower() == "mu_attack":
+        env_file = os.path.join(BASE_DIR, '..', 'mu', 'algorithms', algorithm, 'environment.yaml')
+    else:
+        env_file = os.path.join("mu_attack", "environment.yaml")
+        
     if not os.path.exists(env_file):
         sys.exit(f"Environment file not found for algorithm '{algorithm}'.")
     with open(env_file, 'r') as file:
