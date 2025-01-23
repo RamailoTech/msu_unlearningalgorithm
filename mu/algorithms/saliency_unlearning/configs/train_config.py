@@ -97,12 +97,10 @@ class SaliencyUnlearningConfig(BaseConfig):
             )
 
 
-saliency_unlearning_train_config_quick_canvas = SaliencyUnlearningConfig()
-saliency_unlearning_train_config_quick_canvas.dataset_type = "unlearncanvas"
-saliency_unlearning_train_config_quick_canvas.raw_dataset_dir = (
-    "data/quick-canvas-dataset/sample"
-)
+saliency_unlearning_train_mu = SaliencyUnlearningConfig()
+saliency_unlearning_train_mu.dataset_type = "unlearncanvas"
+saliency_unlearning_train_mu.raw_dataset_dir = "data/quick-canvas-dataset/sample"
 
-saliency_unlearning_train_config_i2p = SaliencyUnlearningConfig()
-saliency_unlearning_train_config_i2p.dataset_type = "i2p"
-saliency_unlearning_train_config_i2p.raw_dataset_dir = "data/i2p-dataset/sample"
+saliency_unlearning_train_i2p = SaliencyUnlearningConfig()
+saliency_unlearning_train_i2p.dataset_type = "i2p"
+saliency_unlearning_train_i2p.raw_dataset_dir = "data/i2p-dataset/sample"

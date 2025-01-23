@@ -150,13 +150,11 @@ class SemipermeableMembraneConfig(BaseConfig):
             raise ValueError("guidance_scale should be a string.")
 
 
-semipermiable_membrane_train_config_quick_canvas = SemipermeableMembraneConfig()
-semipermiable_membrane_train_config_quick_canvas.dataset_type = "unlearncanvas"
-semipermiable_membrane_train_config_quick_canvas.raw_dataset_dir = (
-    "datasets/quick-canvas-dataset/sample"
-)
+semipermiable_membrane_train_mu = SemipermeableMembraneConfig()
+semipermiable_membrane_train_mu.dataset_type = "unlearncanvas"
+semipermiable_membrane_train_mu.raw_dataset_dir = "datasets/quick-canvas-dataset/sample"
 
 
-semipermiable_membrane_train_config_i2p = SemipermeableMembraneConfig()
-semipermiable_membrane_train_config_i2p.dataset_type = "i2p"
-semipermiable_membrane_train_config_i2p.raw_dataset_dir = "datasets/i2p-dataset/sample"
+semipermiable_membrane_train_i2p = SemipermeableMembraneConfig()
+semipermiable_membrane_train_i2p.dataset_type = "i2p"
+semipermiable_membrane_train_i2p.raw_dataset_dir = "datasets/i2p-dataset/sample"
