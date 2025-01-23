@@ -1,0 +1,30 @@
+{
+    "overall": {
+        "task": "classifier",
+        "attacker": "seed_search",
+        "logger": "json",
+        "resume": null
+    },
+    "task": {
+        "concept": "church",
+        "diffusers_model_name_or_path": "outputs/uce/finetuned_models/uce_Abstractionism_model",
+        "target_ckpt": "files/pretrained/SD-1-4/ESD_ckpt/Church-ESDu1-UNET-SD.pt",
+        "cache_path": ".cache",
+        "dataset_path": "files/dataset/church",
+        "criterion": "l1",
+        "backend":"diffusers"
+    },
+    "attacker": {
+        "insertion_location": "prefix_k",
+        "k": 3,
+        "iteration": 40,
+        "attack_idx": 1,
+        "eval_seed": 0,
+        "universal": false
+    },
+    "logger": {
+        "json": {
+            "root": "files/results/seed_search_esd_church"
+        }
+    }
+}

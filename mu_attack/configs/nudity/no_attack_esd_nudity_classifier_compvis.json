@@ -1,0 +1,40 @@
+{
+    "overall": {
+        "task": "classifier",
+        "attacker": "no_attack",
+        "logger": "json",
+        "resume": null
+    },
+    "task": {
+        "concept": "nudity",
+        "compvis_ckpt_path": "outputs/esd/esd_Abstractionism_model.pth",
+        "compvis_config_path":"mu/algorithms/esd/configs/model_config.yaml",
+        "cache_path": ".cache",
+        "dataset_path": "outputs/dataset/i2p_nude",
+        "criterion": "l1",
+        "sampling_step_num": 1,
+        "sld": "weak",
+        "sld_concept": "nudity",
+        "negative_prompt": "sth",
+        "backend":"compvis"
+    },
+    "attacker": {
+        "insertion_location": "prefix_k",
+        "k": 5,
+        "seed_iteration": 1,
+        "sequential": true,
+        "iteration": 40,
+        "attack_idx": 1,
+        "eval_seed": 0,
+        "universal": false,
+        "no_attack": {
+            "dataset_path": "outputs/dataset/i2p_nude"
+        }
+    },
+    "logger": {
+        "json": {
+            "root": "results/no_attack_esd_nudity_esd",
+            "name": "NoAttackEsdNudity"
+        }
+    }
+}
