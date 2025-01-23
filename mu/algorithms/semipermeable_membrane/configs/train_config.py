@@ -94,25 +94,11 @@ class SemipermeableMembraneConfig(BaseConfig):
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 
-        # Validate pretrained model paths
-        if not os.path.exists(self.pretrained_model["ckpt_path"]):
-            raise FileNotFoundError(
-                f"Checkpoint path {self.pretrained_model['ckpt_path']} does not exist."
-            )
-
         # Validate dataset type
         if self.dataset_type not in ["unlearncanvas", "i2p"]:
             raise ValueError(
                 f"Invalid dataset type {self.dataset_type}. Choose from ['unlearncanvas', 'i2p']"
             )
-
-        # Validate devices
-        devices = self.devices.split(",")
-        for device in devices:
-            if not device.isdigit():
-                raise ValueError(
-                    f"Invalid device {device}. Devices should be integers representing CUDA device IDs."
-                )
 
         # Validate training settings
         if self.train["iterations"] <= 0:

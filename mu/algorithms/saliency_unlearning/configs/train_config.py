@@ -66,14 +66,6 @@ class SaliencyUnlearningConfig(BaseConfig):
         if not os.path.exists(self.ckpt_path):
             raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
 
-        # Validate device configuration
-        devices = self.devices.split(",")
-        for device in devices:
-            if not device.isdigit():
-                raise ValueError(
-                    f"Invalid device {device}. Devices should be integers representing CUDA device IDs."
-                )
-
         # Validate guidance values
         if not (0 <= self.start_guidance <= 1):
             raise ValueError("Start guidance should be between 0 and 1.")

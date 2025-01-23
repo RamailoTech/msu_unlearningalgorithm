@@ -29,9 +29,17 @@ class SemipermeableMembraneAlgorithm(BaseAlgorithm):
             config (Dict): Configuration dictionary.
         """
 
-        self.config = config.__dict__
         for key, value in kwargs.items():
-            setattr(config, key, value)
+            if (
+                hasattr(config, key)
+                and isinstance(getattr(config, key), dict)
+                and isinstance(value, dict)
+            ):
+                getattr(config, key).update(value)
+            else:
+                setattr(config, key, value)
+
+        self.config = config.__dict__
 
         self._parse_config()
         config.validate_config()
