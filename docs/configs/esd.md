@@ -1,37 +1,51 @@
 ### Sample Train Config
 
-```
-# Training parameters
-train_method: "xattn"  # Choices: ["noxattn", "selfattn", "xattn", "full", "notime", "xlayer", "selflayer"]
-start_guidance: 0.1  # Optional: guidance of start image (previously alpha)
-negative_guidance: 0.0  # Optional: guidance of negative training
-iterations: 1  # Optional: iterations used to train (previously epochs)
-lr: 1e-5  # Optional: learning rate
-image_size: 512  # Optional: image size used to train
-ddim_steps: 50  # Optional: DDIM steps of inference
+```python
+class ESDConfig(BaseConfig):
 
-# Model configuration
-model_config_path: "model_config.yaml"
-ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
+    def __init__(self, **kwargs):
+        # Training parameters
+        self.train_method = "xattn"  # Choices: ["noxattn", "selfattn", "xattn", "full", "notime", "xlayer", "selflayer"]
+        self.start_guidance = (
+            0.1  # Optional: guidance of start image (previously alpha)
+        )
+        self.negative_guidance = 0.0  # Optional: guidance of negative training
+        self.iterations = 1  # Optional: iterations used to train (previously epochs)
+        self.lr = 1e-5  # Optional: learning rate
+        self.image_size = 512  # Optional: image size used to train
+        self.ddim_steps = 50  # Optional: DDIM steps of inference
 
-# Dataset directories
-raw_dataset_dir: "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
-processed_dataset_dir: "algorithms/esd/data"
-dataset_type: "unlearncanvas"  # Choices: ['unlearncanvas', 'i2p']
-template: "style"  # Choices: ['object', 'style', 'i2p']
-template_name: "Abstractionism"  # Choices: ['self-harm', 'Abstractionism']
+        # Model configuration
+        self.model_config_path = current_dir / "model_config.yaml"
+        self.ckpt_path = "models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
 
-# Output configurations
-output_dir: "outputs/esd/finetuned_models"
-separator: null
+        # Dataset directories
+        self.raw_dataset_dir = "data/quick-canvas-dataset/sample"
+        self.processed_dataset_dir = "mu/algorithms/esd/data"
+        self.dataset_type = "unlearncanvas"  # Choices: ['unlearncanvas', 'i2p']
+        self.template = "style"  # Choices: ['object', 'style', 'i2p']
+        self.template_name = (
+            "Abstractionism"  # Choices: ['self-harm', 'Abstractionism']
+        )
 
-# Device configuration
-devices: "0,0"
-use_sample: True
+        # Output configurations
+        self.output_dir = "outputs/esd/finetuned_models"
+        self.separator = None
+
+        # Device configuration
+        self.devices = "0,0"
+        self.use_sample = True
+
+        # For backward compatibility
+        self.interpolation = "bicubic"  # Interpolation method
+        self.ddim_eta = 0.0  # Eta for DDIM
+        self.num_workers = 4  # Number of workers for data loading
+        self.pin_memory = True  # Pin memory for faster transfer to GPU
+
 ```
 
 ### Sample Model Config
-```
+```yaml
 model:
   base_learning_rate: 1.0e-04
   target: stable_diffusion.ldm.models.diffusion.ddpm.LatentDiffusion

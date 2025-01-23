@@ -36,7 +36,7 @@ class UnifiedConceptEditingAlgorithm(BaseAlgorithm):
         self.model = None
         self.trainer = None
         self.data_handler = None
-        self.device = torch.device(self.config.devices[0])
+        self.device = torch.device(self.config.get("devices")[0])
         self.logger = logging.getLogger(__name__)
         self._setup_components()
 

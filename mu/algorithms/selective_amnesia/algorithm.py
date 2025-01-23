@@ -11,8 +11,6 @@ from mu.algorithms.selective_amnesia.model import SelectiveAmnesiaModel
 from mu.algorithms.selective_amnesia.trainer import SelectiveAmnesiaTrainer
 from mu.algorithms.selective_amnesia.configs import SelectiveAmnesiaConfig
 
-CONFIG_PATH = "mu/algorithms/selective_amnesia/configs/train_config.yaml"
-
 
 class SelectiveAmnesiaAlgorithm(BaseAlgorithm):
     """
@@ -20,14 +18,12 @@ class SelectiveAmnesiaAlgorithm(BaseAlgorithm):
     Sets up model, data handler, and trainer, then runs training.
     """
 
-    def __init__(
-        self, config: SelectiveAmnesiaConfig, config_path: str = CONFIG_PATH, **kwargs
-    ):
+    def __init__(self, config: SelectiveAmnesiaConfig, config_path: str = "", **kwargs):
         self.config = config.__dict__
         for key, value in kwargs.items():
             setattr(config, key, value)
         config.validate_config()
-        self.config_path = config_path
+        self.config_path = self.config.get("config_path") or config_path
         self.model = None
         self.trainer = None
         self.device = config.devices

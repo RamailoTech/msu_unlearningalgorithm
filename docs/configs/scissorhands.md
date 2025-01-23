@@ -1,39 +1,51 @@
-### Sample Train Config
+### Train config
 ```python
-class EraseDiffConfig(BaseConfig):
-
+class ScissorHandsConfig(BaseConfig):
     def __init__(self, **kwargs):
-        self.train_method = "xattn"
-        self.alpha = 0.1
-        self.epochs = 1
-        self.K_steps = 2
-        self.lr = 5e-5
-        self.model_config_path = current_dir / "model_config.yaml"
-        self.ckpt_path = "models/compvis/style50/compvis.ckpt"
+        # Training parameters
+        self.train_method = "xattn"  # choices: ["noxattn", "selfattn", "xattn", "full", "notime", "xlayer", "selflayer"]
+        self.alpha = 0.75  # Guidance of start image used to train
+        self.epochs = 5  # Number of training epochs
+
+        # Model configuration
+        self.model_config_path = "mu/algorithms/scissorhands/configs/model_config.yaml"  # Config path for model
+        self.ckpt_path = "models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
+
+        # Dataset directories
         self.raw_dataset_dir = "data/quick-canvas-dataset/sample"
-        self.processed_dataset_dir = "mu/algorithms/erase_diff/data"
-        self.dataset_type = "unlearncanvas"
-        self.template = "style"
-        self.template_name = "Abstractionism"
-        self.output_dir = "outputs/erase_diff/finetuned_models"
-        self.separator = None
-        self.image_size = 512
-        self.interpolation = "bicubic"
-        self.ddim_steps = 50
-        self.ddim_eta = 0.0
-        self.devices = "0"
-        self.use_sample = True
-        self.num_workers = 4
-        self.pin_memory = True
+        self.processed_dataset_dir = "mu/algorithms/scissorhands/data"
+        self.dataset_type = "unlearncanvas"  # Choices: ["unlearncanvas", "i2p"]
+        self.template = "style"  # Template to use
+        self.template_name = "Abstractionism"  # Template name
 
+        # Output configuration
+        self.output_dir = (
+            "outputs/scissorhands/finetuned_models"  # Output directory to save results
+        )
 
+        # Sampling and image configurations
+        self.sparsity = 0.90  # Threshold for mask sparsity
+        self.project = False  # Whether to project
+        self.memory_num = 1  # Number of memories to use
+        self.prune_num = 10  # Number of pruned images
+
+        # Device configuration
+        self.devices = "0,1"  # CUDA devices to train on (comma-separated)
+
+        # Additional configurations
+        self.use_sample = True  # Use sample dataset for training
+
+        # Guidance configurations
+        self.start_guidence = 0.5  # Starting guidance factor
+        self.negative_guidance = 0.3  # Negative guidance factor
+        self.iterations = 1000  # Number of training iterations
 ```
 
 
-### Sample Model Config
-```
+### Model Config
+```yaml
+
 model:
-
   base_learning_rate: 1.0e-04
   target: stable_diffusion.ldm.models.diffusion.ddpm.LatentDiffusion
   params:
@@ -44,7 +56,7 @@ model:
     timesteps: 1000
     first_stage_key: "edited"
     cond_stage_key: "edit"
-    image_size: 64
+    image_size: 32
     channels: 4
     cond_stage_trainable: false   # Note: different from the one we trained before
     conditioning_key: crossattn

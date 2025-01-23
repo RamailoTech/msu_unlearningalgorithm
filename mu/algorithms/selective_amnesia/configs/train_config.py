@@ -12,11 +12,12 @@ class SelectiveAmnesiaConfig(BaseConfig):
         self.scale_lr = True  # Flag for scaling learning rate
 
         # Model configuration
+        self.config_path = current_dir / "train_config.yaml"
         self.model_config_path = (
             current_dir / "model_config.yaml"
         )  # Config path for model
         self.ckpt_path = "models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
-        self.full_fisher_dict_path = "mu/algorithms/selective_amnesia/data/full_fisher_dict.pkl"  # Path for Fisher dict
+        self.full_fisher_dict_pkl_path = "mu/algorithms/selective_amnesia/data/full_fisher_dict.pkl"  # Path for Fisher dict
 
         # Dataset directories
         self.raw_dataset_dir = "data/quick-canvas-dataset/sample"
@@ -43,7 +44,7 @@ class SelectiveAmnesiaConfig(BaseConfig):
             "params": {
                 "train_batch_size": 4,
                 "val_batch_size": 6,
-                "num_workers": 4,
+                "num_workers": 1,
                 "num_val_workers": 0,  # Avoid val dataloader issue
                 "train": {
                     "target": "stable_diffusion.ldm.data.ForgettingDataset",
@@ -95,7 +96,7 @@ class SelectiveAmnesiaConfig(BaseConfig):
             "trainer": {
                 "benchmark": True,
                 "num_sanity_val_steps": 0,
-                "max_epochs": 50,  # Modify epochs here!
+                "max_epochs": 1,  # Modify epochs here!
                 "check_val_every_n_epoch": 10,
             },
         }
@@ -125,9 +126,9 @@ class SelectiveAmnesiaConfig(BaseConfig):
             )
         if not os.path.exists(self.ckpt_path):
             raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
-        if not os.path.exists(self.full_fisher_dict_path):
+        if not os.path.exists(self.full_fisher_dict_pkl_path):
             raise FileNotFoundError(
-                f"Fisher dictionary file {self.full_fisher_dict_path} does not exist."
+                f"Fisher dictionary file {self.full_fisher_dict_pkl_path} does not exist."
             )
 
         # Check if replay prompts file exists

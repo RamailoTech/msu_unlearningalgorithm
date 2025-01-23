@@ -1,7 +1,5 @@
-import os
-from mu.core.base_config import BaseConfig
-
-
+### Train Config
+```python
 class SemipermeableMembraneConfig(BaseConfig):
     def __init__(self, **kwargs):
         # Pretrained model configuration
@@ -82,65 +80,4 @@ class SemipermeableMembraneConfig(BaseConfig):
         # Verbose logging
         self.verbose = True  # Whether to log verbose information during training
 
-        # Update properties based on provided kwargs
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-    def validate_config(self):
-        """
-        Perform basic validation on the config parameters.
-        """
-        # Check if necessary directories exist
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
-
-        # Validate dataset type
-        if self.dataset_type not in ["unlearncanvas", "i2p"]:
-            raise ValueError(
-                f"Invalid dataset type {self.dataset_type}. Choose from ['unlearncanvas', 'i2p']"
-            )
-
-        # Validate training settings
-        if self.train["iterations"] <= 0:
-            raise ValueError("iterations should be a positive integer.")
-        if self.train["batch_size"] <= 0:
-            raise ValueError("batch_size should be a positive integer.")
-        if self.train["lr"] <= 0:
-            raise ValueError("Learning rate (lr) should be positive.")
-        if self.train["unet_lr"] <= 0:
-            raise ValueError("UNet learning rate (unet_lr) should be positive.")
-        if self.train["text_encoder_lr"] <= 0:
-            raise ValueError(
-                "Text encoder learning rate (text_encoder_lr) should be positive."
-            )
-        if self.train["lr_warmup_steps"] < 0:
-            raise ValueError("lr_warmup_steps should be non-negative.")
-        if self.train["max_denoising_steps"] <= 0:
-            raise ValueError("max_denoising_steps should be positive.")
-
-        # Validate output directory
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
-
-        # Validate WandB project and run names
-        if not isinstance(self.wandb_project, str) or not isinstance(
-            self.wandb_run, str
-        ):
-            raise ValueError("wandb_project and wandb_run should be strings.")
-
-        # Validate prompt configuration
-        if not isinstance(self.prompt["action"], str):
-            raise ValueError("Action should be a string.")
-
-        if not isinstance(self.prompt["guidance_scale"], str):
-            raise ValueError("guidance_scale should be a string.")
-
-
-semipermiable_membrane_train_mu = SemipermeableMembraneConfig()
-semipermiable_membrane_train_mu.dataset_type = "unlearncanvas"
-semipermiable_membrane_train_mu.raw_dataset_dir = "datasets/quick-canvas-dataset/sample"
-
-
-semipermiable_membrane_train_i2p = SemipermeableMembraneConfig()
-semipermiable_membrane_train_i2p.dataset_type = "i2p"
-semipermiable_membrane_train_i2p.raw_dataset_dir = "datasets/i2p-dataset/sample"
+```

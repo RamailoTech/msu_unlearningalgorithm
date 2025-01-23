@@ -1,10 +1,5 @@
-import os
-from mu.core.base_config import BaseConfig
-from pathlib import Path
-
-current_dir = Path(__file__).parent
-
-
+### Train Config
+```python
 class ConceptAblationConfig(BaseConfig):
     def __init__(self, **kwargs):
         # Training parameters
@@ -91,61 +86,71 @@ class ConceptAblationConfig(BaseConfig):
 
         self.prompts = "mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt"
 
-        # Update properties based on provided kwargs
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+```
 
-    def validate_config(self):
-        """
-        Perform basic validation on the config parameters.
-        """
-        # Check if directories exist
-        if not os.path.exists(self.raw_dataset_dir):
-            raise FileNotFoundError(f"Directory {self.raw_dataset_dir} does not exist.")
-        if not os.path.exists(self.processed_dataset_dir):
-            raise FileNotFoundError(
-                f"Directory {self.processed_dataset_dir} does not exist."
-            )
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
+### Model Config
+```yaml
+# Training parameters
+seed : 23 
+scale_lr : True 
+caption_target : "Abstractionism Style"
+regularization : True 
+n_samples : 10 
+train_size : 200
+base_lr : 2.0e-06
 
-        # Validate checkpoint path
-        if not os.path.exists(self.ckpt_path):
-            raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
+# Model configuration
+model_config_path: "mu/algorithms/concept_ablation/configs/model_config.yaml"  # Config path for Stable Diffusion
+ckpt_path: "models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
 
-        # Validate learning rate
-        if self.lr <= 0:
-            raise ValueError("Learning rate (lr) should be positive.")
+# Dataset directories
+raw_dataset_dir: "data/quick-canvas-dataset/sample"
+processed_dataset_dir: "mu/algorithms/concept_ablation/data"
+dataset_type : "unlearncanvas"
+template : "style"
+template_name : "Abstractionism"
 
-        # Validate model and data handler paths
-        if not isinstance(self.data, dict):
-            raise ValueError("Data configuration should be a dictionary.")
-        if not isinstance(self.data["params"], dict):
-            raise ValueError("Data parameters should be a dictionary.")
+lr: 5e-5 
+# Output configurations
+output_dir: "outputs/concept_ablation/finetuned_models"  # Output directory to save results
 
-        # Validate Lightning configuration
-        if not isinstance(self.lightning, dict):
-            raise ValueError("Lightning configuration should be a dictionary.")
-        if "callbacks" not in self.lightning or not isinstance(
-            self.lightning["callbacks"], dict
-        ):
-            raise ValueError("Lightning callbacks should be a dictionary.")
-        if "trainer" not in self.lightning or not isinstance(
-            self.lightning["trainer"], dict
-        ):
-            raise ValueError("Lightning trainer should be a dictionary.")
+# Sampling and image configurations
 
-        # Check if the model checkpoint exists
-        if not os.path.exists(self.model_config_path):
-            raise FileNotFoundError(
-                f"Model config file {self.model_config_path} does not exist."
-            )
+# Device configuration
+devices: "0,"  # CUDA devices to train on (comma-separated)
+
+# Additional flags
+use_sample: True  # Use the sample dataset for training
+
+data:
+  target: mu.algorithms.concept_ablation.data_handler.ConceptAblationDataHandler
+  params:
+    batch_size: 4
+    num_workers: 4
+    wrap: false
+    train:
+      target: mu.algorithms.concept_ablation.src.finetune_data.MaskBase
+      params:
+        size: 512
+    train2:
+      target: mu.algorithms.concept_ablation.src.finetune_data.MaskBase
+      params:
+        size: 512
 
 
-concept_ablation_train_mu = ConceptAblationConfig()
-concept_ablation_train_mu.dataset_type = "unlearncanvas"
-concept_ablation_train_mu.raw_dataset_dir = "data/quick-canvas-dataset/sample"
+lightning:
+  callbacks:
+    image_logger:
+      target: mu.algorithms.concept_ablation.callbacks.ImageLogger
+      params:
+        batch_frequency: 20000
+        save_freq: 10000
+        max_images: 8
+        increase_log_steps: False
+  modelcheckpoint:
+    params:
+      every_n_train_steps: 10000
 
-concept_ablation_train_i2p = ConceptAblationConfig()
-concept_ablation_train_i2p.dataset_type = "i2p"
-concept_ablation_train_i2p.raw_dataset_dir = "data/i2p-dataset/sample"
+  trainer:
+    max_steps: 2000
+```

@@ -1,138 +1,143 @@
-### Train ti config
+### Train Ti Config
+```python
+class ForgetMeNotTiConfig(BaseConfig):
+    """
+    Configuration class for the Forget-Me-Not textual inversion training.
+    Mirrors the fields from the second YAML snippet.
+    """
+
+    def __init__(self, **kwargs):
+        # Model checkpoint path
+        self.ckpt_path = "models/diffuser/style50"
+
+        # Dataset directories
+        self.raw_dataset_dir = "data/quick-canvas-dataset/sample"
+        self.processed_dataset_dir = "mu/algorithms/forget_me_not/data"
+        self.dataset_type = "unlearncanvas"
+        self.template = "style"
+        self.template_name = "Abstractionism"
+        self.use_sample = True  # Use the sample dataset for training
+
+        # Training configuration
+        self.initializer_tokens = self.template_name
+        self.steps = 10
+        self.lr = 1e-4
+        self.weight_decay_ti = 0.1
+        self.seed = 42
+        self.placeholder_tokens = "<s1>|<s2>|<s3>|<s4>"
+        self.placeholder_token_at_data = "<s>|<s1><s2><s3><s4>"
+        self.gradient_checkpointing = False
+        self.scale_lr = False
+        self.gradient_accumulation_steps = 1
+        self.train_batch_size = 1
+        self.lr_warmup_steps = 100
+
+        # Output configuration
+        self.output_dir = "outputs/forget_me_not/ti_models"
+
+        # Device configuration
+        self.devices = "0"  # CUDA devices to train on (comma-separated)
+
+        # Additional configurations
+        self.tokenizer_name = "default_tokenizer"
+        self.instance_prompt = "default_prompt"
+        self.concept_keyword = "default_keyword"
+        self.lr_scheduler = "linear"
+        self.prior_generation_precision = "fp32"
+        self.local_rank = 0
+        self.class_prompt = "default_class_prompt"
+        self.num_class_images = 100
+        self.dataloader_num_workers = 4
+        self.center_crop = True
+        self.prior_loss_weight = 0.1
 ```
 
-ckpt_path: "models/diffuser/style50"
-# ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
+### Train Attn config
+```python
 
-# Dataset directories
-raw_dataset_dir: "data/quick-canvas-dataset/sample"
-# raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
-processed_dataset_dir: "mu/algorithms/forget_me_not/data"
-dataset_type: "unlearncanvas"
-template: "style"
-template_name: &template_name "Abstractionism"  # Define anchor here
-use_sample: True  # Use the sample dataset for training
+class ForgetMeNotAttnConfig(BaseConfig):
+    """
+    This class encapsulates the training configuration for the 'Forget-Me-Not' TI approach.
+    It mirrors the fields specified in the YAML-like config snippet.
+    """
 
-# Training configuration
-initializer_tokens: *template_name  # Reference anchor here
-steps: 10
-lr: 1e-4
-weight_decay_ti: 0.1
-seed: 42
-# placeholder_tokens: "<s1>|<s2>|<s3>|<s4>|<s5>|<s6>|<s7>|<s8>|<s9>|<s10>"
-placeholder_tokens: "<s1>|<s2>|<s3>|<s4>"
-# placeholder_token_at_data: "<s>|<s1><s2><s3><s4><s5><s6><s7><s8><s9><s10>"
-placeholder_token_at_data: "<s>|<s1><s2><s3><s4>"
+    def __init__(self, **kwargs):
+        # Model and checkpoint paths
+        self.ckpt_path = "models/diffuser/style50"
 
-gradient_checkpointing: False
-scale_lr: False
-gradient_accumulation_steps: 1
-train_batch_size: 1
-lr_warmup_steps: 100
+        # Dataset directories and setup
+        self.raw_dataset_dir = "data/quick-canvas-dataset/sample"
+        self.processed_dataset_dir = "mu/algorithms/forget_me_not/data"
+        self.dataset_type = "unlearncanvas"
+        self.template = "style"
+        self.template_name = "Abstractionism"
+        self.use_sample = True  # Use the sample dataset for training
 
-# Output configurations
-output_dir: "outputs/forget_me_not/ti_models"  # Output directory to save results
+        # Textual Inversion config
+        self.use_ti = True
+        self.ti_weights_path = "outputs/forget_me_not/finetuned_models/Abstractionism/step_inv_10.safetensors"
+        self.initializer_tokens = self.template_name
+        self.placeholder_tokens = "<s1>|<s2>|<s3>|<s4>"
 
-# Device configuration
-devices: "0"  # CUDA devices to train on (comma-separated)
+        # Training configuration
+        self.mixed_precision = None  # or "fp16", if desired
+        self.gradient_accumulation_steps = 1
+        self.train_text_encoder = False
+        self.enable_xformers_memory_efficient_attention = False
+        self.gradient_checkpointing = False
+        self.allow_tf32 = False
+        self.scale_lr = False
+        self.train_batch_size = 1
+        self.use_8bit_adam = False
+        self.adam_beta1 = 0.9
+        self.adam_beta2 = 0.999
+        self.adam_weight_decay = 0.01
+        self.adam_epsilon = 1.0e-08
+        self.size = 512
+        self.with_prior_preservation = False
+        self.num_train_epochs = 1
+        self.lr_warmup_steps = 0
+        self.lr_num_cycles = 1
+        self.lr_power = 1.0
+        self.max_steps = 2  # originally "max-steps" in config
+        self.no_real_image = False
+        self.max_grad_norm = 1.0
+        self.checkpointing_steps = 500
+        self.set_grads_to_none = False
+        self.lr = 5e-5
 
+        # Output configurations
+        self.output_dir = "outputs/forget_me_not/finetuned_models/Abstractionism"
 
-# Additional configurations
-tokenizer_name: "default_tokenizer"
-instance_prompt: "default_prompt"
-concept_keyword: "default_keyword"
-lr_scheduler: "linear"
-prior_generation_precision: "fp32"
-local_rank: 0
-class_prompt: "default_class_prompt"
-num_class_images: 100
-dataloader_num_workers: 4
-center_crop: True
-prior_loss_weight: 0.1
+        # Device configuration
+        self.devices = "0"  # CUDA devices to train on (comma-separated)
+        self.only_xa = True  # originally "only-xa" in config
+
+        # Additional 'Forget-Me-Not' parameters
+        self.perform_inversion = True
+        self.continue_inversion = True
+        self.continue_inversion_lr = 0.0001
+        self.learning_rate_ti = 0.001
+        self.learning_rate_unet = 0.0003
+        self.learning_rate_text = 0.0003
+        self.lr_scheduler = "constant"
+        self.lr_scheduler_lora = "linear"
+        self.lr_warmup_steps_lora = 0
+        self.prior_loss_weight = 1.0
+        self.weight_decay_lora = 0.001
+        self.use_face_segmentation_condition = False
+        self.max_train_steps_ti = 500
+        self.max_train_steps_tuning = 1000
+        self.save_steps = 100
+        self.class_data_dir = None
+        self.stochastic_attribute = None
+        self.class_prompt = None
+        self.num_class_images = 100
+        self.resolution = 512
+        self.color_jitter = False
+        self.sample_batch_size = 1
+        self.lora_rank = 4
+        self.clip_ti_decay = True
 ```
 
 
-### Train attn config
-```
-ckpt_path: "models/diffuser/style50"
-# ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
-
-# Dataset directories
-raw_dataset_dir: "data/quick-canvas-dataset/sample"
-# raw_dataset_dir: "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
-processed_dataset_dir: "mu/algorithms/forget_me_not/data"
-dataset_type : "unlearncanvas"
-template : "style"
-template_name : &template_name "Abstractionism"
-use_sample: True  # Use the sample dataset for training
-
-use_ti : True 
-ti_weights_path : "outputs/forget_me_not/ti_models/step_inv_10.safetensors"
-
-initializer_tokens: *template_name 
-placeholder_tokens: "<s1>|<s2>|<s3>|<s4>"
-
-
-# Training configuration
-# mixed_precision: "fp16"
-mixed_precision: null
-gradient_accumulation_steps:  1
-train_text_encoder: False
-enable_xformers_memory_efficient_attention : False
-gradient_checkpointing: False
-allow_tf32 : False
-scale_lr : False
-train_batch_size : 1
-use_8bit_adam : False
-adam_beta1 : 0.9
-adam_beta2 : 0.999
-adam_weight_decay: 0.01
-adam_epsilon: 1.0e-08
-size : 512
-with_prior_preservation : False
-num_train_epochs : 1
-lr_warmup_steps : 0
-lr_num_cycles : 1 
-lr_power : 1.0
-max-steps : 2
-no_real_image : False
-max_grad_norm : 1.0
-checkpointing_steps : 500
-set_grads_to_none : False
-lr : 5e-5
-
-
-# Output configurations
-output_dir: "outputs/forget_me_not/finetuned_models/Abstractionism"  # Output directory to save results
-
-# Device configuration
-devices: "0"  # CUDA devices to train on (comma-separated)
-
-only-xa : True #
-
-
-perform_inversion: True
-continue_inversion: True
-continue_inversion_lr: 0.0001
-learning_rate_ti: 0.001
-learning_rate_unet: 0.0003
-learning_rate_text: 0.0003
-lr_scheduler: "constant"
-lr_scheduler_lora: "linear"
-lr_warmup_steps_lora: 0
-prior_loss_weight: 1.0
-weight_decay_lora: 0.001
-use_face_segmentation_condition: False
-max_train_steps_ti: 500
-max_train_steps_tuning: 1000
-save_steps: 100
-class_data_dir: null
-stochastic_attribute: null
-class_prompt: null
-num_class_images: 100
-resolution: 512
-color_jitter: False
-sample_batch_size: 1
-lora_rank: 4
-clip_ti_decay: True
-```

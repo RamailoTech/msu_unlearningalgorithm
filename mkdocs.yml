@@ -5,7 +5,10 @@ site_dir: docs_build
 nav:
   - Home: README.md
   - Algorithms:
-    - Concept Ablation: algorithms/concept_ablation.md
+    - Concept Ablation: 
+      - Usage: algorithms/concept_ablation.md
+      # - Examples: examples/concept_ablation.md
+      # - Configs: configs/concept_ablation.md
     - Erase Diff: 
       - Usage: algorithms/erase_diff.md 
       - Examples: examples/erase_diff.md
@@ -21,14 +24,26 @@ nav:
       - Examples: examples/forget_me_not.md
       - Configs: configs/forget_me_not.md
 
-    - Saliency Unlearning: algorithms/saliency.md
-    - Scissor Hands: algorithms/scissorhands.md
+    - Saliency Unlearning: 
+      - Usage: algorithms/saliency.md
+      - Examples: examples/saliency.md
+      - Configs: configs/saliency.md
+    - Scissor Hands: 
+      - Usage: algorithms/scissorhands.md
+      - Examples: examples/scissorhands.md
+      - Configs: configs/scissorhands.md
     - Selective Amnesia: 
       - Usage: algorithms/selective_amnesia.md
-      - Examples: examples/selective_amnesia.md
-      - Configs: configs/selective_amnesia.md
-    - Semi Permeable Membrane: algorithms/semi_permeable.md
-    - Unified Concept Editing: algorithms/uce.md
+    #   - Examples: examples/selective_amnesia.md
+    #   - Configs: configs/selective_amnesia.md
+    - Semi Permeable Membrane: 
+      - Usage: algorithms/semipermeable_membrane.md
+      - Examples: examples/semipermeable_membrane.md
+      - Configs: configs/semipermeable_membrane.md
+    - Unified Concept Editing: 
+      - Usage: algorithms/uce.md
+      - Examples: examples/uce.md
+      - Configs: configs/uce.md
   - Contributing: algorithms/contributing.md
 theme:
   name: readthedocs  

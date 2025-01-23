@@ -74,14 +74,6 @@ class UnifiedConceptEditingConfig(BaseConfig):
                 f"Invalid dataset type {self.dataset_type}. Choose from ['unlearncanvas', 'i2p']"
             )
 
-        # Validate devices
-        devices = self.devices.split(",")
-        for device in devices:
-            if not device.isdigit():
-                raise ValueError(
-                    f"Invalid device {device}. Devices should be integers representing CUDA device IDs."
-                )
-
         # Validate training settings
         if self.epochs <= 0:
             raise ValueError("epochs should be a positive integer.")
@@ -115,8 +107,8 @@ class UnifiedConceptEditingConfig(BaseConfig):
             )
 
 
-unified_concept_editing_train_config_quick_canvas = UnifiedConceptEditingConfig()
-unified_concept_editing_train_config_quick_canvas.dataset_type = "unlearncanvas"
+unified_concept_editing_train_mu = UnifiedConceptEditingConfig()
+unified_concept_editing_train_mu.dataset_type = "unlearncanvas"
 
-unified_concept_editing_train_config_i2p = UnifiedConceptEditingConfig()
-unified_concept_editing_train_config_i2p.dataset_type = "i2p"
+unified_concept_editing_train_i2p = UnifiedConceptEditingConfig()
+unified_concept_editing_train_i2p.dataset_type = "i2p"
