@@ -15,7 +15,7 @@ class SemipermeableMembraneEvaluationConfig(BaseConfig):
         self.spm_multiplier = [1.0]  # list of semipermeable membrane multipliers
         self.v2 = False  # whether to use version 2 of the model
         self.matching_metric = "clipcos_tokenuni"  # matching metric for evaluation
-        self.model_config = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/mu_semipermeable_membrane_spm/configs"  # path to model config
+        self.model_config = "machine_unlearning/mu_semipermeable_membrane_spm/configs"  # path to model config
         self.base_model = "CompVis/stable-diffusion-v1-4"  # base model for the algorithm
         self.spm_path = ["outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"]  # path to semipermeable membrane model
         self.ckpt_path = "outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"  # path to finetuned model checkpoint
@@ -28,7 +28,7 @@ class SemipermeableMembraneEvaluationConfig(BaseConfig):
         self.seed_list = [188]  # list of seeds for evaluation
         self.classification_model = "vit_large_patch16_224"  # classification model for evaluation
         self.eval_output_dir = "outputs/eval_results/mu_results/semipermeable_membrane/"  # directory to save evaluation results
-        self.reference_dir = "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"  # path to the original dataset
+        self.reference_dir = "data/quick-canvas-dataset/sample/"  # path to the original dataset
         self.forget_theme = "Bricks"  # theme to forget
         self.multiprocessing = False  # whether to use multiprocessing
 

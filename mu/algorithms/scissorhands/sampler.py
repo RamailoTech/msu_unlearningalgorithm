@@ -79,9 +79,8 @@ class ScissorHandsSampler(BaseSampler):
             for object_class in class_available:
                 prompt = f"A {object_class} image in {test_theme.replace('_',' ')} style."
                 self.logger.info(f"Sampling prompt: {prompt}")
-                autocast_device = self.device.split(":")[0]
                 with torch.no_grad():
-                    with autocast(autocast_device):
+                    with autocast(self.device):
                         with self.model.ema_scope():
                             # Prepare conditioning
                             uc = self.model.get_learned_conditioning([""])  

@@ -41,7 +41,7 @@ class SaliencyUnlearningEvaluator(BaseEvaluator):
         self._parse_config()
         config.validate_config()
         self.config = config.to_dict()
-        self.sampler = SaliencyUnlearningSampler(config)
+        self.sampler = SaliencyUnlearningSampler(self.config)
         self.device = self.config['devices'][0]
         self.model = None
         self.eval_output_path = None

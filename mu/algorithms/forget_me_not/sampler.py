@@ -41,7 +41,7 @@ class ForgetMeNotSampler(BaseSampler):
         """
         self.logger.info("Loading model...")
         
-        model_ckpt_path = f"{self.config['ckpt_path']}/{self.config['forget_theme']}"
+        model_ckpt_path = f"{self.config['ckpt_path']}"
 
         seed = self.config['seed']
 
@@ -59,7 +59,7 @@ class ForgetMeNotSampler(BaseSampler):
 
     def sample(self) -> None:
         steps = self.config["ddim_steps"]
-        theme = self.config["theme"]         
+        theme = self.config["forget_theme"]         
         cfg_text_list = self.config["cfg_text_list"]    
         seed = self.config["seed"]
         H = self.config["image_height"]

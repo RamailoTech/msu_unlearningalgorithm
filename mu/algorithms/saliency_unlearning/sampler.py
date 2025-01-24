@@ -33,7 +33,7 @@ class SaliencyUnlearningSampler(BaseSampler):
         super().__init__()
 
         self.config = config
-        self.device = config.get("device", "cuda" if torch.cuda.is_available() else "cpu")[0]
+        self.device = config.get("device", "cuda" if torch.cuda.is_available() else "cpu")
         self.model = None
         self.sampler = None
         self.logger = logging.getLogger(__name__)
@@ -77,9 +77,8 @@ class SaliencyUnlearningSampler(BaseSampler):
             for object_class in class_available:
                 prompt = f"A {object_class} image in {test_theme.replace('_',' ')} style."
                 self.logger.info(f"Sampling prompt: {prompt}")
-                autocast_device = self.device.split(":")[0]
                 with torch.no_grad():
-                    with autocast(autocast_device):
+                    with autocast(self.device):
                         with self.model.ema_scope():
                             # Prepare conditioning
                             uc = self.model.get_learned_conditioning([""])  

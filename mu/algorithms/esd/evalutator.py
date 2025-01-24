@@ -41,7 +41,7 @@ class ESDEvaluator(BaseEvaluator):
         self._parse_config()
         config.validate_config()
         self.config = config.to_dict()
-        self.sampler = ESDEvaluatorSampler(config)
+        self.sampler = ESDEvaluatorSampler(self.config)
         self.device = self.config['devices'][0]
         self.model = None
         self.eval_output_path = None

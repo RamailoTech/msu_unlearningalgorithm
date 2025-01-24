@@ -41,7 +41,7 @@ class ForgetMeNotEvaluator(BaseEvaluator):
         config.validate_config()
         self.config = config.to_dict()
         self.device = self.config['devices'][0]
-        self.sampler = ForgetMeNotSampler(config)
+        self.sampler = ForgetMeNotSampler(self.config)
         self.model = None
         self.eval_output_path = None
         self.results = {}

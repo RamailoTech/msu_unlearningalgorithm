@@ -42,7 +42,7 @@ class SemipermeableMembraneEvaluator(BaseEvaluator):
         self._parse_config()
         config.validate_config()
         self.config = config.to_dict()
-        self.sampler = SemipermeableMembraneSampler(config)
+        self.sampler = SemipermeableMembraneSampler(self.config)
         self.device = self.config['devices'][0]
         self.model = None
         self.eval_output_path = None
