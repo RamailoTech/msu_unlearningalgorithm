@@ -234,41 +234,44 @@ This section provides instructions for running the **evaluation framework** for 
 
 You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/scissorshands/scripts/` directory.
 
-### **Basic Command to Run Evaluation:**
+#### **Running the Evaluation Framework**
 
-```bash
-conda activate <env_name>
+Create a file, eg, `evaluate.py` and use examples and modify your configs to run the file.  
+
+**Example Code**
+
+```python
+from mu.algorithms.scissorhands import ScissorHandsEvaluator
+from mu.algorithms.scissorhands.configs import (
+    scissorhands_evaluation_config
+)
+
+evaluator = ScissorHandsEvaluator(
+    scissorhands_evaluation_config,
+    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
+    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+)
+evaluator.run()
 ```
 
-```bash
-python -m mu.algorithms.scissorhands.scripts.evaluate \
---config_path mu/algorithms/scissorshands/configs/evaluation_config.yaml
-```
-
-
-**Running in Offline Mode:**
+**Running the Training Script in Offline Mode**
 
 ```bash
-WANDB_MODE=offline python -m mu.algorithms.scissorhands.scripts.evaluate \
---config_path mu/algorithms/scissorshands/configs/evaluation_config.yaml
+WANDB_MODE=offline python evaluate.py
 ```
 
+**How It Works** 
+* Default Values: The script first loads default values from the evluation config file as in configs section.
 
-**Example with CLI Overrides:**
+* Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
 
-```bash
-python -m mu.algorithms.scissorshands.scripts.evaluate \
-    --config_path mu/algorithms/scissorshands/configs/evaluation_config.yaml \
-    --devices "0" \
-    --seed 123 \
-    --cfg_text 8.5 \
-    --batch_size 16
-```
+* Final Configuration: The script merges the configs and convert them into dictionary to proceed with the evaluation. 
 
 
-#### **Description of parameters in evaluation_config.yaml**
+#### **Description of parameters in evaluation_config**
 
-The `evaluation_config.yaml` file contains the necessary parameters for running the Scissorshands evaluation framework. Below is a detailed description of each parameter along with examples.
+The `evaluation_config` contains the necessary parameters for running the Scissorshands evaluation framework. Below is a detailed description of each parameter along with examples.
 
 ---
 
@@ -285,10 +288,15 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
    - *Type:* `str`  
    - *Example:* `"vit_large_patch16_224"`
 
+- classifier_ckpt_path: Path to classifer checkpoint.
+   - *Type*: `str`
+   - *Example*: `models/classifier_ckpt_path/style50_cls.pth`
+
 ---
 
 ### **Training and Sampling Parameters:**
-- theme : Specifies the theme or concept being evaluated for removal from the model's outputs.  
+
+- forget_theme : Concept or style intended for removal in the evaluation process.  
    - *Type:* `str`  
    - *Example:* `"Bricks"`
 
@@ -333,7 +341,7 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 
 - reference_dir : Directory containing original images for comparison during evaluation.  
    - *Type:* `str`  
-   - *Example:* `"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
+   - *Example:* `"data/quick-canvas-dataset/sample/"`
 
 
 ---
@@ -350,9 +358,6 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 ---
 
 ### **Optimization Parameters:**
-- forget_theme : Concept or style intended for removal in the evaluation process.  
-   - *Type:* `str`  
-   - *Example:* `"Bricks"`
 
 - seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  
    - *Type:* `list`  

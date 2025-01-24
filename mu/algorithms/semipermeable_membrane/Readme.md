@@ -247,53 +247,57 @@ WANDB_MODE=offline python my_trainer.py
 
 This section provides instructions for running the **evaluation framework** for the Semipermeable membrane algorithm on Stable Diffusion models. The evaluation framework is used to assess the performance of models after applying machine unlearning.
 
-
 #### **Running the Evaluation Framework**
 
-You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/semipermeable_membrane/scripts/` directory.
+Create a file, eg, `evaluate.py` and use examples and modify your configs to run the file.  
 
-### **Basic Command to Run Evaluation:**
+**Example Code**
 
-```bash
-conda activate <env_name>
+```python
+from mu.algorithms.semipermeable_membrane import SemipermeableMembraneEvaluator
+from mu.algorithms.semipermeable_membrane.configs import (
+    semipermeable_membrane_eval_config
+)
+
+evaluator = SemipermeableMembraneEvaluator(
+    semipermeable_membrane_eval_config,
+    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors",
+    spm_path = ["/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"],
+    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/",
+    model_config = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/mu_semipermeable_membrane_spm/configs"
+)
+evaluator.run()
 ```
 
-```bash
-python -m mu.algorithms.semipermeable_membrane.scripts.evaluate \
---config_path mu/algorithms/semipermeable_membrane/configs/evaluation_config.yaml
-```
-
-
-**Running in Offline Mode:**
+**Running the Training Script in Offline Mode**
 
 ```bash
-WANDB_MODE=offline python -m mu.algorithms.semipermeable_membrane.scripts.evaluate \
---config_path mu/algorithms/semipermeable_membrane/configs/evaluation_config.yaml
+WANDB_MODE=offline python evaluate.py
 ```
 
+**How It Works** 
+* Default Values: The script first loads default values from the evluation config file as in configs section.
 
-**Example with CLI Overrides:**
+* Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
 
-```bash
-python -m mu.algorithms.semipermeable_membrane.scripts.evaluate \
-    --config_path mu/algorithms/semipermeable_membrane/configs/evaluation_config.yaml \
-    --devices "0" \
-    --seed 123 \
-    --cfg_text 8.5 \
-    --batch_size 16
-```
+* Final Configuration: The script merges the configs and convert them into dictionary to proceed with the evaluation. 
 
 
-#### **Description of parameters in evaluation_config.yaml**
+#### **Description of parameters in evaluation_config**
 
-The `evaluation_config.yaml` file contains the necessary parameters for running the Semipermeable membrane evaluation framework. Below is a detailed description of each parameter along with examples.
+The `evaluation_config` contains the necessary parameters for running the Semipermeable membrane evaluation framework. Below is a detailed description of each parameter along with examples.
 
 ---
 
 ### **Model Configuration Parameters:**
+- ckpt_path: paths to finetuned model checkpoint.
+   - *Type:* `str`
+   - *Example:* `outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors`
+
 - spm_path: paths to finetuned model checkpoint.
    - *Type:* `list`
-   - *Example:* `outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors`
+   - *Example:* `["outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"]`
 
 - base_model : Path to the pre-trained base model used for image generation.  
    - *Type:* `str`  
@@ -321,9 +325,13 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
    - *Type:* `str`  
    - *Example:* `"mu/algorithms/semipermeable_membrane/config"`  
 
-- model_ckpt_path: Path to pretrained Stable Diffusion model.
+- classification_model : Specifies the classification model used for evaluating the generated outputs.  
+   - *Type:* `str`  
+   - *Example:* `"vit_large_patch16_224"`
+
+- classifier_ckpt_path: Path to classifer checkpoint.
    - *Type*: `str`
-   - *Example*: `models/diffuser/style50`
+   - *Example*: `models/classifier_ckpt_path/style50_cls.pth`
 
 ---
 
@@ -362,11 +370,7 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 ### **Dataset and Classification Parameters:**
 - reference_dir : Path to the reference dataset used for evaluation and comparison.  
    - *Type:* `str`  
-   - *Example:* `"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`  
-
-- classification_model : Specifies the classification model used for the evaluation.  
-   - *Type:* `str`  
-   - *Example:* `"vit_large_patch16_224"`  
+   - *Example:* `"data/quick-canvas-dataset/sample/"`  
 
 - forget_theme : Specifies the theme to be forgotten during the unlearning process.  
    - *Type:* `str`  

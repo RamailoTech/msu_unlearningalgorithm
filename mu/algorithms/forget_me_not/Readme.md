@@ -266,70 +266,70 @@ WANDB_MODE=offline python my_trainer_attn.py
 
 
 
-#### forget_me_not Evaluation Framework
+#### Forget me not Evaluation Framework
 
 This section provides instructions for running the **evaluation framework** for the forget_me_not algorithm on Stable Diffusion models. The evaluation framework is used to assess the performance of models after applying machine unlearning.
 
 
 #### **Running the Evaluation Framework**
 
-You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/forget_me_not/scripts/` directory.
+Create a file, eg, `evaluate.py` and use examples and modify your configs to run the file.  
 
-### **Basic Command to Run Evaluation:**
+**Example Code**
 
-```bash
-conda activate <env_name>
+```python
+from mu.algorithms.forget_me_not import ForgetMeNotEvaluator
+from mu.algorithms.forget_me_not.configs import (
+    forget_me_not_evaluation_config
+)
+
+evaluator = ForgetMeNotEvaluator(
+    forget_me_not_evaluation_config,
+    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/forget_me_not/finetuned_models/Abstractionism",
+    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+)
+evaluator.run()
 ```
 
-```bash
-python -m mu.algorithms.forget_me_not.scripts.evaluate \
---config_path mu/algorithms/forget_me_not/configs/evaluation_config.yaml
-```
-
-
-**Running in Offline Mode:**
+**Running the Training Script in Offline Mode**
 
 ```bash
-WANDB_MODE=offline python -m mu.algorithms.forget_me_not.scripts.evaluate \
---config_path mu/algorithms/forget_me_not/configs/evaluation_config.yaml
+WANDB_MODE=offline python evaluate.py
 ```
 
+**How It Works** 
+* Default Values: The script first loads default values from the evluation config file as in configs section.
 
-**Example with CLI Overrides:**
+* Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
 
-```bash
-python -m mu.algorithms.forget_me_not.scripts.evaluate \
-    --config_path mu/algorithms/forget_me_not/configs/evaluation_config.yaml \
-    --devices "0" \
-    --seed 123 \
-    --cfg_text 8.5 \
-    --batch_size 16
-```
+* Final Configuration: The script merges the configs and convert them into dictionary to proceed with the evaluation. 
 
 
-#### **Description of parameters in evaluation_config.yaml**
+#### **Description of parameters in evaluation_config**
 
-The `evaluation_config.yaml` file contains the necessary parameters for running the forget_me_not evaluation framework. Below is a detailed description of each parameter along with examples.
+The `evaluation_config` contains the necessary parameters for running the forget_me_not evaluation framework. Below is a detailed description of each parameter along with examples.
 
 ---
 
 ### **Model Configuration:**
 - ckpt_path : Path to the finetuned Stable Diffusion checkpoint file to be evaluated.  
    - *Type:* `str`  
-   - *Example:* `"outputs/forget_me_not/finetuned_models/forget_me_not_Abstractionism_model.pth"`
+   - *Example:* `"outputs/forget_me_not/finetuned_models/Abstractionism"`
 
 - classification_model : Specifies the classification model used for evaluating the generated outputs.  
    - *Type:* `str`  
    - *Example:* `"vit_large_patch16_224"`
 
-- model_ckpt_path: Path to pretrained Stable Diffusion model.
+- classifier_ckpt_path: Path to classifer checkpoint.
    - *Type*: `str`
-   - *Example*: `models/diffuser/style50`
+   - *Example*: `models/classifier_ckpt_path/style50_cls.pth`
 
 ---
 
 ### **Training and Sampling Parameters:**
-- theme : Specifies the theme or concept being evaluated for removal from the model's outputs.  
+
+- forget_theme : Concept or style intended for removal in the evaluation process.  
    - *Type:* `str`  
    - *Example:* `"Bricks"`
 
@@ -374,7 +374,7 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 
 - reference_dir : Directory containing original images for comparison during evaluation.  
    - *Type:* `str`  
-   - *Example:* `"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
+   - *Example:* `"data/quick-canvas-dataset/sample/"`
 
 ---
 
@@ -390,9 +390,6 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 ---
 
 ### **Optimization Parameters:**
-- forget_theme : Concept or style intended for removal in the evaluation process.  
-   - *Type:* `str`  
-   - *Example:* `"Bricks"`
 
 - seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  
    - *Type:* `list`  

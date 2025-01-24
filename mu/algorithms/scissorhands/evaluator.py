@@ -13,13 +13,12 @@ from torchvision import transforms
 from torch.nn import functional as F
 
 from stable_diffusion.constants.const import theme_available, class_available
+
+from mu.algorithms.scissorhands.configs import ScissorhandsEvaluationConfig
 from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid,tensor_to_float
 from mu.core.base_evaluator import BaseEvaluator
 from mu.algorithms.scissorhands import ScissorHandsSampler
 
-#TODO remove this
-theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
-class_available = ['Architectures', 'Bears', 'Birds']
 
 
 class ScissorHandsEvaluator(BaseEvaluator):
@@ -28,7 +27,7 @@ class ScissorHandsEvaluator(BaseEvaluator):
     Inherits from the abstract BaseEvaluator.
     """
 
-    def __init__(self,config: Dict[str, Any], **kwargs):
+    def __init__(self,config: ScissorhandsEvaluationConfig, **kwargs):
         """
         Args:
             sampler (Any): An instance of a BaseSampler-derived class (e.g., ScissorHandsSampler).
@@ -36,8 +35,13 @@ class ScissorHandsEvaluator(BaseEvaluator):
             **kwargs: Additional overrides for config.
         """
         super().__init__(config, **kwargs)
-        self.config = config
-        self.sampler = ScissorHandsSampler(config)
+        self.config = config.__dict__
+        for key, value in kwargs.items():
+            setattr(config, key, value)
+        self._parse_config()
+        config.validate_config()
+        self.config = config.to_dict()
+        self.sampler = ScissorHandsSampler(self.config)
         self.device = self.config['devices'][0]
         self.model = None
         self.eval_output_path = None
@@ -63,9 +67,9 @@ class ScissorHandsEvaluator(BaseEvaluator):
         self.model.head = torch.nn.Linear(1024, num_classes).to(self.device)
 
         # Load checkpoint
-        ckpt_path = self.config["model_ckpt_path"]
+        ckpt_path = self.config["classifier_ckpt_path"]
         self.logger.info(f"Loading classification checkpoint from: {ckpt_path}")
-        self.model.load_state_dict(torch.load(ckpt_path, map_location=self.device)["state_dict"],strict=False)
+        self.model.load_state_dict(torch.load(ckpt_path, map_location=self.device)["model_state_dict"])
         self.model.eval()
     
         self.logger.info("Classification model loaded successfully.")

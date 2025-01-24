@@ -21,7 +21,6 @@ from scipy import linalg
 from stable_diffusion.constants.const import theme_available, class_available
 import tqdm
 import os
-import cv2
 import torch
 import warnings
 import numpy as np

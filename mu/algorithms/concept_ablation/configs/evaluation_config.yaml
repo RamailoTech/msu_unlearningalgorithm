@@ -1,6 +1,7 @@
 model_config: "mu/algorithms/concept_ablation/configs/model_config.yaml"
 ckpt_path: "outputs/concept_ablation/finetuned_models/checkpoints/last-v2.ckpt"
-model_ckpt_path : "models/compvis/style50/compvis.ckpt"
+classifier_ckpt_path: "models/classifier_ckpt_path/style50_cls.pth"
+forget_theme: "Bricks"
 cfg_text: 9.0
 devices: "0"
 seed: 188
@@ -15,5 +16,4 @@ seed_list: ["188"]
 classification_model: "vit_large_patch16_224"
 eval_output_dir: "outputs/eval_results/mu_results/ca/"
 reference_dir: "data/quick-canvas-dataset/sample/"  #original dataset
-forget_theme: "Bricks"
 multiprocessing: False

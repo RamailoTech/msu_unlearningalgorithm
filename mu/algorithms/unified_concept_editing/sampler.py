@@ -63,8 +63,10 @@ class UnifiedConceptEditingSampler(BaseSampler):
 
         # 3. The UNet model for generating the latents.
         self.unet = UNet2DConditionModel.from_pretrained(pipeline_path, subfolder="unet", cache_dir="./cache", torch_dtype=torch.float16)
-        self.unet.load_state_dict(torch.load(model_ckpt_path, map_location=self.device))
+        #NOTE removed this line
+        # self.unet.load_state_dict(torch.load(model_ckpt_path, map_location=self.device))
         self.unet.to(torch.float16)
+
         self.scheduler = LMSDiscreteScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear",
                                         num_train_timesteps=1000)
 
@@ -79,7 +81,6 @@ class UnifiedConceptEditingSampler(BaseSampler):
         Sample (generate) images using the loaded model and sampler, based on the config.
         """
         steps = self.config["ddim_steps"]
-        theme = self.config["theme"]  
         batch_size = self.config["batch_size"]       
         cfg_text = self.config["cfg_text"]    
         seed = self.config["seed"]

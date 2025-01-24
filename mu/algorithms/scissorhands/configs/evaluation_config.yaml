@@ -1,6 +1,6 @@
 model_config: "mu/algorithms/scissorhands/configs/model_config.yaml"
 ckpt_path: "outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth"
-model_ckpt_path: "models/compvis/style50/compvis.ckpt" 
+classifier_ckpt_path: "models/classifier_ckpt_path/style50_cls.pth"
 cfg_text: 9.0
 seed: 188
 task: "class"

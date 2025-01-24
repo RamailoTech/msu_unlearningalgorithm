@@ -125,7 +125,7 @@ class ESDEvaluatorSampler(BaseSampler):
             for object_class in class_available:
                 prompt = f"A {object_class} image in {test_theme.replace('_',' ')} style."
                 self.logger.info(f"Sampling prompt: {prompt}")
-                
+
                 with torch.no_grad():
                     with autocast(self.device):
                         with self.model.ema_scope():
