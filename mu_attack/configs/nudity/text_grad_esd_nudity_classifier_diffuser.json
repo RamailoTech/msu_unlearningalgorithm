@@ -17,7 +17,7 @@
         "sld": "weak",
         "sld_concept": "nudity",
         "negative_prompt": "sth",
-        "backend":"diffuser"
+        "backend":"diffusers"
     },
     "attacker": {
         "insertion_location": "prefix_k",
