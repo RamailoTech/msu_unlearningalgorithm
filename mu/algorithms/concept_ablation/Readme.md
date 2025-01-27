@@ -236,11 +236,11 @@ Create a file, eg, `evaluate.py` and use examples and modify your configs to run
 ```python
 from mu.algorithms.concept_ablation import ConceptAblationEvaluator
 from mu.algorithms.concept_ablation.configs import (
-    concept_ablation_config
+    concept_ablation_evaluation_config
 )
 
 evaluator = ConceptAblationEvaluator(
-    concept_ablation_config,
+    concept_ablation_evaluation_config,
     ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/concept_ablation/finetuned_models/checkpoints/last.ckpt",
     classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
     reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"

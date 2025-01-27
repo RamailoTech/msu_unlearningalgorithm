@@ -45,7 +45,7 @@ class SemipermeableMembraneSampler(BaseSampler):
 
         self.config = config
         self.device = self.config['devices'][0]
-        model_config = f"{self.config['model_config']}/{self.config['forget_theme']}/config.yaml"
+        model_config = f"{self.config['model_config_path']}/{self.config['forget_theme']}/config.yaml"
         self.model_config: GenerationConfig = load_config_from_yaml(model_config)
         self.model = None
         self.sampler = None
@@ -206,7 +206,7 @@ class SemipermeableMembraneSampler(BaseSampler):
         output_dir = f"{self.config['sampler_output_dir']}"
 
         #make config directory
-        config = f"{self.config['model_config']}/{self.config['theme']}/config.yaml"
+        config = f"{self.config['model_config_path']}/{self.config['theme']}/config.yaml"
 
         for test_theme in theme_available:
             theme_path = os.path.join(output_dir, test_theme)

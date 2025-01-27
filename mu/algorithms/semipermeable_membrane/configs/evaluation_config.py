@@ -15,7 +15,7 @@ class SemipermeableMembraneEvaluationConfig(BaseConfig):
         self.spm_multiplier = [1.0]  # list of semipermeable membrane multipliers
         self.v2 = False  # whether to use version 2 of the model
         self.matching_metric = "clipcos_tokenuni"  # matching metric for evaluation
-        self.model_config = "machine_unlearning/mu_semipermeable_membrane_spm/configs"  # path to model config
+        self.model_config_path = "machine_unlearning/mu_semipermeable_membrane_spm/configs"  # path to model config
         self.base_model = "CompVis/stable-diffusion-v1-4"  # base model for the algorithm
         self.spm_path = ["outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"]  # path to semipermeable membrane model
         self.ckpt_path = "outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"  # path to finetuned model checkpoint
@@ -40,8 +40,8 @@ class SemipermeableMembraneEvaluationConfig(BaseConfig):
         """
         Perform basic validation on the config parameters.
         """
-        if not os.path.exists(self.model_config):
-            raise FileNotFoundError(f"Model config directory {self.model_config} does not exist.")
+        if not os.path.exists(self.model_config_path):
+            raise FileNotFoundError(f"Model config directory {self.model_config_path} does not exist.")
         if not os.path.exists(self.ckpt_path):
             raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
         if not os.path.exists(self.reference_dir):

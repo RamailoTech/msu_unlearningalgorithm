@@ -46,7 +46,7 @@ class ScissorHandsSampler(BaseSampler):
         """
         self.logger.info("Loading model...")
         model_ckpt_path = self.config["ckpt_path"]
-        model_config = load_config(self.config["model_config"])
+        model_config = load_config(self.config["model_config_path"])
         self.model = load_ckpt_from_config(model_config, model_ckpt_path, verbose=True)
         self.model.to(self.device)
         self.model.eval()
