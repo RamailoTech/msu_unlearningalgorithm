@@ -5,5 +5,5 @@ from .train_config import (
 )
 from .evaluation_config import(
     ErasediffEvaluationConfig,
-    erase_diff_config
+    erase_diff_evaluation_config
 )

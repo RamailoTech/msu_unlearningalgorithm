@@ -11,7 +11,7 @@ current_dir = Path(__file__).parent
 class ConceptAblationEvaluationConfig(BaseConfig):
 
     def __init__(self, **kwargs):
-        self.model_config = "mu/algorithms/concept_ablation/configs/model_config.yaml"  # path to model config
+        self.model_config_path = current_dir/"model_config.yaml"  # path to model config
         self.ckpt_path = "outputs/concept_ablation/finetuned_models/checkpoints/last-v2.ckpt"  # path to finetuned model checkpoint
         self.classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth"  # path to classifier checkpoint
         self.forget_theme = "Bricks"  # theme to forget
@@ -38,8 +38,8 @@ class ConceptAblationEvaluationConfig(BaseConfig):
         """
         Perform basic validation on the config parameters.
         """
-        if not os.path.exists(self.model_config):
-            raise FileNotFoundError(f"Model config file {self.model_config} does not exist.")
+        if not os.path.exists(self.model_config_path):
+            raise FileNotFoundError(f"Model config file {self.model_config_path} does not exist.")
         if not os.path.exists(self.ckpt_path):
             raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
         if not os.path.exists(self.classifier_ckpt_path):
@@ -62,4 +62,4 @@ class ConceptAblationEvaluationConfig(BaseConfig):
 
 
 # Example usage
-concept_ablation_config = ConceptAblationEvaluationConfig()
+concept_ablation_evaluation_config = ConceptAblationEvaluationConfig()

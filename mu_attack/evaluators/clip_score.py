@@ -12,19 +12,39 @@ import torch
 from torchmetrics.functional.multimodal import clip_score
 import torch.nn.functional as F
 
+from mu.core.base_config import BaseConfig
+from mu_attack.configs.evaluation import AttackEvaluatorConfig
 from mu_attack.core.base_evaluator import BaseEvaluator
 
 
 class ClipScoreEvaluator(BaseEvaluator):
-    def __init__(self, config: Dict[str, Any], **kwargs):
+    def __init__(self, config: AttackEvaluatorConfig, **kwargs):
         super().__init__(config, **kwargs)
 
-        self.config = config.get("clip", {})
+        for key, value in kwargs.items():
+            if not hasattr(config, key):
+                setattr(config, key, value)
+                continue
+            config_attr = getattr(config, key)
+            if isinstance(config_attr, BaseConfig) and isinstance(value, dict):
+                for sub_key, sub_val in value.items():
+                    setattr(config_attr, sub_key, sub_val)
+            elif isinstance(config_attr, dict) and isinstance(value, dict):
+                config_attr.update(value)
+            else:
+                setattr(config, key, value)
+        
+        self.config = config.to_dict()
+        config.validate_config()
+        self.output_path = self.config.get('output_path')
+        self.config = self.config.get("clip", {})
         self.image_path = self.config['image_path']
         self.log_path = self.config['log_path']
-        self.device = self.config['devices']
+        devices = [
+            f"cuda:{int(d.strip())}" for d in self.config.get("devices", "0").split(",")
+        ]
+        self.device = devices
         self.model_name_or_path = self.config['model_name_or_path']
-        self.output_path = config.get('output_path')
 
         # Pass the correct model name or path
         self.clip_score_fn = partial(clip_score, model_name_or_path=self.model_name_or_path)

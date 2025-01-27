@@ -4,9 +4,11 @@ import os
 from typing import Any, Dict
 import logging
 import json
-from mu_attack.loggers.json_ import get_parser
 
+from mu.core.base_config import BaseConfig
+from mu_attack.loggers.json_ import get_parser
 from mu_attack.helpers.utils import convert_time
+from mu_attack.configs.evaluation import AttackEvaluatorConfig
 from mu_attack.core.base_evaluator import BaseEvaluator
 
 
@@ -15,13 +17,29 @@ class ASREvaluator(BaseEvaluator):
     Evaluator for ASR.
     This evaluator computes the ASR (Attack Success Rate) of a set of experiments.
     """
-    def __init__(self, config: Dict[str, Any], **kwargs):
+    def __init__(self, config: AttackEvaluatorConfig, **kwargs):
         super().__init__(config, **kwargs)
         
-        self.config = config.get("asr", {})
+        
+        for key, value in kwargs.items():
+            if not hasattr(config, key):
+                setattr(config, key, value)
+                continue
+            config_attr = getattr(config, key)
+            if isinstance(config_attr, BaseConfig) and isinstance(value, dict):
+                for sub_key, sub_val in value.items():
+                    setattr(config_attr, sub_key, sub_val)
+            elif isinstance(config_attr, dict) and isinstance(value, dict):
+                config_attr.update(value)
+            else:
+                setattr(config, key, value)
+
+        self.config = config.to_dict()
+        self.output_path = self.config.get('output_path')
+        config.validate_config()
+        self.config = self.config.get("asr", {})
         self.root = self.config['root']
-        self.root_no_attack = self.config['root-no-attack']
-        self.output_path = config.get('output_path')
+        self.root_no_attack = self.config['root_no_attack']
         self.exps = []
         self.no_attack_exps = []
         self.results = {}  

@@ -11,7 +11,7 @@ current_dir = Path(__file__).parent
 class ScissorhandsEvaluationConfig(BaseConfig):
 
     def __init__(self, **kwargs):
-        self.model_config = "mu/algorithms/scissorhands/configs/model_config.yaml"  # path to model config
+        self.model_config_path = current_dir/"model_config.yaml"  # path to model config
         self.ckpt_path = "outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth"  # path to finetuned model checkpoint
         self.classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth"  # path to classifier checkpoint
         self.cfg_text = 9.0  # classifier-free guidance scale
@@ -38,8 +38,8 @@ class ScissorhandsEvaluationConfig(BaseConfig):
         """
         Perform basic validation on the config parameters.
         """
-        if not os.path.exists(self.model_config):
-            raise FileNotFoundError(f"Model config file {self.model_config} does not exist.")
+        if not os.path.exists(self.model_config_path):
+            raise FileNotFoundError(f"Model config file {self.model_config_path} does not exist.")
         if not os.path.exists(self.ckpt_path):
             raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
         if not os.path.exists(self.classifier_ckpt_path):

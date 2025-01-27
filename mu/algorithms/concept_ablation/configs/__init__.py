@@ -6,5 +6,5 @@ from .train_config import (
 
 from .evaluation_config import (
     ConceptAblationEvaluationConfig,
-    concept_ablation_config
+    concept_ablation_evaluation_config
 )

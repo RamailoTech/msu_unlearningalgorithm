@@ -9,6 +9,8 @@ import logging
 
 import tensorflow.compat.v1 as tf
 
+from mu.core.base_config import BaseConfig
+from mu_attack.configs.evaluation import AttackEvaluatorConfig
 from mu_attack.core.base_evaluator import BaseEvaluator
 from mu_attack.tasks.utils.ldm.modules.evaluate.adm_evaluator import Evaluator
 
@@ -18,7 +20,7 @@ class FIDEvaluator(BaseEvaluator):
     FIDEvaluator for computing FID, Inception Score, and other evaluation metrics.
     """
 
-    def __init__(self, config: Dict[str, Any], **kwargs):
+    def __init__(self, config:AttackEvaluatorConfig, **kwargs):
         """
         Initialize the FID Evaluator with batch paths and TensorFlow evaluator setup.
 
@@ -29,10 +31,26 @@ class FIDEvaluator(BaseEvaluator):
 
         super().__init__(config, **kwargs)
         # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-        self.config = config.get("fid", {})
+        for key, value in kwargs.items():
+            if not hasattr(config, key):
+                setattr(config, key, value)
+                continue
+            config_attr = getattr(config, key)
+            if isinstance(config_attr, BaseConfig) and isinstance(value, dict):
+                for sub_key, sub_val in value.items():
+                    setattr(config_attr, sub_key, sub_val)
+            elif isinstance(config_attr, dict) and isinstance(value, dict):
+                config_attr.update(value)
+            else:
+                setattr(config, key, value)
+
+        self.config = config.to_dict()
+        config.validate_config()
+        self.output_path = self.config.get('output_path')
+        self.config = self.config.get("fid", {})
         self.ref_batch_path = self.config['ref_batch_path']
         self.sample_batch_path = self.config['sample_batch_path']        
-        self.output_path = config.get('output_path')
+
         self.result = {}
 
         # Configure TensorFlow for evaluation

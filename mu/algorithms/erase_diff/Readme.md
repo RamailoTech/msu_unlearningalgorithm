@@ -264,11 +264,11 @@ Create a file, eg, `evaluate.py` and use examples and modify your configs to run
 ```python
 from mu.algorithms.erase_diff import EraseDiffEvaluator
 from mu.algorithms.erase_diff.configs import (
-    erase_diff_config
+    erase_diff_evaluation_config
 )
 
 evaluator = EraseDiffEvaluator(
-    erase_diff_config,
+    erase_diff_evaluation_config,
     ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/erase_diff/erase_diff_Abstractionism_model.pth",
     classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
     reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
