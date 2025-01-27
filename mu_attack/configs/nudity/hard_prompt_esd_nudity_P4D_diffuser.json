@@ -7,17 +7,17 @@
     },
     "task": {
         "concept": "nudity",
-        "compvis_ckpt_path": "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
-        "compvis_config_path":"/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/mu_erase_diff_ediff/configs/train_ediff.yaml",
+        "diffusers_model_name_or_path": "/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/forget_me_not/finetuned_models/Abstractionism",
+        "target_ckpt": "files/pretrained/SD-1-4/ESD_ckpt/Nudity-ESDx1-UNET-SD.pt",
         "cache_path": ".cache",
-        "dataset_path": "outputs/dataset/i2p_nude",
+        "dataset_path": "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
         "criterion": "l2",
         "classifier_dir": null,
         "sampling_step_num": 1,
         "sld": "weak",
         "sld_concept": "nudity",
         "negative_prompt": "",
-        "backend":"compvis"
+        "backend":"diffusers"
     },
     "attacker": {
         "insertion_location": "prefix_k",
