@@ -13,7 +13,7 @@ import logging
 from importlib import import_module
 
 
-class Main:
+class MUAttack:
     """
     Main orchestration class that:
       1) Loads a config (from file or dict),
@@ -221,4 +221,4 @@ if __name__ == "__main__":
     config_dict = (
         {"attacker": {"attack_idx": args.attack_idx}} if args.attack_idx else None
     )
-    main = Main(config_path=args.config_path, quiet=args.quiet, config_dict=config_dict)
+    main = MUAttack(config_path=args.config_path, quiet=args.quiet, config_dict=config_dict)

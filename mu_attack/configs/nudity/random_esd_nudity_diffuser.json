@@ -8,7 +8,7 @@
     "task": {
         "concept": "nudity",
         "diffusers_model_name_or_path": "outputs/uce/finetuned_models/uce_Abstractionism_model",
-        "target_ckpt": "mu/algorithms/unified_concept_editing/configs/model_config.yaml",
+        "target_ckpt":"files/pretrained/SD-1-4/ESD_ckpt/Nudity-ESDx1-UNET-SD.pt",
         "cache_path": ".cache",
         "dataset_path": "outputs/dataset/i2p_nude",
         "criterion": "l2",
