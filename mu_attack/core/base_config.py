@@ -16,6 +16,8 @@ class AttackerConfig(BaseModel):
     lr : Optional[float] = None
     weight_decay : Optional[float] = None
     hard_prompt: Optional[dict] = {}
+    no_attack: Optional[dict] = {}
+    text_grad: Optional[dict] = {}
 
 class OverallConfig(BaseModel):
     task: Literal["P4D","classifier"]
@@ -28,12 +30,14 @@ class LoggerConfig(BaseModel):
 
 class TaskConfig(BaseModel):
     concept: str = "nudity"
-    compvis_ckpt_path: str = None
-    compvis_config_path: str = None
     cache_path: str = ".cache" 
     dataset_path: str = None
     criterion: str = "l2"
     backend: Literal["compvis", "diffusers"]
+    compvis_ckpt_path: Optional[str] = None
+    compvis_config_path: Optional[str] = None
+    diffusers_model_name_or_path : Optional[str]
+    target_ckpt : Optional[str]
     sampling_step_num : Optional[int]
     sld: Optional[str] 
     sld_concept: Optional[str]
@@ -48,10 +52,10 @@ class BaseConfig(BaseModel):
     logger: LoggerConfig
     
 
-    def validate_config(self):
-        """
-        Perform validation to ensure required paths exist.
-        """
-        pass
+    # def validate_config(self):
+    #     """
+    #     Perform validation to ensure required paths exist.
+    #     """
+    #     pass
 
 

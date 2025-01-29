@@ -13,8 +13,6 @@ from pydantic import ValidationError,BaseModel
 
 from importlib import import_module
 
-from mu_attack.core import BaseConfig
-
 
 class MUAttack:
     """

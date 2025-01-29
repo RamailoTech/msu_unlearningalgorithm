@@ -21,6 +21,7 @@ class HardPromptESDNudityP4DConfigCompvis(BaseConfig):
     )
 
     attacker: AttackerConfig = AttackerConfig(
+        sequential = True,
         lr=0.01,
         weight_decay=0.1
     )
@@ -28,17 +29,5 @@ class HardPromptESDNudityP4DConfigCompvis(BaseConfig):
     logger: LoggerConfig = LoggerConfig(
         json={"root": "results/hard_prompt_esd_nudity_P4D_scissorhands", "name": "P4d"}
     )
-    
-    def validate_config(self):
-        """
-        Validates the configuration, ensuring all required file paths exist.
-        """
-        if not os.path.exists(self.task["compvis_ckpt_path"]):
-            raise FileNotFoundError(f"Checkpoint path does not exist: {self.task.compvis_ckpt_path}")
-        if not os.path.exists(self.task["compvis_config_path"]):
-            raise FileNotFoundError(f"Config path does not exist: {self.task.compvis_config_path}")
-        if not os.path.exists(self.task['dataset_path']):
-            raise FileNotFoundError(f"Dataset path does not exist: {self.task.dataset_path}")
-
 
 hard_prompt_esd_nudity_P4D_compvis_config = HardPromptESDNudityP4DConfigCompvis()

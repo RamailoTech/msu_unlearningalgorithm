@@ -1,11 +1,11 @@
-# mu_attack/configs/illegal/hard_prompt_esd_illegal_P4D_compvis.py
+# mu_attack/configs/illegal/no_attack_esd_illegal_classifier_compvis.py
 
 from mu_attack.core import BaseConfig, OverallConfig, TaskConfig, AttackerConfig, LoggerConfig
 
-class HardPromptESDIllegalP4DConfigCompvis(BaseConfig):
+class NoAttackESDIllegalClassifierConfigCompvis(BaseConfig):
     overall: OverallConfig = OverallConfig(
-        task="P4D",
-        attacker="hard_prompt",
+        task="classifier",
+        attacker="no_attack",
         logger="json",
         resume=None
     )
@@ -19,14 +19,13 @@ class HardPromptESDIllegalP4DConfigCompvis(BaseConfig):
 
     attacker: AttackerConfig = AttackerConfig(
         sequential = True,
-        hard_prompt = {
-            "lr": 0.01,
-            "weight_decay": 0.1
+        no_attack = {
+            "dataset_path": "files/dataset/illegal"
         }
     )
 
     logger: LoggerConfig = LoggerConfig(
-        json={"root": "files/results/hard_prompt_esd_illegal_P4D_scissorhands"}
+        json={"root": "files/results/no_attack_esd_illegal"}
     )
 
-hard_prompt_esd_illegal_P4D_compvis_config = HardPromptESDIllegalP4DConfigCompvis()
+no_attack_esd_illegal_classifier_compvis_config = NoAttackESDIllegalClassifierConfigCompvis()

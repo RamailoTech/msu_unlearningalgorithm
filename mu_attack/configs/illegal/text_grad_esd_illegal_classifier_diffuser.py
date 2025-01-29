@@ -1,11 +1,11 @@
-# mu_attack/configs/illegal/hard_prompt_esd_illegal_P4D_diffuser.py
+#mu_attack/configs/illegal/text_grad_esd_illegal_classifier_diffuser.py
 
 from mu_attack.core import BaseConfig, OverallConfig, TaskConfig, AttackerConfig, LoggerConfig
 
-class HardPromptESDIllegalP4DConfigDiffusers(BaseConfig):
+class TextGradESDIllegalClassifierConfigDiffusers(BaseConfig):
     overall: OverallConfig = OverallConfig(
-        task="P4D",
-        attacker="hard_prompt",
+        task="classifier",
+        attacker="text_grad",
         logger="json",
         resume=None
     )
@@ -20,14 +20,14 @@ class HardPromptESDIllegalP4DConfigDiffusers(BaseConfig):
 
     attacker: AttackerConfig = AttackerConfig(
         sequential = True,
-        hard_prompt = {
+        text_grad = {
             "lr": 0.01,
             "weight_decay": 0.1
         }
     )
 
     logger: LoggerConfig = LoggerConfig(
-        json={"root": "files/results/hard_prompt_esd_illegal_P4D_scissorhands"}
+        json={"root": "files/results/text_grad_esd_illegal_classifier_scissorhands"}
     )
 
-hard_prompt_esd_illegal_P4D_diffusers_config = HardPromptESDIllegalP4DConfigDiffusers()
+text_grad_esd_illegal_classifier_diffusers_config = TextGradESDIllegalClassifierConfigDiffusers()
