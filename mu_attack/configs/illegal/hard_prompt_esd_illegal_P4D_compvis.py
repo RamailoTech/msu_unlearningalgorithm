@@ -1,82 +1,7 @@
 # mu_attack/configs/illegal/hard_prompt_esd_illegal_P4D_compvis.py
 
 import os
-from pathlib import Path
-
-from mu.core.base_config import BaseConfig
-
-current_dir = Path(__file__).parent
-
-
-class OverallConfig(BaseConfig):
-    def __init__(self,
-                 task="P4D",
-                 attacker="hard_prompt",
-                 logger="json",
-                 resume=None):
-        self.task = task
-        self.attacker = attacker
-        self.logger = logger
-        self.resume = resume
-
-
-class TaskConfig(BaseConfig):
-    def __init__(self,
-                 concept="harm",
-                 compvis_ckpt_path="outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
-                 compvis_config_path="mu/algorithms/scissorhands/configs/model_config.yaml", #TODO fix this path
-                 cache_path=".cache",
-                 dataset_path="files/dataset/illegal",
-                 criterion="l2",
-                 classifier_dir=None,
-                 backend="compvis"):
-        self.concept = concept
-        self.compvis_ckpt_path = compvis_ckpt_path
-        self.compvis_config_path = compvis_config_path
-        self.cache_path = cache_path
-        self.dataset_path = dataset_path
-        self.criterion = criterion
-        self.classifier_dir = classifier_dir
-        self.backend = backend
-
-
-class AttackerConfig(BaseConfig):
-    def __init__(self,
-                 insertion_location="prefix_k",
-                 k=5,
-                 iteration=40,
-                 seed_iteration=1,
-                 attack_idx=0,
-                 eval_seed=0,
-                 universal=False,
-                 sequential=True,
-                 hard_prompt=None):
-        self.insertion_location = insertion_location
-        self.k = k
-        self.iteration = iteration
-        self.seed_iteration = seed_iteration
-        self.attack_idx = attack_idx
-        self.eval_seed = eval_seed
-        self.universal = universal
-        self.sequential = sequential
-        self.hard_prompt = HardPromptConfig(**hard_prompt) if hard_prompt else HardPromptConfig()
-
-
-class HardPromptConfig(BaseConfig):
-    def __init__(self, lr=0.01, weight_decay=0.1):
-        self.lr = lr
-        self.weight_decay = weight_decay
-
-
-class LoggerConfig(BaseConfig):
-    def __init__(self,
-                 json_config=None):
-        self.json = JSONLoggerConfig(**json_config) if json_config else JSONLoggerConfig()
-
-
-class JSONLoggerConfig(BaseConfig):
-    def __init__(self, root="files/results/hard_prompt_esd_illegal_P4D_scissorhands"):
-        self.root = root
+from mu_attack.core.base_config import BaseConfig, OverallConfig, TaskConfigCompvis, AttackerConfig, LoggerConfig
 
 
 class HardPromptIllegalConfigCompvis(BaseConfig):
@@ -86,10 +11,49 @@ class HardPromptIllegalConfigCompvis(BaseConfig):
                  attacker=None,
                  logger=None):
         super().__init__()
-        self.overall = OverallConfig(**overall) if overall else OverallConfig()
-        self.task = TaskConfig(**task) if task else TaskConfig()
-        self.attacker = AttackerConfig(**attacker) if attacker else AttackerConfig()
-        self.logger = LoggerConfig(**logger) if logger else LoggerConfig()
+
+        self.overall = OverallConfig(
+            task="P4D",
+            attacker="hard_prompt",
+            logger="json",
+            resume=None,
+            **(overall or {})
+        )
+
+        self.task = TaskConfigCompvis(
+            concept="harm",
+            compvis_ckpt_path="outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
+            compvis_config_path="mu/algorithms/scissorhands/configs/model_config.yaml",
+            cache_path=".cache",
+            dataset_path="outputs/dataset/illegal",
+            criterion="l2",
+            classifier_dir=None,
+            backend="compvis",
+            **(task or {})
+        )
+
+        self.attacker = AttackerConfig(
+            insertion_location="prefix_k",
+            k=5,
+            iteration=40,
+            seed_iteration=1,
+            attack_idx=0,
+            eval_seed=0,
+            universal=False,
+            sequential=True,
+            hard_prompt= {
+                "lr": 0.01,
+                "weight_decay": 0.1
+                }
+            **(attacker or {})
+        )
+
+        self.logger = LoggerConfig(
+            json_config={
+                "root": "files/results/hard_prompt_esd_illegal_P4D_scissorhands"
+            },
+            **(logger or {})
+        )
 
     def validate_config(self):
         """
@@ -106,5 +70,24 @@ class HardPromptIllegalConfigCompvis(BaseConfig):
             if not os.path.exists(self.logger.json.root):
                 raise FileNotFoundError(f"Logger root directory {self.logger.json.root} does not exist.")
 
+    def to_dict(self):
+        """
+        Convert the entire configuration object to a dictionary.
+        """
+        return {
+            "overall": {
+                "task": self.overall.task,
+                "attacker": self.overall.attacker,
+                "logger": self.overall.logger,
+                "resume": self.overall.resume,
+            },
+            "task": vars(self.task),
+            "attacker": vars(self.attacker),
+            "logger": {
+                "json": vars(self.logger.json)
+            },
+        }
 
-hard_prompt_esd_illegal_P4D_compvis = HardPromptIllegalConfigCompvis()
+
+
+hard_prompt_esd_illegal_P4D_compvis_config = HardPromptIllegalConfigCompvis()

@@ -1,7 +1,7 @@
 # mu_attack/configs/nudity/hard_prompt_esd_nudity_P4D_diffuser.py
 
 import os
-from mu_attack.core.base_config import BaseConfig, OverallConfig, TaskConfigDiffuser, AttackerConfig, LoggerConfig
+from mu_attack.core.base_config import BaseConfig, OverallConfig, AttackerConfig, LoggerConfig
 
 
 class HardPromptESDNudityP4DConfigDiffusers(BaseConfig):
