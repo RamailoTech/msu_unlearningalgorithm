@@ -34,4 +34,4 @@ class NoAttackESDNudityClassifierConfigCompvis(BaseConfig):
     )
 
 
-no_attack_esd_nudity_classifier_compvi_config = NoAttackESDNudityClassifierConfigCompvis()
+no_attack_esd_nudity_classifier_compvis_config = NoAttackESDNudityClassifierConfigCompvis()

@@ -1,6 +1,5 @@
 # mu_attack/configs/nudity/no_attack_esd_nudity_classifier_diffuser.py
 
-import os
 from mu_attack.core.base_config import BaseConfig, OverallConfig, TaskConfig, AttackerConfig, LoggerConfig
 
 

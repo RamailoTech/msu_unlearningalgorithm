@@ -36,13 +36,13 @@ class TaskConfig(BaseModel):
     backend: Literal["compvis", "diffusers"]
     compvis_ckpt_path: Optional[str] = None
     compvis_config_path: Optional[str] = None
-    diffusers_model_name_or_path : Optional[str]
-    target_ckpt : Optional[str]
-    sampling_step_num : Optional[int]
-    sld: Optional[str] 
-    sld_concept: Optional[str]
-    negative_prompt: Optional[str]
-    classifier_dir: Optional[str] 
+    diffusers_model_name_or_path : Optional[str] = None
+    target_ckpt : Optional[str] = None
+    sampling_step_num : Optional[int] = None
+    sld: Optional[str] = None
+    sld_concept: Optional[str] = None
+    negative_prompt: Optional[str] = None
+    classifier_dir: Optional[str] =  None
     
 
 class BaseConfig(BaseModel):
@@ -51,11 +51,3 @@ class BaseConfig(BaseModel):
     attacker: AttackerConfig
     logger: LoggerConfig
     
-
-    # def validate_config(self):
-    #     """
-    #     Perform validation to ensure required paths exist.
-    #     """
-    #     pass
-
-

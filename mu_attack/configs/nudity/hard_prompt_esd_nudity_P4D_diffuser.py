@@ -34,5 +34,4 @@ class HardPromptESDNudityP4DConfigDiffusers(BaseConfig):
             }
     )
 
-
 hard_prompt_esd_nudity_P4D_diffusers_config = HardPromptESDNudityP4DConfigDiffusers()

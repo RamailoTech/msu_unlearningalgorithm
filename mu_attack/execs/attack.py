@@ -52,8 +52,8 @@ class MUAttack:
 
     def _update_config_from_kwargs(self, config_dict, overrides):
         """
-        ✅ Updates config dictionary using dot-separated keys.
-        ✅ Supports both Pydantic models and dictionary fields.
+        Updates config dictionary using dot-separated keys.
+        Supports both Pydantic models and dictionary fields.
         """
         for key, value in overrides.items():
             keys = key.split(".")  # Convert 'task.name' -> ['task', 'name']
@@ -66,7 +66,7 @@ class MUAttack:
 
             final_attr = keys[-1]
             if final_attr in current_dict:
-                current_dict[final_attr] = value  # ✅ Override value
+                current_dict[final_attr] = value  # Override value
             else:
                 raise AttributeError(f"Invalid config key: {key} (Could not find '{final_attr}')")
 
@@ -75,12 +75,33 @@ class MUAttack:
         """
         Validates the configuration, ensuring all required file paths exist.
         """
-        if not os.path.exists(self.config['task']['compvis_ckpt_path']):
-            raise FileNotFoundError(f"Checkpoint path does not exist: {self.config['task']['compvis_ckpt_path']}")
-        if not os.path.exists(self.config['task']['compvis_config_path']):
-            raise FileNotFoundError(f"Config path does not exist: {self.config['task']['compvis_config_path']}")
-        if not os.path.exists(self.config['task']['dataset_path']):
-            raise FileNotFoundError(f"Dataset path does not exist: {self.config['task']['dataset_path']}")
+        task_config = self.config.get("task", {})
+        backend = task_config.get("backend")
+        
+        compvis_ckpt_path = task_config.get("compvis_ckpt_path")
+        compvis_config_path = task_config.get("compvis_config_path")
+        dataset_path = task_config.get("dataset_path")
+        diffusers_model_name_or_path = task_config.get("diffusers_model_name_or_path")
+        target_ckpt = task_config.get("target_ckpt")
+
+        if backend == "compvis":
+            if compvis_ckpt_path and not os.path.exists(compvis_ckpt_path):
+                raise FileNotFoundError(f"Checkpoint path does not exist: {compvis_ckpt_path}")
+            
+            if compvis_config_path and not os.path.exists(compvis_config_path):
+                raise FileNotFoundError(f"Config path does not exist: {compvis_config_path}")
+
+        #Validate diffusers paths only if backend is "diffusers"
+        if backend == "diffusers":
+            if diffusers_model_name_or_path and not os.path.exists(diffusers_model_name_or_path):
+                raise FileNotFoundError(f"Diffusers model path does not exist: {diffusers_model_name_or_path}")
+
+            # if target_ckpt and not os.path.exists(target_ckpt):
+            #     raise FileNotFoundError(f"Target checkpoint does not exist: {target_ckpt}")
+
+        # Always validate dataset path (common to both backends)
+        if dataset_path and not os.path.exists(dataset_path):
+            raise FileNotFoundError(f"Dataset path does not exist: {dataset_path}")
 
     def load_resume_config(self):
         """

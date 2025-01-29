@@ -1,6 +1,5 @@
 # mu_attack/configs/nudity/random_esd_nudity_compvis.py
 
-import os
 from mu_attack.core import BaseConfig, OverallConfig, TaskConfig, AttackerConfig, LoggerConfig
 
 
