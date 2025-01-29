@@ -1,11 +1,11 @@
-# mu_attack/configs/style/hard_prompt_esd_vangogh_P4D_compvis.py
+# mu_attack/configs/style/text_grad_esd_vangogh_classifier_compvis.py
 
 from mu_attack.core import BaseConfig, OverallConfig, TaskConfig, AttackerConfig, LoggerConfig
 
-class HardPromptESDVangoghP4DConfigCompvis(BaseConfig):
+class TextGradESDVangoghClassifierConfigCompvis(BaseConfig):
     overall: OverallConfig = OverallConfig(
-        task="P4D",
-        attacker="hard_prompt",
+        task="classifier",
+        attacker="text_grad",
         logger="json",
         resume=None
     )
@@ -19,15 +19,14 @@ class HardPromptESDVangoghP4DConfigCompvis(BaseConfig):
     attacker: AttackerConfig = AttackerConfig(
         sequential = True,
         k = 3,
-        attack_idx = 1,
-        hard_prompt = {
+        text_grad = {
             "lr": 0.01,
             "weight_decay": 0.1
         }
     )
 
     logger: LoggerConfig = LoggerConfig(
-        json={"root": "results/hard_prompt_esd_vangogh_P4D"}
+        json={"root": "results/text_grad_esd_vangogh_classifier"}
     )
 
-hard_prompt_esd_vangogh_P4D_compvis_config = HardPromptESDVangoghP4DConfigCompvis()
+text_grad_esd_vangogh_classifier_compvis_config = TextGradESDVangoghClassifierConfigCompvis()

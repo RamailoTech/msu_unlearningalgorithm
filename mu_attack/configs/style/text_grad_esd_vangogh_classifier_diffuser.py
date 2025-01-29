@@ -1,11 +1,11 @@
-# mu_attack/configs/style/hard_prompt_esd_vangogh_P4D_compvis.py
+# mu_attack/configs/style/text_grad_esd_vangogh_classifier_diffuser.py
 
 from mu_attack.core import BaseConfig, OverallConfig, TaskConfig, AttackerConfig, LoggerConfig
 
-class HardPromptESDVangoghP4DConfigCompvis(BaseConfig):
+class TextGradESDVangoghClassifierConfigDiffusers(BaseConfig):
     overall: OverallConfig = OverallConfig(
-        task="P4D",
-        attacker="hard_prompt",
+        task="classifier",
+        attacker="text_grad",
         logger="json",
         resume=None
     )
@@ -13,21 +13,21 @@ class HardPromptESDVangoghP4DConfigCompvis(BaseConfig):
     task: TaskConfig = TaskConfig(
         concept = "vangogh",
         classifier_dir="results/checkpoint-2800",
-        backend="compvis"
+        backend="diffusers",
+        target_ckpt = "files/pretrained/SD-1-4/ESD_ckpt/VanGogh-ESDx1-UNET-SD.pt"
     )
 
     attacker: AttackerConfig = AttackerConfig(
         sequential = True,
         k = 3,
-        attack_idx = 1,
-        hard_prompt = {
+        text_grad = {
             "lr": 0.01,
             "weight_decay": 0.1
         }
     )
 
     logger: LoggerConfig = LoggerConfig(
-        json={"root": "results/hard_prompt_esd_vangogh_P4D"}
+        json={"root": "results/text_grad_esd_vangogh_classifier"}
     )
 
-hard_prompt_esd_vangogh_P4D_compvis_config = HardPromptESDVangoghP4DConfigCompvis()
+text_grad_esd_vangogh_classifier_diffuser_config = TextGradESDVangoghClassifierConfigDiffusers()

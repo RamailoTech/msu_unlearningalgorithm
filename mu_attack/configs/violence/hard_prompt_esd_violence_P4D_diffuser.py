@@ -1,8 +1,8 @@
-# mu_attack/configs/style/hard_prompt_esd_vangogh_P4D_compvis.py
+# mu_attack/configs/violence/hard_prompt_esd_violence_P4D_diffuser.py
 
 from mu_attack.core import BaseConfig, OverallConfig, TaskConfig, AttackerConfig, LoggerConfig
 
-class HardPromptESDVangoghP4DConfigCompvis(BaseConfig):
+class HardPromptESDViolenceP4DConfigDiffuser(BaseConfig):
     overall: OverallConfig = OverallConfig(
         task="P4D",
         attacker="hard_prompt",
@@ -11,15 +11,14 @@ class HardPromptESDVangoghP4DConfigCompvis(BaseConfig):
     )
 
     task: TaskConfig = TaskConfig(
-        concept = "vangogh",
-        classifier_dir="results/checkpoint-2800",
-        backend="compvis"
+        concept = "harm",
+        classifier_dir=None,
+        backend="diffusers",
+        target_ckpt = "files/pretrained/SD-1-4/ESD_ckpt/Violence-ESDu1-UNET-SD.pt"
     )
 
     attacker: AttackerConfig = AttackerConfig(
         sequential = True,
-        k = 3,
-        attack_idx = 1,
         hard_prompt = {
             "lr": 0.01,
             "weight_decay": 0.1
@@ -27,7 +26,7 @@ class HardPromptESDVangoghP4DConfigCompvis(BaseConfig):
     )
 
     logger: LoggerConfig = LoggerConfig(
-        json={"root": "results/hard_prompt_esd_vangogh_P4D"}
+        json={"root": "results/hard_prompt_esd_violence_P4D"}
     )
 
-hard_prompt_esd_vangogh_P4D_compvis_config = HardPromptESDVangoghP4DConfigCompvis()
+hard_prompt_esd_violence_P4D_diffuser_config = HardPromptESDViolenceP4DConfigDiffuser()
