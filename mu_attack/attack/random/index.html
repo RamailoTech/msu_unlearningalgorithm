@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Usage - Unlearn Diff</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Usage";
+        var mkdocs_page_input_path = "mu_attack/attack/random.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> Unlearn Diff
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../../unlearn/">Unlearn</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../../../attack/Readme_MU_Attack.md">Attack</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Unlearn Algorithms</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" >Concept Ablation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/concept_ablation/">Usage</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Erase Diff</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/erase_diff/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/erase_diff/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/erase_diff/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >ESD</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/esd/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/esd/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/esd/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/esd/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Forget Me Not</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/forget_me_not/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/forget_me_not/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/forget_me_not/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Saliency Unlearning</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/saliency/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/saliency/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/saliency/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/saliency/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Scissor Hands</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/scissorhands/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/scissorhands/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/scissorhands/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Selective Amnesia</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/selective_amnesia/">Usage</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Semi Permeable Membrane</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/semipermeable_membrane/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/semipermeable_membrane/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/semipermeable_membrane/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/semipermeable_membrane/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Unified Concept Editing</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/uce/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/uce/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/uce/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/uce/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Unlearn Mu Attack</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" >Hard Prompt</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../hard_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/hard_prompt/">Config</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >No attack</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../no_attack/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/no_attack/">Config</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Random</a>
+    <ul class="current">
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Usage</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#create-environment">Create Environment</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#generate-dataset">Generate Dataset</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#run-attack">Run Attack</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#description-of-fields-in-config-json-file">Description of fields in config json file</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/random/">Config</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Seed Search</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../seed_search/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/seed_search/">Config</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Text Grad</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../text_grad/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/text_grad/">Config</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Evaluation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../mu_attack_evaluation/">Usage</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../../../algorithms/contributing.md">Contributing</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">Unlearn Diff</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Unlearn Mu Attack</li>
+          <li class="breadcrumb-item">Random</li>
+      <li class="breadcrumb-item active">Usage</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="unlearndiffattak">UnlearnDiffAttak</h2>
+<p>This repository contains the implementation of UnlearnDiffAttack for random, a framework for evaluating the robustness of safety-driven unlearned Models using adversarial prompts.</p>
+<h3 id="create-environment">Create Environment</h3>
+<pre><code>conda env create -f environment.yaml
+</code></pre>
+<h3 id="generate-dataset">Generate Dataset</h3>
+<pre><code>python -m scripts.generate_dataset --prompts_path data/prompts/prompts.csv --concept i2p_nude --save_path outputs/dataset
+</code></pre>
+<h3 id="run-attack">Run Attack</h3>
+<ol>
+<li><strong>Random Attack - compvis</strong></li>
+</ol>
+<pre><code class="language-python">from mu_attack.configs.nudity import random_esd_nudity_compvis_config
+from mu_attack.execs.attack import MUAttack
+from mu.algorithms.scissorhands.configs import scissorhands_train_mu
+
+def run_attack_for_nudity():
+
+    overridable_params = {
+    &quot;task.compvis_ckpt_path&quot; :&quot;outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth&quot;,
+   &quot;task.compvis_config_path&quot; : scissorhands_train_mu.model_config_path ,
+    &quot;task.dataset_path&quot; : &quot;outputs/dataset/i2p_nude&quot;,
+    &quot;logger.json.root&quot; : &quot;results/hard_prompt_esd_nudity_P4D_scissorhands&quot;
+    }
+
+    MUAttack(
+        config=random_esd_nudity_compvis_config,
+        **overridable_params
+    )
+
+if __name__ == &quot;__main__&quot;:
+    run_attack_for_nudity()
+</code></pre>
+<p><strong>Code Explanation &amp; Important Notes</strong></p>
+<ol>
+<li>
+<p>from mu_attack.configs.nudity import hard_prompt_esd_nudity_P4D_compvis_config
+→ This imports the predefined Hard Prompt Attack configuration for nudity unlearning in the CompVis model. It sets up the attack parameters and methodologies.</p>
+</li>
+<li>
+<p>from mu.algorithms.scissorhands.configs import scissorhands_train_mu
+→ Imports the Scissorhands model configuration, required to set the task.compvis_config_path parameter correctly.</p>
+</li>
+</ol>
+<p><strong>Overriding Parameters in JSON Configuration</strong></p>
+<ul>
+<li>
+<p>The overridable_params dictionary allows dynamic modification of parameters defined in the JSON configuration.</p>
+</li>
+<li>
+<p>This enables users to override default values by passing them as arguments.</p>
+</li>
+</ul>
+<p><strong>Example usage</strong></p>
+<pre><code class="language-python">overridable_params = {
+    &quot;task.compvis_ckpt_path&quot;: &quot;outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth&quot;,
+    &quot;task.compvis_config_path&quot;: scissorhands_train_mu.model_config_path,  # Overrides model config
+    &quot;task.dataset_path&quot;: &quot;outputs/dataset/i2p_nude&quot;,  # Overrides dataset path
+    &quot;logger.json.root&quot;: &quot;results/hard_prompt_esd_nudity_P4D_scissorhands&quot;,  # Overrides logging path
+    &quot;attacker.k&quot; = 3,
+    &quot;attacker.no_attack.dataset_path&quot; = &quot;path/to/dataset&quot; #overrides the datset path for no attack
+}
+
+</code></pre>
+<ol>
+<li><strong>Random Attack - diffuser</strong></li>
+</ol>
+<pre><code class="language-python">from mu_attack.configs.nudity import random_esd_nudity_diffuser_config
+from mu_attack.execs.attack import MUAttack
+
+def run_attack_for_nudity():
+
+    overridable_params = {
+    &quot;task.diffusers_model_name_or_path&quot; : &quot;outputs/forget_me_not/finetuned_models/Abstractionism&quot;,
+    &quot;task.dataset_path&quot; : &quot;outputs/dataset/i2p_nude&quot;,
+    &quot;logger.json.root&quot; : &quot;results/random_esd_nudity_diffuser_uce&quot;
+
+    }
+
+    MUAttack(
+        config=random_esd_nudity_diffuser_config,
+        **overridable_params
+    )
+
+if __name__ == &quot;__main__&quot;:
+    run_attack_for_nudity()
+</code></pre>
+<p><strong>Code Explanation &amp; Important Notes</strong></p>
+<ol>
+<li>from mu_attack.configs.nudity import random_esd_nudity_P4D_diffusers_config
+→ This imports the predefined random Attack configuration for nudity unlearning in the diffusers model. It sets up the attack parameters and methodologies.</li>
+</ol>
+<h3 id="description-of-fields-in-config-json-file">Description of fields in config json file</h3>
+<ol>
+<li>overall</li>
+</ol>
+<p>This section defines the high-level configuration for the attack.</p>
+<ul>
+<li>
+<p>task : The name of the task being performed.</p>
+<p>Type: str
+Example: classifer</p>
+</li>
+<li>
+<p>attacker: Specifies the attack type.</p>
+<p>Type: str
+Example: random</p>
+</li>
+<li>
+<p>logger: Defines the logging mechanism.</p>
+<p>Type: str
+Example: JSON</p>
+</li>
+<li>
+<p>resume: Option to resume from previous checkpoint.</p>
+</li>
+<li>
+<p>task</p>
+</li>
+<li>
+<p>concept: The concept targeted by the attack.</p>
+<p>Type: str
+Example: nudity</p>
+</li>
+<li>
+<p>diffusers_model_name_or_path: Path to the pre-trained checkpoint of the diffuser model. (For diffuser)</p>
+<p>Type: str
+Example: "outputs/semipermeable_membrane/finetuned_models/"</p>
+</li>
+<li>
+<p>target_ckpt: Path to the target model checkpoint used in the attack.  (For diffuser)</p>
+<p>Type: str
+Example: "files/pretrained/SD-1-4/ESD_ckpt/Nudity-ESDx1-UNET-SD.pt"</p>
+</li>
+<li>
+<p>compvis_ckpt_path: Path to the pre-trained checkpoint of the CompVis model. (For compvis)</p>
+<p>Type: str
+Example: "outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth"</p>
+</li>
+<li>
+<p>compvis_config_path: Path to the configuration file for the CompVis model. (For compvis)</p>
+<p>Type: str
+Example: "configs/scissorhands/model_config.yaml"</p>
+</li>
+<li>
+<p>cache_path: Directory to cache intermediate results.</p>
+<p>Type: str
+Example: ".cache"</p>
+</li>
+<li>
+<p>dataset_path: Path to the dataset used for the attack.</p>
+<p>Type: str
+Example: "outputs/dataset/i2p_nude"</p>
+</li>
+<li>
+<p>criterion: The loss function or criterion used during the attack.</p>
+<p>Type: str
+Example: "l2"</p>
+</li>
+<li>
+<p>classifier_dir: Directory for the classifier, if applicable. null if not used.
+    Type: str
+    Example: "/path/classifier_dir"</p>
+</li>
+<li>
+<p>sampling_step_num: Number of sampling steps during the attack.</p>
+<p>Type: int
+Example: 1</p>
+</li>
+<li>
+<p>sld: Strength of latent disentanglement.</p>
+<p>Type: str
+Example: "weak" </p>
+</li>
+<li>
+<p>sld_concept: Concept tied to latent disentanglement.</p>
+<p>Type: str
+Example: "nudity"</p>
+</li>
+<li>
+<p>negative_prompt: The negative prompt used to steer the generation. </p>
+<p>Type: str
+Example: "sth"</p>
+</li>
+<li>
+<p>backend: Specifies the backend model i.e "diffusers".</p>
+<p>Type: str
+Options: "diffusers" or "compvis"</p>
+</li>
+<li>
+<p>attacker</p>
+</li>
+<li>
+<p>insertion_location: The point of insertion for the prompt.</p>
+<p>Type: str
+Example: "prefix_k"</p>
+</li>
+<li>
+<p>k: The value of k for the prompt insertion point.</p>
+<p>Type: int
+Example: 5</p>
+</li>
+<li>
+<p>iteration: Number of iterations for the attack.</p>
+<p>Type: int
+Example: 1</p>
+</li>
+<li>
+<p>seed_iteration: Random seed for the iterative process.</p>
+<p>Type: int
+Example: 1</p>
+</li>
+<li>
+<p>attack_idx: Index of the attack for evaluation purposes.</p>
+<p>Type: int
+Example: 0</p>
+</li>
+<li>
+<p>eval_seed: Seed value used for evaluation.</p>
+<p>Type: int
+Example: 0</p>
+</li>
+<li>
+<p>universal: Whether the attack is universal (true or false).</p>
+<p>Type: bool
+Example: false</p>
+</li>
+<li>
+<p>sequential: Whether the attack is applied sequentially.</p>
+<p>Type: bool
+Example: true</p>
+</li>
+<li>
+<p>logger</p>
+</li>
+<li>
+<p>json: Logging configuration.</p>
+<ul>
+<li>
+<p>root: Path to the directory where logs will be saved.</p>
+<p>Type: str
+Example: "results/hard_prompt_esd_nudity_P4D"</p>
+</li>
+<li>
+<p>name: Name for the log file or experiment.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: "Hard Prompt"</li>
+</ul>
+</li>
+</ul>
+<p>Example usage:</p>
+<p><code>json
+"json": {
+        "root": "results/no_attack_esd_nudity_esd",
+        "name": "Hard Prompt"
+    }</code></p>
+</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../configs/no_attack/" class="btn btn-neutral float-left" title="Config"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../configs/random/" class="btn btn-neutral float-right" title="Config">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../../configs/no_attack/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../configs/random/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

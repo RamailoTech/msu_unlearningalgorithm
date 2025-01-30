@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Usage - Unlearn Diff</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Usage";
+        var mkdocs_page_input_path = "unlearn/algorithms/esd.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> Unlearn Diff
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../">Unlearn</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../../../attack/Readme_MU_Attack.md">Attack</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Unlearn Algorithms</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" >Concept Ablation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../concept_ablation/">Usage</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Erase Diff</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/erase_diff/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/erase_diff/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/erase_diff/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >ESD</a>
+    <ul class="current">
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Usage</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prerequisities">Prerequisities</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#create-environment">Create environment:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#activate-environment">Activate environment:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#downloading-data-and-models">Downloading data and models.</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#run-train">Run Train</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#directory-structure">Directory Structure</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#description-of-arguments-being-used-in-train_configyaml">Description of arguments being used in train_config.yaml</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#basic-command-to-run-evaluation">Basic Command to Run Evaluation:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#model-configuration">Model Configuration:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#training-and-sampling-parameters">Training and Sampling Parameters:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#output-and-logging-parameters">Output and Logging Parameters:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#performance-and-efficiency-parameters">Performance and Efficiency Parameters:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optimization-parameters">Optimization Parameters:</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/esd/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/esd/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/esd/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Forget Me Not</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/forget_me_not/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/forget_me_not/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/forget_me_not/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Saliency Unlearning</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../saliency/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/saliency/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/saliency/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/saliency/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Scissor Hands</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/scissorhands/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/scissorhands/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/scissorhands/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Selective Amnesia</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../selective_amnesia/">Usage</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Semi Permeable Membrane</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../semipermeable_membrane/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/semipermeable_membrane/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/semipermeable_membrane/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/semipermeable_membrane/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Unified Concept Editing</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../uce/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/uce/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/uce/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/uce/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Unlearn Mu Attack</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" >Hard Prompt</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../mu_attack/attack/hard_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../mu_attack/configs/hard_prompt/">Config</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >No attack</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../mu_attack/attack/no_attack/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../mu_attack/configs/no_attack/">Config</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Random</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../mu_attack/attack/random/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../mu_attack/configs/random/">Config</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Seed Search</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../mu_attack/attack/seed_search/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../mu_attack/configs/seed_search/">Config</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Text Grad</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../mu_attack/attack/text_grad/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../mu_attack/configs/text_grad/">Config</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Evaluation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../mu_attack/mu_attack_evaluation/">Usage</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../../../algorithms/contributing.md">Contributing</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">Unlearn Diff</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Unlearn Algorithms</li>
+          <li class="breadcrumb-item">ESD</li>
+      <li class="breadcrumb-item active">Usage</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="esd-algorithm-for-machine-unlearning">ESD Algorithm for Machine Unlearning</h1>
+<p>This repository provides an implementation of the ESD algorithm for machine unlearning in Stable Diffusion models. The ESD algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.</p>
+<h3 id="installation">Installation</h3>
+<pre><code>pip install unlearn_diff
+</code></pre>
+<h3 id="prerequisities">Prerequisities</h3>
+<p>Ensure <code>conda</code> is installed on your system. You can install Miniconda or Anaconda:</p>
+<ul>
+<li><strong>Miniconda</strong> (recommended): <a href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a></li>
+<li><strong>Anaconda</strong>: <a href="https://www.anaconda.com/products/distribution">https://www.anaconda.com/products/distribution</a></li>
+</ul>
+<p>After installing <code>conda</code>, ensure it is available in your PATH by running. You may require to restart the terminal session:</p>
+<pre><code class="language-bash">conda --version
+</code></pre>
+<h3 id="create-environment">Create environment:</h3>
+<pre><code>create_env &lt;algorithm_name&gt;
+</code></pre>
+<p>eg: <code>create_env esd</code></p>
+<h3 id="activate-environment">Activate environment:</h3>
+<pre><code>conda activate &lt;environment_name&gt;
+</code></pre>
+<p>eg: <code>conda activate esd</code></p>
+<p>The <algorithm_name> has to be one of the folders in the <code>mu/algorithms</code> folder.</p>
+<h3 id="downloading-data-and-models">Downloading data and models.</h3>
+<p>After you install the package, you can use the following commands to download.</p>
+<ol>
+<li><strong>Dataset</strong>:</li>
+<li><strong>i2p</strong>:<ul>
+<li><strong>Sample</strong>:
+ <code>download_data sample i2p</code></li>
+<li><strong>Full</strong>:
+ <code>download_data full i2p</code></li>
+</ul>
+</li>
+<li>
+<p><strong>quick_canvas</strong>:</p>
+<ul>
+<li><strong>Sample</strong>:
+ <code>download_data sample quick_canvas</code></li>
+<li><strong>Full</strong>:
+ <code>download_data full quick_canvas</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Model</strong>:</p>
+</li>
+<li><strong>compvis</strong>:
+    <code>download_model compvis</code></li>
+<li><strong>diffuser</strong>:
+    <code>download_model diffuser</code></li>
+</ol>
+<p><strong>Verify the Downloaded Files</strong></p>
+<p>After downloading, verify that the datasets have been correctly extracted:</p>
+<pre><code class="language-bash">ls -lh ./data/i2p-dataset/sample/
+ls -lh ./data/quick-canvas-dataset/sample/
+</code></pre>
+<hr />
+<h2 id="run-train">Run Train</h2>
+<p>Create a file, eg, <code>my_trainer.py</code> and use examples and modify your configs to run the file.  </p>
+<p><strong>Example Code</strong></p>
+<pre><code class="language-python">from mu.algorithms.esd.algorithm import ESDAlgorithm
+from mu.algorithms.esd.configs import (
+    esd_train_mu,
+)
+
+algorithm = ESDAlgorithm(
+    esd_train_mu,
+    ckpt_path=&quot;/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt&quot;,
+    raw_dataset_dir=(
+        &quot;/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample&quot;
+    ),
+)
+algorithm.run()
+</code></pre>
+<p><strong>Running the Training Script in Offline Mode</strong></p>
+<pre><code class="language-bash">WANDB_MODE=offline python my_trainer.py
+</code></pre>
+<p><strong>How It Works</strong> 
+* Default Values: The script first loads default values from the train config file as in configs section.</p>
+<ul>
+<li>
+<p>Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.</p>
+</li>
+<li>
+<p>Final Configuration: The script merges the configs and convert them into dictionary to proceed with the training. </p>
+</li>
+</ul>
+<h2 id="directory-structure">Directory Structure</h2>
+<ul>
+<li><code>algorithm.py</code>: Implementation of the ESDAlgorithm class.</li>
+<li><code>configs/</code>: Contains configuration files for training and generation.</li>
+<li><code>constants/const.py</code>: Constants used throughout the project.</li>
+<li><code>model.py</code>: Implementation of the ESDModel class.</li>
+<li><code>scripts/train.py</code>: Script to train the ESD algorithm.</li>
+<li><code>trainer.py</code>: Implementation of the ESDTrainer class.</li>
+<li><code>utils.py</code>: Utility functions used in the project.</li>
+</ul>
+<hr />
+<h3 id="description-of-arguments-being-used-in-train_configyaml">Description of arguments being used in train_config.yaml</h3>
+<p>The <code>config/train_config.yaml</code> file is a configuration file for training a Stable Diffusion model using the ESD (Erase Stable Diffusion) method. It defines various parameters related to training, model setup, dataset handling, and output configuration. Below is a detailed description of each section and parameter:</p>
+<p><strong>Training Parameters</strong></p>
+<p>These parameters control the fine-tuning process, including the method of training, guidance scales, learning rate, and iteration settings.</p>
+<ul>
+<li>
+<p>train_method: Specifies the method of training to decide which parts of the model to update.</p>
+<ul>
+<li>Type: str</li>
+<li>Choices: noxattn, selfattn, xattn, full, notime, xlayer, selflayer</li>
+<li>Example: xattn</li>
+</ul>
+</li>
+<li>
+<p>start_guidance: Guidance scale for generating initial images during training. Affects the diversity of the training set.</p>
+<ul>
+<li>Type: float</li>
+<li>Example: 0.1</li>
+</ul>
+</li>
+<li>
+<p>negative_guidance: Guidance scale for erasing the target concept during training.</p>
+<ul>
+<li>Type: float</li>
+<li>Example: 0.0</li>
+</ul>
+</li>
+<li>
+<p>iterations: Number of training iterations (similar to epochs).</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 1</li>
+</ul>
+</li>
+<li>
+<p>lr: Learning rate used by the optimizer for fine-tuning.</p>
+<ul>
+<li>Type: float</li>
+<li>Example: 5e-5</li>
+</ul>
+</li>
+<li>
+<p>image_size: Size of images used during training and sampling (in pixels).</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 512</li>
+</ul>
+</li>
+<li>
+<p>ddim_steps: Number of diffusion steps used in the DDIM sampling process.</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 50</li>
+</ul>
+</li>
+</ul>
+<p><strong>Model Configuration</strong></p>
+<p>These parameters specify the Stable Diffusion model checkpoint and configuration file.</p>
+<ul>
+<li>
+<p>model_config_path: Path to the YAML file defining the model architecture and parameters.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: mu/algorithms/esd/configs/model_config.yaml</li>
+</ul>
+</li>
+<li>
+<p>ckpt_path: Path to the finetuned Stable Diffusion model checkpoint.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: '../models/compvis/style50/compvis.ckpt'</li>
+</ul>
+</li>
+</ul>
+<p><strong>Dataset Configuration</strong></p>
+<p>These parameters define the dataset type and template for training, specifying whether to focus on objects, styles, or inappropriate content.</p>
+<ul>
+<li>
+<p>dataset_type: Type of dataset used for training.</p>
+<ul>
+<li>Type: str</li>
+<li>Choices: unlearncanvas, i2p</li>
+<li>Example: unlearncanvas</li>
+</ul>
+</li>
+<li>
+<p>template: Type of concept or style to erase during training.</p>
+<ul>
+<li>Type: str</li>
+<li>Choices: object, style, i2p</li>
+<li>Example: style</li>
+</ul>
+</li>
+<li>
+<p>template_name: Specific name of the object or style to erase (e.g., "Abstractionism").</p>
+<ul>
+<li>Type: str</li>
+<li>Example Choices: Abstractionism, self-harm</li>
+<li>Example: Abstractionism</li>
+</ul>
+</li>
+</ul>
+<p><strong>Output Configuration</strong></p>
+<p>These parameters control where the outputs of the training process, such as fine-tuned models, are stored.</p>
+<ul>
+<li>
+<p>output_dir: Directory where the fine-tuned model and training results will be saved.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: outputs/esd/finetuned_models</li>
+</ul>
+</li>
+<li>
+<p>separator: Separator character used to handle multiple prompts during training. If set to null, no special handling occurs.</p>
+<ul>
+<li>Type: str or null</li>
+<li>Example: null</li>
+</ul>
+</li>
+</ul>
+<p><strong>Device Configuration</strong></p>
+<p>These parameters define the compute resources for training.</p>
+<ul>
+<li>
+<p>devices: Specifies the CUDA devices used for training. Provide a comma-separated list of device IDs.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: 0,1</li>
+</ul>
+</li>
+<li>
+<p>use_sample: Boolean flag indicating whether to use a sample dataset for testing or debugging.</p>
+<ul>
+<li>Type: bool</li>
+<li>Example: True</li>
+</ul>
+</li>
+</ul>
+<h4 id="esd-evaluation-framework">ESD Evaluation Framework</h4>
+<p>This section provides instructions for running the <strong>evaluation framework</strong> for the ESD algorithm on Stable Diffusion models. The evaluation framework is used to assess the performance of models after applying machine unlearning.</p>
+<h4 id="running-the-evaluation-framework"><strong>Running the Evaluation Framework</strong></h4>
+<p>You can run the evaluation framework using the <code>evaluate.py</code> script located in the <code>mu/algorithms/esd/scripts/</code> directory.</p>
+<h3 id="basic-command-to-run-evaluation"><strong>Basic Command to Run Evaluation:</strong></h3>
+<pre><code class="language-bash">conda activate &lt;env_name&gt;
+</code></pre>
+<pre><code class="language-bash">python -m mu.algorithms.esd.scripts.evaluate \
+--config_path mu/algorithms/esd/configs/evaluation_config.yaml
+</code></pre>
+<p><strong>Running in Offline Mode:</strong></p>
+<pre><code class="language-bash">WANDB_MODE=offline python -m mu.algorithms.esd.scripts.evaluate \
+--config_path mu/algorithms/esd/configs/evaluation_config.yaml
+</code></pre>
+<p><strong>Example with CLI Overrides:</strong></p>
+<pre><code class="language-bash">python -m mu.algorithms.esd.scripts.evaluate \
+    --config_path mu/algorithms/esd/configs/evaluation_config.yaml \
+    --devices &quot;0&quot; \
+    --seed 123 \
+    --cfg_text 8.5 \
+    --batch_size 16
+</code></pre>
+<h4 id="description-of-parameters-in-evaluation_configyaml"><strong>Description of parameters in evaluation_config.yaml</strong></h4>
+<p>The <code>evaluation_config.yaml</code> file contains the necessary parameters for running the ESD evaluation framework. Below is a detailed description of each parameter along with examples.</p>
+<hr />
+<h3 id="model-configuration"><strong>Model Configuration:</strong></h3>
+<ul>
+<li>model_config : Path to the YAML file specifying the model architecture and settings.  </li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"mu/algorithms/esd/configs/model_config.yaml"</code></p>
+</li>
+<li>
+<p>ckpt_path : Path to the finetuned Stable Diffusion checkpoint file to be evaluated.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"outputs/esd/finetuned_models/esd_Abstractionism_model.pth"</code></p>
+</li>
+<li>
+<p>classification_model : Specifies the classification model used for evaluating the generated outputs.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"vit_large_patch16_224"</code></p>
+</li>
+<li>
+<p>model_ckpt_path: Path to pretrained Stable Diffusion model.</p>
+</li>
+<li><em>Type</em>: <code>str</code></li>
+<li><em>Example</em>: <code>models/compvis/style50/compvis.ckpt</code></li>
+</ul>
+<hr />
+<h3 id="training-and-sampling-parameters"><strong>Training and Sampling Parameters:</strong></h3>
+<ul>
+<li>theme : Specifies the theme or concept being evaluated for removal from the model's outputs.  </li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"Bricks"</code></p>
+</li>
+<li>
+<p>devices : CUDA device IDs to be used for the evaluation process.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"0"</code>  </p>
+</li>
+<li>
+<p>cfg_text : Classifier-free guidance scale value for image generation. Higher values increase the strength of the conditioning prompt.  </p>
+</li>
+<li><em>Type:</em> <code>float</code>  </li>
+<li>
+<p><em>Example:</em> <code>9.0</code>  </p>
+</li>
+<li>
+<p>seed : Random seed for reproducibility of results.  </p>
+</li>
+<li><em>Type:</em> <code>int</code>  </li>
+<li>
+<p><em>Example:</em> <code>188</code></p>
+</li>
+<li>
+<p>ddim_steps : Number of steps for the DDIM (Denoising Diffusion Implicit Models) sampling process.  </p>
+</li>
+<li><em>Type:</em> <code>int</code>  </li>
+<li>
+<p><em>Example:</em> <code>100</code></p>
+</li>
+<li>
+<p>ddim_eta : DDIM eta value for controlling the amount of randomness during sampling. Set to <code>0</code> for deterministic sampling.  </p>
+</li>
+<li><em>Type:</em> <code>float</code>  </li>
+<li>
+<p><em>Example:</em> <code>0.0</code></p>
+</li>
+<li>
+<p>image_height : Height of the generated images in pixels.  </p>
+</li>
+<li><em>Type:</em> <code>int</code>  </li>
+<li>
+<p><em>Example:</em> <code>512</code></p>
+</li>
+<li>
+<p>image_width : Width of the generated images in pixels.  </p>
+</li>
+<li><em>Type:</em> <code>int</code>  </li>
+<li><em>Example:</em> <code>512</code></li>
+</ul>
+<hr />
+<h3 id="output-and-logging-parameters"><strong>Output and Logging Parameters:</strong></h3>
+<ul>
+<li>sampler_output_dir : Directory where generated images will be saved during evaluation.  </li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"outputs/eval_results/mu_results/esd/"</code></p>
+</li>
+<li>
+<p>eval_output_dir : Directory where evaluation metrics and results will be stored.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"outputs/eval_results/mu_results/esd/"</code></p>
+</li>
+<li>
+<p>reference_dir : Directory containing original images for comparison during evaluation.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li><em>Example:</em> <code>"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"</code></li>
+</ul>
+<hr />
+<h3 id="performance-and-efficiency-parameters"><strong>Performance and Efficiency Parameters:</strong></h3>
+<ul>
+<li>multiprocessing : Enables multiprocessing for faster evaluation for FID score. Recommended for large datasets.  </li>
+<li><em>Type:</em> <code>bool</code>  </li>
+<li>
+<p><em>Example:</em> <code>False</code>  </p>
+</li>
+<li>
+<p>batch_size : Batch size used during FID computation and evaluation.  </p>
+</li>
+<li><em>Type:</em> <code>int</code>  </li>
+<li><em>Example:</em> <code>16</code>  </li>
+</ul>
+<hr />
+<h3 id="optimization-parameters"><strong>Optimization Parameters:</strong></h3>
+<ul>
+<li>forget_theme : Concept or style intended for removal in the evaluation process.  </li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"Bricks"</code></p>
+</li>
+<li>
+<p>seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  </p>
+</li>
+<li><em>Type:</em> <code>list</code>  </li>
+<li><em>Example:</em> <code>["188"]</code></li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../../evaluation/erase_diff/" class="btn btn-neutral float-left" title="Evaluation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../examples/esd/" class="btn btn-neutral float-right" title="Examples">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../../../evaluation/erase_diff/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../examples/esd/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
