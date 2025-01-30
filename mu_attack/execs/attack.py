@@ -9,11 +9,12 @@ import torch
 import numpy as np
 from datetime import datetime
 import logging
+from pydantic import ValidationError,BaseModel
 
 from importlib import import_module
 
 
-class Main:
+class MUAttack:
     """
     Main orchestration class that:
       1) Loads a config (from file or dict),
@@ -24,40 +25,83 @@ class Main:
       6) Runs the attack.
     """
 
-    def __init__(self, config_path=None, config_dict=None, quiet=False):
+    def __init__(self, config,  quiet=False,**overridable_params):
         """
         :param config_path: Path to a JSON config file (optional).
         :param config_dict: A dict containing the config (optional).
         :param quiet: Whether to suppress printing config summary.
         """
         self.logger = logging.getLogger(__name__)
-        # 1. Load config from JSON file or directly from a dict.
-        if config_path is not None:
-            with open(config_path, "r") as f:
-                self.config = json.load(f)
-        else:
-            # Fallback to whatever was passed as config_dict
-            self.config = config_dict or {}
+        self.config = None
 
-        if config_dict:
-            self.merge_dicts(self.config, config_dict)
+        self.config = config.model_dump()
+        self._update_config_from_kwargs(self.config, overridable_params)
+        self.validate_config_json()
 
-        # 2. Possibly load 'resume' config
         self.load_resume_config()
-
-        # 3. Validate config
         self.validate_config()
-
-        # 4. Optionally print the config
         if not quiet:
             self.print_config()
-
-        # 5. Setup everything
         self.setup_seed()
         self.init_task()
         self.init_attacker()
         self.init_logger()
         self.run()
+
+    
+
+    def _update_config_from_kwargs(self, config_dict, overrides):
+        """
+        Updates config dictionary using dot-separated keys.
+        Supports both Pydantic models and dictionary fields.
+        """
+        for key, value in overrides.items():
+            keys = key.split(".")  # Convert 'task.name' -> ['task', 'name']
+            current_dict = config_dict
+
+            for attr in keys[:-1]:  # Traverse to the final attribute
+                if attr not in current_dict:
+                    raise AttributeError(f"Invalid config key: {key} (Could not find '{attr}')")
+                current_dict = current_dict[attr]
+
+            final_attr = keys[-1]
+            if final_attr in current_dict:
+                current_dict[final_attr] = value  # Override value
+            else:
+                raise AttributeError(f"Invalid config key: {key} (Could not find '{final_attr}')")
+
+    
+    def validate_config_json(self):
+        """
+        Validates the configuration, ensuring all required file paths exist.
+        """
+        task_config = self.config.get("task", {})
+        backend = task_config.get("backend")
+        
+        compvis_ckpt_path = task_config.get("compvis_ckpt_path")
+        compvis_config_path = task_config.get("compvis_config_path")
+        dataset_path = task_config.get("dataset_path")
+        diffusers_model_name_or_path = task_config.get("diffusers_model_name_or_path")
+        target_ckpt = task_config.get("target_ckpt")
+
+        if backend == "compvis":
+            if compvis_ckpt_path and not os.path.exists(compvis_ckpt_path):
+                raise FileNotFoundError(f"Checkpoint path does not exist: {compvis_ckpt_path}")
+            
+            if compvis_config_path and not os.path.exists(compvis_config_path):
+                raise FileNotFoundError(f"Config path does not exist: {compvis_config_path}")
+
+        #Validate diffusers paths only if backend is "diffusers"
+        if backend == "diffusers":
+            if diffusers_model_name_or_path and not os.path.exists(diffusers_model_name_or_path):
+                raise FileNotFoundError(f"Diffusers model path does not exist: {diffusers_model_name_or_path}")
+
+            # if target_ckpt and not os.path.exists(target_ckpt):
+            #     raise FileNotFoundError(f"Target checkpoint does not exist: {target_ckpt}")
+
+        # Always validate dataset path (common to both backends)
+        if dataset_path and not os.path.exists(dataset_path):
+            raise FileNotFoundError(f"Dataset path does not exist: {dataset_path}")
 
     def load_resume_config(self):
         """
@@ -221,4 +265,4 @@ if __name__ == "__main__":
     config_dict = (
         {"attacker": {"attack_idx": args.attack_idx}} if args.attack_idx else None
     )
-    main = Main(config_path=args.config_path, quiet=args.quiet, config_dict=config_dict)
+    main = MUAttack(config_path=args.config_path, quiet=args.quiet)
