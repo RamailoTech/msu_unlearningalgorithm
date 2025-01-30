@@ -14,25 +14,32 @@ nav:
       - Usage: unlearn/algorithms/erase_diff.md 
       - Examples: unlearn/examples/erase_diff.md
       - Configs: unlearn/configs/erase_diff.md
+      - Evaluation: evaluation/erase_diff.md
 
     - ESD: 
       - Usage: unlearn/algorithms/esd.md
       - Examples: unlearn/examples/esd.md
       - Configs: unlearn/configs/esd.md
+      - Evaluation: evaluation/esd.md
       
     - Forget Me Not: 
       - Usage: unlearn/algorithms/forget_me_not.md
       - Examples: unlearn/examples/forget_me_not.md
       - Configs: unlearn/configs/forget_me_not.md
+      - Evaluation: evaluation/forget_me_not.md
 
     - Saliency Unlearning: 
       - Usage: unlearn/algorithms/saliency.md
       - Examples: unlearn/examples/saliency.md
       - Configs: unlearn/configs/saliency.md
+      - Evaluation: evaluation/saliency.md 
+
     - Scissor Hands: 
       - Usage: unlearn/algorithms/scissorhands.md
       - Examples: unlearn/examples/scissorhands.md
       - Configs: unlearn/configs/scissorhands.md
+      - Evaluation: evaluation/scissorhands.md
+
     - Selective Amnesia: 
       - Usage: unlearn/algorithms/selective_amnesia.md
     #   - Examples: examples/selective_amnesia.md
@@ -41,10 +48,14 @@ nav:
       - Usage: unlearn/algorithms/semipermeable_membrane.md
       - Examples: unlearn/examples/semipermeable_membrane.md
       - Configs: unlearn/configs/semipermeable_membrane.md
+      - Evaluation: evaluation/semipermeable_membrane.md
+
     - Unified Concept Editing: 
       - Usage: unlearn/algorithms/uce.md
       - Examples: unlearn/examples/uce.md
       - Configs: unlearn/configs/uce.md
+      - Evaluation: evaluation/uce.md
+
   - Unlearn Mu Attack: 
     - Hard Prompt: 
       - Usage: attack/algorithms/hard_prompt.md
