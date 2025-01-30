@@ -30,8 +30,7 @@
     },
     "logger": {
         "json": {
-        "compvis_ckpt_path": "outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
-            "root": "files/results/no_attack_esd_illegal_"
+            "root": "files/results/no_attack_esd_illegal"
         }
     }
 }

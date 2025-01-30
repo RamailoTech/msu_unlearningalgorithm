@@ -58,12 +58,27 @@ nav:
 
   - Unlearn Mu Attack: 
     - Hard Prompt: 
-      - Usage: attack/algorithms/hard_prompt.md
-      - Config: attack/configs/hard_prompt.md
-      - Examples: attack/examples/hard_prompt.md
+      - Usage: mu_attack/attack/hard_prompt.md
+      - Config: mu_attack/configs/hard_prompt.md
+
+    - No attack: 
+      - Usage: mu_attack/attack/no_attack.md
+      - Config: mu_attack/configs/no_attack.md
+
+    - Random:
+      - Usage: mu_attack/attack/random.md
+      - Config: mu_attack/configs/random.md
+
+    - Seed Search:
+      - Usage: mu_attack/attack/seed_search.md
+      - Config: mu_attack/configs/seed_search.md
+
+    - Text Grad:
+      - Usage: mu_attack/attack/text_grad.md
+      - Config: mu_attack/configs/text_grad.md
   
   - Evaluation :
-    - Usage: evaluation/README.md
+    - Usage: mu_attack/mu_attack_evaluation.md
 
   - Contributing: algorithms/contributing.md
 theme:
