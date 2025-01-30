@@ -3,47 +3,57 @@ docs_dir: docs
 site_dir: docs_build  
 
 nav:
-  - Home: README.md
-  - Algorithms:
+  - Unlearn: unlearn/README.md
+  - Attack: attack/Readme_MU_Attack.md 
+  - Unlearn Algorithms:
     - Concept Ablation: 
-      - Usage: algorithms/concept_ablation.md
+      - Usage: unlearn/algorithms/concept_ablation.md
       # - Examples: examples/concept_ablation.md
       # - Configs: configs/concept_ablation.md
     - Erase Diff: 
-      - Usage: algorithms/erase_diff.md 
-      - Examples: examples/erase_diff.md
-      - Configs: configs/erase_diff.md
+      - Usage: unlearn/algorithms/erase_diff.md 
+      - Examples: unlearn/examples/erase_diff.md
+      - Configs: unlearn/configs/erase_diff.md
 
     - ESD: 
-      - Usage: algorithms/esd.md
-      - Examples: examples/esd.md
-      - Configs: configs/esd.md
+      - Usage: unlearn/algorithms/esd.md
+      - Examples: unlearn/examples/esd.md
+      - Configs: unlearn/configs/esd.md
       
     - Forget Me Not: 
-      - Usage: algorithms/forget_me_not.md
-      - Examples: examples/forget_me_not.md
-      - Configs: configs/forget_me_not.md
+      - Usage: unlearn/algorithms/forget_me_not.md
+      - Examples: unlearn/examples/forget_me_not.md
+      - Configs: unlearn/configs/forget_me_not.md
 
     - Saliency Unlearning: 
-      - Usage: algorithms/saliency.md
-      - Examples: examples/saliency.md
-      - Configs: configs/saliency.md
+      - Usage: unlearn/algorithms/saliency.md
+      - Examples: unlearn/examples/saliency.md
+      - Configs: unlearn/configs/saliency.md
     - Scissor Hands: 
-      - Usage: algorithms/scissorhands.md
-      - Examples: examples/scissorhands.md
-      - Configs: configs/scissorhands.md
+      - Usage: unlearn/algorithms/scissorhands.md
+      - Examples: unlearn/examples/scissorhands.md
+      - Configs: unlearn/configs/scissorhands.md
     - Selective Amnesia: 
-      - Usage: algorithms/selective_amnesia.md
+      - Usage: unlearn/algorithms/selective_amnesia.md
     #   - Examples: examples/selective_amnesia.md
     #   - Configs: configs/selective_amnesia.md
     - Semi Permeable Membrane: 
-      - Usage: algorithms/semipermeable_membrane.md
-      - Examples: examples/semipermeable_membrane.md
-      - Configs: configs/semipermeable_membrane.md
+      - Usage: unlearn/algorithms/semipermeable_membrane.md
+      - Examples: unlearn/examples/semipermeable_membrane.md
+      - Configs: unlearn/configs/semipermeable_membrane.md
     - Unified Concept Editing: 
-      - Usage: algorithms/uce.md
-      - Examples: examples/uce.md
-      - Configs: configs/uce.md
+      - Usage: unlearn/algorithms/uce.md
+      - Examples: unlearn/examples/uce.md
+      - Configs: unlearn/configs/uce.md
+  - Unlearn Mu Attack: 
+    - Hard Prompt: 
+      - Usage: attack/algorithms/hard_prompt.md
+      - Config: attack/configs/hard_prompt.md
+      - Examples: attack/examples/hard_prompt.md
+  
+  - Evaluation :
+    - Usage: evaluation/README.md
+
   - Contributing: algorithms/contributing.md
 theme:
   name: readthedocs  
