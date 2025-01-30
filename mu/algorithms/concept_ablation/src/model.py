@@ -118,6 +118,7 @@ class CustomDiffusion(LatentDiffusion):
         self.add_token = add_token
         self.cond_stage_trainable = cond_stage_trainable
         self.loss_type_reverse = loss_type_reverse
+
         super().__init__(cond_stage_trainable=cond_stage_trainable, *args, **kwargs)
 
         if self.freeze_model == 'crossattn-kv':

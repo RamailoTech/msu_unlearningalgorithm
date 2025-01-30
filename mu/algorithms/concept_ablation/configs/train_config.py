@@ -112,7 +112,14 @@ class ConceptAblationConfig(BaseConfig):
         self.template_name = "Abstractionism"
         self.lr = 5e-5
         self.output_dir = "outputs/concept_ablation/finetuned_models"
-        self.devices = "0"
+        self.devices = "1"
+        self.reg_caption = ""
+        self.reg_caption2 = ""
+        self.datapath2 = ""
+        self.reg_datapath2 = None
+        self.caption2 = ""
+        self.reg_caption2 = ""
+        self.loss_type_reverse = "model-based"
         self.use_sample = True
         self.data = DataConfig(
             target="mu.algorithms.concept_ablation.data_handler.ConceptAblationDataHandler",
