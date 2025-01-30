@@ -37,7 +37,6 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
 
         config.validate_config()
         self.config = config.to_dict()
-        self._parse_config()
         self.config_path = self.config.get("config_path")
         self.model = None
         self.trainer = None
