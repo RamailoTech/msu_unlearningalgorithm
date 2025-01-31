@@ -9,10 +9,10 @@ from mu.core.base_config import BaseConfig
 from mu_attack.loggers.json_ import get_parser
 from mu_attack.helpers.utils import convert_time
 from mu_attack.configs.evaluation import AttackEvaluatorConfig
-from mu_attack.core.base_evaluator import BaseEvaluator
+from evaluation.core import AttackBaseEvaluator
 
 
-class ASREvaluator(BaseEvaluator):
+class ASREvaluator(AttackBaseEvaluator):
     """
     Evaluator for ASR.
     This evaluator computes the ASR (Attack Success Rate) of a set of experiments.

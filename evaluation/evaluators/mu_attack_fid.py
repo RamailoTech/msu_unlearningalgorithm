@@ -11,11 +11,11 @@ import tensorflow.compat.v1 as tf
 
 from mu.core.base_config import BaseConfig
 from mu_attack.configs.evaluation import AttackEvaluatorConfig
-from mu_attack.core.base_evaluator import BaseEvaluator
+from evaluation.core import AttackBaseEvaluator
 from mu_attack.tasks.utils.ldm.modules.evaluate.adm_evaluator import Evaluator
 
 
-class FIDEvaluator(BaseEvaluator):
+class FIDEvaluator(AttackBaseEvaluator):
     """
     FIDEvaluator for computing FID, Inception Score, and other evaluation metrics.
     """
