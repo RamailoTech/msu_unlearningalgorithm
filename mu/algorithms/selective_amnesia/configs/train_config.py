@@ -33,7 +33,7 @@ class SelectiveAmnesiaConfig(BaseConfig):
         self.output_dir = "outputs/selective_amnesia/finetuned_models"  # Output directory to save results
 
         # Device configuration
-        self.devices = "0"  # CUDA devices (comma-separated)
+        self.devices = "0,"  # CUDA devices (comma-separated)
 
         # Additional flags
         self.use_sample = True  # Use sample dataset for training
@@ -96,7 +96,7 @@ class SelectiveAmnesiaConfig(BaseConfig):
             "trainer": {
                 "benchmark": True,
                 "num_sanity_val_steps": 0,
-                "max_epochs": 1,  # Modify epochs here!
+                "max_epochs": 50,  # Modify epochs here!
                 "check_val_every_n_epoch": 10,
             },
         }

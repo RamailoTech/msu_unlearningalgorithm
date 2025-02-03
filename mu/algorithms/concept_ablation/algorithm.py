@@ -31,7 +31,7 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
                     setattr(config_attr, sub_key, sub_val)
             elif isinstance(config_attr, dict) and isinstance(value, dict):
                 config_attr.update(value)
-            else:
+            else: 
                 setattr(config, key, value)
         self.config = config.to_dict()
 

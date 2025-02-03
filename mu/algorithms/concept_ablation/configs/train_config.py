@@ -99,8 +99,8 @@ class ConceptAblationConfig(BaseConfig):
         self.scale_lr = True
         self.caption_target = "Abstractionism Style"
         self.regularization = True
-        self.n_samples = 10
-        self.train_size = 200
+        self.n_samples = 1
+        self.train_size = 2
         self.base_lr = 2.0e-06
         self.config_path = current_dir / "train_config.yaml"
         self.model_config_path = current_dir / "model_config.yaml"
@@ -112,7 +112,7 @@ class ConceptAblationConfig(BaseConfig):
         self.template_name = "Abstractionism"
         self.lr = 5e-5
         self.output_dir = "outputs/concept_ablation/finetuned_models"
-        self.devices = "1"
+        self.devices = "0,"
         self.reg_caption = ""
         self.reg_caption2 = ""
         self.datapath2 = ""
@@ -150,11 +150,10 @@ class ConceptAblationConfig(BaseConfig):
                 )
             ),
             modelcheckpoint=ModelCheckpointConfig(
-                params=ModelCheckpointParamsConfig(every_n_train_steps=10000)
+                params=ModelCheckpointParamsConfig(every_n_train_steps=2)
             ),
-            trainer=TrainerConfig(max_steps=2000),
+            trainer=TrainerConfig(max_steps=200),
         )
-        self.prompts = "mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt"
         for key, value in kwargs.items():
             setattr(self, key, value)
 
