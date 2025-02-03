@@ -105,7 +105,7 @@ class ConceptAblationConfig(BaseConfig):
         self.config_path = current_dir / "train_config.yaml"
         self.model_config_path = current_dir / "model_config.yaml"
         self.ckpt_path = "models/compvis/style50/compvis.ckpt"
-        self.raw_dataset_dir = "data/quick-canvas-dataset/sample"
+        self.raw_dataset_dir = "/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/data/quick-canvas-dataset/sample"
         self.processed_dataset_dir = "mu/algorithms/concept_ablation/data"
         self.dataset_type = "unlearncanvas"
         self.template = "style"
