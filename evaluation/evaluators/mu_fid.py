@@ -20,6 +20,13 @@ theme_available = ["Abstractionism", "Bricks"]
 class_available = ["Architectures", "Bears", "Birds"]
 # class_available = ['Architectures']
 
+def to_cuda(elements):
+    """Transfers elements to CUDA if GPU is available."""
+    if torch.cuda.is_available():
+        return elements.to("cuda")
+    return elements
+
+
 class PartialInceptionNetwork(nn.Module):
     """
     A modified InceptionV3 network used for feature extraction.

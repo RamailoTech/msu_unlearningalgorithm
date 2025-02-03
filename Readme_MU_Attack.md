@@ -422,7 +422,9 @@ Create a file, eg, `evaluate.py` and use examples and modify your configs to run
 **Example Code**
 
 ```python
-from evaluation.evaluators import ASREvaluator,ClipScoreEvaluator, FIDEvaluator
+from evaluation.evaluators.asr import ASREvaluator
+from evaluation.evaluators.clip_score import ClipScoreEvaluator
+from evaluation.evaluators.mu_attack_fid import FIDEvaluator
 from mu_attack.configs.evaluation import attack_evaluation_config
 
 
