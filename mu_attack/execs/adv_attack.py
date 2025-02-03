@@ -1,17 +1,19 @@
 
-from mu.helpers import sample_model
-from mu_attack.tasks.utils.text_encoder import CustomTextEncoder
-from mu_attack.helpers.utils import id2embedding, param_choices, get_models
-from mu_attack.attackers.soft_prompt import SoftPromptAttack
-from transformers import CLIPTextModel, CLIPTokenizer
-from diffusers import AutoencoderKL
+
 import torch
 from tqdm import tqdm
 import random
-import argparse
 import wandb
-from pathlib import Path
-import os
+
+from transformers import CLIPTextModel, CLIPTokenizer
+from diffusers import AutoencoderKL
+
+from mu_attack.configs.adv_unlearn import AdvUnlearnConfig
+from mu.helpers import sample_model
+from mu_attack.tasks.utils.text_encoder import CustomTextEncoder
+from mu_attack.attackers.soft_prompt import SoftPromptAttack
+from mu_attack.helpers.utils import id2embedding, param_choices, get_models, retain_prompt, get_train_loss_retain,save_text_encoder, save_model, save_history
+
 
 
 class AdvUnlearn:
@@ -23,70 +25,50 @@ class AdvUnlearn:
     """
     def __init__(
         self,
-        prompt,
-        dataset_retain,
-        retain_batch,
-        retain_train,
-        retain_step,
-        retain_loss_w,
-        attack_method,
-        train_method,
-        norm_layer,
-        component,
-        start_guidance,
-        negative_guidance,
-        iterations,
-        save_interval,
-        lr,
-        config_path,
-        ckpt_path,
-        diffusers_config_path,
-        output_dir,
-        devices,
-        seperator=None,
-        image_size=512,
-        ddim_steps=50,
-        adv_prompt_num=3,
-        attack_embd_type='word_embd',
-        attack_type='prefix_k',
-        attack_init='latest',
-        warmup_iter=200,
-        attack_step=30,
-        attack_lr=1e-2,
-        adv_prompt_update_step=20
+        config: AdvUnlearnConfig,
+        **kwargs
     ):
-        # General training and attack settings
-        self.prompt = prompt
-        self.dataset_retain = dataset_retain
-        self.retain_batch = retain_batch
-        self.retain_train = retain_train
-        self.retain_step = retain_step
-        self.retain_loss_w = retain_loss_w
-        self.attack_method = attack_method
-        self.train_method = train_method
-        self.norm_layer = norm_layer
-        self.component = component
-        self.start_guidance = start_guidance
-        self.negative_guidance = negative_guidance
-        self.iterations = iterations
-        self.save_interval = save_interval
-        self.lr = lr
-        self.config_path = config_path
-        self.ckpt_path = ckpt_path
-        self.diffusers_config_path = diffusers_config_path
-        self.output_dir = output_dir
-        self.devices = devices
-        self.seperator = seperator
-        self.image_size = image_size
-        self.ddim_steps = ddim_steps
-        self.adv_prompt_num = adv_prompt_num
-        self.attack_embd_type = attack_embd_type
-        self.attack_type = attack_type
-        self.attack_init = attack_init
-        self.warmup_iter = warmup_iter
-        self.attack_step = attack_step
-        self.attack_lr = attack_lr
-        self.adv_prompt_update_step = adv_prompt_update_step
+        self.config = config.__dict__
+        for key, value in kwargs.items():
+            setattr(config, key, value)
+        
+        config.validate_config()
+
+        self.config = config
+        self.prompt = config.prompt
+        self.dataset_retain = config.dataset_retain
+        self.retain_batch = config.retain_batch
+        self.retain_train = config.retain_train
+        self.retain_step = config.retain_step
+        self.retain_loss_w = config.retain_loss_w
+        self.attack_method = config.attack_method
+        self.train_method = config.train_method
+        self.norm_layer = config.norm_layer
+        self.component = config.component
+        self.model_name_or_path = config.model_name_or_path
+        self.start_guidance = config.start_guidance
+        self.negative_guidance = config.negative_guidance
+        self.iterations = config.iterations
+        self.save_interval = config.save_interval
+        self.lr = config.lr
+        self.config_path = config.config_path
+        self.ckpt_path = config.ckpt_path
+        self.diffusers_config_path = config.diffusers_config_path
+        self.output_dir = config.output_dir
+        self.devices = config.devices
+        self.seperator = config.seperator
+        self.image_size = config.image_size
+        self.ddim_steps = config.ddim_steps
+        self.adv_prompt_num = config.adv_prompt_num
+        self.attack_embd_type = config.attack_embd_type
+        self.attack_type = config.attack_type
+        self.attack_init = config.attack_init
+        self.warmup_iter = config.warmup_iter
+        self.attack_step = config.attack_step
+        self.attack_lr = config.attack_lr
+        self.adv_prompt_update_step = config.adv_prompt_update_step
+        self.ddim_eta = config.ddim_eta
+        self.cache_path = config.cache_path
 
         # Will be set during training.
         self.words = None
@@ -133,15 +115,15 @@ class AdvUnlearn:
         self.retain_dataset = retain_prompt(self.dataset_retain)
         
         # --- Training Setup ---
-        ddim_eta = 0  # constant value for training
+        ddim_eta = self.ddim_eta  # constant value for training
         
-        model_name_or_path = "CompVis/stable-diffusion-v1-4"
-        cache_path = ".cache"
+       
+       
         # Load the VAE
-        self.vae = AutoencoderKL.from_pretrained(model_name_or_path, subfolder="vae", cache_dir=cache_path).to(self.devices[0])
+        self.vae = AutoencoderKL.from_pretrained(self.model_name_or_path, subfolder="vae", cache_dir=self.cache_path).to(self.devices[0])
         # Load tokenizer and text encoder
-        self.tokenizer = CLIPTokenizer.from_pretrained(model_name_or_path, subfolder="tokenizer", cache_dir=cache_path)
-        self.text_encoder = CLIPTextModel.from_pretrained(model_name_or_path, subfolder="text_encoder", cache_dir=cache_path).to(self.devices[0])
+        self.tokenizer = CLIPTokenizer.from_pretrained(self.model_name_or_path, subfolder="tokenizer", cache_dir=self.cache_path)
+        self.text_encoder = CLIPTextModel.from_pretrained(self.model_name_or_path, subfolder="text_encoder", cache_dir=self.cache_path).to(self.devices[0])
         self.custom_text_encoder = CustomTextEncoder(self.text_encoder).to(self.devices[0])
         self.all_embeddings = self.custom_text_encoder.get_all_embedding().unsqueeze(0)
         
@@ -162,7 +144,7 @@ class AdvUnlearn:
     def train(self):
         """Stage 2: Training loop."""
         word_print = self.setup()
-        ddim_eta = 0  # As used in training
+        ddim_eta = self.ddim_eta  # As used in training
         
         # A lambda function to sample until a given time step.
         quick_sample_till_t = lambda x, s, code, batch, t: sample_model(
@@ -370,3 +352,4 @@ class AdvUnlearn:
                        save_diffusers=True, compvis_config_file=self.config_path,
                        diffusers_config_file=self.diffusers_config_path)
         save_history(self.output_dir, losses, word_print)
+
