@@ -116,8 +116,6 @@ class AdvUnlearn:
         
         # --- Training Setup ---
         ddim_eta = self.ddim_eta  # constant value for training
-        
-       
        
         # Load the VAE
         self.vae = AutoencoderKL.from_pretrained(self.model_name_or_path, subfolder="vae", cache_dir=self.cache_path).to(self.devices[0])
@@ -231,6 +229,7 @@ class AdvUnlearn:
                 self.custom_text_encoder.text_encoder.train()
                 self.custom_text_encoder.text_encoder.requires_grad_(True)
                 self.model.eval()
+                # print('==== Train text_encoder ====')
             else:
                 self.custom_text_encoder.text_encoder.eval()
                 self.custom_text_encoder.text_encoder.requires_grad_(False)
@@ -254,6 +253,7 @@ class AdvUnlearn:
             else:
                 retain_text_input = None
                 retain_text_embeddings = None
+                # retain_emb_0 = None
                 retain_emb_p = None
                 retain_emb_n = None
 
