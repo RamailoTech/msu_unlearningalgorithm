@@ -17,6 +17,7 @@ dependencies:
     - invisible-watermark
     - imageio==2.9.0
     - imageio-ffmpeg==0.4.2
+    - huggingface_hub==0.10.1
     - pytorch-lightning==1.4.2
     - omegaconf==2.1.1
     - test-tube>=0.7.5
@@ -31,4 +32,4 @@ dependencies:
     - tabulate
     - -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
     - -e git+https://github.com/openai/CLIP.git@main#egg=clip
-    - -e .
+    # - -e .

@@ -1,5 +1,8 @@
+# mu_attack/attackers/soft_prompt.py
+
 import torch
 import wandb
+
 from mu.helpers import sample_model
 from mu_attack.helpers.utils import split_id, id2embedding, split_embd, init_adv, construct_embd, construct_id
 
@@ -174,6 +177,10 @@ class SoftPromptAttack:
             
             wandb.log({'Attack_Loss': loss.item()}, step=global_step + i)
             wandb.log({'Train_Loss': 0.0}, step=global_step + i)
+            print(f'Step: {global_step + i}, Attack_Loss: {loss.item()}')
+            print(f'Step: {global_step + i}, Train_Loss: 0.0')
+
+
         
         # --- Return the adversarial embeddings and input IDs ---
         if attack_embd_type == 'condition_embd':
