@@ -1,3 +1,5 @@
+# evaluation/core/mu_base_evaluator.py
+
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
@@ -5,7 +7,6 @@ class BaseEvaluator(ABC):
     """Abstract base class for evaluating image generation models."""
     
     def __init__(self,config: Dict[str, Any], **kwargs):
-        # self.sampler =sampler
         self.config = config
     
     def _parse_config(self):

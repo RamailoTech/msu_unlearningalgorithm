@@ -29,6 +29,7 @@ dependencies:
     - clean-fid==0.1.35
     - kornia==0.6
     - wandb
+    - fastargs
     - timm==0.6.7
     - -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
     - -e git+https://github.com/openai/CLIP.git@main#egg=clip

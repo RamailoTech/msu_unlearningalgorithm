@@ -9,10 +9,11 @@ dependencies:
   - pytorch-cuda=11.8    
   - torchvision=0.15.2
   - pytorch-lightning=1.9.5
-  - numpy=1.23.5
+  # - numpy=1.23.5
+  - numpy=1.26.0
   - pandas=2.0.3
   - onnxruntime
-  - tqdm=4.66.1
+  - tqdm=4.66.1 
   - accelerate=0.23.0
   - terminaltables=3.1.10
   - torchmetrics=1.1.2

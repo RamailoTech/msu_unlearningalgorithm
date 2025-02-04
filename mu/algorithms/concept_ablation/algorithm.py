@@ -8,7 +8,7 @@ import logging
 from pathlib import Path
 
 from mu.core import BaseAlgorithm
-from mu.algorithms.concept_ablation.data_handler import ConceptAblationDataHandler
+# from mu.algorithms.concept_ablation.data_handler import ConceptAblationDataHandler
 from mu.algorithms.concept_ablation.model import ConceptAblationModel
 from mu.algorithms.concept_ablation.trainer import ConceptAblationTrainer
 from mu.algorithms.concept_ablation.configs import ConceptAblationConfig
@@ -31,7 +31,7 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
                     setattr(config_attr, sub_key, sub_val)
             elif isinstance(config_attr, dict) and isinstance(value, dict):
                 config_attr.update(value)
-            else:
+            else: 
                 setattr(config, key, value)
         self.config = config.to_dict()
 

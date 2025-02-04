@@ -1,4 +1,4 @@
-#mu_attack/core/base_evaluator.py
+# evaluation/core/base_evaluator.py
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict

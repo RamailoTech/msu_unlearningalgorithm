@@ -6,7 +6,6 @@ import torch
 import timm
 import json
 from tqdm import tqdm
-from typing import Any, Dict
 
 from PIL import Image  
 from torchvision import transforms
@@ -14,10 +13,10 @@ from torch.nn import functional as F
 
 from stable_diffusion.constants.const import theme_available, class_available
 
-from mu.core.base_evaluator import BaseEvaluator
+from evaluation.core import BaseEvaluator
 from mu.algorithms.saliency_unlearning import SaliencyUnlearningSampler
 from mu.algorithms.saliency_unlearning.configs import SaliencyUnlearningEvaluationConfig
-from mu.helpers.utils import load_style_generated_images,load_style_ref_images,calculate_fid, tensor_to_float
+from evaluation.evaluators import load_style_generated_images,load_style_ref_images,calculate_fid, tensor_to_float
 
 
 

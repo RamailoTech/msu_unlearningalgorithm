@@ -14,10 +14,10 @@ import torch.nn.functional as F
 
 from mu.core.base_config import BaseConfig
 from mu_attack.configs.evaluation import AttackEvaluatorConfig
-from mu_attack.core.base_evaluator import BaseEvaluator
+from evaluation.core import AttackBaseEvaluator
 
 
-class ClipScoreEvaluator(BaseEvaluator):
+class ClipScoreEvaluator(AttackBaseEvaluator):
     def __init__(self, config: AttackEvaluatorConfig, **kwargs):
         super().__init__(config, **kwargs)
 
