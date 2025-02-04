@@ -40,7 +40,11 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../../unlearn/">Home</a>
+                <li class="toctree-l1"><a class="reference internal" href="../../unlearn/">Unlearn</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../../attack/Readme_MU_Attack.md">Attack</a>
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">Unlearn Algorithms</span></p>
@@ -227,9 +231,9 @@
 <h4 id="running-the-evaluation-framework"><strong>Running the Evaluation Framework</strong></h4>
 <p>Create a file, eg, <code>evaluate.py</code> and use examples and modify your configs to run the file.  </p>
 <p><strong>Example Code</strong></p>
-<pre><code class="language-python">from mu_attack.evaluators.asr import ASREvaluator
-from mu_attack.evaluators.clip_score import ClipScoreEvaluator
-from mu_attack.evaluators.fid import FIDEvaluator
+<pre><code class="language-python">from evaluation.evaluators.asr import ASREvaluator
+from evaluation.evaluators.clip_score import ClipScoreEvaluator
+from evaluation.evaluators.mu_attack_fid import FIDEvaluator
 from mu_attack.configs.evaluation import attack_evaluation_config
 
 
@@ -281,6 +285,7 @@ def main():
 
 if __name__ == &quot;__main__&quot;:
     main()
+
 
 </code></pre>
 <p><strong>Running the Training Script in Offline Mode</strong></p>
