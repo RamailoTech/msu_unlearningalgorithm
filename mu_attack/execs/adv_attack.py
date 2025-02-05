@@ -136,7 +136,8 @@ class AdvAttack:
             image_size=self.image_size,
             criteria=self.criteria,
             k=self.adv_prompt_num,
-            all_embeddings=self.all_embeddings
+            all_embeddings=self.all_embeddings,
+            backend = self.backend
         )
 
 

@@ -327,3 +327,67 @@ def sample_model(model, sampler, c, h, w, ddim_steps, scale, ddim_eta, start_cod
         return samples_ddim, inters
     return samples_ddim
 
+@torch.no_grad()
+def sample_model_for_diffuser(model, scheduler, c, h, w, ddim_steps, scale, ddim_eta, start_code=None,
+                 n_samples=1, t_start=-1, log_every_t=None, till_T=None, verbose=True):
+    """
+    Diffusers-compatible sampling function.
+
+    Args:
+        model: The UNet model (from diffusers).
+        scheduler: A DDIMScheduler (or similar) instance.
+        c (torch.Tensor): The conditional encoder_hidden_states.
+        h (int): Image height.
+        w (int): Image width.
+        ddim_steps (int): Number of diffusion steps.
+        scale (float): Guidance scale. If not 1.0, classifier-free guidance is applied.
+        ddim_eta (float): The eta parameter for DDIM (unused in this basic implementation).
+        start_code (torch.Tensor, optional): Starting latent code. If None, random noise is used.
+        n_samples (int): Number of samples to generate.
+        t_start, log_every_t, till_T, verbose: Additional parameters (not used in this diffusers implementation).
+
+    Returns:
+        torch.Tensor: The generated latent sample.
+    """
+    device = c.device
+
+    # If no starting code is provided, sample random noise.
+    if start_code is None:
+        start_code = torch.randn((n_samples, 4, h // 8, w // 8), device=device)
+    latents = start_code
+
+    # Set the number of timesteps in the scheduler.
+    scheduler.set_timesteps(ddim_steps)
+
+    # If using classifier-free guidance, prepare unconditional embeddings.
+    if scale != 1.0:
+        # In a full implementation you would obtain these from your text encoder
+        # For this example, we simply create a tensor of zeros with the same shape as c.
+        uc = torch.zeros_like(c)
+        # Duplicate latents and conditioning for guidance.
+        latents = torch.cat([latents, latents], dim=0)
+        c_in = torch.cat([uc, c], dim=0)
+    else:
+        c_in = c
+
+    # Diffusion sampling loop.
+    for t in scheduler.timesteps:
+        # Scale the latents as required by the scheduler.
+        latent_model_input = scheduler.scale_model_input(latents, t)
+        model_output = model(latent_model_input, t, encoder_hidden_states=c_in)
+        # Assume model_output is a ModelOutput with a 'sample' attribute.
+        if scale != 1.0:
+            # Split the batch into unconditional and conditional parts.
+            noise_pred_uncond, noise_pred_text = model_output.sample.chunk(2)
+            # Apply classifier-free guidance.
+            noise_pred = noise_pred_uncond + scale * (noise_pred_text - noise_pred_uncond)
+        else:
+            noise_pred = model_output.sample
+
+        # Step the scheduler.
+        latents = scheduler.step(noise_pred, t, latents).prev_sample
+
+    # If guidance was used, return only the second half of the batch.
+    if scale != 1.0:
+        latents = latents[n_samples:]
+    return latents
