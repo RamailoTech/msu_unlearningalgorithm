@@ -5,14 +5,16 @@ import random
 import wandb
 
 from transformers import CLIPTextModel, CLIPTokenizer
+from diffusers import StableDiffusionPipeline
 
+from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 from mu_attack.configs.adv_unlearn import AdvUnlearnConfig
 from mu_attack.attackers.soft_prompt import SoftPromptAttack
 from mu_attack.tasks.utils.text_encoder import CustomTextEncoder
-from mu_attack.helpers.utils import get_models
+from mu_attack.helpers.utils import get_models_for_compvis, get_models_for_diffusers
 
 
-class AdvUnlearn:
+class AdvAttack:
     """
     Class for adversarial unlearning training.
     
@@ -44,6 +46,9 @@ class AdvUnlearn:
         self.start_guidance = config.start_guidance
         self.config_path = config.config_path
         self.ckpt_path = config.ckpt_path
+        self.backend = config.backend
+        self.diffusers_model_name_or_path = config.diffusers_model_name_or_path
+        self.target_ckpt = config.target_ckpt
         self.criteria = torch.nn.MSELoss()
 
         # Initialize wandb
@@ -55,6 +60,21 @@ class AdvUnlearn:
 
         # Load models
         self.load_models()
+
+    def encode_text(self, text):
+        """Encodes text into a latent space using CLIP from Diffusers."""
+        text_inputs = self.tokenizer(
+            text,
+            padding="max_length",
+            truncation=True,
+            max_length=77,
+            return_tensors="pt"
+        ).to(self.devices[0])  # Move to correct device
+
+        with torch.no_grad():
+            text_embeddings = self.text_encoder(text_inputs.input_ids)[0]  # Take the first output (hidden states)
+
+        return text_embeddings
 
     def load_models(self):
         """Loads the tokenizer, text encoder, and models."""
@@ -68,9 +88,15 @@ class AdvUnlearn:
         self.all_embeddings = self.custom_text_encoder.get_all_embedding().unsqueeze(0)
 
         # Load base models
-        self.model_orig, self.sampler_orig, self.model, self.sampler = get_models(
-            self.config_path, self.ckpt_path, self.devices
-        )
+        if self.backend == "compvis":
+            self.model_orig, self.sampler_orig, self.model, self.sampler = get_models_for_compvis(
+                self.config_path, self.ckpt_path, self.devices
+            )
+        elif self.backend == "diffusers":
+            self.model_orig, self.sampler_orig, self.model, self.sampler = get_models_for_diffusers(
+                self.diffusers_model_name_or_path, self.target_ckpt, self.devices
+            )
+            
 
     def attack(self):
         """Performs the adversarial attack."""
@@ -85,9 +111,14 @@ class AdvUnlearn:
         # Select a random word from the prompt list
         word = random.choice(self.words)
 
-        # Get learned condition embeddings
-        emb_0 = self.model_orig.get_learned_conditioning([''])
-        emb_p = self.model_orig.get_learned_conditioning([word])
+        if self.backend == "compvis":
+            # CompVis uses `get_learned_conditioning`
+            emb_0 = self.model_orig.get_learned_conditioning([''])
+            emb_p = self.model_orig.get_learned_conditioning([word])
+        elif self.backend == "diffusers":
+            # Diffusers requires explicit encoding via CLIP
+            emb_0 = self.encode_text("")
+            emb_p = self.encode_text(word)
 
         # Initialize attack class
         sp_attack = SoftPromptAttack(

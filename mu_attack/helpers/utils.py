@@ -8,6 +8,8 @@ import torch.nn.functional as F
 from torchvision.transforms.functional import InterpolationMode
 import torchvision.transforms as torch_transforms
 
+from diffusers import UNet2DConditionModel, DDIMScheduler
+
 
 from mu.helpers.utils import load_model_from_config
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
@@ -235,13 +237,66 @@ def construct_id(k, adv_id, insertion_location,sot_id,eot_id,mid_id):
 
 
 
-def get_models(config_path, ckpt_path, devices):
+def get_models_for_compvis(config_path, ckpt_path, devices):
     model_orig = load_model_from_config(config_path, ckpt_path, devices[1])
     sampler_orig = DDIMSampler(model_orig)
 
     model = load_model_from_config(config_path, ckpt_path, devices[0])
     sampler = DDIMSampler(model)
 
+    return model_orig, sampler_orig, model, sampler
+
+def get_models_for_diffusers(model_name_or_path, target_ckpt, devices, cache_path=None):
+    """
+    Loads two copies of a Diffusers UNet model along with their DDIM schedulers.
+    
+    Args:
+        model_name_or_path (str): The Hugging Face model identifier or local path.
+        target_ckpt (str or None): Path to a target checkpoint to load into the primary model (on devices[0]).
+                                   If None, no state dict is loaded.
+        devices (list or tuple): A list/tuple of two devices, e.g. [device0, device1].
+        cache_path (str or None): Optional cache directory for pretrained weights.
+        
+    Returns:
+        model_orig: The UNet loaded on devices[1].
+        sampler_orig: The DDIM scheduler corresponding to model_orig.
+        model: The UNet loaded on devices[0] (optionally updated with target_ckpt).
+        sampler: The DDIM scheduler corresponding to model.
+    """
+    
+    # Load the original model (used for e.g. computing loss, etc.) on devices[1]
+    model_orig = UNet2DConditionModel.from_pretrained(
+        model_name_or_path,
+        subfolder="unet",
+        cache_dir=cache_path
+    ).to(devices[1])
+    
+    # Create a DDIM scheduler for model_orig. (Note: diffusers DDIMScheduler is used here;
+    # adjust the subfolder or configuration if your scheduler is stored elsewhere.)
+    sampler_orig = DDIMScheduler.from_pretrained(
+        model_name_or_path,
+        subfolder="scheduler",
+        cache_dir=cache_path
+    )
+    
+    # Load the second copy of the model on devices[0]
+    model = UNet2DConditionModel.from_pretrained(
+        model_name_or_path,
+        subfolder="unet",
+        cache_dir=cache_path
+    ).to(devices[0])
+    
+    # Optionally load a target checkpoint into model
+    if target_ckpt is not None:
+        state_dict = torch.load(target_ckpt, map_location=devices[0])
+        model.load_state_dict(state_dict)
+    
+    sampler = DDIMScheduler.from_pretrained(
+        model_name_or_path,
+        subfolder="scheduler",
+        cache_dir=cache_path
+    )
+    
     return model_orig, sampler_orig, model, sampler
 
 @torch.no_grad()

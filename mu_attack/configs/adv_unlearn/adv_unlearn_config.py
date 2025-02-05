@@ -10,6 +10,8 @@ class AdvUnlearnConfig(BaseConfig):
         self.config_path = current_dir / "model_config.yaml"
         self.ckpt_path = "models/sd-v1-4-full-ema.ckpt"
         self.model_name_or_path = "CompVis/stable-diffusion-v1-4"
+        self.target_ckpt = None
+        self.diffusers_model_name_or_path = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
         
         # Devices & IO
         self.devices = "0,0"  # You can later parse this string into a list if needed.
@@ -35,6 +37,9 @@ class AdvUnlearnConfig(BaseConfig):
         self.attack_init = "latest"           # Choices: 'random', 'latest'
         self.attack_step = 30
         self.attack_lr = 1e-3
+
+        #backend
+        self.backend = "diffusers"
 
         #wandb configs
         self.project_name = "quick-canvas-machine-unlearning"
