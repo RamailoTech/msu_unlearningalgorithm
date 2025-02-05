@@ -28,7 +28,7 @@ from mu.algorithms.esd.configs import esd_train_mu
 def mu_defense():
     adv_unlearn = AdvAttack(
         config=adv_unlearn_config,
-        ckpt_path = "/home/ubuntu/Projects/dipesh/unlearn_diff/models/sd-v1-4-full-ema.ckpt",
+        compvis_ckpt_path = "/home/ubuntu/Projects/dipesh/unlearn_diff/models/sd-v1-4-full-ema.ckpt",
         attack_step = 2,
         backend = "compvis",
         config_path = esd_train_mu.model_config_path
@@ -53,7 +53,7 @@ def mu_defense():
 
     adv_unlearn = AdvAttack(
         config=adv_unlearn_config,
-        ckpt_path = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50",
+        diffusers_model_name_or_path = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50",
         attack_step = 2,
         backend = "diffusers"
 

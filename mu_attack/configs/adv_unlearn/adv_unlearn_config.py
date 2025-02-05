@@ -63,8 +63,6 @@ class AdvUnlearnConfig(BaseConfig):
         if self.backend not in ["compvis", "diffusers"]:
             raise ValueError(f"Backend must be either 'compvis' or 'diffusers'. Got {self.backend}.")
         if self.backend == "compvis":
-            if not os.path.exists(self.config_path):
-                raise FileNotFoundError(f"Model config file {self.config_path} does not exist.")
             if not os.path.exists(self.compvis_ckpt_path):
                 raise FileNotFoundError(f"Checkpoint file {self.compvis_ckpt_path} does not exist.")
         elif self.backend == "diffusers":
