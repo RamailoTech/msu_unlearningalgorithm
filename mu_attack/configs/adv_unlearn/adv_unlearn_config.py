@@ -6,11 +6,17 @@ current_dir = Path(__file__).parent
 
 class AdvUnlearnConfig(BaseConfig):
     def __init__(self, **kwargs):
-        # Inference & Model Paths
+        # Inference & Model Paths for compvis
         self.config_path = current_dir / "model_config.yaml"
-        self.ckpt_path = "models/sd-v1-4-full-ema.ckpt"
-        self.model_name_or_path = "CompVis/stable-diffusion-v1-4"
+        self.compvis_ckpt_path = "models/sd-v1-4-full-ema.ckpt"
+
+        #model path for custom encoder
+        self.encoder_model_name_or_path = "CompVis/stable-diffusion-v1-4"
+
+        #for samlping
         self.target_ckpt = None
+
+        # Model Paths for diffusers
         self.diffusers_model_name_or_path = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
         
         # Devices & IO
@@ -54,10 +60,16 @@ class AdvUnlearnConfig(BaseConfig):
         """
         Perform basic validation on the config parameters.
         """
-        if not os.path.exists(self.config_path):
-            raise FileNotFoundError(f"Model config file {self.config_path} does not exist.")
-        if not os.path.exists(self.ckpt_path):
-            raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
+        if self.backend not in ["compvis", "diffusers"]:
+            raise ValueError(f"Backend must be either 'compvis' or 'diffusers'. Got {self.backend}.")
+        if self.backend == "compvis":
+            if not os.path.exists(self.config_path):
+                raise FileNotFoundError(f"Model config file {self.config_path} does not exist.")
+            if not os.path.exists(self.compvis_ckpt_path):
+                raise FileNotFoundError(f"Checkpoint file {self.compvis_ckpt_path} does not exist.")
+        elif self.backend == "diffusers":
+            if not os.path.exists(self.diffusers_model_name_or_path):
+                raise FileNotFoundError(f"Diffusers model {self.diffusers_model_name_or_path} does not exist.")
 
 adv_unlearn_config = AdvUnlearnConfig()
 

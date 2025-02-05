@@ -29,7 +29,7 @@ class AdvAttack:
         config.validate_config()
 
         self.prompt = config.prompt
-        self.model_name_or_path = config.model_name_or_path
+        self.encoder_model_name_or_path = config.encoder_model_name_or_path
         self.cache_path = config.cache_path
         self.devices = [f'cuda:{int(d.strip())}' for d in config.devices.split(',')]
         self.attack_type = config.attack_type
@@ -45,7 +45,7 @@ class AdvAttack:
         self.adv_prompt_num = config.adv_prompt_num
         self.start_guidance = config.start_guidance
         self.config_path = config.config_path
-        self.ckpt_path = config.ckpt_path
+        self.compvis_ckpt_path = config.compvis_ckpt_path
         self.backend = config.backend
         self.diffusers_model_name_or_path = config.diffusers_model_name_or_path
         self.target_ckpt = config.target_ckpt
@@ -79,10 +79,10 @@ class AdvAttack:
     def load_models(self):
         """Loads the tokenizer, text encoder, and models."""
         self.tokenizer = CLIPTokenizer.from_pretrained(
-            self.model_name_or_path, subfolder="tokenizer", cache_dir=self.cache_path
+            self.encoder_model_name_or_path, subfolder="tokenizer", cache_dir=self.cache_path
         )
         self.text_encoder = CLIPTextModel.from_pretrained(
-            self.model_name_or_path, subfolder="text_encoder", cache_dir=self.cache_path
+            self.encoder_model_name_or_path, subfolder="text_encoder", cache_dir=self.cache_path
         ).to(self.devices[0])
         self.custom_text_encoder = CustomTextEncoder(self.text_encoder).to(self.devices[0])
         self.all_embeddings = self.custom_text_encoder.get_all_embedding().unsqueeze(0)
@@ -90,7 +90,7 @@ class AdvAttack:
         # Load base models
         if self.backend == "compvis":
             self.model_orig, self.sampler_orig, self.model, self.sampler = get_models_for_compvis(
-                self.config_path, self.ckpt_path, self.devices
+                self.config_path, self.compvis_ckpt_path, self.devices
             )
         elif self.backend == "diffusers":
             self.model_orig, self.sampler_orig, self.model, self.sampler = get_models_for_diffusers(
