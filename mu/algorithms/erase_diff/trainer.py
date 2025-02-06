@@ -9,10 +9,12 @@ import wandb
 import logging
 
 from timm.utils import AverageMeter
-import logging 
+import logging
 
 from mu.core import BaseTrainer
 from mu.algorithms.erase_diff.model import EraseDiffModel
+from mu.helpers.utils import param_choices
+
 
 class EraseDiffTrainer(BaseTrainer):
     """
@@ -20,7 +22,9 @@ class EraseDiffTrainer(BaseTrainer):
     Handles the training loop, loss computation, and optimization.
     """
 
-    def __init__(self, model: EraseDiffModel, config: dict, device: str,  data_handler, **kwargs):
+    def __init__(
+        self, model: EraseDiffModel, config: dict, device: str, data_handler, **kwargs
+    ):
         """
         Initialize the EraseDiffTrainer.
 
@@ -28,12 +32,12 @@ class EraseDiffTrainer(BaseTrainer):
             model (EraseDiffModel): Instance of EraseDiffModel.
             config (dict): Configuration dictionary.
             device (str): Device to perform training on.
-            device_orig (str): Device for the original (frozen) model.
-            data_handler (EraseDiffDataHandler): Instance of EraseDiffDataHandler.
+            data_handler: Instance of EraseDiffDataHandler.
             **kwargs: Additional keyword arguments.
         """
         super().__init__(model, config, **kwargs)
         self.device = device
+        # Note: the passed model is an EraseDiffModel, whose attribute "model" is the actual network.
         self.model = model.model
         self.sampler = None
         self.sampler_orig = None
@@ -47,50 +51,87 @@ class EraseDiffTrainer(BaseTrainer):
         Setup the optimizer based on the training method.
         """
         # Select parameters to train based on train_method
-        train_method = self.config.get('train_method', 'xattn')
+        train_method = self.config.get("train_method", "xattn")
         parameters = []
-        for name, param in self.model.model.named_parameters():
-            if train_method == 'full':
+        if train_method == "full":
+            for name, param in self.model.model.named_parameters():
                 parameters.append(param)
-            elif train_method == 'xattn' and 'attn2' in name:
-                parameters.append(param)
-            elif train_method == 'selfattn' and 'attn1' in name:
-                parameters.append(param)
-            elif train_method == 'noxattn':
-                if not (name.startswith('out.') or 'attn2' in name or 'time_embed' in name):
+        elif train_method == "xattn":
+            for name, param in self.model.model.named_parameters():
+                if "attn2" in name:
                     parameters.append(param)
-            elif train_method == 'xlayer':
-                if 'attn2' in name and ('output_blocks.6.' in name or 'output_blocks.8.' in name):
+        elif train_method == "selfattn":
+            for name, param in self.model.model.named_parameters():
+                if "attn1" in name:
                     parameters.append(param)
-            elif train_method == 'selflayer':
-                if 'attn1' in name and ('input_blocks.4.' in name or 'input_blocks.7.' in name):
+        elif train_method == "noxattn":
+            for name, param in self.model.model.named_parameters():
+                if not (
+                    name.startswith("out.") or "attn2" in name or "time_embed" in name
+                ):
                     parameters.append(param)
+        elif train_method == "xlayer":
+            for name, param in self.model.model.named_parameters():
+                if "attn2" in name and (
+                    "output_blocks.6." in name or "output_blocks.8." in name
+                ):
+                    parameters.append(param)
+        elif train_method == "selflayer":
+            for name, param in self.model.model.named_parameters():
+                if "attn1" in name and (
+                    "input_blocks.4." in name or "input_blocks.7." in name
+                ):
+                    parameters.append(param)
+        elif train_method.startswith("text_encoder"):
+            if hasattr(self.model, "cond_stage_model"):
+                text_encoder_module = self.model.cond_stage_model
+            elif hasattr(self.model, "text_encoder"):
+                text_encoder_module = self.model.text_encoder.text_model
+            else:
+                self.logger.error("Model does not have a text encoder attribute.")
+                text_encoder_module = None
 
-        self.optimizer = torch.optim.Adam(parameters, lr=self.config.get('lr', 1e-5))
+            if text_encoder_module is not None:
+                for name, param in text_encoder_module.named_parameters():
+                    if "text_model" in name:
+                        parameters.append(param)
+        else:
+            self.logger.error(f"Unknown train_method: {train_method}")
+
+        self.optimizer = torch.optim.Adam(parameters, lr=self.config.get("lr", 1e-5))
 
     def train(self):
         """
         Execute the training loop.
         """
-        epochs = self.config.get('epochs', 1)
-        K_steps = self.config.get('K_steps', 2)
-        alpha = self.config.get('alpha', 0.1)
+        epochs = self.config.get("epochs", 1)
+        K_steps = self.config.get("K_steps", 2)
+        alpha = self.config.get("alpha", 0.1)
 
         # Retrieve data loaders
         data_loaders = self.data_handler.get_data_loaders()
-        forget_dl = data_loaders.get('forget')
-        remain_dl = data_loaders.get('remain')
+        forget_dl = data_loaders.get("forget")
+        remain_dl = data_loaders.get("remain")
 
         self.logger.info(f"Number of forget samples: {len(forget_dl.dataset)}")
         self.logger.info(f"Number of remain samples: {len(remain_dl.dataset)}")
 
+        train_method = self.config.get("train_method", "xattn")
+
         for epoch in range(epochs):
             self.logger.info(f"Starting Epoch {epoch+1}/{epochs}")
-            with tqdm(total=len(forget_dl), desc=f'Epoch {epoch+1}/{epochs}') as pbar:
-                self.model.train()
+            with tqdm(total=len(forget_dl), desc=f"Epoch {epoch+1}/{epochs}") as pbar:
+                # NEW: For text_encoder training, freeze the overall model and set only text_encoder to train.
+                if train_method.startswith("text_encoder"):
+                    self.model.model.eval()
+                    if hasattr(self.model.model, "text_encoder"):
+                        self.model.model.text_encoder.train()
+                else:
+                    self.model.train()
+
                 param_i = self.get_param()
 
-                for step in range(K_steps): 
+                for step in range(K_steps):
                     unl_losses = AverageMeter()
                     for forget_batch in forget_dl:
                         self.optimizer.zero_grad()
@@ -107,7 +148,9 @@ class EraseDiffTrainer(BaseTrainer):
                         pseudo_prompts = remain_prompts
 
                         # Forget stage
-                        forget_loss = self.compute_forget_loss(forget_images, forget_prompts, pseudo_prompts)
+                        forget_loss = self.compute_forget_loss(
+                            forget_images, forget_prompts, pseudo_prompts
+                        )
 
                         forget_loss.backward()
                         self.optimizer.step()
@@ -118,7 +161,13 @@ class EraseDiffTrainer(BaseTrainer):
 
                     # Remain stage
                     for remain_batch in remain_dl:
-                        self.model.train()
+                        if train_method.startswith("text_encoder"):
+                            self.model.model.eval()
+                            if hasattr(self.model.model, "text_encoder"):
+                                self.model.model.text_encoder.train()
+                        else:
+                            self.model.train()
+
                         self.optimizer.zero_grad()
 
                         remain_images, remain_prompts = remain_batch
@@ -134,13 +183,15 @@ class EraseDiffTrainer(BaseTrainer):
 
                         remain_btch = {
                             "edited": remain_images.to(self.device),
-                            "edit": {"c_crossattn": remain_prompts}
+                            "edit": {"c_crossattn": remain_prompts},
                         }
                         # Remain loss
                         remain_loss = self.model.shared_step(remain_btch)[0]
 
                         # Forget loss within remain stage
-                        unlearn_loss = self.compute_unlearn_loss(forget_images, forget_prompts, pseudo_prompts)
+                        unlearn_loss = self.compute_unlearn_loss(
+                            forget_images, forget_prompts, pseudo_prompts
+                        )
 
                         q_loss = unlearn_loss - unl_losses.avg.detach()
 
@@ -150,7 +201,12 @@ class EraseDiffTrainer(BaseTrainer):
 
                         # Logging
                         wandb.log({"loss": total_loss.item()})
-                        pbar.set_postfix({"loss": total_loss.item() / self.config.get('batch_size', 4)})
+                        pbar.set_postfix(
+                            {
+                                "loss": total_loss.item()
+                                / self.config.get("batch_size", 4)
+                            }
+                        )
                         pbar.update(1)
 
             self.logger.info(f"Epoch {epoch+1}/{epochs} completed.")
@@ -187,7 +243,9 @@ class EraseDiffTrainer(BaseTrainer):
         torch.cuda.empty_cache()
         torch.manual_seed(0)
 
-    def compute_forget_loss(self, forget_images: torch.Tensor, forget_prompts: list, pseudo_prompts: list) -> torch.Tensor:
+    def compute_forget_loss(
+        self, forget_images: torch.Tensor, forget_prompts: list, pseudo_prompts: list
+    ) -> torch.Tensor:
         """
         Compute the forget loss.
 
@@ -201,17 +259,23 @@ class EraseDiffTrainer(BaseTrainer):
         """
         forget_batch = {
             "edited": forget_images.to(self.device),
-            "edit": {"c_crossattn": forget_prompts}
+            "edit": {"c_crossattn": forget_prompts},
         }
         pseudo_batch = {
             "edited": forget_images.to(self.device),
-            "edit": {"c_crossattn": pseudo_prompts}
+            "edit": {"c_crossattn": pseudo_prompts},
         }
 
-        forget_input, forget_emb = self.model.get_input(forget_batch, self.model.first_stage_key)
-        pseudo_input, pseudo_emb = self.model.get_input(pseudo_batch, self.model.first_stage_key)
+        forget_input, forget_emb = self.model.get_input(
+            forget_batch, self.model.first_stage_key
+        )
+        pseudo_input, pseudo_emb = self.model.get_input(
+            pseudo_batch, self.model.first_stage_key
+        )
 
-        t = torch.randint(0, self.model.num_timesteps, (forget_input.shape[0],), device=self.device).long()
+        t = torch.randint(
+            0, self.model.num_timesteps, (forget_input.shape[0],), device=self.device
+        ).long()
         noise = torch.randn_like(forget_input, device=self.device)
 
         forget_noisy = self.model.q_sample(x_start=forget_input, t=t, noise=noise)
@@ -223,7 +287,9 @@ class EraseDiffTrainer(BaseTrainer):
         forget_loss = self.criteria(forget_out, pseudo_out)
         return forget_loss
 
-    def compute_unlearn_loss(self, forget_images: torch.Tensor, forget_prompts: list, pseudo_prompts: list) -> torch.Tensor:
+    def compute_unlearn_loss(
+        self, forget_images: torch.Tensor, forget_prompts: list, pseudo_prompts: list
+    ) -> torch.Tensor:
         """
         Compute the unlearn loss within the remain stage.
 
@@ -237,17 +303,23 @@ class EraseDiffTrainer(BaseTrainer):
         """
         forget_batch = {
             "edited": forget_images.to(self.device),
-            "edit": {"c_crossattn": forget_prompts}
+            "edit": {"c_crossattn": forget_prompts},
         }
         pseudo_batch = {
             "edited": forget_images.to(self.device),
-            "edit": {"c_crossattn": pseudo_prompts}
+            "edit": {"c_crossattn": pseudo_prompts},
         }
 
-        forget_input, forget_emb = self.model.get_input(forget_batch, self.model.first_stage_key)
-        pseudo_input, pseudo_emb = self.model.get_input(pseudo_batch, self.model.first_stage_key)
+        forget_input, forget_emb = self.model.get_input(
+            forget_batch, self.model.first_stage_key
+        )
+        pseudo_input, pseudo_emb = self.model.get_input(
+            pseudo_batch, self.model.first_stage_key
+        )
 
-        t = torch.randint(0, self.model.num_timesteps, (forget_input.shape[0],), device=self.device).long()
+        t = torch.randint(
+            0, self.model.num_timesteps, (forget_input.shape[0],), device=self.device
+        ).long()
         noise = torch.randn_like(forget_input, device=self.device)
 
         forget_noisy = self.model.q_sample(x_start=forget_input, t=t, noise=noise)

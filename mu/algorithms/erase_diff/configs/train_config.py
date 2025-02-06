@@ -46,6 +46,8 @@ class EraseDiffConfig(BaseConfig):
             "notime",
             "xlayer",
             "selflayer",
+            "text_encoder_layer",
+            "text_encoder_full",
         ]
         if self.epochs <= 0:
             raise ValueError("epochs should be a positive integer.")
