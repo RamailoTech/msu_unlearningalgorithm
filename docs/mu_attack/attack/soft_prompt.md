@@ -65,6 +65,12 @@ if __name__ == "__main__":
 
 ```
 
+**Run the python file in offline mode**
+
+```bash
+WANDB_MODE=offline python_file.py
+```
+
 
 **Code Explanation & Important Notes**
 
