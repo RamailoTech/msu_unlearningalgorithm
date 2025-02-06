@@ -237,16 +237,16 @@ def construct_id(k, adv_id, insertion_location,sot_id,eot_id,mid_id):
 
 
 
-def get_models_for_compvis(config_path, ckpt_path, devices):
-    model_orig = load_model_from_config(config_path, ckpt_path, devices[1])
+def get_models_for_compvis(config_path, compvis_ckpt_path, devices):
+    model_orig = load_model_from_config(config_path, compvis_ckpt_path, devices[1])
     sampler_orig = DDIMSampler(model_orig)
 
-    model = load_model_from_config(config_path, ckpt_path, devices[0])
+    model = load_model_from_config(config_path, compvis_ckpt_path, devices[0])
     sampler = DDIMSampler(model)
 
     return model_orig, sampler_orig, model, sampler
 
-def get_models_for_diffusers(model_name_or_path, target_ckpt, devices, cache_path=None):
+def get_models_for_diffusers(diffuser_model_name_or_path, target_ckpt, devices, cache_path=None):
     """
     Loads two copies of a Diffusers UNet model along with their DDIM schedulers.
     
@@ -266,7 +266,7 @@ def get_models_for_diffusers(model_name_or_path, target_ckpt, devices, cache_pat
     
     # Load the original model (used for e.g. computing loss, etc.) on devices[1]
     model_orig = UNet2DConditionModel.from_pretrained(
-        model_name_or_path,
+        diffuser_model_name_or_path,
         subfolder="unet",
         cache_dir=cache_path
     ).to(devices[1])
@@ -274,14 +274,14 @@ def get_models_for_diffusers(model_name_or_path, target_ckpt, devices, cache_pat
     # Create a DDIM scheduler for model_orig. (Note: diffusers DDIMScheduler is used here;
     # adjust the subfolder or configuration if your scheduler is stored elsewhere.)
     sampler_orig = DDIMScheduler.from_pretrained(
-        model_name_or_path,
+        diffuser_model_name_or_path,
         subfolder="scheduler",
         cache_dir=cache_path
     )
     
     # Load the second copy of the model on devices[0]
     model = UNet2DConditionModel.from_pretrained(
-        model_name_or_path,
+        diffuser_model_name_or_path,
         subfolder="unet",
         cache_dir=cache_path
     ).to(devices[0])
@@ -292,7 +292,7 @@ def get_models_for_diffusers(model_name_or_path, target_ckpt, devices, cache_pat
         model.load_state_dict(state_dict)
     
     sampler = DDIMScheduler.from_pretrained(
-        model_name_or_path,
+        diffuser_model_name_or_path,
         subfolder="scheduler",
         cache_dir=cache_path
     )
