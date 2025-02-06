@@ -1,1 +1,1 @@
-from .adv_unlearn_config import AdvUnlearnConfig, adv_unlearn_config
+from .adv_attack_config import AdvAttackConfig, adv_attack_config

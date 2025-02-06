@@ -8,7 +8,7 @@ from transformers import CLIPTextModel, CLIPTokenizer
 from diffusers import StableDiffusionPipeline
 
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
-from mu_attack.configs.adv_unlearn import AdvUnlearnConfig
+from mu_attack.configs.adv_unlearn import AdvAttackConfig
 from mu_attack.attackers.soft_prompt import SoftPromptAttack
 from mu_attack.tasks.utils.text_encoder import CustomTextEncoder
 from mu_attack.helpers.utils import get_models_for_compvis, get_models_for_diffusers
@@ -21,7 +21,7 @@ class AdvAttack:
     This class wraps the full training pipeline including adversarial attack 
     and model handling.
     """
-    def __init__(self, config: AdvUnlearnConfig, **kwargs):
+    def __init__(self, config: AdvAttackConfig, **kwargs):
         self.config = config.__dict__
         for key, value in kwargs.items():
             setattr(config, key, value)

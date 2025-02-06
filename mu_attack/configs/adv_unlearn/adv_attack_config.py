@@ -1,10 +1,12 @@
+#mu_attack/configs/adv_unlearn/adv_attack_config.py
+
 import os
 from pathlib import Path
 from mu.core.base_config import BaseConfig
 
 current_dir = Path(__file__).parent
 
-class AdvUnlearnConfig(BaseConfig):
+class AdvAttackConfig(BaseConfig):
     def __init__(self, **kwargs):
         # Inference & Model Paths for compvis
         self.config_path = current_dir / "model_config.yaml"
@@ -69,5 +71,5 @@ class AdvUnlearnConfig(BaseConfig):
             if not os.path.exists(self.diffusers_model_name_or_path):
                 raise FileNotFoundError(f"Diffusers model {self.diffusers_model_name_or_path} does not exist.")
 
-adv_unlearn_config = AdvUnlearnConfig()
+adv_attack_config = AdvAttackConfig()
 

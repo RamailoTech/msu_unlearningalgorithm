@@ -21,13 +21,13 @@ eg: ```conda activate mu_attack```
 ```python
 
 from mu_attack.execs.adv_attack import AdvAttack
-from mu_attack.configs.adv_unlearn import adv_unlearn_config
+from mu_attack.configs.adv_unlearn import adv_attack_config
 from mu.algorithms.esd.configs import esd_train_mu
 
 
 def mu_defense():
     adv_unlearn = AdvAttack(
-        config=adv_unlearn_config,
+        config=adv_attack_config,
         compvis_ckpt_path = "/home/ubuntu/Projects/dipesh/unlearn_diff/models/sd-v1-4-full-ema.ckpt",
         attack_step = 2,
         backend = "compvis",
@@ -46,13 +46,13 @@ if __name__ == "__main__":
 
 ```python
 from mu_attack.execs.adv_attack import AdvAttack
-from mu_attack.configs.adv_unlearn import adv_unlearn_config
+from mu_attack.configs.adv_unlearn import adv_attack_config
 
 
 def mu_defense():
 
     adv_unlearn = AdvAttack(
-        config=adv_unlearn_config,
+        config=adv_attack_config,
         diffusers_model_name_or_path = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50",
         attack_step = 2,
         backend = "diffusers"
