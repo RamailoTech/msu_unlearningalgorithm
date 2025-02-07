@@ -174,5 +174,527 @@ def to_cuda(elements):
     return elements
 
 
+def param_choices(model, train_method, component="all", final_layer_norm=False):
+    # choose parameters to train based on train_method
+    parameters = []
 
+    # Text Encoder FUll Weight Tuning
+    if train_method == "text_encoder_full":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Final Layer Norm
+            if name.startswith("final_layer_norm"):
+                if component == "all" or final_layer_norm == True:
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
 
+            # Transformer layers
+            elif name.startswith("encoder"):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+
+            # Embedding layers
+            else:
+                pass
+
+    # Text Encoder Layer 0 Tuning
+    elif train_method == "text_encoder_layer0":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Encoder Layer 0
+            if name.startswith("encoder.layers.0"):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+
+            elif name.startswith("final_layer_norm") and final_layer_norm == True:
+                print(name)
+                parameters.append(param)
+
+            else:
+                pass
+
+    elif train_method == "text_encoder_layer01":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Encoder Layer 0
+            if name.startswith("encoder.layers.0") or name.startswith(
+                "encoder.layers.1"
+            ):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+            elif name.startswith("final_layer_norm") and final_layer_norm == True:
+                print(name)
+                parameters.append(param)
+
+            else:
+                pass
+
+    elif train_method == "text_encoder_layer012":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Encoder Layer 0
+            if (
+                name.startswith("encoder.layers.0")
+                or name.startswith("encoder.layers.1")
+                or name.startswith("encoder.layers.2")
+            ):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+
+            elif name.startswith("final_layer_norm") and final_layer_norm == True:
+                print(name)
+                parameters.append(param)
+
+            else:
+                pass
+
+    elif train_method == "text_encoder_layer0123":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Encoder Layer 0
+            if (
+                name.startswith("encoder.layers.0")
+                or name.startswith("encoder.layers.1")
+                or name.startswith("encoder.layers.2")
+                or name.startswith("encoder.layers.3")
+            ):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+
+            elif name.startswith("final_layer_norm") and final_layer_norm == True:
+                print(name)
+                parameters.append(param)
+
+            else:
+                pass
+
+    elif train_method == "text_encoder_layer01234":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Encoder Layer 0
+            if (
+                name.startswith("encoder.layers.0")
+                or name.startswith("encoder.layers.1")
+                or name.startswith("encoder.layers.2")
+                or name.startswith("encoder.layers.3")
+                or name.startswith("encoder.layers.4")
+            ):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+
+            elif name.startswith("final_layer_norm") and final_layer_norm == True:
+                print(name)
+                parameters.append(param)
+
+            else:
+                pass
+
+    elif train_method == "text_encoder_layer012345":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Encoder Layer 0
+            if (
+                name.startswith("encoder.layers.0")
+                or name.startswith("encoder.layers.1")
+                or name.startswith("encoder.layers.2")
+                or name.startswith("encoder.layers.3")
+                or name.startswith("encoder.layers.4")
+                or name.startswith("encoder.layers.5")
+            ):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+
+            elif name.startswith("final_layer_norm") and final_layer_norm == True:
+                print(name)
+                parameters.append(param)
+
+            else:
+                pass
+
+    elif train_method == "text_encoder_layer0123456":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Encoder Layer 0
+            if (
+                name.startswith("encoder.layers.0")
+                or name.startswith("encoder.layers.1")
+                or name.startswith("encoder.layers.2")
+                or name.startswith("encoder.layers.3")
+                or name.startswith("encoder.layers.4")
+                or name.startswith("encoder.layers.5")
+                or name.startswith("encoder.layers.6")
+            ):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+
+            elif name.startswith("final_layer_norm") and final_layer_norm == True:
+                print(name)
+                parameters.append(param)
+
+            else:
+                pass
+
+    elif train_method == "text_encoder_layer01234567":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Encoder Layer 0
+            if (
+                name.startswith("encoder.layers.0")
+                or name.startswith("encoder.layers.1")
+                or name.startswith("encoder.layers.2")
+                or name.startswith("encoder.layers.3")
+                or name.startswith("encoder.layers.4")
+                or name.startswith("encoder.layers.5")
+                or name.startswith("encoder.layers.6")
+                or name.startswith("encoder.layers.7")
+            ):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+
+            elif name.startswith("final_layer_norm") and final_layer_norm == True:
+                print(name)
+                parameters.append(param)
+
+            else:
+                pass
+
+    elif train_method == "text_encoder_layer012345678":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Encoder Layer 0
+            if (
+                name.startswith("encoder.layers.0")
+                or name.startswith("encoder.layers.1")
+                or name.startswith("encoder.layers.2")
+                or name.startswith("encoder.layers.3")
+                or name.startswith("encoder.layers.4")
+                or name.startswith("encoder.layers.5")
+                or name.startswith("encoder.layers.6")
+                or name.startswith("encoder.layers.7")
+                or name.startswith("encoder.layers.8")
+            ):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+
+            elif name.startswith("final_layer_norm") and final_layer_norm == True:
+                print(name)
+                parameters.append(param)
+
+            else:
+                pass
+
+    elif train_method == "text_encoder_layer0123456789":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Encoder Layer 0
+            if (
+                name.startswith("encoder.layers.0")
+                or name.startswith("encoder.layers.1")
+                or name.startswith("encoder.layers.2")
+                or name.startswith("encoder.layers.3")
+                or name.startswith("encoder.layers.4")
+                or name.startswith("encoder.layers.5")
+                or name.startswith("encoder.layers.6")
+                or name.startswith("encoder.layers.7")
+                or name.startswith("encoder.layers.8")
+                or name.startswith("encoder.layers.9")
+            ):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+
+            elif name.startswith("final_layer_norm") and final_layer_norm == True:
+                print(name)
+                parameters.append(param)
+
+            else:
+                pass
+
+    elif train_method == "text_encoder_layer012345678910":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Encoder Layer 0
+            if (
+                name.startswith("encoder.layers.0")
+                or name.startswith("encoder.layers.1")
+                or name.startswith("encoder.layers.2")
+                or name.startswith("encoder.layers.3")
+                or name.startswith("encoder.layers.4")
+                or name.startswith("encoder.layers.5")
+                or name.startswith("encoder.layers.6")
+                or name.startswith("encoder.layers.7")
+                or name.startswith("encoder.layers.8")
+                or name.startswith("encoder.layers.9")
+                or name.startswith("encoder.layers.10")
+            ):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+
+            elif name.startswith("final_layer_norm") and final_layer_norm == True:
+                print(name)
+                parameters.append(param)
+
+            else:
+                pass
+
+    elif train_method == "text_encoder_layer01234567891011":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Encoder Layer 0
+            if (
+                name.startswith("encoder.layers.0")
+                or name.startswith("encoder.layers.1")
+                or name.startswith("encoder.layers.2")
+                or name.startswith("encoder.layers.3")
+                or name.startswith("encoder.layers.4")
+                or name.startswith("encoder.layers.5")
+                or name.startswith("encoder.layers.6")
+                or name.startswith("encoder.layers.7")
+                or name.startswith("encoder.layers.8")
+                or name.startswith("encoder.layers.9")
+                or name.startswith("encoder.layers.10")
+                or name.startswith("encoder.layers.11")
+            ):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+
+            elif name.startswith("final_layer_norm") and final_layer_norm == True:
+                print(name)
+                parameters.append(param)
+
+            else:
+                pass
+
+    elif train_method == "text_encoder_layer0_11":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Encoder Layer 0
+            if name.startswith("encoder.layers.0") or name.startswith(
+                "encoder.layers.11"
+            ):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+
+            elif name.startswith("final_layer_norm") and final_layer_norm == True:
+                print(name)
+                parameters.append(param)
+
+            else:
+                pass
+
+    elif train_method == "text_encoder_layer01_1011":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Encoder Layer 0
+            if (
+                name.startswith("encoder.layers.0")
+                or name.startswith("encoder.layers.1")
+                or name.startswith("encoder.layers.10")
+                or name.startswith("encoder.layers.11")
+            ):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+
+            elif name.startswith("final_layer_norm") and final_layer_norm == True:
+                print(name)
+                parameters.append(param)
+
+            else:
+                pass
+
+    elif train_method == "text_encoder_layer012_91011":
+        for name, param in model.text_encoder.text_model.named_parameters():
+            # Encoder Layer 0
+            if (
+                name.startswith("encoder.layers.0")
+                or name.startswith("encoder.layers.1")
+                or name.startswith("encoder.layers.2")
+                or name.startswith("encoder.layers.9")
+                or name.startswith("encoder.layers.10")
+                or name.startswith("encoder.layers.11")
+            ):
+                if component == "ffn" and "mlp" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "attn" and "self_attn" in name:
+                    print(name)
+                    parameters.append(param)
+                elif component == "all":
+                    print(name)
+                    parameters.append(param)
+                else:
+                    pass
+
+            elif name.startswith("final_layer_norm") and final_layer_norm == True:
+                print(name)
+                parameters.append(param)
+
+            else:
+                pass
+
+    # UNet Model Tuning
+    else:
+        for name, param in model.model.diffusion_model.named_parameters():
+            # train all layers except x-attns and time_embed layers
+            if train_method == "noxattn":
+                if name.startswith("out.") or "attn2" in name or "time_embed" in name:
+                    pass
+                else:
+                    print(name)
+                    parameters.append(param)
+
+            # train only self attention layers
+            if train_method == "selfattn":
+                if "attn1" in name:
+                    print(name)
+                    parameters.append(param)
+
+            # train only x attention layers
+            if train_method == "xattn":
+                if "attn2" in name:
+                    print(name)
+                    parameters.append(param)
+
+            # train all layers
+            if train_method == "full":
+                print(name)
+                parameters.append(param)
+
+            # train all layers except time embed layers
+            if train_method == "notime":
+                if not (name.startswith("out.") or "time_embed" in name):
+                    print(name)
+                    parameters.append(param)
+            if train_method == "xlayer":
+                if "attn2" in name:
+                    if "output_blocks.6." in name or "output_blocks.8." in name:
+                        print(name)
+                        parameters.append(param)
+            if train_method == "selflayer":
+                if "attn1" in name:
+                    if "input_blocks.4." in name or "input_blocks.7." in name:
+                        print(name)
+                        parameters.append(param)
+
+    return parameters

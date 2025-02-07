@@ -30,6 +30,8 @@ class EraseDiffConfig(BaseConfig):
         self.use_sample = True
         self.num_workers = 4
         self.pin_memory = True
+        self.encoder_component = ["all", "ffn", "attn"]
+        self.norm_layer = False
 
         for key, value in kwargs.items():
             setattr(self, key, value)
