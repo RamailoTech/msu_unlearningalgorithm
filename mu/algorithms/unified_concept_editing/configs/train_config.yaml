@@ -35,5 +35,5 @@ add_prompts: false
 
 
 # Additional parameters
-preserver_concepts: "A Lion image"  # Comma-separated string if multiple concepts, e.g., "concept1,concept2"
+preserve_concepts: "A Lion image"  # Comma-separated string if multiple concepts, e.g., "concept1,concept2"
 base: "stable-diffusion-v1-4"  # Base version of stable diffusion

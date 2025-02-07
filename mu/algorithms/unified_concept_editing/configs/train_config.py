@@ -45,7 +45,7 @@ class UnifiedConceptEditingConfig(BaseConfig):
         self.add_prompts = False  # Whether to add additional prompts
 
         # Preserver concepts (comma-separated if multiple)
-        self.preserver_concepts = (
+        self.preserve_concepts = (
             "A Lion image"  # Comma-separated string of preserver concepts
         )
 
@@ -96,9 +96,9 @@ class UnifiedConceptEditingConfig(BaseConfig):
         if self.lamb < 0:
             raise ValueError("lamb should be a positive value.")
 
-        # Validate preserver_concepts
-        if not isinstance(self.preserver_concepts, str):
-            raise ValueError("preserver_concepts should be a string.")
+        # Validate preserve_concepts
+        if not isinstance(self.preserve_concepts, str):
+            raise ValueError("preserve_concepts should be a string.")
 
         # Validate base model
         if self.base not in ["stable-diffusion-v1-4"]:
