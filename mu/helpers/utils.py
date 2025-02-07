@@ -176,11 +176,12 @@ def to_cuda(elements):
 
 def param_choices(model, train_method, component="all", final_layer_norm=False):
     # choose parameters to train based on train_method
+    model = model.transformer
     parameters = []
 
     # Text Encoder FUll Weight Tuning
     if train_method == "text_encoder_full":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Final Layer Norm
             if name.startswith("final_layer_norm"):
                 if component == "all" or final_layer_norm == True:
@@ -209,7 +210,7 @@ def param_choices(model, train_method, component="all", final_layer_norm=False):
 
     # Text Encoder Layer 0 Tuning
     elif train_method == "text_encoder_layer0":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Encoder Layer 0
             if name.startswith("encoder.layers.0"):
                 if component == "ffn" and "mlp" in name:
@@ -232,7 +233,7 @@ def param_choices(model, train_method, component="all", final_layer_norm=False):
                 pass
 
     elif train_method == "text_encoder_layer01":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Encoder Layer 0
             if name.startswith("encoder.layers.0") or name.startswith(
                 "encoder.layers.1"
@@ -256,7 +257,7 @@ def param_choices(model, train_method, component="all", final_layer_norm=False):
                 pass
 
     elif train_method == "text_encoder_layer012":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Encoder Layer 0
             if (
                 name.startswith("encoder.layers.0")
@@ -283,7 +284,7 @@ def param_choices(model, train_method, component="all", final_layer_norm=False):
                 pass
 
     elif train_method == "text_encoder_layer0123":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Encoder Layer 0
             if (
                 name.startswith("encoder.layers.0")
@@ -311,7 +312,7 @@ def param_choices(model, train_method, component="all", final_layer_norm=False):
                 pass
 
     elif train_method == "text_encoder_layer01234":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Encoder Layer 0
             if (
                 name.startswith("encoder.layers.0")
@@ -340,7 +341,7 @@ def param_choices(model, train_method, component="all", final_layer_norm=False):
                 pass
 
     elif train_method == "text_encoder_layer012345":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Encoder Layer 0
             if (
                 name.startswith("encoder.layers.0")
@@ -370,7 +371,7 @@ def param_choices(model, train_method, component="all", final_layer_norm=False):
                 pass
 
     elif train_method == "text_encoder_layer0123456":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Encoder Layer 0
             if (
                 name.startswith("encoder.layers.0")
@@ -401,7 +402,7 @@ def param_choices(model, train_method, component="all", final_layer_norm=False):
                 pass
 
     elif train_method == "text_encoder_layer01234567":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Encoder Layer 0
             if (
                 name.startswith("encoder.layers.0")
@@ -433,7 +434,7 @@ def param_choices(model, train_method, component="all", final_layer_norm=False):
                 pass
 
     elif train_method == "text_encoder_layer012345678":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Encoder Layer 0
             if (
                 name.startswith("encoder.layers.0")
@@ -466,7 +467,7 @@ def param_choices(model, train_method, component="all", final_layer_norm=False):
                 pass
 
     elif train_method == "text_encoder_layer0123456789":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Encoder Layer 0
             if (
                 name.startswith("encoder.layers.0")
@@ -500,7 +501,7 @@ def param_choices(model, train_method, component="all", final_layer_norm=False):
                 pass
 
     elif train_method == "text_encoder_layer012345678910":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Encoder Layer 0
             if (
                 name.startswith("encoder.layers.0")
@@ -535,7 +536,7 @@ def param_choices(model, train_method, component="all", final_layer_norm=False):
                 pass
 
     elif train_method == "text_encoder_layer01234567891011":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Encoder Layer 0
             if (
                 name.startswith("encoder.layers.0")
@@ -571,7 +572,7 @@ def param_choices(model, train_method, component="all", final_layer_norm=False):
                 pass
 
     elif train_method == "text_encoder_layer0_11":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Encoder Layer 0
             if name.startswith("encoder.layers.0") or name.startswith(
                 "encoder.layers.11"
@@ -596,7 +597,7 @@ def param_choices(model, train_method, component="all", final_layer_norm=False):
                 pass
 
     elif train_method == "text_encoder_layer01_1011":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Encoder Layer 0
             if (
                 name.startswith("encoder.layers.0")
@@ -624,7 +625,7 @@ def param_choices(model, train_method, component="all", final_layer_norm=False):
                 pass
 
     elif train_method == "text_encoder_layer012_91011":
-        for name, param in model.text_encoder.text_model.named_parameters():
+        for name, param in model.text_model.named_parameters():
             # Encoder Layer 0
             if (
                 name.startswith("encoder.layers.0")

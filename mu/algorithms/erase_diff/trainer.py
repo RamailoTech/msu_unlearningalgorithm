@@ -92,7 +92,14 @@ class EraseDiffTrainer(BaseTrainer):
                 text_encoder_module = None
 
             if text_encoder_module is not None:
-                parameters = param_choices(model=text_encoder_module, train_method=train_method, component=)
+                parameters = param_choices(
+                    model=text_encoder_module, train_method=train_method
+                )
+        self.optimizer = torch.optim.Adam(parameters, lr=self.config.get("lr", 1e-5))
+
+    def train(self):
+        """
+        Execute the training loop.
         """
         epochs = self.config.get("epochs", 1)
         K_steps = self.config.get("K_steps", 2)
