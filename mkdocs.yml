@@ -3,7 +3,7 @@ docs_dir: docs
 site_dir: docs_build  
 
 nav:
-  - Unlearn: unlearn/README.md
+  - Home: README.md
   - Attack: attack/Readme_MU_Attack.md 
   - Unlearn Algorithms:
     - Concept Ablation: 
