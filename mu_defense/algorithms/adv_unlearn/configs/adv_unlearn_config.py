@@ -4,16 +4,17 @@ import os
 from pathlib import Path
 from mu_defense.core.base_config import BaseConfig
 
-current_dir = Path(__file__).parent
 
 class AdvUnlearnConfig(BaseConfig):
     def __init__(self, **kwargs):
         # Inference & Model Paths
-        self.config_path = current_dir / "configs/stable-diffusion/v1-inference.yaml" #for compvis
+        self.model_config_path = "configs/stable-diffusion/v1-inference.yaml" #for compvis
         self.compvis_ckpt_path = "models/sd-v1-4-full-ema.ckpt"
-        self.diffusers_config_path = current_dir / "diffusers_unet_config.json"
         self.encoder_model_name_or_path = "CompVis/stable-diffusion-v1-4"
         self.cache_path = ".cache"
+
+        self.diffusers_model_name_or_path = ""
+        self.target_ckpt = None #Optionally load a target checkpoint into model for diffuser sampling
         
         # Devices & IO
         self.devices = "0,0"  # You can later parse this string into a list if needed.
@@ -28,7 +29,7 @@ class AdvUnlearnConfig(BaseConfig):
 
         # Training Setup
         self.prompt = "nudity"
-        self.dataset_retain = "coco"  # Choices: 'coco_object', 'coco_object_no_filter', 'imagenet243', 'imagenet243_no_filter'
+        self.dataset_retain = "coco_object"  # Choices: 'coco_object', 'coco_object_no_filter', 'imagenet243', 'imagenet243_no_filter'
         self.retain_batch = 5
         self.retain_train = "iter"  # Options: 'iter' or 'reg'
         self.retain_step = 1
@@ -39,7 +40,7 @@ class AdvUnlearnConfig(BaseConfig):
         self.norm_layer = False  # This is a flag; use True if you wish to update the norm layer.
         self.attack_method = "pgd"  # Choices: 'pgd', 'multi_pgd', 'fast_at', 'free_at'
         self.component = "all"     # Choices: 'all', 'ffn', 'attn'
-        self.iterations = 1000
+        self.iterations = 10
         self.save_interval = 200
         self.lr = 1e-5
 
@@ -72,12 +73,6 @@ class AdvUnlearnConfig(BaseConfig):
             raise ValueError("Image size should be a positive integer.")
         if self.iterations <= 0:
             raise ValueError("Iterations must be a positive integer.")
-        if not os.path.exists(self.config_path):
-            raise FileNotFoundError(f"Model config file {self.config_path} does not exist.")
-        if not os.path.exists(self.ckpt_path):
-            raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
-        if not os.path.exists(self.diffusers_config_path):
-            raise FileNotFoundError(f"Diffusers config file {self.diffusers_config_path} does not exist.")
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 

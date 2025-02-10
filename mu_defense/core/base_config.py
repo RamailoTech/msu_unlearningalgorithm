@@ -31,3 +31,4 @@ class BaseConfig(ABC):
             else:
                 result[attr_name] = attr_value
         return result
+

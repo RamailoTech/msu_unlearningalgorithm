@@ -1,3 +1,5 @@
+# mu_defense/algorithms/adv_unlearn/compvis_trainer.py
+
 import torch
 from tqdm import tqdm
 import random
@@ -5,18 +7,17 @@ import wandb
 import logging
 from torch.nn import MSELoss
 
-from mu.helpers import sample_model
 from mu.core import BaseTrainer
 from mu_defense.algorithms.adv_unlearn import (
     id2embedding,
     param_choices,
-    retain_prompt,
     get_train_loss_retain,
     save_text_encoder,
-    save_model,
-    save_history
+    save_history,
+    sample_model
 )
 from mu_attack.attackers.soft_prompt import SoftPromptAttack
+from mu_defense.algorithms.adv_unlearn import AdvUnlearnDatasetHandler
 
 
 class AdvUnlearnCompvisTrainer(BaseTrainer):
@@ -28,20 +29,7 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
     """
     def __init__(self, model, config: dict, devices: list, **kwargs):
         """
-        Initialize the AdvUnlearnTrainer.
-
-        Args:
-            model: A model loader instance that contains the following attributes:
-                   - model_orig: the frozen diffusion model,
-                   - sampler_orig: sampler for the frozen model,
-                   - model: the trainable diffusion model,
-                   - sampler: sampler for the trainable model,
-                   - tokenizer: the tokenizer,
-                   - custom_text_encoder: the custom text encoder wrapping the CLIP text encoder,
-                   - all_embeddings: the complete text embedding matrix,
-                   - vae: the VAE.
-            config (dict): Configuration dictionary with all training hyperparameters.
-            devices (list): List of device strings (e.g., ['cuda:0']).
+        Initialize the AdvUnlearnCompvisTrainer.
         """
         super().__init__(model, config, **kwargs)
         self.devices = devices
@@ -51,12 +39,12 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
         self.model_orig = model.model_orig  # frozen diffusion model (set to eval)
         self.sampler = model.sampler
         self.sampler_orig = model.sampler_orig
+        self.model_loader = model 
 
         # Other loaded components.
         self.tokenizer = model.tokenizer
         self.custom_text_encoder = model.custom_text_encoder
         self.all_embeddings = model.all_embeddings
-        self.vae = model.vae
 
         # Loss criterion.
         self.criteria = MSELoss()
@@ -65,14 +53,13 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
         self.config = config
         self.prompt = self.config['prompt']
         self.seperator = self.config.get('seperator')
-        self.iterations = self.config['iterations']
+        self.iterations = self.config.get('iterations')
         self.ddim_steps = self.config['ddim_steps']
         self.start_guidance = self.config['start_guidance']
         self.negative_guidance = self.config['negative_guidance']
         self.image_size = self.config['image_size']
         self.lr = self.config['lr']
-        self.config_path = self.config['config_path']
-        self.diffusers_config_path = self.config['diffusers_config_path']
+        self.model_config_path = self.config['model_config_path']
         self.output_dir = self.config['output_dir']
 
         # Retention and attack parameters.
@@ -97,8 +84,14 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
 
         self.logger = logging.getLogger(__name__)
 
-        # Setup prompt cleaning and retaining dataset.
-        self._setup_prompt_and_dataset()
+        # Setup the dataset handler and prompt cleaning.
+        self.dataset_handler = AdvUnlearnDatasetHandler(
+            prompt=self.prompt,
+            seperator=self.seperator,
+            dataset_retain=self.dataset_retain
+        )
+        self.words, self.word_print = self.dataset_handler.setup_prompt()
+        self.retain_dataset = self.dataset_handler.setup_dataset()
 
         # Initialize adversarial prompt variables.
         self.adv_word_embd = None
@@ -107,31 +100,6 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
 
         # Setup trainable parameters and optimizer.
         self._setup_optimizer()
-
-    def _setup_prompt_and_dataset(self):
-        """
-        Perform prompt cleaning and create the retaining dataset.
-        """
-        # Special-case prompt cleaning.
-        if self.prompt == 'allartist':
-            self.prompt = ("Kelly Mckernan, Thomas Kinkade, Ajin Demi Human, "
-                           "Alena Aenami, Tyler Edlin, Kilian Eng")
-        elif self.prompt == 'i2p':
-            self.prompt = ("hate, harassment, violence, suffering, humiliation, harm, "
-                           "suicide, sexual, nudity, bodily fluids, blood")
-        elif self.prompt == "artifact":
-            self.prompt = ("ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, "
-                           "mutation, mutated, extra limbs, extra legs, extra arms, disfigured, deformed, cross-eye, "
-                           "body out of frame, blurry, bad art, bad anatomy, blurred, text, watermark, grainy")
-        if self.seperator:
-            self.words = [w.strip() for w in self.prompt.split(self.seperator)]
-        else:
-            self.words = [self.prompt]
-        self.word_print = self.prompt.replace(" ", "")
-        self.logger.info(f"The Concept Prompt to be unlearned: {self.words}")
-
-        # Create a retaining dataset using your helper function.
-        self.retain_dataset = retain_prompt(self.dataset_retain)
 
     def _setup_optimizer(self):
         """
@@ -158,7 +126,6 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
         Execute the adversarial unlearning training loop.
         """
         ddim_eta = self.ddim_eta
-        # Lambda to sample until a given time step.
         quick_sample_till_t = lambda x, s, code, batch, t: sample_model(
             self.model, self.sampler,
             x, self.image_size, self.image_size, self.ddim_steps, s, ddim_eta,
@@ -171,7 +138,6 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
 
         pbar = tqdm(range(self.iterations))
         for i in pbar:
-            # --- Update adversarial prompt every adv_prompt_update_step iterations ---
             if i % self.adv_prompt_update_step == 0:
                 if self.retain_dataset.check_unseen_prompt_count() < self.retain_batch:
                     self.retain_dataset.reset()
@@ -189,12 +155,10 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
                     text_input.input_ids.to(self.devices[0]),
                     self.devices[0]
                 )
-                # Get conditioning from the frozen model.
                 emb_0 = self.model_orig.get_learned_conditioning([''])
                 emb_p = self.model_orig.get_learned_conditioning([word])
 
                 if i >= self.warmup_iter:
-                    # Update adversarial prompt using SoftPromptAttack.
                     self.custom_text_encoder.text_encoder.eval()
                     self.custom_text_encoder.text_encoder.requires_grad_(False)
                     self.model.eval()
@@ -243,7 +207,6 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
                     global_step += self.attack_step
                     attack_round += 1
 
-            # --- Set models to training/eval modes based on train_method ---
             if 'text_encoder' in self.train_method:
                 self.custom_text_encoder.text_encoder.train()
                 self.custom_text_encoder.text_encoder.requires_grad_(True)
@@ -255,7 +218,6 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
 
             self.optimizer.zero_grad()
 
-            # --- Retaining prompts for retention regularization (if configured) ---
             if self.retain_train == 'reg':
                 retain_words = self.retain_dataset.get_random_prompts(self.retain_batch)
                 retain_text_input = self.tokenizer(
@@ -284,7 +246,6 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
                 retain_emb_p = None
                 retain_emb_n = None
 
-            # --- Compute training loss ---
             if i < self.warmup_iter:
                 input_ids = text_input.input_ids.to(self.devices[0])
                 emb_n = self.custom_text_encoder(
@@ -326,7 +287,6 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
             global_step += 1
             self.optimizer.step()
 
-            # --- Additional Retention Training (for iterative retention) ---
             if self.retain_train == 'iter':
                 for r in range(self.retain_step):
                     self.optimizer.zero_grad()
@@ -384,40 +344,22 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
                     retain_loss.backward()
                     self.optimizer.step()
 
-            # --- Checkpointing and saving history ---
             if (i + 1) % self.config['save_interval'] == 0 and (i + 1) != self.iterations and (i + 1) >= self.config['save_interval']:
                 if 'text_encoder' in self.train_method:
                     save_text_encoder(self.output_dir, self.custom_text_encoder, self.train_method, i)
                 else:
-                    save_model(
-                        self.output_dir,
-                        self.model,
-                        self.train_method,
-                        i,
-                        save_compvis=True,
-                        save_diffusers=True,
-                        compvis_config_file=self.config_path,
-                        diffusers_config_file=self.diffusers_config_path
-                    )
+                    output_path = f"{self.output_dir}/models/model_checkpoint_{i}.pt"
+                    self.model_loader.save_model(self.model, output_path)
                 if i % 1 == 0:
                     save_history(self.output_dir, losses, self.word_print)
 
-        # --- Final checkpointing ---
         self.model.eval()
         self.custom_text_encoder.text_encoder.eval()
         self.custom_text_encoder.text_encoder.requires_grad_(False)
         if 'text_encoder' in self.train_method:
             save_text_encoder(self.output_dir, self.custom_text_encoder, self.train_method, i)
-        else:
-            save_model(
-                self.output_dir,
-                self.model,
-                self.train_method,
-                i,
-                save_compvis=True,
-                save_diffusers=True,
-                compvis_config_file=self.config_path,
-                diffusers_config_file=self.diffusers_config_path
-            )
+        else: 
+            output_path = f"{self.output_dir}/models/model_checkpoint_{i}.pt"
+            self.model_loader.save_model(self.model, output_path)
         save_history(self.output_dir, losses, self.word_print)
         return self.model

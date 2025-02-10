@@ -1,15 +1,13 @@
 # mu/algorithms/adv_unlearn/algorithm.py
 
 from mu.core.base_config import BaseConfig
-import torch
 import wandb
-from typing import Dict
 import logging
 from pathlib import Path
 
 from mu.core import BaseAlgorithm
-from mu_defense.algorithms.adv_unlearn.model import AdvUnlearnModel
-from mu_defense.algorithms.adv_unlearn import AdvUnlearnCompvisTrainer
+from mu_defense.algorithms.adv_unlearn import AdvUnlearnModel
+from mu_defense.algorithms.adv_unlearn.trainer import AdvUnlearnTrainer
 from mu_defense.algorithms.adv_unlearn.configs import AdvUnlearnConfig
 
 
@@ -38,10 +36,10 @@ class AdvUnlearnAlgorithm(BaseAlgorithm):
         # Validate and update config.
         config.validate_config()
         self.config = config.to_dict()
-        self.config_path = self.config.get("config_path")
         self.model = None
         self.trainer = None
-        self.device = self.config.get("devices")[0]
+        self.devices = self.config.get("devices")
+        self.devices = [f'cuda:{int(d.strip())}' for d in self.devices.split(',')]
         self.logger = logging.getLogger(__name__)
         self._setup_components()
 
@@ -53,18 +51,14 @@ class AdvUnlearnAlgorithm(BaseAlgorithm):
 
         # Initialize Model
         self.model = AdvUnlearnModel(
-            model_name_or_path=self.config.get("model_name_or_path"),
-            model_config_path=self.config.get("config_path"),
-            compvis_ckpt_path=self.config.get("compvis_ckpt_path"),
-            cache_path=self.config.get("cache_path"),
-            devices=self.config.get("devices"),
+            config=self.config
         )
 
         # Initialize Trainer
-        self.trainer = AdvUnlearnCompvisTrainer(
+        self.trainer = AdvUnlearnTrainer(
             model=self.model,
             config=self.config,
-            devices=self.config.get("devices"),
+            devices=self.devices,
         )
 
     def run(self):
@@ -87,7 +81,7 @@ class AdvUnlearnAlgorithm(BaseAlgorithm):
 
             try:
                 # Start training.
-                self.trainer.train()
+                self.trainer.run()
             except Exception as e:
                 self.logger.error(f"Error during training: {str(e)}")
                 raise
