@@ -2,6 +2,7 @@ import torch
 from tqdm import tqdm
 import random
 import wandb
+import logging
 from torch.nn import MSELoss
 
 from mu.helpers import sample_model
@@ -16,14 +17,14 @@ from mu_defense.algorithms.adv_unlearn import (
     save_history
 )
 from mu_attack.attackers.soft_prompt import SoftPromptAttack
-from mu_attack.tasks.utils.text_encoder import CustomTextEncoder
 
-class AdvUnlearnTrainer(BaseTrainer):
+
+class AdvUnlearnCompvisTrainer(BaseTrainer):
     """
     Trainer for adversarial unlearning.
-    
+
     This trainer performs the adversarial prompt update and retention-based
-    regularized training loop.
+    regularized training loop for CompVis/Diffusers models.
     """
     def __init__(self, model, config: dict, devices: list, **kwargs):
         """
@@ -94,6 +95,8 @@ class AdvUnlearnTrainer(BaseTrainer):
         self.adv_prompt_update_step = self.config['adv_prompt_update_step']
         self.ddim_eta = self.config['ddim_eta']
 
+        self.logger = logging.getLogger(__name__)
+
         # Setup prompt cleaning and retaining dataset.
         self._setup_prompt_and_dataset()
 
@@ -125,7 +128,7 @@ class AdvUnlearnTrainer(BaseTrainer):
         else:
             self.words = [self.prompt]
         self.word_print = self.prompt.replace(" ", "")
-        print(f"The Concept Prompt to be unlearned: {self.words}")
+        self.logger.info(f"The Concept Prompt to be unlearned: {self.words}")
 
         # Create a retaining dataset using your helper function.
         self.retain_dataset = retain_prompt(self.dataset_retain)
@@ -396,8 +399,8 @@ class AdvUnlearnTrainer(BaseTrainer):
                         compvis_config_file=self.config_path,
                         diffusers_config_file=self.diffusers_config_path
                     )
-            if i % 1 == 0:
-                save_history(self.output_dir, losses, self.word_print)
+                if i % 1 == 0:
+                    save_history(self.output_dir, losses, self.word_print)
 
         # --- Final checkpointing ---
         self.model.eval()

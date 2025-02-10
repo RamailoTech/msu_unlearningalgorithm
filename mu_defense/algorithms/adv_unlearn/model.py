@@ -20,7 +20,7 @@ class AdvUnlearnModel(BaseModel):
         self,
         model_name_or_path: str,
         config_path: str,
-        ckpt_path: str,
+        compvis_ckpt_path: str,
         cache_path: str,
         devices: list
     ):
@@ -30,14 +30,14 @@ class AdvUnlearnModel(BaseModel):
         Args:
             model_name_or_path (str): Path or identifier of the pretrained model.
             config_path (str): Path to the model configuration file.
-            ckpt_path (str): Path to the model checkpoint.
+            compvis_ckpt_path (str): Path to the model checkpoint.
             cache_path (str): Directory for caching downloaded models.
             devices (list): List of device strings (e.g., ['cuda:0', 'cuda:1']) for model placement.
         """
         super().__init__()
         self.model_name_or_path = model_name_or_path
         self.config_path = config_path
-        self.ckpt_path = ckpt_path
+        self.ckpt_path = compvis_ckpt_path
         self.cache_path = cache_path
         self.devices = devices
 
@@ -67,7 +67,7 @@ class AdvUnlearnModel(BaseModel):
         # Load diffusion models using your helper function.
         self.model_orig, self.sampler_orig, self.model, self.sampler = get_models(
             self.config_path,
-            self.ckpt_path,
+            self.compvis_ckpt_path,
             self.devices
         )
         self.model_orig.eval()  # Set the frozen model to evaluation mode.
