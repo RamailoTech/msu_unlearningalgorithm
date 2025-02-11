@@ -14,7 +14,7 @@ from mu_defense.algorithms.adv_unlearn.utils import (
     get_train_loss_retain,
     save_text_encoder,
     save_history,
-    sample_model
+    sample_model_for_diffuser
 )
 
 
@@ -84,6 +84,7 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
         self.attack_lr = self.config['attack_lr']
         self.adv_prompt_update_step = self.config['adv_prompt_update_step']
         self.ddim_eta = self.config['ddim_eta']
+        self.backend = self.config['backend']
 
         self.logger = logging.getLogger(__name__)
 
@@ -157,12 +158,25 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
             )
         self.optimizer = torch.optim.Adam(self.parameters, lr=float(self.lr))
 
+    def encode_text(self, text):
+        text_inputs = self.tokenizer(
+            text,
+            padding="max_length",
+            truncation=True,
+            max_length=77,
+            return_tensors="pt"
+        ).to(self.devices[0])
+        with torch.no_grad():
+            text_embeddings = self.adv_attack.text_encoder(text_inputs.input_ids)[0]
+        return text_embeddings
+
     def train(self):
         """
         Execute the adversarial unlearning training loop.
         """
         ddim_eta = self.ddim_eta
-        quick_sample_till_t = lambda x, s, code, batch, t: sample_model(
+
+        quick_sample_till_t = lambda x, s, code, batch, t: sample_model_for_diffuser(
             self.model, self.sampler,
             x, self.image_size, self.image_size, self.ddim_steps, s, ddim_eta,
             start_code=code, n_samples=batch, till_T=t, verbose=False
@@ -191,9 +205,11 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
                     text_input.input_ids.to(self.devices[0]),
                     self.devices[0]
                 )
-                # Obtain the unconditional and conditional embeddings via the original model.
-                emb_0 = self.model_orig.get_learned_conditioning([''])
-                emb_p = self.model_orig.get_learned_conditioning([word])
+
+
+                emb_0 = self.encode_text("")
+                emb_p = self.encode_text(word)
+
 
                 if i >= self.warmup_iter:
                     self.custom_text_encoder.text_encoder.eval()
@@ -260,7 +276,7 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
                     self.model, self.model_orig, self.custom_text_encoder, self.sampler,
                     emb_0, emb_p, retain_emb_p, emb_n, retain_emb_n, self.start_guidance,
                     self.negative_guidance, self.devices, self.ddim_steps, ddim_eta,
-                    self.image_size, self.criteria, input_ids, self.attack_embd_type
+                    self.image_size, self.criteria, input_ids, self.attack_embd_type,self.backend
                 )
             else:
                 if self.attack_embd_type == 'word_embd':
@@ -270,7 +286,7 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
                         emb_0, emb_p, retain_emb_p, None, retain_emb_n, self.start_guidance,
                         self.negative_guidance, self.devices, self.ddim_steps, ddim_eta,
                         self.image_size, self.criteria, self.adv_input_ids, self.attack_embd_type,
-                        self.adv_word_embd
+                        self.adv_word_embd,self.backend
                     )
                 elif self.attack_embd_type == 'condition_embd':
                     loss = get_train_loss_retain(
@@ -279,7 +295,7 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
                         emb_0, emb_p, retain_emb_p, None, retain_emb_n, self.start_guidance,
                         self.negative_guidance, self.devices, self.ddim_steps, ddim_eta,
                         self.image_size, self.criteria, self.adv_input_ids, self.attack_embd_type,
-                        self.adv_condition_embd
+                        self.adv_condition_embd,self.backend
                     )
             loss.backward()
             losses.append(loss.item())
