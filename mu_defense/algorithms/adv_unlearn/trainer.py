@@ -3,7 +3,7 @@
 import logging
 
 from mu_defense.core import BaseTrainer
-from mu_defense.algorithms.adv_unlearn import AdvUnlearnCompvisTrainer
+from mu_defense.algorithms.adv_unlearn import AdvUnlearnCompvisTrainer,AdvUnlearnDiffuserTrainer
 
 class AdvUnlearnTrainer(BaseTrainer):
     """
@@ -23,7 +23,10 @@ class AdvUnlearnTrainer(BaseTrainer):
             # Create the CompVis trainer.
             self.trainer = AdvUnlearnCompvisTrainer(model, config, devices)
         if self.backend == "diffusers":
-            pass
+            self.logger.info("Using Diffusers backend for adversarial unlearning.")
+            
+            # Create the diffuser trainer.
+            self.trainer = AdvUnlearnDiffuserTrainer(model, config, devices)
             
 
     def run(self):

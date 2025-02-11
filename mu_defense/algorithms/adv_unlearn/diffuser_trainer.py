@@ -1,4 +1,4 @@
-# mu_defense/algorithms/adv_unlearn/compvis_trainer.py
+# mu_defense/algorithms/adv_unlearn/diffuser_trainer.py
 
 import torch
 from tqdm import tqdm
@@ -23,7 +23,7 @@ from mu_attack.configs.adv_unlearn import AdvAttackConfig
 from mu_defense.algorithms.adv_unlearn import AdvUnlearnDatasetHandler
 
 
-class AdvUnlearnCompvisTrainer(BaseTrainer):
+class AdvUnlearnDiffuserTrainer(BaseTrainer):
     """
     Trainer for adversarial unlearning.
 
@@ -88,7 +88,7 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
         self.logger = logging.getLogger(__name__)
 
         attack_config = AdvAttackConfig(
-            prompt="",  # prompt is no longer used in __init__
+            prompt="", 
             encoder_model_name_or_path=self.tokenizer.name_or_path,
             cache_path=config.get("cache_path", "./cache"),
             devices=",".join([d.strip() for d in config.get("devices", "cuda:0").split(',')]),
@@ -105,10 +105,10 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
             adv_prompt_num=config['adv_prompt_num'],
             start_guidance=config['start_guidance'],
             config_path=config['model_config_path'],
-            compvis_ckpt_path=config.get("compvis_ckpt_path", ""),
+            compvis_ckpt_path=None,
             backend=config['backend'],
-            diffusers_model_name_or_path="",
-            target_ckpt="",
+            diffusers_model_name_or_path=config['diffusers_model_name_or_path'],
+            target_ckpt=config['target_ckpt'],
             project=config.get("project_name", "default_project"),
             experiment_name=config.get("experiment_name", "default_experiment")
         )

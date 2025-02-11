@@ -50,6 +50,7 @@ class AdvUnlearnConfig(BaseConfig):
         self.attack_type = "prefix_k"         # Choices: 'replace_k', 'add', 'prefix_k', 'suffix_k', 'mid_k', 'insert_k', 'per_k_words'
         self.attack_init = "latest"           # Choices: 'random', 'latest'
         self.attack_step = 30
+        self.attack_init_embd = None
         self.adv_prompt_update_step = 1
         self.attack_lr = 1e-3
         self.warmup_iter = 200

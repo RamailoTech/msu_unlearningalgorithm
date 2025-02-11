@@ -11,7 +11,6 @@ from mu_attack.helpers.utils import get_models_for_compvis, get_models_for_diffu
 class AdvAttack:
     def __init__(self, config: AdvAttackConfig):
         self.config = config.__dict__
-        # Do not set self.prompt from the config; remove the dependency.
         self.encoder_model_name_or_path = config.encoder_model_name_or_path
         self.cache_path = config.cache_path
         self.devices = [f'cuda:{int(d.strip())}' for d in config.devices.split(',')]
@@ -65,7 +64,7 @@ class AdvAttack:
         Returns:
             tuple: (adversarial embedding, input_ids)
         """
-        # Now, use the passed `word` for the attack instead of self.prompt.
+        # use the passed `word` for the attack instead of self.prompt.
         # (Everything else in this method remains the same.)
         sp_attack = SoftPromptAttack(
             model=self.model,
@@ -89,18 +88,16 @@ class AdvAttack:
                                 self.attack_embd_type, self.attack_step, self.attack_lr,
                                 self.attack_init, self.attack_init_embd, self.attack_method)
 
-    # Example helper methods to get embeddings from model_orig.
     def _get_emb_0(self):
         if self.backend == "compvis":
             return self.model_orig.get_learned_conditioning([''])
-        else:
-            # For diffusers, you need to define your own method (e.g., using self.encode_text(""))
+        elif self.backend == "diffusers":
             return self.encode_text("")
     
     def _get_emb_p(self, word):
         if self.backend == "compvis":
             return self.model_orig.get_learned_conditioning([word])
-        else:
+        elif self.backend == "diffusers":
             return self.encode_text(word)
 
     def encode_text(self, text):
