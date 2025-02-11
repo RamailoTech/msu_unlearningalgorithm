@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Selective amnesia - Unlearn Diff</title>
+    <title>Configs - Unlearn Diff</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Selective amnesia";
+        var mkdocs_page_name = "Configs";
         var mkdocs_page_input_path = "unlearn/configs/selective_amnesia.md";
         var mkdocs_page_url = null;
       </script>
@@ -40,14 +40,18 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Unlearn Algorithms</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../../..">Home</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Concept Ablation</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../../algorithms/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/concept_ablation/">Examples</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../concept_ablation/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/concept_ablation/">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -111,9 +115,17 @@
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" >Selective Amnesia</a>
-    <ul>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Selective Amnesia</a>
+    <ul class="current">
                 <li class="toctree-l2"><a class="reference internal" href="../../algorithms/selective_amnesia/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/selective_amnesia/">Examples</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Configs</a>
+    <ul class="current">
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="" href="../../../evaluation/selective_amnesia.md">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -208,7 +220,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Selective amnesia</li>
+          <li class="breadcrumb-item">Unlearn Algorithms</li>
+          <li class="breadcrumb-item">Selective Amnesia</li>
+      <li class="breadcrumb-item active">Configs</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -217,10 +231,264 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                
+                <h3 id="train-config">Train config</h3>
+<pre><code class="language-python">import os
+from mu.core.base_config import BaseConfig
+from pathlib import Path
+
+current_dir = Path(__file__).parent
+
+
+class SelectiveAmnesiaConfig(BaseConfig):
+    def __init__(self, **kwargs):
+        # Training parameters
+        self.seed = 23  # Random seed
+        self.scale_lr = True  # Flag for scaling learning rate
+
+        # Model configuration
+        self.config_path = current_dir / &quot;train_config.yaml&quot;
+        self.model_config_path = (
+            current_dir / &quot;model_config.yaml&quot;
+        )  # Config path for model
+        self.ckpt_path = &quot;models/compvis/style50/compvis.ckpt&quot;  # Checkpoint path for Stable Diffusion
+        self.full_fisher_dict_pkl_path = &quot;mu/algorithms/selective_amnesia/data/full_fisher_dict.pkl&quot;  # Path for Fisher dict
+
+        # Dataset directories
+        self.raw_dataset_dir = &quot;data/quick-canvas-dataset/sample&quot;
+        self.processed_dataset_dir = &quot;mu/algorithms/selective_amnesia/data&quot;
+        self.dataset_type = (
+            &quot;unlearncanvas&quot;  # Dataset type (choices: unlearncanvas, i2p)
+        )
+        self.template = &quot;style&quot;  # Template to use
+        self.template_name = &quot;Abstractionism&quot;  # Template name
+        self.replay_prompt_path = &quot;mu/algorithms/selective_amnesia/data/fim_prompts_sample.txt&quot;  # Path for replay prompts
+
+        # Output configurations
+        self.output_dir = &quot;outputs/selective_amnesia/finetuned_models&quot;  # Output directory to save results
+
+        # Device configuration
+        self.devices = &quot;0,&quot;  # CUDA devices (comma-separated)
+
+        # Additional flags
+        self.use_sample = True  # Use sample dataset for training
+
+        # Data configuration
+        self.data = {
+            &quot;target&quot;: &quot;mu.algorithms.selective_amnesia.data_handler.SelectiveAmnesiaDataHandler&quot;,
+            &quot;params&quot;: {
+                &quot;train_batch_size&quot;: 4,
+                &quot;val_batch_size&quot;: 6,
+                &quot;num_workers&quot;: 1,
+                &quot;num_val_workers&quot;: 0,  # Avoid val dataloader issue
+                &quot;train&quot;: {
+                    &quot;target&quot;: &quot;stable_diffusion.ldm.data.ForgettingDataset&quot;,
+                    &quot;params&quot;: {
+                        &quot;forget_prompt&quot;: &quot;An image in Artist_Sketch style&quot;,
+                        &quot;forget_dataset_path&quot;: &quot;./q_dist/photo_style&quot;,
+                    },
+                },
+                &quot;validation&quot;: {
+                    &quot;target&quot;: &quot;stable_diffusion.ldm.data.VisualizationDataset&quot;,
+                    &quot;params&quot;: {
+                        &quot;output_size&quot;: 512,
+                        &quot;n_gpus&quot;: 1,  # Number of GPUs for validation
+                    },
+                },
+            },
+        }
+
+        # Lightning configuration
+        self.lightning = {
+            &quot;find_unused_parameters&quot;: False,
+            &quot;modelcheckpoint&quot;: {
+                &quot;params&quot;: {&quot;every_n_epochs&quot;: 0, &quot;save_top_k&quot;: 0, &quot;monitor&quot;: None}
+            },
+            &quot;callbacks&quot;: {
+                &quot;image_logger&quot;: {
+                    &quot;target&quot;: &quot;mu.algorithms.selective_amnesia.callbacks.ImageLogger&quot;,
+                    &quot;params&quot;: {
+                        &quot;batch_frequency&quot;: 1,
+                        &quot;max_images&quot;: 999,
+                        &quot;increase_log_steps&quot;: False,
+                        &quot;log_first_step&quot;: False,
+                        &quot;log_all_val&quot;: True,
+                        &quot;clamp&quot;: True,
+                        &quot;log_images_kwargs&quot;: {
+                            &quot;ddim_eta&quot;: 0,
+                            &quot;ddim_steps&quot;: 50,
+                            &quot;use_ema_scope&quot;: True,
+                            &quot;inpaint&quot;: False,
+                            &quot;plot_progressive_rows&quot;: False,
+                            &quot;plot_diffusion_rows&quot;: False,
+                            &quot;N&quot;: 6,  # Number of validation prompts
+                            &quot;unconditional_guidance_scale&quot;: 7.5,
+                            &quot;unconditional_guidance_label&quot;: [&quot;&quot;],
+                        },
+                    },
+                }
+            },
+            &quot;trainer&quot;: {
+                &quot;benchmark&quot;: True,
+                &quot;num_sanity_val_steps&quot;: 0,
+                &quot;max_epochs&quot;: 50,  # Modify epochs here!
+                &quot;check_val_every_n_epoch&quot;: 10,
+            },
+        }
+
+        # Update properties based on provided kwargs
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def validate_config(self):
+        &quot;&quot;&quot;
+        Perform basic validation on the config parameters.
+        &quot;&quot;&quot;
+        # Check if necessary directories exist
+        if not os.path.exists(self.raw_dataset_dir):
+            raise FileNotFoundError(f&quot;Directory {self.raw_dataset_dir} does not exist.&quot;)
+        if not os.path.exists(self.processed_dataset_dir):
+            raise FileNotFoundError(
+                f&quot;Directory {self.processed_dataset_dir} does not exist.&quot;
+            )
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
+
+        # Check if model and checkpoint files exist
+        if not os.path.exists(self.model_config_path):
+            raise FileNotFoundError(
+                f&quot;Model config file {self.model_config_path} does not exist.&quot;
+            )
+        if not os.path.exists(self.ckpt_path):
+            raise FileNotFoundError(f&quot;Checkpoint file {self.ckpt_path} does not exist.&quot;)
+        if not os.path.exists(self.full_fisher_dict_pkl_path):
+            raise FileNotFoundError(
+                f&quot;Fisher dictionary file {self.full_fisher_dict_pkl_path} does not exist.&quot;
+            )
+
+        # Check if replay prompts file exists
+        if not os.path.exists(self.replay_prompt_path):
+            raise FileNotFoundError(
+                f&quot;Replay prompt file {self.replay_prompt_path} does not exist.&quot;
+            )
+
+        # Validate dataset type
+        if self.dataset_type not in [&quot;unlearncanvas&quot;, &quot;i2p&quot;]:
+            raise ValueError(
+                f&quot;Invalid dataset type {self.dataset_type}. Choose from ['unlearncanvas', 'i2p']&quot;
+            )
+
+        # Validate batch sizes
+        if self.data[&quot;params&quot;][&quot;train_batch_size&quot;] &lt;= 0:
+            raise ValueError(f&quot;train_batch_size should be a positive integer.&quot;)
+        if self.data[&quot;params&quot;][&quot;val_batch_size&quot;] &lt;= 0:
+            raise ValueError(f&quot;val_batch_size should be a positive integer.&quot;)
+
+        # Validate lightning trainer max_epochs
+        if self.lightning[&quot;trainer&quot;][&quot;max_epochs&quot;] &lt;= 0:
+            raise ValueError(f&quot;max_epochs should be a positive integer.&quot;)
+
+
+selective_amnesia_config_quick_canvas = SelectiveAmnesiaConfig()
+selective_amnesia_config_quick_canvas.dataset_type = &quot;unlearncanvas&quot;
+selective_amnesia_config_quick_canvas.raw_dataset_dir = (
+    &quot;data/quick-canvas-dataset/sample&quot;
+)
+
+selective_amnesia_config_i2p = SelectiveAmnesiaConfig()
+selective_amnesia_config_i2p.dataset_type = &quot;i2p&quot;
+selective_amnesia_config_i2p.raw_dataset_dir = &quot;data/i2p-dataset/sample&quot;
+</code></pre>
+<h3 id="train-config-yaml-file">Train config yaml file</h3>
+<pre><code class="language-bash"># Training parameters
+seed : 23 
+scale_lr : True 
+
+# Model configuration
+model_config_path: &quot;mu/algorithms/selective_amnesia/configs/model_config.yaml&quot;
+ckpt_path: &quot;/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt&quot;  # Checkpoint path for Stable Diffusion
+full_fisher_dict_pkl_path : &quot;mu/algorithms/selective_amnesia/data/full_fisher_dict.pkl&quot;
+
+# Dataset directories
+raw_dataset_dir: &quot;data/quick-canvas-dataset/sample&quot;
+processed_dataset_dir: &quot;mu/algorithms/selective_amnesia/data&quot;
+dataset_type : &quot;unlearncanvas&quot;
+template : &quot;style&quot;
+template_name : &quot;Abstractionism&quot;
+replay_prompt_path: &quot;mu/algorithms/selective_amnesia/data/fim_prompts_sample.txt&quot;
+
+
+# Output configurations
+output_dir: &quot;outputs/selective_amnesia/finetuned_models&quot;  # Output directory to save results
+
+# Sampling and image configurations
+
+# Device configuration
+devices: &quot;0,&quot;  # CUDA devices to train on (comma-separated)
+
+# Additional flags
+use_sample: True  # Use the sample dataset for training
+
+data:
+  target: mu.algorithms.selective_amnesia.data_handler.SelectiveAmnesiaDataHandler
+  params:
+    train_batch_size: 4
+    val_batch_size: 6
+    num_workers: 4
+    num_val_workers: 0 # Avoid a weird val dataloader issue (keep unchanged)
+    train:
+      target: stable_diffusion.ldm.data.ForgettingDataset
+      params:
+        forget_prompt: An image in Artist_Sketch style
+        forget_dataset_path: ./q_dist/photo_style
+    validation:
+      target: stable_diffusion.ldm.data.VisualizationDataset
+      params:
+        output_size: 512
+        n_gpus: 1 # CHANGE THIS TO NUMBER OF GPUS! small hack to sure we see all our logging samples
+
+lightning:
+  find_unused_parameters: False
+
+  modelcheckpoint:
+    params:
+      every_n_epochs: 0
+      save_top_k: 0
+      monitor: null
+
+  callbacks:
+    image_logger:
+      target: mu.algorithms.selective_amnesia.callbacks.ImageLogger
+      params:
+        batch_frequency: 1
+        max_images: 999
+        increase_log_steps: False
+        log_first_step: False
+        log_all_val: True
+        clamp: True
+        log_images_kwargs:
+          ddim_eta: 0
+          ddim_steps: 50
+          use_ema_scope: True
+          inpaint: False
+          plot_progressive_rows: False
+          plot_diffusion_rows: False
+          N: 6 # keep this the same as number of validation prompts!
+          unconditional_guidance_scale: 7.5
+          unconditional_guidance_label: [&quot;&quot;]
+
+  trainer:
+    benchmark: True
+    num_sanity_val_steps: 0
+    max_epochs: 50 # modify epochs here!
+    check_val_every_n_epoch: 10
+</code></pre>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../examples/selective_amnesia/" class="btn btn-neutral float-left" title="Examples"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../algorithms/semipermeable_membrane/" class="btn btn-neutral float-right" title="Usage">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -242,6 +510,10 @@
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
+      <span><a href="../../examples/selective_amnesia/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../algorithms/semipermeable_membrane/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

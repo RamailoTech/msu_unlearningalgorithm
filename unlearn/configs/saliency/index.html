@@ -47,7 +47,11 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../../algorithms/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/concept_ablation/">Examples</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../concept_ablation/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/concept_ablation/">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -116,6 +120,12 @@
                   <li class="toctree-l1"><a class="reference internal" >Selective Amnesia</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../../algorithms/selective_amnesia/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/selective_amnesia/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../selective_amnesia/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="../../../evaluation/selective_amnesia.md">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -320,6 +330,72 @@ output_dir: &quot;outputs/saliency_unlearning/masks&quot;  # Output directory to
 lr: 0.00001
 devices: &quot;0&quot;  # CUDA devices to train on (comma-separated)
 use_sample: true
+</code></pre>
+<h3 id="evaluation-config">Evaluation config</h3>
+<pre><code class="language-python"># mu/algorithms/saliency_unlearning/configs/evaluation_config.py
+
+import os
+from pathlib import Path
+
+from mu.core.base_config import BaseConfig
+
+current_dir = Path(__file__).parent
+
+
+class SaliencyUnlearningEvaluationConfig(BaseConfig):
+
+    def __init__(self, **kwargs):
+        self.model_config_path = current_dir/&quot;model_config.yaml&quot;  # path to model config
+        self.ckpt_path = &quot;outputs/saliency_unlearning/finetuned_models/saliency_unlearning_Abstractionism_model.pth&quot;  # path to finetuned model checkpoint
+        self.classifier_ckpt_path = &quot;models/classifier_ckpt_path/style50_cls.pth&quot;  # path to classifier checkpoint
+        self.forget_theme = &quot;Bricks&quot;  # theme to forget
+        self.cfg_text = 9.0  # classifier-free guidance scale
+        self.devices = &quot;0&quot;  # GPU device ID
+        self.seed = 188  # random seed
+        self.task = &quot;class&quot;  # task type
+        self.ddim_steps = 100  # number of DDIM steps
+        self.image_height = 512  # height of the image
+        self.image_width = 512  # width of the image
+        self.ddim_eta = 0.0  # DDIM eta parameter
+        self.sampler_output_dir = &quot;outputs/eval_results/mu_results/saliency_unlearning/&quot;  # directory to save sampler outputs
+        self.seed_list = [&quot;188&quot;]  # list of seeds for evaluation
+        self.classification_model = &quot;vit_large_patch16_224&quot;  # classification model for evaluation
+        self.eval_output_dir = &quot;outputs/eval_results/mu_results/saliency_unlearning/&quot;  # directory to save evaluation results
+        self.reference_dir = &quot;data/quick-canvas-dataset/sample/&quot;  # path to the original dataset
+        self.multiprocessing = False  # whether to use multiprocessing
+
+        # Override defaults with any provided kwargs
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def validate_config(self):
+        &quot;&quot;&quot;
+        Perform basic validation on the config parameters.
+        &quot;&quot;&quot;
+        if not os.path.exists(self.model_config_path):
+            raise FileNotFoundError(f&quot;Model config file {self.model_config_path} does not exist.&quot;)
+        if not os.path.exists(self.ckpt_path):
+            raise FileNotFoundError(f&quot;Checkpoint file {self.ckpt_path} does not exist.&quot;)
+        if not os.path.exists(self.classifier_ckpt_path):
+            raise FileNotFoundError(f&quot;Classifier checkpoint file {self.classifier_ckpt_path} does not exist.&quot;)
+        if not os.path.exists(self.reference_dir):
+            raise FileNotFoundError(f&quot;Reference directory {self.reference_dir} does not exist.&quot;)
+        if not os.path.exists(self.eval_output_dir):
+            os.makedirs(self.eval_output_dir)
+        if not os.path.exists(self.sampler_output_dir):
+            os.makedirs(self.sampler_output_dir)
+
+        if self.cfg_text &lt;= 0:
+            raise ValueError(&quot;Classifier-free guidance scale (cfg_text) should be positive.&quot;)
+        if self.ddim_steps &lt;= 0:
+            raise ValueError(&quot;DDIM steps should be a positive integer.&quot;)
+        if self.image_height &lt;= 0 or self.image_width &lt;= 0:
+            raise ValueError(&quot;Image height and width should be positive.&quot;)
+        if self.task not in [&quot;class&quot;, &quot;other_task&quot;]:  # Add other valid tasks if needed
+            raise ValueError(&quot;Invalid task type.&quot;)
+
+
+saliency_unlearning_evaluation_config = SaliencyUnlearningEvaluationConfig()
 </code></pre>
               
             </div>

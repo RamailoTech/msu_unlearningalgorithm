@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Concept ablation - Unlearn Diff</title>
+    <title>Examples - Unlearn Diff</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Concept ablation";
+        var mkdocs_page_name = "Examples";
         var mkdocs_page_input_path = "unlearn/examples/concept_ablation.md";
         var mkdocs_page_url = null;
       </script>
@@ -40,14 +40,20 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Unlearn Algorithms</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../../..">Home</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" >Concept Ablation</a>
-    <ul>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Concept Ablation</a>
+    <ul class="current">
                 <li class="toctree-l2"><a class="reference internal" href="../../algorithms/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Examples</a>
+    <ul class="current">
+    </ul>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../../configs/concept_ablation/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/concept_ablation/">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -114,6 +120,12 @@
                   <li class="toctree-l1"><a class="reference internal" >Selective Amnesia</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../../algorithms/selective_amnesia/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../selective_amnesia/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/selective_amnesia/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="../../../evaluation/selective_amnesia.md">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -208,7 +220,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Concept ablation</li>
+          <li class="breadcrumb-item">Unlearn Algorithms</li>
+          <li class="breadcrumb-item">Concept Ablation</li>
+      <li class="breadcrumb-item active">Examples</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -217,10 +231,94 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                
+                <p>Train your model by using Concept Ablation Algorithm. Import pre defined config classes or create your own object.
+Refer the config docs for details about the parameters that you can use.</p>
+<p>To test the below code snippet, you can create a file, copy the below code in eg, <code>my_trainer.py</code>
+and execute it with <code>python my_trainer.py</code> or use <code>WANDB_MODE=offline python my_trainer.py</code> for offline mode.</p>
+<h3 id="use-pre-defined-config">Use pre defined config</h3>
+<pre><code class="language-python">from mu.algorithms.concept_ablation.algorithm import (
+    ConceptAblationAlgorithm,
+)
+from mu.algorithms.concept_ablation.configs import (
+    concept_ablation_train_mu,
+    ConceptAblationConfig,
+)
+
+if __name__ == &quot;__main__&quot;:
+
+    concept_ablation_train_mu.lightning.trainer.max_steps = 5
+
+    algorithm = ConceptAblationAlgorithm(
+        concept_ablation_train_mu
+    )
+    algorithm.run()
+</code></pre>
+<h3 id="modify-some-train-parameters-in-pre-defined-config-class">Modify some train parameters in pre defined config class.</h3>
+<p>View the config docs to see a list of available parameters.</p>
+<pre><code class="language-python">from mu.algorithms.concept_ablation.algorithm import (
+    ConceptAblationAlgorithm,
+)
+from mu.algorithms.concept_ablation.configs import (
+    concept_ablation_train_mu,
+    ConceptAblationConfig,
+)
+
+if __name__ == &quot;__main__&quot;:
+
+    concept_ablation_train_mu.lightning.trainer.max_steps = 5
+
+    algorithm = ConceptAblationAlgorithm(
+        concept_ablation_train_mu,
+        config_path=&quot;/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/concept_ablation/configs/train_config.yaml&quot;,
+        ckpt_path=&quot;/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt&quot;,
+        prompts=&quot;/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt&quot;,
+        output_dir=&quot;/opt/dlami/nvme/outputs&quot;,
+        # devices=&quot;1&quot;,
+    )
+    algorithm.run()
+</code></pre>
+<h3 id="create-your-own-config-object">Create your own config object</h3>
+<pre><code class="language-python">from mu.algorithms.concept_ablation.algorithm import (
+    ConceptAblationAlgorithm,
+)
+from mu.algorithms.concept_ablation.configs import (
+    ConceptAblationConfig,
+)
+
+myconfig = ConceptAblationConfig()
+myconfig.ckpt_path = &quot;/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt&quot;
+myconfig.raw_dataset_dir = (
+    &quot;/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample&quot;
+)
+algorithm = ConceptAblationConfig(myconfig)
+algorithm.run()
+</code></pre>
+<h3 id="override-the-config-class-itself">Override the Config class itself.</h3>
+<pre><code class="language-python">from mu.algorithms.concept_ablation.algorithm import (
+    ConceptAblationAlgorithm,
+)
+from mu.algorithms.concept_ablation.configs import (
+    ConceptAblationConfig,
+)
+
+
+class MyNewConfigClass(ConceptAblationConfig):
+    def __init__(self, *args, **kwargs):
+        self.new_parameter = kwargs.get(&quot;new_parameter&quot;)
+        super().__init__()
+
+new_config_object = MyNewConfigClass()
+algorithm = ConceptAblationAlgorithm(new_config_object)
+algorithm.run()
+
+</code></pre>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../algorithms/concept_ablation/" class="btn btn-neutral float-left" title="Usage"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../configs/concept_ablation/" class="btn btn-neutral float-right" title="Configs">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -242,6 +340,10 @@
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
+      <span><a href="../../algorithms/concept_ablation/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../configs/concept_ablation/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

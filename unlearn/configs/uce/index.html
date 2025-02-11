@@ -47,7 +47,11 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../../algorithms/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/concept_ablation/">Examples</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../concept_ablation/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/concept_ablation/">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -114,6 +118,12 @@
                   <li class="toctree-l1"><a class="reference internal" >Selective Amnesia</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../../algorithms/selective_amnesia/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/selective_amnesia/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../selective_amnesia/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="../../../evaluation/selective_amnesia.md">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -271,6 +281,76 @@
 
         # Base model used for editing
         self.base = &quot;stable-diffusion-v1-4&quot;  # Base version of Stable Diffusion
+</code></pre>
+<h3 id="evaluation-config">Evaluation config</h3>
+<pre><code class="language-python"># mu/algorithms/unified_concept_editing/configs/evaluation_config.py
+
+import os
+from pathlib import Path
+
+from mu.core.base_config import BaseConfig
+
+current_dir = Path(__file__).parent
+
+
+class UceEvaluationConfig(BaseConfig):
+
+    def __init__(self, **kwargs):
+        self.ckpt_path = &quot;outputs/uce/finetuned_models/uce_Abstractionism_model.pth&quot;  # path to finetuned model checkpoint
+        self.pipeline_path = &quot;UnlearnCanvas/machine_unlearning/models/diffuser/style50&quot;  # path to pretrained pipeline
+        self.classifier_ckpt_path = &quot;models/classifier_ckpt_path/style50_cls.pth&quot;  # path to classifier checkpoint
+        self.cfg_text = 9.0  # classifier-free guidance scale
+        self.seed = 188  # random seed
+        self.task = &quot;class&quot;  # task type
+        self.devices = &quot;0&quot;  # GPU device ID
+        self.ddim_steps = 100  # number of DDIM steps
+        self.image_height = 512  # height of the image
+        self.image_width = 512  # width of the image
+        self.ddim_eta = 0.0  # DDIM eta parameter
+        self.sampler_output_dir = &quot;outputs/eval_results/mu_results/uce&quot;  # directory to save sampler outputs
+        self.seed_list = [&quot;188&quot;]  # list of seeds for evaluation
+        self.batch_size = 1  # batch size for evaluation
+        self.classification_model = &quot;vit_large_patch16_224&quot;  # classification model for evaluation
+        self.eval_output_dir = &quot;outputs/eval_results/mu_results/uce&quot;  # directory to save evaluation results
+        self.reference_dir = &quot;data/quick-canvas-dataset/sample/&quot;  # path to the original dataset
+        self.forget_theme = &quot;Bricks&quot;  # theme to forget
+        self.multiprocessing = False  # whether to use multiprocessing
+
+        # Override defaults with any provided kwargs
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def validate_config(self):
+        &quot;&quot;&quot;
+        Perform basic validation on the config parameters.
+        &quot;&quot;&quot;
+        if not os.path.exists(self.ckpt_path):
+            raise FileNotFoundError(f&quot;Checkpoint file {self.ckpt_path} does not exist.&quot;)
+        if not os.path.exists(self.pipeline_path):
+            raise FileNotFoundError(f&quot;Pipeline directory {self.pipeline_path} does not exist.&quot;)
+        if not os.path.exists(self.classifier_ckpt_path):
+            raise FileNotFoundError(f&quot;Classifier checkpoint file {self.classifier_ckpt_path} does not exist.&quot;)
+        if not os.path.exists(self.reference_dir):
+            raise FileNotFoundError(f&quot;Reference directory {self.reference_dir} does not exist.&quot;)
+        if not os.path.exists(self.eval_output_dir):
+            os.makedirs(self.eval_output_dir)
+        if not os.path.exists(self.sampler_output_dir):
+            os.makedirs(self.sampler_output_dir)
+
+        if self.cfg_text &lt;= 0:
+            raise ValueError(&quot;Classifier-free guidance scale (cfg_text) should be positive.&quot;)
+        if self.ddim_steps &lt;= 0:
+            raise ValueError(&quot;DDIM steps should be a positive integer.&quot;)
+        if self.image_height &lt;= 0 or self.image_width &lt;= 0:
+            raise ValueError(&quot;Image height and width should be positive.&quot;)
+        if self.batch_size &lt;= 0:
+            raise ValueError(&quot;Batch size should be a positive integer.&quot;)
+        if self.task not in [&quot;class&quot;, &quot;other_task&quot;]:  # Add other valid tasks if needed
+            raise ValueError(&quot;Invalid task type.&quot;)
+
+
+# Example usage
+uce_evaluation_config = UceEvaluationConfig()
 </code></pre>
               
             </div>

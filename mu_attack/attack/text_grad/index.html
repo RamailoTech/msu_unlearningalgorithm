@@ -47,7 +47,11 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/concept_ablation/">Examples</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/concept_ablation/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/concept_ablation/">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -114,6 +118,12 @@
                   <li class="toctree-l1"><a class="reference internal" >Selective Amnesia</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/selective_amnesia/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/selective_amnesia/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/selective_amnesia/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="../../../evaluation/selective_amnesia.md">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -232,12 +242,8 @@
                 <h2 id="unlearndiffattak">UnlearnDiffAttak</h2>
 <p>This repository contains the implementation of UnlearnDiffAttack for text grad, a framework for evaluating the robustness of safety-driven unlearned Models using adversarial prompts.</p>
 <h3 id="create-environment">Create Environment</h3>
-<pre><code>create_env &lt;algorithm_name&gt;
+<pre><code class="language-bash">conda env create -f environment.yaml
 </code></pre>
-<p>eg: <code>create_env mu_attack</code></p>
-<pre><code>conda activate &lt;environment_name&gt;
-</code></pre>
-<p>eg: <code>conda activate mu_attack</code></p>
 <h3 id="generate-dataset">Generate Dataset</h3>
 <pre><code class="language-bash">python -m scripts.generate_dataset --prompts_path data/prompts/prompts.csv --concept i2p_nude --save_path outputs/dataset
 </code></pre>

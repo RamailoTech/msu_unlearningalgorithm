@@ -47,7 +47,11 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/concept_ablation/">Examples</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../../configs/concept_ablation/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/concept_ablation/">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -115,6 +119,12 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../selective_amnesia/">Usage</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/selective_amnesia/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/selective_amnesia/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="../../../evaluation/selective_amnesia.md">Evaluation</a>
+                </li>
     </ul>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" >Semi Permeable Membrane</a>
@@ -138,18 +148,6 @@
     <li class="toctree-l3"><a class="reference internal" href="#directory-structure">Directory Structure</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#description-of-arguments-in-train_configyaml">Description of Arguments in train_config.yaml</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#basic-command-to-run-evaluation">Basic Command to Run Evaluation:</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#model-configuration-parameters">Model Configuration Parameters:</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#sampling-parameters">Sampling Parameters:</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#output-parameters">Output Parameters:</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#dataset-and-classification-parameters">Dataset and Classification Parameters:</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#performance-parameters">Performance Parameters:</a>
     </li>
         </ul>
     </li>
@@ -515,171 +513,11 @@ algorithm.run()
 <ul>
 <li>Boolean flag for verbose logging during training.</li>
 </ul>
-<h4 id="semipermeable-membrane-evaluation-framework">Semipermeable membrane Evaluation Framework</h4>
-<p>This section provides instructions for running the <strong>evaluation framework</strong> for the Semipermeable membrane algorithm on Stable Diffusion models. The evaluation framework is used to assess the performance of models after applying machine unlearning.</p>
-<h4 id="running-the-evaluation-framework"><strong>Running the Evaluation Framework</strong></h4>
-<p>You can run the evaluation framework using the <code>evaluate.py</code> script located in the <code>mu/algorithms/semipermeable_membrane/scripts/</code> directory.</p>
-<h3 id="basic-command-to-run-evaluation"><strong>Basic Command to Run Evaluation:</strong></h3>
-<pre><code class="language-bash">conda activate &lt;env_name&gt;
-</code></pre>
-<pre><code class="language-bash">python -m mu.algorithms.semipermeable_membrane.scripts.evaluate \
---config_path mu/algorithms/semipermeable_membrane/configs/evaluation_config.yaml
-</code></pre>
-<p><strong>Running in Offline Mode:</strong></p>
-<pre><code class="language-bash">WANDB_MODE=offline python -m mu.algorithms.semipermeable_membrane.scripts.evaluate \
---config_path mu/algorithms/semipermeable_membrane/configs/evaluation_config.yaml
-</code></pre>
-<p><strong>Example with CLI Overrides:</strong></p>
-<pre><code class="language-bash">python -m mu.algorithms.semipermeable_membrane.scripts.evaluate \
-    --config_path mu/algorithms/semipermeable_membrane/configs/evaluation_config.yaml \
-    --devices &quot;0&quot; \
-    --seed 123 \
-    --cfg_text 8.5 \
-    --batch_size 16
-</code></pre>
-<h4 id="description-of-parameters-in-evaluation_configyaml"><strong>Description of parameters in evaluation_config.yaml</strong></h4>
-<p>The <code>evaluation_config.yaml</code> file contains the necessary parameters for running the Semipermeable membrane evaluation framework. Below is a detailed description of each parameter along with examples.</p>
-<hr />
-<h3 id="model-configuration-parameters"><strong>Model Configuration Parameters:</strong></h3>
-<ul>
-<li>spm_path: paths to finetuned model checkpoint.</li>
-<li><em>Type:</em> <code>list</code></li>
-<li>
-<p><em>Example:</em> <code>outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors</code></p>
-</li>
-<li>
-<p>base_model : Path to the pre-trained base model used for image generation.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"path/to/base/model.pth"</code>  </p>
-</li>
-<li>
-<p>precision : Specifies the numerical precision for model computation.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li><em>Options:</em> <code>"fp32"</code>, <code>"fp16"</code>, <code>"bf16"</code>  </li>
-<li>
-<p><em>Example:</em> <code>"fp32"</code>  </p>
-</li>
-<li>
-<p>spm_multiplier:  Specifies the multiplier for Semipermeable Membrane (SPM) model.  </p>
-</li>
-<li><em>Type:</em> <code>float</code>  </li>
-<li>
-<p><em>Example:</em> <code>1.0</code>  </p>
-</li>
-<li>
-<p>v2 : Specifies whether to use version 2.x of the model.  </p>
-</li>
-<li><em>Type:</em> <code>bool</code>  </li>
-<li>
-<p><em>Example:</em> <code>false</code>  </p>
-</li>
-<li>
-<p>matching_metric : Metric used for evaluating the similarity between generated prompts and erased concepts.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li><em>Options:</em> <code>"clipcos"</code>, <code>"clipcos_tokenuni"</code>, <code>"tokenuni"</code>  </li>
-<li>
-<p><em>Example:</em> <code>"clipcos_tokenuni"</code>  </p>
-</li>
-<li>
-<p>model_config : Path to the model configuration YAML file.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"mu/algorithms/semipermeable_membrane/config"</code>  </p>
-</li>
-<li>
-<p>model_ckpt_path: Path to pretrained Stable Diffusion model.</p>
-</li>
-<li><em>Type</em>: <code>str</code></li>
-<li><em>Example</em>: <code>models/diffuser/style50</code></li>
-</ul>
-<hr />
-<h3 id="sampling-parameters"><strong>Sampling Parameters:</strong></h3>
-<ul>
-<li>theme : Specifies the theme for the evaluation process.  </li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"Bricks"</code>  </p>
-</li>
-<li>
-<p>seed : Random seed for reproducibility of the evaluation process.  </p>
-</li>
-<li><em>Type:</em> <code>int</code>  </li>
-<li>
-<p><em>Example:</em> <code>188</code>  </p>
-</li>
-<li>
-<p>devices : Specifies the CUDA devices for running the model.  </p>
-</li>
-<li><em>Type:</em> <code>str</code> (Comma-separated for multiple devices)  </li>
-<li>
-<p><em>Example:</em> <code>"0"</code>  </p>
-</li>
-<li>
-<p>task : Specifies the task type for the evaluation process.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li><em>Options:</em> <code>"class"</code>, <code>"style"</code>  </li>
-<li><em>Example:</em> <code>"class"</code>  </li>
-</ul>
-<hr />
-<h3 id="output-parameters"><strong>Output Parameters:</strong></h3>
-<ul>
-<li>sampler_output_dir : Directory where generated images will be saved during the sampling process.  </li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"outputs/eval_results/mu_results/semipermeable_membrane/"</code>  </p>
-</li>
-<li>
-<p>eval_output_dir : Directory where evaluation metrics and results will be stored.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li><em>Example:</em> <code>"outputs/eval_results/mu_results/semipermeable_membrane/"</code>  </li>
-</ul>
-<hr />
-<h3 id="dataset-and-classification-parameters"><strong>Dataset and Classification Parameters:</strong></h3>
-<ul>
-<li>reference_dir : Path to the reference dataset used for evaluation and comparison.  </li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"</code>  </p>
-</li>
-<li>
-<p>classification_model : Specifies the classification model used for the evaluation.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"vit_large_patch16_224"</code>  </p>
-</li>
-<li>
-<p>forget_theme : Specifies the theme to be forgotten during the unlearning process.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li><em>Example:</em> <code>"Bricks"</code>  </li>
-</ul>
-<hr />
-<h3 id="performance-parameters"><strong>Performance Parameters:</strong></h3>
-<ul>
-<li>multiprocessing : Enables multiprocessing for faster evaluation.  </li>
-<li><em>Type:</em> <code>bool</code>  </li>
-<li>
-<p><em>Example:</em> <code>false</code>  </p>
-</li>
-<li>
-<p>seed_list :  List of random seeds for multiple evaluation trials.  </p>
-</li>
-<li><em>Type:</em> <code>list</code>  </li>
-<li><em>Example:</em> <code>["188"]</code>  </li>
-</ul>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../selective_amnesia/" class="btn btn-neutral float-left" title="Usage"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../configs/selective_amnesia/" class="btn btn-neutral float-left" title="Configs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../../examples/semipermeable_membrane/" class="btn btn-neutral float-right" title="Examples">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -703,7 +541,7 @@ algorithm.run()
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../selective_amnesia/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../../configs/selective_amnesia/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../../examples/semipermeable_membrane/" style="color: #fcfcfc">Next &raquo;</a></span>

@@ -47,7 +47,11 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/concept_ablation/">Examples</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../../configs/concept_ablation/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/concept_ablation/">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -111,18 +115,6 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#description-of-arguments-train_configyaml">Description of Arguments train_config.yaml</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#basic-command-to-run-evaluation">Basic Command to Run Evaluation:</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#model-configuration">Model Configuration:</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#training-and-sampling-parameters">Training and Sampling Parameters:</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#output-and-logging-parameters">Output and Logging Parameters:</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#performance-and-efficiency-parameters">Performance and Efficiency Parameters:</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optimization-parameters">Optimization Parameters:</a>
-    </li>
         </ul>
     </li>
     </ul>
@@ -150,6 +142,12 @@
                   <li class="toctree-l1"><a class="reference internal" >Selective Amnesia</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../selective_amnesia/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../examples/selective_amnesia/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/selective_amnesia/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="../../../evaluation/selective_amnesia.md">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -604,163 +602,6 @@ algorithm.run()
 <li>Example: </li>
 </ul>
 </li>
-</ul>
-<h4 id="saliency-unlearning-evaluation-framework">Saliency Unlearning Evaluation Framework</h4>
-<p>This section provides instructions for running the <strong>evaluation framework</strong> for the Saliency Unlearning algorithm on Stable Diffusion models. The evaluation framework is used to assess the performance of models after applying machine unlearning.</p>
-<h4 id="running-the-evaluation-framework"><strong>Running the Evaluation Framework</strong></h4>
-<p>You can run the evaluation framework using the <code>evaluate.py</code> script located in the <code>mu/algorithms/saliency_unlearning/scripts/</code> directory.</p>
-<h3 id="basic-command-to-run-evaluation"><strong>Basic Command to Run Evaluation:</strong></h3>
-<pre><code class="language-bash">conda activate &lt;env_name&gt;
-</code></pre>
-<pre><code class="language-bash">python -m mu.algorithms.saliency_unlearning.scripts.evaluate \
---config_path mu/algorithms/saliency_unlearning/configs/evaluation_config.yaml
-</code></pre>
-<p><strong>Running in Offline Mode:</strong></p>
-<pre><code class="language-bash">WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.evaluate \
---config_path mu/algorithms/saliency_unlearning/configs/evaluation_config.yaml
-</code></pre>
-<p><strong>Example with CLI Overrides:</strong></p>
-<pre><code class="language-bash">python -m mu.algorithms.saliency_unlearning.scripts.evaluate \
-    --config_path mu/algorithms/saliency_unlearning/configs/evaluation_config.yaml \
-    --devices &quot;0&quot; \
-    --seed 123 \
-    --cfg_text 8.5 \
-    --batch_size 16
-</code></pre>
-<h4 id="description-of-parameters-in-evaluation_configyaml"><strong>Description of parameters in evaluation_config.yaml</strong></h4>
-<p>The <code>evaluation_config.yaml</code> file contains the necessary parameters for running the Saliency Unlearning evaluation framework. Below is a detailed description of each parameter along with examples.</p>
-<hr />
-<h3 id="model-configuration"><strong>Model Configuration:</strong></h3>
-<ul>
-<li>model_config : Path to the YAML file specifying the model architecture and settings.  </li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"mu/algorithms/saliency_unlearning/configs/model_config.yaml"</code></p>
-</li>
-<li>
-<p>ckpt_path : Path to the finetuned Stable Diffusion checkpoint file to be evaluated.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"outputs/saliency_unlearning/finetuned_models/saliency_unlearning_Abstractionism_model.pth"</code></p>
-</li>
-<li>
-<p>classification_model : Specifies the classification model used for evaluating the generated outputs.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"vit_large_patch16_224"</code></p>
-</li>
-<li>
-<p>model_ckpt_path: Path to pretrained Stable Diffusion model.</p>
-</li>
-<li><em>Type</em>: <code>str</code></li>
-<li><em>Example</em>: <code>models/compvis/style50/compvis.ckpt</code></li>
-</ul>
-<hr />
-<h3 id="training-and-sampling-parameters"><strong>Training and Sampling Parameters:</strong></h3>
-<ul>
-<li>theme : Specifies the theme or concept being evaluated for removal from the model's outputs.  </li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"Bricks"</code></p>
-</li>
-<li>
-<p>devices : CUDA device IDs to be used for the evaluation process.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"0"</code>  </p>
-</li>
-<li>
-<p>cfg_text : Classifier-free guidance scale value for image generation. Higher values increase the strength of the conditioning prompt.  </p>
-</li>
-<li><em>Type:</em> <code>float</code>  </li>
-<li>
-<p><em>Example:</em> <code>9.0</code>  </p>
-</li>
-<li>
-<p>seed : Random seed for reproducibility of results.  </p>
-</li>
-<li><em>Type:</em> <code>int</code>  </li>
-<li>
-<p><em>Example:</em> <code>188</code></p>
-</li>
-<li>
-<p>ddim_steps : Number of steps for the DDIM (Denoising Diffusion Implicit Models) sampling process.  </p>
-</li>
-<li><em>Type:</em> <code>int</code>  </li>
-<li>
-<p><em>Example:</em> <code>100</code></p>
-</li>
-<li>
-<p>ddim_eta : DDIM eta value for controlling the amount of randomness during sampling. Set to <code>0</code> for deterministic sampling.  </p>
-</li>
-<li><em>Type:</em> <code>float</code>  </li>
-<li>
-<p><em>Example:</em> <code>0.0</code></p>
-</li>
-<li>
-<p>image_height : Height of the generated images in pixels.  </p>
-</li>
-<li><em>Type:</em> <code>int</code>  </li>
-<li>
-<p><em>Example:</em> <code>512</code></p>
-</li>
-<li>
-<p>image_width : Width of the generated images in pixels.  </p>
-</li>
-<li><em>Type:</em> <code>int</code>  </li>
-<li><em>Example:</em> <code>512</code></li>
-</ul>
-<hr />
-<h3 id="output-and-logging-parameters"><strong>Output and Logging Parameters:</strong></h3>
-<ul>
-<li>sampler_output_dir : Directory where generated images will be saved during evaluation.  </li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"outputs/eval_results/mu_results/saliency_unlearning/"</code></p>
-</li>
-<li>
-<p>eval_output_dir : Directory where evaluation metrics and results will be stored.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"outputs/eval_results/mu_results/saliency_unlearning/"</code></p>
-</li>
-<li>
-<p>reference_dir : Directory containing original images for comparison during evaluation.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li><em>Example:</em> <code>"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"</code></li>
-</ul>
-<hr />
-<h3 id="performance-and-efficiency-parameters"><strong>Performance and Efficiency Parameters:</strong></h3>
-<ul>
-<li>multiprocessing : Enables multiprocessing for faster evaluation for FID score. Recommended for large datasets.  </li>
-<li><em>Type:</em> <code>bool</code>  </li>
-<li>
-<p><em>Example:</em> <code>False</code>  </p>
-</li>
-<li>
-<p>batch_size : Batch size used during FID computation and evaluation.  </p>
-</li>
-<li><em>Type:</em> <code>int</code>  </li>
-<li><em>Example:</em> <code>16</code>  </li>
-</ul>
-<hr />
-<h3 id="optimization-parameters"><strong>Optimization Parameters:</strong></h3>
-<ul>
-<li>forget_theme : Concept or style intended for removal in the evaluation process.  </li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"Bricks"</code></p>
-</li>
-<li>
-<p>seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  </p>
-</li>
-<li><em>Type:</em> <code>list</code>  </li>
-<li><em>Example:</em> <code>["188"]</code></li>
 </ul>
               
             </div>

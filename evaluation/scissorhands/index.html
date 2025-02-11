@@ -47,7 +47,11 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../../unlearn/algorithms/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../unlearn/examples/concept_ablation/">Examples</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../../unlearn/configs/concept_ablation/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../concept_ablation/">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -116,6 +120,12 @@
                   <li class="toctree-l1"><a class="reference internal" >Selective Amnesia</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../../unlearn/algorithms/selective_amnesia/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../unlearn/examples/selective_amnesia/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../unlearn/configs/selective_amnesia/">Configs</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="../selective_amnesia.md">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -228,8 +238,22 @@
 <h3 id="basic-command-to-run-evaluation"><strong>Basic Command to Run Evaluation:</strong></h3>
 <pre><code class="language-bash">conda activate &lt;env_name&gt;
 </code></pre>
-<pre><code class="language-bash">python -m mu.algorithms.scissorhands.scripts.evaluate \
---config_path mu/algorithms/scissorshands/configs/evaluation_config.yaml
+<p>Add the following code to <code>evaluate.py</code></p>
+<pre><code class="language-python">from mu.algorithms.scissorhands import ScissorHandsEvaluator
+from mu.algorithms.scissorhands.configs import (
+    scissorhands_evaluation_config
+)
+
+evaluator = ScissorHandsEvaluator(
+    scissorhands_evaluation_config,
+    ckpt_path=&quot;/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth&quot;,
+    classifier_ckpt_path = &quot;/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth&quot;,
+    reference_dir= &quot;/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/&quot;
+)
+evaluator.run()
+</code></pre>
+<p><strong>Run the script</strong></p>
+<pre><code class="language-bash">python evaluate.py
 </code></pre>
 <p><strong>Running in Offline Mode:</strong></p>
 <pre><code class="language-bash">WANDB_MODE=offline python -m mu.algorithms.scissorhands.scripts.evaluate \
