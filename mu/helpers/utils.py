@@ -54,10 +54,9 @@ def load_model_from_config(
     model.cond_stage_model.device = device
     return model
 
-
 @torch.no_grad()
 def sample_model(
-    model,
+    model,   
     sampler,
     c,
     h,

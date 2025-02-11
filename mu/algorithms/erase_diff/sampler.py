@@ -16,9 +16,6 @@ from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 from mu.helpers import load_config
 from mu.helpers.utils import load_ckpt_from_config
 
-#TODO to remove this
-theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
-class_available = ['Architectures', 'Bears', 'Birds']
 
 class EraseDiffSampler(BaseSampler):
     """EraseDiff Image Generator class extending a hypothetical BaseImageGenerator."""

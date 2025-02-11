@@ -18,10 +18,6 @@ from mu.helpers import sample_model, load_config
 from mu.helpers.utils import load_ckpt_from_config
 
 
-#TODO remove this
-theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
-class_available = ['Architectures', 'Bears', 'Birds']
-
 
 class ESDSampler(BaseSampler):
     """Sampler for the ESD algorithm."""

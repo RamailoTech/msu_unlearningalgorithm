@@ -15,9 +15,6 @@ from stable_diffusion.constants.const import theme_available, class_available
 from mu.helpers import load_config
 from mu.helpers.utils import load_ckpt_from_config,load_style_generated_images,load_style_ref_images,calculate_fid
 
-#TODO remove this
-theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
-class_available = ['Architectures', 'Bears', 'Birds']
 
 class SaliencyUnlearningSampler(BaseSampler):
     """Saliency Unlearning Image Generator class extending a hypothetical BaseImageGenerator."""
