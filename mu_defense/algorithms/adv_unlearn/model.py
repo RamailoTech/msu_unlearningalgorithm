@@ -5,7 +5,7 @@ from transformers import CLIPTextModel, CLIPTokenizer
 
 from mu_defense.core import BaseModel 
 from mu_attack.tasks.utils.text_encoder import CustomTextEncoder
-from mu_defense.algorithms.adv_unlearn import get_models_for_compvis, get_models_for_diffusers
+from mu_defense.algorithms.adv_unlearn.utils import get_models_for_compvis, get_models_for_diffusers
 
 
 class AdvUnlearnModel(BaseModel):

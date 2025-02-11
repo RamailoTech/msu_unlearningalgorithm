@@ -10,6 +10,9 @@ class BaseTrainer(ABC):
         self.config = config
         self.devices = config.get("devices", ["cuda:0"])
         self.logger = logging.getLogger(__name__)
+
+    def train(self):
+        pass
     
     @abstractmethod
     def run(self):

@@ -4,7 +4,7 @@
 import logging
 
 from mu_defense.core import BaseDatasetHandler
-from mu_defense.algorithms.adv_unlearn import retain_prompt  
+from mu_defense.algorithms.adv_unlearn.utils import retain_prompt  
 
 
 class AdvUnlearnDatasetHandler(BaseDatasetHandler):
