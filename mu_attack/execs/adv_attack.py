@@ -1,34 +1,17 @@
 # mu_attack/execs/adv_attack.py
 
 import torch
-import random
 import wandb
 
-from transformers import CLIPTextModel, CLIPTokenizer
-from diffusers import StableDiffusionPipeline
-
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 from mu_attack.configs.adv_unlearn import AdvAttackConfig
 from mu_attack.attackers.soft_prompt import SoftPromptAttack
-from mu_attack.tasks.utils.text_encoder import CustomTextEncoder
 from mu_attack.helpers.utils import get_models_for_compvis, get_models_for_diffusers
 
 
 class AdvAttack:
-    """
-    Class for adversarial unlearning training.
-    
-    This class wraps the full training pipeline including adversarial attack 
-    and model handling.
-    """
-    def __init__(self, config: AdvAttackConfig, **kwargs):
+    def __init__(self, config: AdvAttackConfig):
         self.config = config.__dict__
-        for key, value in kwargs.items():
-            setattr(config, key, value)
-        
-        config.validate_config()
-
-        self.prompt = config.prompt
+        # Do not set self.prompt from the config; remove the dependency.
         self.encoder_model_name_or_path = config.encoder_model_name_or_path
         self.cache_path = config.cache_path
         self.devices = [f'cuda:{int(d.strip())}' for d in config.devices.split(',')]
@@ -51,43 +34,16 @@ class AdvAttack:
         self.target_ckpt = config.target_ckpt
         self.criteria = torch.nn.MSELoss()
 
-        # Initialize wandb
+        # Initialize wandb (if needed)
         wandb.init(
             project=config.project_name,
             name=config.experiment_name,
             reinit=True
         )
 
-        # Load models
         self.load_models()
 
-    def encode_text(self, text):
-        """Encodes text into a latent space using CLIP from Diffusers."""
-        text_inputs = self.tokenizer(
-            text,
-            padding="max_length",
-            truncation=True,
-            max_length=77,
-            return_tensors="pt"
-        ).to(self.devices[0])  # Move to correct device
-
-        with torch.no_grad():
-            text_embeddings = self.text_encoder(text_inputs.input_ids)[0]  # Take the first output (hidden states)
-
-        return text_embeddings
-
     def load_models(self):
-        """Loads the tokenizer, text encoder, and models."""
-        self.tokenizer = CLIPTokenizer.from_pretrained(
-            self.encoder_model_name_or_path, subfolder="tokenizer", cache_dir=self.cache_path
-        )
-        self.text_encoder = CLIPTextModel.from_pretrained(
-            self.encoder_model_name_or_path, subfolder="text_encoder", cache_dir=self.cache_path
-        ).to(self.devices[0])
-        self.custom_text_encoder = CustomTextEncoder(self.text_encoder).to(self.devices[0])
-        self.all_embeddings = self.custom_text_encoder.get_all_embedding().unsqueeze(0)
-
-        # Load base models
         if self.backend == "compvis":
             self.model_orig, self.sampler_orig, self.model, self.sampler = get_models_for_compvis(
                 self.config_path, self.compvis_ckpt_path, self.devices
@@ -96,39 +52,29 @@ class AdvAttack:
             self.model_orig, self.sampler_orig, self.model, self.sampler = get_models_for_diffusers(
                 self.diffusers_model_name_or_path, self.target_ckpt, self.devices
             )
-            
 
-    def attack(self):
-        """Performs the adversarial attack."""
-        # Ensure words are in list format
-        if isinstance(self.prompt, str):
-            self.words = [self.prompt]
-        elif isinstance(self.prompt, list):
-            self.words = self.prompt
-        else:
-            raise ValueError("Prompt must be a string or a list of strings.")
-
-        # Select a random word from the prompt list
-        word = random.choice(self.words)
-
-        if self.backend == "compvis":
-            # CompVis uses `get_learned_conditioning`
-            emb_0 = self.model_orig.get_learned_conditioning([''])
-            emb_p = self.model_orig.get_learned_conditioning([word])
-        elif self.backend == "diffusers":
-            # Diffusers requires explicit encoding via CLIP
-            emb_0 = self.encode_text("")
-            emb_p = self.encode_text(word)
-
-        # Initialize attack class
+    def attack(self, word, global_step, attack_round):
+        """
+        Perform the adversarial attack using the given word.
+        
+        Args:
+            word (str): The current prompt to attack.
+            global_step (int): The current global training step.
+            attack_round (int): The current attack round.
+        
+        Returns:
+            tuple: (adversarial embedding, input_ids)
+        """
+        # Now, use the passed `word` for the attack instead of self.prompt.
+        # (Everything else in this method remains the same.)
         sp_attack = SoftPromptAttack(
             model=self.model,
             model_orig=self.model_orig,
-            tokenizer=self.tokenizer,
-            text_encoder=self.custom_text_encoder,
+            tokenizer=self.tokenizer,              
+            text_encoder=self.custom_text_encoder,   
             sampler=self.sampler,
-            emb_0=emb_0,
-            emb_p=emb_p,
+            emb_0=self._get_emb_0(),                  
+            emb_p=self._get_emb_p(word),             
             start_guidance=self.start_guidance,
             devices=self.devices,
             ddim_steps=self.ddim_steps,
@@ -137,25 +83,36 @@ class AdvAttack:
             criteria=self.criteria,
             k=self.adv_prompt_num,
             all_embeddings=self.all_embeddings,
-            backend = self.backend
+            backend=self.backend
         )
+        return sp_attack.attack(global_step, word, attack_round, self.attack_type,
+                                self.attack_embd_type, self.attack_step, self.attack_lr,
+                                self.attack_init, self.attack_init_embd, self.attack_method)
+
+    # Example helper methods to get embeddings from model_orig.
+    def _get_emb_0(self):
+        if self.backend == "compvis":
+            return self.model_orig.get_learned_conditioning([''])
+        else:
+            # For diffusers, you need to define your own method (e.g., using self.encode_text(""))
+            return self.encode_text("")
+    
+    def _get_emb_p(self, word):
+        if self.backend == "compvis":
+            return self.model_orig.get_learned_conditioning([word])
+        else:
+            return self.encode_text(word)
+
+    def encode_text(self, text):
+        text_inputs = self.tokenizer(
+            text,
+            padding="max_length",
+            truncation=True,
+            max_length=77,
+            return_tensors="pt"
+        ).to(self.devices[0])
+        with torch.no_grad():
+            text_embeddings = self.text_encoder(text_inputs.input_ids)[0]
+        return text_embeddings
 
 
-        self.adv_word_embd, self.adv_input_ids = sp_attack.attack(
-            global_step=0,
-            word=word,
-            attack_round=0,
-            attack_type=self.attack_type,
-            attack_embd_type=self.attack_embd_type,
-            attack_step=self.attack_step,
-            attack_lr=self.attack_lr,
-            attack_init=self.attack_init,
-            attack_init_embd=self.attack_init_embd,
-            attack_method=self.attack_method
-        )
-
-
-        return self.adv_word_embd, self.adv_input_ids
-
-
-   
