@@ -1,0 +1,57 @@
+# Python version
+# Ensure Python >= 3.8 and < 3.12 in your environment
+
+# Required pip version
+# pip==20.3
+
+# CUDA-compatible PyTorch and torchvision for CUDA 12.1
+# torch==2.3.1+cu121
+# torchvision==0.18.1+cu121 -f https://download.pytorch.org/whl/torch_stable.html
+torch>=2.3.1
+torchvision>=0.18.1
+
+# Core dependencies
+numpy==1.24.0
+albumentations==0.4.3
+datasets==2.8.0
+diffusers
+opencv-python==4.5.5.64
+pudb==2019.2
+invisible-watermark
+imageio==2.9.0
+imageio-ffmpeg==0.4.2
+pytorch-lightning==1.4.2
+omegaconf==2.1.1
+test-tube>=0.7.5
+streamlit>=0.73.1
+einops==0.3.0
+torch-fidelity==0.3.0
+transformers==4.36.0
+torchmetrics==0.6.0
+kornia==0.6
+openai
+pyyaml
+omegaconf
+pytorch-lightning==1.4.2
+gradio
+seaborn
+loguru
+ml_collections
+webdataset
+ftfy
+yacs
+controlnet_aux
+fvcore
+h5py
+xtcocotools
+natsort
+timm==0.6.7
+fairscale
+open_clip_torch
+
+# VCS dependencies
+# git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
+# git+https://github.com/openai/CLIP.git@main#egg=clip
+# git+https://github.com/crowsonkb/k-diffusion.git
+# git+https://github.com/cocodataset/panopticapi.git
+# git+https://github.com/facebookresearch/detectron2.git
