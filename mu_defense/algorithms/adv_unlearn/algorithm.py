@@ -50,9 +50,7 @@ class AdvUnlearnAlgorithm(BaseAlgorithm):
         self.logger.info("Setting up components for adversarial unlearning training...")
 
         # Initialize Model
-        self.model = AdvUnlearnModel(
-            config=self.config
-        )
+        self.model = AdvUnlearnModel(config=self.config)
 
         # Initialize Trainer
         self.trainer = AdvUnlearnTrainer(
@@ -60,6 +58,10 @@ class AdvUnlearnAlgorithm(BaseAlgorithm):
             config=self.config,
             devices=self.devices,
         )
+        self.trainer.trainer.adv_attack.model_orig = self.model.model_orig
+        self.trainer.trainer.adv_attack.sampler_orig = self.model.sampler_orig
+        self.trainer.trainer.adv_attack.model = self.model.model
+        self.trainer.trainer.adv_attack.sampler = self.model.sampler
 
     def run(self):
         """

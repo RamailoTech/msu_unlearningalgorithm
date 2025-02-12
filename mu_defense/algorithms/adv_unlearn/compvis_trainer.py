@@ -361,7 +361,7 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
         if 'text_encoder' in self.train_method:
             save_text_encoder(self.output_dir, self.custom_text_encoder, self.train_method, i)
         else: 
-            output_path = f"{self.output_dir}/models/model_checkpoint_{i}.pt"
+            output_path = f"{self.output_dir}/models/compvis_model_checkpoint_{i}.pt"
             self.model_loader.save_model(self.model, output_path)
         save_history(self.output_dir, losses, self.word_print)
         return self.model

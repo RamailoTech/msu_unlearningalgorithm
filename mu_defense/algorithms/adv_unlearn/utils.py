@@ -135,25 +135,9 @@ def get_models_for_compvis(config_path, compvis_ckpt_path, devices):
 
 @torch.no_grad()
 def sample_model_for_diffuser(model, scheduler, c, h, w, ddim_steps, scale, ddim_eta, start_code=None,
-                 n_samples=1, t_start=-1, log_every_t=None, till_T=None, verbose=True):
+                              n_samples=1, t_start=-1, log_every_t=None, till_T=None, verbose=True):
     """
     Diffusers-compatible sampling function.
-
-    Args:
-        model: The UNet model (from diffusers).
-        scheduler: A DDIMScheduler (or similar) instance.
-        c (torch.Tensor): The conditional encoder_hidden_states.
-        h (int): Image height.
-        w (int): Image width.
-        ddim_steps (int): Number of diffusion steps.
-        scale (float): Guidance scale. If not 1.0, classifier-free guidance is applied.
-        ddim_eta (float): The eta parameter for DDIM (unused in this basic implementation).
-        start_code (torch.Tensor, optional): Starting latent code. If None, random noise is used.
-        n_samples (int): Number of samples to generate.
-        t_start, log_every_t, till_T, verbose: Additional parameters (not used in this diffusers implementation).
-
-    Returns:
-        torch.Tensor: The generated latent sample.
     """
     device = c.device
 
@@ -165,13 +149,11 @@ def sample_model_for_diffuser(model, scheduler, c, h, w, ddim_steps, scale, ddim
     # Set the number of timesteps in the scheduler.
     scheduler.set_timesteps(ddim_steps)
 
-    # If using classifier-free guidance, prepare unconditional embeddings.
+    # Prepare conditioning.
     if scale != 1.0:
-        # In a full implementation you would obtain these from your text encoder
-        # For this example, we simply create a tensor of zeros with the same shape as c.
+        # Create unconditional embeddings (all zeros for this example).
         uc = torch.zeros_like(c)
-        # Duplicate latents and conditioning for guidance.
-        latents = torch.cat([latents, latents], dim=0)
+        # Duplicate only the conditioning inputs.
         c_in = torch.cat([uc, c], dim=0)
     else:
         c_in = c
@@ -180,23 +162,101 @@ def sample_model_for_diffuser(model, scheduler, c, h, w, ddim_steps, scale, ddim
     for t in scheduler.timesteps:
         # Scale the latents as required by the scheduler.
         latent_model_input = scheduler.scale_model_input(latents, t)
-        model_output = model(latent_model_input, t, encoder_hidden_states=c_in)
-        # Assume model_output is a ModelOutput with a 'sample' attribute.
         if scale != 1.0:
-            # Split the batch into unconditional and conditional parts.
+            # Duplicate the latent model input for classifier-free guidance.
+            latent_model_input = torch.cat([latent_model_input, latent_model_input], dim=0)
+        # Run the model.
+        model_output = model(latent_model_input, t, encoder_hidden_states=c_in)
+        # Process the output.
+        if scale != 1.0:
             noise_pred_uncond, noise_pred_text = model_output.sample.chunk(2)
-            # Apply classifier-free guidance.
             noise_pred = noise_pred_uncond + scale * (noise_pred_text - noise_pred_uncond)
         else:
             noise_pred = model_output.sample
 
-        # Step the scheduler.
+        # Update the latents with the original (unduplicated) latents.
         latents = scheduler.step(noise_pred, t, latents).prev_sample
 
-    # If guidance was used, return only the second half of the batch.
-    if scale != 1.0:
-        latents = latents[n_samples:]
     return latents
+
+
+
+# @torch.no_grad()
+# def sample_model_for_diffuser(model, scheduler, c, h, w, ddim_steps, scale, ddim_eta, start_code=None,
+#                               n_samples=1, t_start=-1, log_every_t=None, till_T=None, verbose=True):
+#     """
+#     Diffusers-compatible sampling function.
+
+#     Args:
+#         model: The UNet model (from diffusers).
+#         scheduler: A DDIMScheduler (or similar) instance.
+#         c (torch.Tensor): The conditional encoder_hidden_states.
+#         h (int): Image height.
+#         w (int): Image width.
+#         ddim_steps (int): Number of diffusion steps.
+#         scale (float): Guidance scale. If not 1.0, classifier-free guidance is applied.
+#         ddim_eta (float): The eta parameter for DDIM (unused in this basic implementation).
+#         start_code (torch.Tensor, optional): Starting latent code. If None, random noise is used.
+#         n_samples (int): Number of samples to generate.
+#         t_start, log_every_t, till_T, verbose: Additional parameters (not used in this diffusers implementation).
+
+#     Returns:
+#         torch.Tensor: The generated latent sample.
+#     """
+#     device = c.device
+
+#     # If no starting code is provided, initialize random noise
+#     if start_code is None:
+#         start_code = torch.randn((n_samples, 4, h // 8, w // 8), device=device)
+#     latents = start_code
+
+#     # Set timesteps for the scheduler
+#     scheduler.set_timesteps(ddim_steps)
+
+#     # Prepare for classifier-free guidance
+#     if scale != 1.0:
+#         uc = torch.zeros_like(c, device=device)  # Unconditional embeddings
+#         c_in = torch.cat([uc, c], dim=0)        # Combine unconditional and conditional embeddings
+#         latents = torch.cat([latents, latents], dim=0)  # Double latents batch size
+#     else:
+#         c_in = c
+
+#     # Diffusion sampling loop
+#     for t in scheduler.timesteps:
+#         # Scale the latents as required by the scheduler
+#         latent_model_input = scheduler.scale_model_input(latents, t)
+
+#         # Debugging shapes
+#         print(f"Latents shape before model call: {latent_model_input.shape}")
+#         print(f"Conditioning shape before model call: {c_in.shape}")
+
+#         # Pass through the model
+#         model_output = model(latent_model_input, t, encoder_hidden_states=c_in)
+
+#         # Debugging shapes after model call
+#         print(f"Model output sample shape: {model_output.sample.shape}")
+
+#         if scale != 1.0:
+#             # Split outputs for classifier-free guidance
+#             noise_pred_uncond, noise_pred_text = model_output.sample.chunk(2, dim=0)
+#             # Apply guidance
+#             noise_pred = noise_pred_uncond + scale * (noise_pred_text - noise_pred_uncond)
+#         else:
+#             noise_pred = model_output.sample
+
+#         # Debugging noise prediction
+#         print(f"Noise prediction shape: {noise_pred.shape}")
+
+#         # Step the scheduler
+#         latents = scheduler.step(noise_pred, t, latents).prev_sample
+
+    # # If guidance was used, slice latents to keep only the conditional part
+    # if scale != 1.0:
+    #     latents = latents[n_samples:]
+
+    # return latents
+
+
 
 @torch.no_grad()
 def sample_model(model, sampler, c, h, w, ddim_steps, scale, ddim_eta, start_code=None, n_samples=1,t_start=-1,log_every_t=None,till_T=None,verbose=True):
@@ -226,140 +286,189 @@ def sample_model(model, sampler, c, h, w, ddim_steps, scale, ddim_eta, start_cod
         return samples_ddim, inters
     return samples_ddim
 
-@torch.no_grad()
-def get_train_loss_retain(retain_batch, retain_train, retain_loss_w,
-                          model, model_orig, text_encoder, sampler,
-                          emb_0, emb_p, retain_emb_p, emb_n, retain_emb_n,
-                          start_guidance, negative_guidance, devices,
-                          ddim_steps, ddim_eta, image_size, criteria,
-                          adv_input_ids, attack_embd_type,backend, adv_embd=None,
-                          ):
-    """
-    Compute the training loss for unlearning (with retaining) with support for both
-    CompVis and diffusers backends.
-    
+
+def get_train_loss_retain( retain_batch, retain_train, retain_loss_w, model, model_orig, text_encoder, sampler, emb_0, emb_p, retain_emb_p,  emb_n, retain_emb_n, start_guidance, negative_guidance, devices, ddim_steps, ddim_eta, image_size, criteria, adv_input_ids, attack_embd_type, adv_embd=None):
+    """_summary_
+
     Args:
-        retain_batch: batch size for retention prompts.
-        retain_train: string, either 'reg' or some other value, indicating retention training type.
-        retain_loss_w: weight for the retention loss.
-        model: trainable diffusion model.
-        model_orig: frozen diffusion model.
-        text_encoder: the text encoder (used in adversarial embedding computation).
-        sampler: DDIM sampler (or scheduler).
-        emb_0: unconditional embedding.
-        emb_p: conditional embedding (ground-truth concept).
-        retain_emb_p: conditional embedding for retention prompts.
-        emb_n: conditional embedding (for modified concept).
-        retain_emb_n: retention branch’s conditional embedding.
-        start_guidance: guidance scale for sampling.
-        negative_guidance: negative guidance factor.
-        devices: list of devices (e.g. ["cuda:0"]).
-        ddim_steps: number of diffusion steps.
-        ddim_eta: eta parameter for DDIM.
-        image_size: image height/width.
-        criteria: loss function.
-        adv_input_ids: input_ids for adversarial word embedding.
-        attack_embd_type: either 'condition_embd' or 'word_embd'.
-        adv_embd: adversarial embedding (if already computed).
-        backend: "compvis" (default) or "diffusers" to choose appropriate sampling and model calls.
+        model: ESD model
+        model_orig: frozen DDPM model
+        sampler: DDIMSampler for DDPM model
         
+        emb_0: unconditional embedding
+        emb_p: conditional embedding (for ground truth concept)
+        emb_n: conditional embedding (for modified concept)
+        
+        start_guidance: unconditional guidance for ESD model
+        negative_guidance: negative guidance for ESD model
+        
+        devices: list of devices for ESD and DDPM models 
+        ddim_steps: number of steps for DDIMSampler
+        ddim_eta: eta for DDIMSampler
+        image_size: image size for DDIMSampler
+        
+        criteria: loss function for ESD model
+        
+        adv_input_ids: input_ids for adversarial word embedding
+        adv_emb_n: adversarial conditional embedding
+        adv_word_emb_n: adversarial word embedding
+
     Returns:
-        loss: the computed loss.
+        loss: training loss for ESD model
     """
+    quick_sample_till_t = lambda x, s, code, batch, t: sample_model(model, sampler,
+                                                                 x, image_size, image_size, ddim_steps, s, ddim_eta,
+                                                                 start_code=code, n_samples=batch, till_T=t, verbose=False)
     
-    # Select the appropriate sampling function.
-    if backend == "diffusers":
-        quick_sample_till_t = lambda x, s, code, batch, t: sample_model_for_diffuser(
-            model, sampler, x, image_size, image_size, ddim_steps, s, ddim_eta,
-            start_code=code, n_samples=batch, till_T=t, verbose=False
-        )
-    else:
-        quick_sample_till_t = lambda x, s, code, batch, t: sample_model(
-            model, sampler, x, image_size, image_size, ddim_steps, s, ddim_eta,
-            start_code=code, n_samples=batch, till_T=t, verbose=False
-        )
     
-    # Sample a random timestep and compute corresponding DDPM timestep.
     t_enc = torch.randint(ddim_steps, (1,), device=devices[0])
-    og_num = round((int(t_enc) / ddim_steps) * 1000)
-    og_num_lim = round((int(t_enc + 1) / ddim_steps) * 1000)
+    # time step from 1000 to 0 (0 being good)
+    og_num = round((int(t_enc)/ddim_steps)*1000)
+    og_num_lim = round((int(t_enc+1)/ddim_steps)*1000)
+
     t_enc_ddpm = torch.randint(og_num, og_num_lim, (1,), device=devices[0])
-    
-    start_code = torch.randn((1, 4, 64, 64), device=devices[0])
+
+    start_code = torch.randn((1, 4, 64, 64)).to(devices[0])
     if retain_train == 'reg':
-        retain_start_code = torch.randn((retain_batch, 4, 64, 64), device=devices[0])
+        retain_start_code = torch.randn((retain_batch, 4, 64, 64)).to(devices[0])
     
     with torch.no_grad():
-        # Sample latent using the conditional embedding.
-        z = quick_sample_till_t(emb_p.to(devices[0]), start_guidance, start_code, 1, int(t_enc))
-        
-        # Get outputs from the frozen model.
-        if backend == "diffusers":
-            out_0 = model_orig(z.to(devices[0]), t_enc_ddpm.to(devices[0]), encoder_hidden_states=emb_0.to(devices[0]))
-            e_0 = out_0.sample if hasattr(out_0, "sample") else out_0
-            out_p = model_orig(z.to(devices[0]), t_enc_ddpm.to(devices[0]), encoder_hidden_states=emb_p.to(devices[0]))
-            e_p = out_p.sample if hasattr(out_p, "sample") else out_p
-        else:
-            e_0 = model_orig.apply_model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), emb_0.to(devices[0]))
-            e_p = model_orig.apply_model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), emb_p.to(devices[0]))
+        # generate an image with the concept from ESD model
+        z = quick_sample_till_t(emb_p.to(devices[0]), start_guidance, start_code, 1, int(t_enc)) # emb_p seems to work better instead of emb_0
+        # get conditional and unconditional scores from frozen model at time step t and image z
+        e_0 = model_orig.apply_model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), emb_0.to(devices[0]))
+        e_p = model_orig.apply_model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), emb_p.to(devices[0]))
         
         if retain_train == 'reg':
-            retain_z = quick_sample_till_t(retain_emb_p.to(devices[0]), start_guidance, retain_start_code, retain_batch, int(t_enc))
-            if backend == "diffusers":
-                out_retain = model_orig(retain_z.to(devices[0]), t_enc_ddpm.to(devices[0]), encoder_hidden_states=retain_emb_p.to(devices[0]))
-                retain_e_p = out_retain.sample if hasattr(out_retain, "sample") else out_retain
-            else:
-                retain_e_p = model_orig.apply_model(retain_z.to(devices[0]), t_enc_ddpm.to(devices[0]), retain_emb_p.to(devices[0]))
+            retain_z = quick_sample_till_t(retain_emb_p.to(devices[0]), start_guidance, retain_start_code, retain_batch, int(t_enc)) # emb_p seems to work better instead of emb_0
+            # retain_e_0 = model_orig.apply_model(retain_z.to(devices[0]), t_enc_ddpm.to(devices[0]), retain_emb_0.to(devices[0]))
+            retain_e_p = model_orig.apply_model(retain_z.to(devices[0]), t_enc_ddpm.to(devices[0]), retain_emb_p.to(devices[0]))
     
-    # Compute output from the trainable model.
     if adv_embd is None:
-        if backend == "diffusers":
-            out_n = model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), encoder_hidden_states=emb_n.to(devices[0]))
-            e_n = out_n.sample if hasattr(out_n, "sample") else out_n
-        else:
-            e_n = model.apply_model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), emb_n.to(devices[0]))
+        e_n = model.apply_model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), emb_n.to(devices[0]))
     else:
         if attack_embd_type == 'condition_embd':
-            if backend == "diffusers":
-                out_n = model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), encoder_hidden_states=adv_embd.to(devices[0]))
-                e_n = out_n.sample if hasattr(out_n, "sample") else out_n
-            else:
-                e_n = model.apply_model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), adv_embd.to(devices[0]))
+            # Train with adversarial conditional embedding
+            e_n = model.apply_model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), adv_embd.to(devices[0]))
         elif attack_embd_type == 'word_embd':
+            # Train with adversarial word embedding
             print('====== Training with adversarial word embedding =====')
-            # Compute adversarial word embedding via the text encoder.
-            adv_emb_n = text_encoder(input_ids=adv_input_ids.to(devices[0]), inputs_embeds=adv_embd.to(devices[0]))[0]
-            if backend == "diffusers":
-                out_n = model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), encoder_hidden_states=adv_emb_n.to(devices[0]))
-                e_n = out_n.sample if hasattr(out_n, "sample") else out_n
-            else:
-                e_n = model.apply_model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), adv_emb_n.to(devices[0]))
+            adv_emb_n = text_encoder(input_ids = adv_input_ids.to(devices[0]), inputs_embeds=adv_embd.to(devices[0]))[0]
+            e_n = model.apply_model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), adv_emb_n.to(devices[0]))
         else:
             raise ValueError('attack_embd_type must be either condition_embd or word_embd')
     
-    # Freeze gradients for the frozen branch.
     e_0.requires_grad = False
     e_p.requires_grad = False
     
-    # Compute the unlearning loss.
-    unlearn_loss = criteria(
-        e_n.to(devices[0]),
-        e_0.to(devices[0]) - (negative_guidance * (e_p.to(devices[0]) - e_0.to(devices[0])))
-    )
+    # reconstruction loss for ESD objective from frozen model and conditional score of ESD model
+    # loss = criteria(e_n.to(devices[0]), e_0.to(devices[0]) - (negative_guidance*(e_p.to(devices[0]) - e_0.to(devices[0])))) 
     
+    # return loss
+
     if retain_train == 'reg':
-        if backend == "diffusers":
-            out_retain_n = model(retain_z.to(devices[0]), t_enc_ddpm.to(devices[0]), encoder_hidden_states=retain_emb_n.to(devices[0]))
-            retain_e_n = out_retain_n.sample if hasattr(out_retain_n, "sample") else out_retain_n
-        else:
-            retain_e_n = model.apply_model(retain_z.to(devices[0]), t_enc_ddpm.to(devices[0]), retain_emb_n.to(devices[0]))
+        # reconstruction loss for ESD objective from frozen model and conditional score of ESD model
+        print('====== Training with retain batch =====')
+        unlearn_loss = criteria(e_n.to(devices[0]), e_0.to(devices[0]) - (negative_guidance*(e_p.to(devices[0]) - e_0.to(devices[0])))) 
         
-        # For the retention branch, we assume retain_e_p’s gradients are not needed.
+        retain_e_n = model.apply_model(retain_z.to(devices[0]), t_enc_ddpm.to(devices[0]), retain_emb_n.to(devices[0]))
+        
+        # retain_e_0.requires_grad = False
         retain_e_p.requires_grad = False
         retain_loss = criteria(retain_e_n.to(devices[0]), retain_e_p.to(devices[0]))
+        
+        loss = unlearn_loss + retain_loss_w * retain_loss
+        return loss
+        
+    else:
+        # reconstruction loss for ESD objective from frozen model and conditional score of ESD model
+        unlearn_loss = criteria(e_n.to(devices[0]), e_0.to(devices[0]) - (negative_guidance*(e_p.to(devices[0]) - e_0.to(devices[0])))) 
+        return unlearn_loss
+
+
+def get_train_loss_retain_diffuser(
+    retain_batch, retain_train, retain_loss_w,
+    model, model_orig, text_encoder, sampler,
+    emb_0, emb_p, retain_emb_p, emb_n, retain_emb_n,
+    start_guidance, negative_guidance, devices,
+    ddim_steps, ddim_eta, image_size, criteria,
+    adv_input_ids, attack_embd_type, adv_embd=None
+):
+    """
+    Compute the training loss for unlearning (with retaining) using Diffusers.
+    
+    Args:
+        Same as get_train_loss_retain.
+    
+    Returns:
+        loss: The computed training loss.
+    """
+    quick_sample_till_t = lambda x, s, code, batch, t: sample_model_for_diffuser(
+        model, sampler, x, image_size, image_size, ddim_steps, s, ddim_eta,
+        start_code=code, n_samples=batch, till_T=t, verbose=False
+    )
+    
+    t_enc = torch.randint(ddim_steps, (1,), device=devices[0])
+    # Time step mapping
+    og_num = round((int(t_enc) / ddim_steps) * 1000)
+    og_num_lim = round(((int(t_enc) + 1) / ddim_steps) * 1000)
+    t_enc_ddpm = torch.randint(og_num, og_num_lim, (1,), device=devices[0])
+    
+    start_code = torch.randn((1, 4, 64, 64)).to(devices[0])
+    if retain_train == 'reg':
+        retain_start_code = torch.randn((retain_batch, 4, 64, 64)).to(devices[0])
+    
+    with torch.no_grad():
+        # Sample latent z using the Diffuser backend
+        z = quick_sample_till_t(emb_p.to(devices[0]), start_guidance, start_code, 1, int(t_enc))
+        
+        # Get outputs from the frozen model for conditional/unconditional embeddings
+        out_0 = model_orig(z.to(devices[0]), t_enc_ddpm.to(devices[0]), encoder_hidden_states=emb_0.to(devices[0]))
+        e_0 = out_0.sample if hasattr(out_0, "sample") else out_0
+        
+        out_p = model_orig(z.to(devices[0]), t_enc_ddpm.to(devices[0]), encoder_hidden_states=emb_p.to(devices[0]))
+        e_p = out_p.sample if hasattr(out_p, "sample") else out_p
+        
+        if retain_train == 'reg':
+            retain_z = quick_sample_till_t(retain_emb_p.to(devices[0]), start_guidance, retain_start_code, retain_batch, int(t_enc))
+            out_retain = model_orig(retain_z.to(devices[0]), t_enc_ddpm.to(devices[0]), encoder_hidden_states=retain_emb_p.to(devices[0]))
+            retain_e_p = out_retain.sample if hasattr(out_retain, "sample") else out_retain
+    
+    if adv_embd is None:
+        out_n = model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), encoder_hidden_states=emb_n.to(devices[0]))
+        e_n = out_n.sample if hasattr(out_n, "sample") else out_n
+    else:
+        if attack_embd_type == 'condition_embd':
+            out_n = model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), encoder_hidden_states=adv_embd.to(devices[0]))
+            e_n = out_n.sample if hasattr(out_n, "sample") else out_n
+        elif attack_embd_type == 'word_embd':
+            print('====== Training with adversarial word embedding =====')
+            adv_emb_n = text_encoder(input_ids=adv_input_ids.to(devices[0]), inputs_embeds=adv_embd.to(devices[0]))[0]
+            out_n = model(z.to(devices[0]), t_enc_ddpm.to(devices[0]), encoder_hidden_states=adv_emb_n.to(devices[0]))
+            e_n = out_n.sample if hasattr(out_n, "sample") else out_n
+        else:
+            raise ValueError('attack_embd_type must be either condition_embd or word_embd')
+    
+    # Ensure gradients are not computed for frozen outputs
+    e_0.requires_grad = False
+    e_p.requires_grad = False
+    
+    if retain_train == 'reg':
+        # Reconstruction loss for unlearning and retention
+        print('====== Training with retain batch =====')
+        unlearn_loss = criteria(e_n.to(devices[0]), e_0.to(devices[0]) - (negative_guidance * (e_p.to(devices[0]) - e_0.to(devices[0]))))
+        
+        out_retain_n = model(retain_z.to(devices[0]), t_enc_ddpm.to(devices[0]), encoder_hidden_states=retain_emb_n.to(devices[0]))
+        retain_e_n = out_retain_n.sample if hasattr(out_retain_n, "sample") else out_retain_n
+        
+        retain_e_p.requires_grad = False
+        retain_loss = criteria(retain_e_n.to(devices[0]), retain_e_p.to(devices[0]))
+        
         loss = unlearn_loss + retain_loss_w * retain_loss
         return loss
     else:
+        # Reconstruction loss for unlearning only
+        unlearn_loss = criteria(e_n.to(devices[0]), e_0.to(devices[0]) - (negative_guidance * (e_p.to(devices[0]) - e_0.to(devices[0]))))
         return unlearn_loss
 
 
