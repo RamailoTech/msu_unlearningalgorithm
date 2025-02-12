@@ -118,5 +118,4 @@ setup(
     },
     cmdclass={
         'install': CustomInstallCommand,
-    },
-)
+    }
