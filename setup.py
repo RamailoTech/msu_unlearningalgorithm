@@ -1,7 +1,10 @@
 from setuptools import setup, find_packages
+from setuptools.command.install import install as _install
 import os
 import subprocess
 import sys
+import json
+import yaml
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -29,12 +32,57 @@ def check_conda():
         sys.stderr.write("Error: Conda is not installed.\n")
         sys.exit(1)
 
-# You can keep this check if your package requires a conda environment.
+
 check_conda()
+
+class CustomInstallCommand(_install):
+    def run(self):
+        # Run the standard installation process.
+        _install.run(self)
+        
+         # Step 1: Use the environment.yaml to either update or create the conda environment.
+        print("\nProcessing environment.yaml ...")
+        env_yaml = os.path.join(os.path.dirname(__file__), "environment.yaml")
+        if not os.path.exists(env_yaml):
+            sys.stderr.write(f"Error: {env_yaml} not found.\n")
+            sys.exit(1)
+
+        # Parse environment.yaml to get the environment name.
+        try:
+            with open(env_yaml, "r", encoding='utf-8') as f:
+                env_data = yaml.safe_load(f)
+            env_name = env_data.get("name")
+            if not env_name:
+                sys.stderr.write("Error: Environment name not found in environment.yaml.\n")
+                sys.exit(1)
+        except Exception as e:
+            sys.stderr.write(f"Error reading {env_yaml}: {e}\n")
+            sys.exit(1)
+        
+        # Check if the environment exists by listing current conda environments.
+        try:
+            output = subprocess.check_output(["conda", "env", "list", "--json"], universal_newlines=True)
+            envs = json.loads(output).get("envs", [])
+            # Compare basenames of the environment paths to the desired env_name.
+            env_exists = any(os.path.basename(env_path) == env_name for env_path in envs)
+        except Exception as e:
+            sys.stderr.write(f"Error checking conda environments: {e}\n")
+            sys.exit(1)
+        
+        if env_exists:
+            print(f"Environment '{env_name}' exists.")
+        else:
+            print(f"Environment '{env_name}' does not exist. Creating environment...")
+            try:
+                subprocess.check_call(["conda", "env", "create", "--name", env_name, "--file", env_yaml])
+                print("Conda environment created successfully.")
+            except subprocess.CalledProcessError as e:
+                sys.stderr.write(f"Error creating conda environment: {e}\n")
+                sys.exit(1)
 
 setup(
     name="unlearn_diff",
-    version="1.0.4",
+    version="1.0.5",
     author="nebulaanish",
     author_email="nebulaanish@gmail.com",
     description="Unlearning Algorithms",
@@ -52,59 +100,23 @@ setup(
     },
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: MIT License",  # Choose appropriate license
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.7",
-    # Only include packages that can be installed via pip
     install_requires=[
-        "albumentations==0.4.3",
-        "datasets==2.8.0",
-        "opencv-python==4.1.2.30",
-        "pudb==2019.2",
-        "invisible-watermark",
-        "imageio==2.9.0",
-        "imageio-ffmpeg==0.4.2",
-        "pytorch-lightning==1.4.2",
-        "omegaconf==2.1.1",
-        "test-tube>=0.7.5",
-        "streamlit>=0.73.1",
-        "einops==0.3.0",
-        "torch-fidelity==0.3.0",
-        "transformers==4.36.0",
-        "torchmetrics==0.6.0",
-        "kornia==0.6",
-        "taming-transformers-rom1504",  # assuming available on PyPI; otherwise use dependency_links or document manual install
-        "clip",  # same note as above
-        "openai",
-        "gradio",
-        "loguru",
-        "ml_collections",
-        "webdataset",
-        "ftfy",
-        "yacs",
-        "controlnet_aux",
-        "fvcore",
-        "h5py",
-        "xtcocotools",
-        "natsort",
-        "timm==0.6.7",
-        "fairscale",
-        "open_clip_torch",
+        "pyyaml",
+        "setuptools",
     ],
-    # For packages installed from git repositories, you can use dependency_links (though note that pip support is diminishing)
-    dependency_links=[
-        "git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers",
-        "git+https://github.com/openai/CLIP.git@main#egg=clip",
-        "git+https://github.com/crowsonkb/k-diffusion.git",
-        "git+https://github.com/cocodataset/panopticapi.git",
-        "git+https://github.com/facebookresearch/detectron2.git",
-    ],
+    extras_require={},
     entry_points={
         "console_scripts": [
             "create_env=scripts.commands:create_env_cli",
             "download_data=scripts.commands:download_data_cli",
             "download_model=scripts.commands:download_models_cli",
         ],
+    },
+    cmdclass={
+        'install': CustomInstallCommand,
     },
 )
