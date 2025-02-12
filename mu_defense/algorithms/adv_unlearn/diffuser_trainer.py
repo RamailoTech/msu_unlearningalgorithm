@@ -195,7 +195,7 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
             safety_checker=self.safety_checker,
             feature_extractor=self.feature_extractor,
         )
-        pipeline.save_pretrained(output_path)
+        pipeline.save_pretrained(output_path,safe_serialization=True)
 
     def train(self):
         """
@@ -337,8 +337,7 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
             wandb.log({'Attack_Loss': 0.0}, step=global_step)
             global_step += 1
             self.optimizer.step()
-        
-        scaler = torch.cuda.amp.GradScaler()
+
 
         if self.retain_train == 'iter':
             for r in range(self.retain_step):
@@ -404,8 +403,7 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
                     inputs_embeds=retain_text_embeddings
                 )[0]
 
-                # Trainable branch – use autocast (but no no_grad)
-                torch.cuda.empty_cache()
+
 
                 with autocast():
                     retain_e_n = self.model(
@@ -419,9 +417,8 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
                     retain_e_p.to(self.devices[0])
                 )
                 
-                scaler.scale(retain_loss).backward()
-                scaler.step(self.optimizer)
-                scaler.update()
+                retain_loss.backward()
+                self.optimizer.step()
                 torch.cuda.empty_cache() 
             
 
@@ -438,6 +435,8 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
         self.custom_text_encoder.text_encoder.requires_grad_(False)
         if 'text_encoder' in self.train_method:
             save_text_encoder(self.output_dir, self.custom_text_encoder, self.train_method, i)
+            output_path = f"{self.output_dir}/models/diffuser_model_checkpoint_{i}"
+            self.save_final_pipeline(output_path)
         else: 
             output_path = f"{self.output_dir}/models/diffuser_model_checkpoint_{i}"
             self.save_final_pipeline(output_path)
