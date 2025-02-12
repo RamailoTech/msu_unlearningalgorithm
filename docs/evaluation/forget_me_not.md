@@ -13,29 +13,28 @@ You can run the evaluation framework using the `evaluate.py` script located in t
 conda activate <env_name>
 ```
 
-```bash
-python -m mu.algorithms.forget_me_not.scripts.evaluate \
---config_path mu/algorithms/forget_me_not/configs/evaluation_config.yaml
+Add the following code to `evaluate.py`
+
+```python
+from mu.algorithms.forget_me_not import ForgetMeNotEvaluator
+from mu.algorithms.forget_me_not.configs import (
+    forget_me_not_evaluation_config
+)
+
+evaluator = ForgetMeNotEvaluator(
+    forget_me_not_evaluation_config,
+    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/forget_me_not/finetuned_models/Abstractionism",
+    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+)
+evaluator.run()
 ```
 
 
-**Running in Offline Mode:**
+**Run the script**
 
 ```bash
-WANDB_MODE=offline python -m mu.algorithms.forget_me_not.scripts.evaluate \
---config_path mu/algorithms/forget_me_not/configs/evaluation_config.yaml
-```
-
-
-**Example with CLI Overrides:**
-
-```bash
-python -m mu.algorithms.forget_me_not.scripts.evaluate \
-    --config_path mu/algorithms/forget_me_not/configs/evaluation_config.yaml \
-    --devices "0" \
-    --seed 123 \
-    --cfg_text 8.5 \
-    --batch_size 16
+python evaluate.py
 ```
 
 

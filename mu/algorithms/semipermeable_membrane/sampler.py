@@ -20,9 +20,6 @@ from mu.algorithms.semipermeable_membrane.src.engine.train_util import encode_pr
 from mu.algorithms.semipermeable_membrane.src.models.merge_spm import load_state_dict
 
 
-#TODO remove this
-theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
-class_available = ['Architectures', 'Bears', 'Birds']
 
 MATCHING_METRICS = Literal[
     "clipcos",

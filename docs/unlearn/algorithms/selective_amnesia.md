@@ -91,55 +91,38 @@ wget https://huggingface.co/ajrheng/selective-amnesia/resolve/main/full_fisher_d
 python -m mu.algorithms.selective_amnesia.scripts.train --config_path mu/algorithms/selective_amnesia/configs/train_config.yaml --full_fisher_dict_pkl_path /path/full_fisher_dict.pkl
 ```
 
-### Running the Training Script in Offline Mode
+
+### Run train
+
+Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
+
+```python
+from mu.algorithms.selective_amnesia.algorithm import SelectiveAmnesiaAlgorithm
+from mu.algorithms.selective_amnesia.configs import (
+    selective_amnesia_config_quick_canvas,
+)
+
+algorithm = SelectiveAmnesiaAlgorithm(
+    selective_amnesia_config_quick_canvas,
+    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
+    raw_dataset_dir=(
+        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+    ),
+)
+algorithm.run()
 
 ```
-WANDB_MODE=offline python -m mu.algorithms.selective_amnesia.scripts.train --config_path mu/algorithms/selective_amnesia/configs/train_config.yaml --full_fisher_dict_pkl_path /path/full_fisher_dict.pkl
-```
-
-### Overriding Configuration via Command Line
-
-You can override configuration parameters by passing them directly as arguments during runtime.
-
-**Example Usage with Command-Line Arguments:**
 
 ```bash
-python -m mu.algorithms.selective_amnesia.scripts.train \
---config_path mu/algorithms/selective_amnesia/configs/train_config.yaml \
---train_batch_size 8 \
---max_epochs 100 \
---devices 0,1 \
---output_dir outputs/experiment_2
+WANDB_MODE=offline python my_trainer.py
 ```
 
-**Explanation:**
-* `--config_path`: Specifies the YAML configuration file.
-* `--train_batch_size`: Overrides the training batch size to 8.
-* `--max_epochs`: Updates the maximum number of training epochs to 100.
-* `--devices`: Specifies the GPUs (e.g., device 0 and 1).
-* `--output_dir`: Sets a custom output directory for the experiment.
+**How It Works** 
+* Default Values: The script first loads default values from the train config file as in configs section.
 
----
+* Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
 
-## Directory Structure
-
-- `algorithm.py`: Core implementation of the Selective Amnesia Algorithm.
-- `configs/`: Configuration files for training and generation.
-- `data_handler.py`: Data handling and preprocessing.
-- `scripts/train.py`: Script to train the Selective Amnesia Algorithm.
-- `callbacks/`: Custom callbacks for logging and monitoring training.
-- `utils.py`: Utility functions.
-
----
-
-## How It Works
-
-1. **Default Configuration:** Loads values from the specified YAML file (`--config_path`).
-2. **Command-Line Overrides:** Updates the configuration with values provided as command-line arguments.
-3. **Training Execution:** Initializes the `SelectiveAmnesiaAlgorithm` and trains the model using the provided dataset, model checkpoint, and configuration.
-4. **Output:** Saves the fine-tuned model and logs training metrics in the specified output directory.
-
----
+* Final Configuration: The script merges the configs and convert them into dictionary to proceed with the training. 
 
 ## Notes
 

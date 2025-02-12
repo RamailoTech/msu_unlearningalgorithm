@@ -13,30 +13,30 @@ You can run the evaluation framework using the `evaluate.py` script located in t
 conda activate <env_name>
 ```
 
-```bash
-python -m mu.algorithms.saliency_unlearning.scripts.evaluate \
---config_path mu/algorithms/saliency_unlearning/configs/evaluation_config.yaml
+Add the following code to `evaluate.py`
+
+```python
+
+from mu.algorithms.saliency_unlearning import SaliencyUnlearningEvaluator
+from mu.algorithms.saliency_unlearning.configs import (
+    saliency_unlearning_evaluation_config
+)
+
+evaluator = SaliencyUnlearningEvaluator(
+    saliency_unlearning_evaluation_config,
+    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/saliency_unlearning/saliency_unlearning_Abstractionism_model.pth",
+    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+)
+evaluator.run()
 ```
 
-
-**Running in Offline Mode:**
-
-```bash
-WANDB_MODE=offline python -m mu.algorithms.saliency_unlearning.scripts.evaluate \
---config_path mu/algorithms/saliency_unlearning/configs/evaluation_config.yaml
-```
-
-
-**Example with CLI Overrides:**
+**Run the script**
 
 ```bash
-python -m mu.algorithms.saliency_unlearning.scripts.evaluate \
-    --config_path mu/algorithms/saliency_unlearning/configs/evaluation_config.yaml \
-    --devices "0" \
-    --seed 123 \
-    --cfg_text 8.5 \
-    --batch_size 16
+python evaluate.py
 ```
+
 
 
 #### **Description of parameters in evaluation_config.yaml**

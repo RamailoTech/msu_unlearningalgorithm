@@ -94,7 +94,7 @@ class SemipermeableMembraneModel(BaseModel):
         """
         Save the model weights to the output path
         """
-        #TODO
+
         self.logger.info(f"Saving model to {output_path}")
         # Save the SPM network weights
         model.save_weights(

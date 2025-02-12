@@ -13,11 +13,28 @@ You can run the evaluation framework using the `evaluate.py` script located in t
 conda activate <env_name>
 ```
 
-```bash
-python -m mu.algorithms.unified_concept_editing.scripts.evaluate \
---config_path mu/algorithms/unified_concept_editing/configs/evaluation_config.yaml
+Add the following code to `evaluate.py`
+
+```python
+from mu.algorithms.unified_concept_editing import UnifiedConceptEditingEvaluator
+from mu.algorithms.unified_concept_editing.configs import (
+    uce_evaluation_config
+)
+
+evaluator = UnifiedConceptEditingEvaluator(
+    uce_evaluation_config,
+    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/uce/finetuned_models/uce_Abstractionism_model",
+    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/",
+    pipeline_path = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
+)
+evaluator.run()
+
 ```
 
+```bash
+python evaluate.py
+```
 
 **Running in Offline Mode:**
 

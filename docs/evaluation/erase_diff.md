@@ -13,29 +13,29 @@ You can run the evaluation framework using the `evaluate.py` script located in t
 conda activate <env_name>
 ```
 
-```bash
-python -m mu.algorithms.erase_diff.scripts.evaluate \
---config_path mu/algorithms/erase_diff/configs/evaluation_config.yaml
+
+Add the following code to `evaluate.py`.
+
+
+```python
+from mu.algorithms.erase_diff import EraseDiffEvaluator
+from mu.algorithms.erase_diff.configs import (
+    erase_diff_evaluation_config
+)
+
+evaluator = EraseDiffEvaluator(
+    erase_diff_evaluation_config,
+    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/erase_diff/erase_diff_Abstractionism_model.pth",
+    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+)
+evaluator.run()
 ```
 
-
-**Running in Offline Mode:**
-
-```bash
-WANDB_MODE=offline python -m mu.algorithms.erase_diff.scripts.evaluate \
---config_path mu/algorithms/erase_diff/configs/evaluation_config.yaml
-```
-
-
-**Example with CLI Overrides:**
+**Run the script**
 
 ```bash
-python -m mu.algorithms.erase_diff.scripts.evaluate \
-    --config_path mu/algorithms/erase_diff/configs/evaluation_config.yaml \
-    --devices "0" \
-    --seed 123 \
-    --cfg_text 8.5 \
-    --batch_size 16
+python evaluate.py
 ```
 
 
