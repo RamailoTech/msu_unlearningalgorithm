@@ -70,13 +70,7 @@ class CustomInstallCommand(_install):
             sys.exit(1)
         
         if env_exists:
-            print(f"Environment '{env_name}' exists. Updating environment...")
-            try:
-                subprocess.check_call(["conda", "env", "update", "--name", env_name, "--file", env_yaml, "--prune"])
-                print("Conda environment updated successfully.")
-            except subprocess.CalledProcessError as e:
-                sys.stderr.write(f"Error updating conda environment: {e}\n")
-                sys.exit(1)
+            print(f"Environment '{env_name}' exists.")
         else:
             print(f"Environment '{env_name}' does not exist. Creating environment...")
             try:
