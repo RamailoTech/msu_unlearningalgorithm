@@ -13,9 +13,29 @@ You can run the evaluation framework using the `evaluate.py` script located in t
 conda activate <env_name>
 ```
 
+Add the following code to `evaluate.py`
+
+```python
+from mu.algorithms.scissorhands import ScissorHandsEvaluator
+from mu.algorithms.scissorhands.configs import (
+    scissorhands_evaluation_config
+)
+
+evaluator = ScissorHandsEvaluator(
+    scissorhands_evaluation_config,
+    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
+    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+)
+evaluator.run()
+```
+
+
+
+**Run the script**
+
 ```bash
-python -m mu.algorithms.scissorhands.scripts.evaluate \
---config_path mu/algorithms/scissorshands/configs/evaluation_config.yaml
+python evaluate.py
 ```
 
 

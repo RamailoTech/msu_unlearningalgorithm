@@ -29,7 +29,7 @@ def check_conda():
         sys.stderr.write("Error: Conda is not installed.\n")
         sys.exit(1)
 
-
+# You can keep this check if your package requires a conda environment.
 check_conda()
 
 setup(
@@ -52,15 +52,54 @@ setup(
     },
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",  # Choose appropriate license
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.7",
+    # Only include packages that can be installed via pip
     install_requires=[
-        "pyyaml",
-        "setuptools",
+        "albumentations==0.4.3",
+        "datasets==2.8.0",
+        "opencv-python==4.1.2.30",
+        "pudb==2019.2",
+        "invisible-watermark",
+        "imageio==2.9.0",
+        "imageio-ffmpeg==0.4.2",
+        "pytorch-lightning==1.4.2",
+        "omegaconf==2.1.1",
+        "test-tube>=0.7.5",
+        "streamlit>=0.73.1",
+        "einops==0.3.0",
+        "torch-fidelity==0.3.0",
+        "transformers==4.36.0",
+        "torchmetrics==0.6.0",
+        "kornia==0.6",
+        "taming-transformers-rom1504",  # assuming available on PyPI; otherwise use dependency_links or document manual install
+        "clip",  # same note as above
+        "openai",
+        "gradio",
+        "loguru",
+        "ml_collections",
+        "webdataset",
+        "ftfy",
+        "yacs",
+        "controlnet_aux",
+        "fvcore",
+        "h5py",
+        "xtcocotools",
+        "natsort",
+        "timm==0.6.7",
+        "fairscale",
+        "open_clip_torch",
     ],
-    extras_require={},
+    # For packages installed from git repositories, you can use dependency_links (though note that pip support is diminishing)
+    dependency_links=[
+        "git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers",
+        "git+https://github.com/openai/CLIP.git@main#egg=clip",
+        "git+https://github.com/crowsonkb/k-diffusion.git",
+        "git+https://github.com/cocodataset/panopticapi.git",
+        "git+https://github.com/facebookresearch/detectron2.git",
+    ],
     entry_points={
         "console_scripts": [
             "create_env=scripts.commands:create_env_cli",
