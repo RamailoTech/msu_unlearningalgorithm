@@ -78,10 +78,14 @@ nav:
     - Text Grad:
       - Usage: mu_attack/attack/text_grad.md
       - Config: mu_attack/configs/text_grad.md
+
+  - Unlearn Mu Defense:
+    - Usage: mu_defense/adv_unlearn.md
+    - Config: mu_defense/config.md
   
   - Evaluation :
     - Usage: mu_attack/mu_attack_evaluation.md
 
-  - Contributing: algorithms/contributing.md
+  - Contributing: unlearn/algorithms/contributing.md
 theme:
   name: readthedocs  

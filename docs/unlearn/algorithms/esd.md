@@ -119,9 +119,9 @@ WANDB_MODE=offline python my_trainer.py
 - `utils.py`: Utility functions used in the project.
 ---
 
-### Description of arguments being used in train_config.yaml
+### Description of arguments being used in train_config class
 
-The `config/train_config.yaml` file is a configuration file for training a Stable Diffusion model using the ESD (Erase Stable Diffusion) method. It defines various parameters related to training, model setup, dataset handling, and output configuration. Below is a detailed description of each section and parameter:
+These are the configuration used for training a Stable Diffusion model using the ESD (Erase Stable Diffusion) method. It defines various parameters related to training, model setup, dataset handling, and output configuration. Below is a detailed description of each section and parameter:
 
 **Training Parameters**
 

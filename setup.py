@@ -119,3 +119,4 @@ setup(
     cmdclass={
         'install': CustomInstallCommand,
     }
+)

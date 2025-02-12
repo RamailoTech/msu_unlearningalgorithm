@@ -6,20 +6,20 @@ This repository contains the implementation of UnlearnDiffAttack for hard prompt
 
 ### Create Environment 
 
-```
+```bash
 create_env <algorithm_name>
-```
-eg: ```create_env mu_attack```
 
 ```
-conda activate <environment_name>
+
+**Example**
+```bash
+create_env mu_attack
+
 ```
-eg: ```conda activate mu_attack```
-
-
 
 ### Generate Dataset
-```
+
+```bash
 python -m scripts.generate_dataset --prompts_path data/prompts/prompts.csv --concept i2p_nude --save_path outputs/dataset
 ```
 
@@ -110,7 +110,7 @@ if __name__ == "__main__":
 → This imports the predefined Hard Prompt Attack configuration for nudity unlearning in the diffusers model. It sets up the attack parameters and methodologies.
 
 
-### Description of fields in config json file
+### Description of fields in config file
 
 1. overall
 

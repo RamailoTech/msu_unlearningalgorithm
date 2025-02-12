@@ -32,7 +32,7 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
     Trainer for adversarial unlearning.
 
     This trainer performs the adversarial prompt update and retention-based
-    regularized training loop for CompVis/Diffusers models.
+    regularized training loop for Diffusers models.
     """
     def __init__(self, model, config: dict, devices: list, **kwargs):
         """

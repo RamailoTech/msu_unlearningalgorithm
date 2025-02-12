@@ -74,47 +74,43 @@ ls -lh ./data/quick-canvas-dataset/sample/
 ```
 ---
 
-## Run Train
+### Example usage
 
-### Example Command
+Add the following code snippet to a python script `trainer.py`. Run the script using `python trainer.py`.
 
-```bash
-python -m mu.algorithms.concept_ablation.scripts.train \
---config_path mu/algorithms/concept_ablation/configs/train_config.yaml \
---prompts mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt
+```python
+from mu.algorithms.concept_ablation.algorithm import (
+    ConceptAblationAlgorithm,
+)
+from mu.algorithms.concept_ablation.configs import (
+    concept_ablation_train_mu,
+    ConceptAblationConfig,
+)
+
+if __name__ == "__main__":
+
+    concept_ablation_train_mu.lightning.trainer.max_steps = 5
+
+    algorithm = ConceptAblationAlgorithm(
+        concept_ablation_train_mu,
+        config_path="/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/concept_ablation/configs/train_config.yaml",
+        ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
+        prompts="/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt",
+        output_dir="/opt/dlami/nvme/outputs",
+        # devices="1",
+    )
+    algorithm.run()
 ```
 
-### Running the Training Script in Offline Mode
 
-```bash
-WANDB_MODE=offline python -m mu.algorithms.concept_ablation.scripts.train \
---config_path mu/algorithms/concept_ablation/configs/train_config.yaml \
---prompts /home/ubuntu/Projects/Palistha/msu_unlearningalgorithm/mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt
-```
+## Notes
 
-### Overriding Configuration via Command Line
-
-You can override configuration parameters by passing them directly as arguments during runtime.
-
-**Example Usage with Command-Line Arguments:**
-
-```bash
-python -m mu.algorithms.concept_ablation.scripts.train \
---config_path mu/algorithms/concept_ablation/configs/train_config.yaml \
---batch_size 8 \
---base_lr 1e-5 \
---devices 0,1 \
---output_dir outputs/experiment_2
-```
-
-**Explanation:**
-* `--config_path`: Specifies the YAML configuration file.
-* `--batch_size`: Overrides the batch size to 8.
-* `--base_lr`: Updates the base learning rate to 1e-5.
-* `--devices`: Specifies the GPUs (e.g., device 0 and 1).
-* `--output_dir`: Sets a custom output directory for the experiment.
-
+1. Ensure all dependencies are installed as per the environment file.
+2. The training process generates logs in the `logs/` directory for easy monitoring.
+3. Use appropriate CUDA devices for optimal performance during training.
+4. Regularly verify dataset and model configurations to avoid errors during execution.
 ---
+
 
 ## Directory Structure
 
@@ -125,23 +121,6 @@ python -m mu.algorithms.concept_ablation.scripts.train \
 - `callbacks/`: Custom callbacks for logging and monitoring training.
 - `utils.py`: Utility functions.
 
----
-
-## How It Works
-
-1. **Default Configuration:** Loads values from the specified YAML file (`--config_path`).
-2. **Command-Line Overrides:** Updates the configuration with values provided as command-line arguments.
-3. **Training Execution:** Initializes the `ConceptAblationAlgorithm` and trains the model using the provided dataset, model checkpoint, and configuration.
-4. **Output:** Saves the fine-tuned model and logs training metrics in the specified output directory.
-
----
-
-## Notes
-
-1. Ensure all dependencies are installed as per the environment file.
-2. The training process generates logs in the `logs/` directory for easy monitoring.
-3. Use appropriate CUDA devices for optimal performance during training.
-4. Regularly verify dataset and model configurations to avoid errors during execution.
 
 
 ## Configuration File (`train_config.yaml`)
