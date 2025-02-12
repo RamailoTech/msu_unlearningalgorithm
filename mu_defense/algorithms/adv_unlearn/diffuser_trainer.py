@@ -399,9 +399,6 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
             
                 torch.cuda.empty_cache()
 
-
-
-
             if (i + 1) % self.config['save_interval'] == 0 and (i + 1) != self.iterations and (i + 1) >= self.config['save_interval']:
                 if 'text_encoder' in self.train_method:
                     save_text_encoder(self.output_dir, self.custom_text_encoder, self.train_method, i)
