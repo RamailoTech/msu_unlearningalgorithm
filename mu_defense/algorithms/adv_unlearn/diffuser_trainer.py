@@ -9,6 +9,8 @@ import logging
 from torch.cuda.amp import autocast
 from torch.nn import MSELoss
 
+from diffusers import StableDiffusionPipeline
+
 from mu.core import BaseTrainer
 from mu_defense.algorithms.adv_unlearn.utils import (
     id2embedding,
@@ -46,6 +48,9 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
         self.sampler_orig = model.sampler_orig
         self.model_loader = model 
         self.text_encoder = model.text_encoder
+        self.vae = model.vae
+        self.safety_checker = model.safety_checker
+        self.feature_extractor = model.feature_extractor
 
         # Other loaded components.
         self.tokenizer = model.tokenizer
@@ -172,6 +177,25 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
         with torch.no_grad():
             text_embeddings = self.adv_attack.text_encoder(text_inputs.input_ids)[0]
         return text_embeddings
+
+    def save_final_pipeline(self, output_path: str) -> None:
+        """
+        Save the final adversarial unlearn (adv attack) output as a full pipeline,
+        containing your fine-tuned UNet, text encoder, scheduler, tokenizer, etc.
+        This method packages all components (including model_index.json, safety_checker,
+        feature_extractor, and scheduler configurations) into the output_path.
+        """
+
+        pipeline = StableDiffusionPipeline(
+            unet=self.model,  # Final fine-tuned UNet (diffusion model)
+            scheduler=self.sampler,  # Final scheduler (e.g. DDIM scheduler)
+            text_encoder=self.custom_text_encoder.text_encoder,  # Fine-tuned text encoder
+            tokenizer=self.tokenizer,  # Tokenizer (usually unchanged)
+            vae=self.vae,
+            safety_checker=self.safety_checker,
+            feature_extractor=self.feature_extractor,
+        )
+        pipeline.save_pretrained(output_path)
 
     def train(self):
         """
@@ -313,7 +337,8 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
             wandb.log({'Attack_Loss': 0.0}, step=global_step)
             global_step += 1
             self.optimizer.step()
-
+        
+        scaler = torch.cuda.amp.GradScaler()
 
         if self.retain_train == 'iter':
             for r in range(self.retain_step):
@@ -393,11 +418,12 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
                     retain_e_n.to(self.devices[0]),
                     retain_e_p.to(self.devices[0])
                 )
-
-                retain_loss.backward()
-                self.optimizer.step()
+                
+                scaler.scale(retain_loss).backward()
+                scaler.step(self.optimizer)
+                scaler.update()
+                torch.cuda.empty_cache() 
             
-                torch.cuda.empty_cache()
 
             if (i + 1) % self.config['save_interval'] == 0 and (i + 1) != self.iterations and (i + 1) >= self.config['save_interval']:
                 if 'text_encoder' in self.train_method:
@@ -414,6 +440,8 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
             save_text_encoder(self.output_dir, self.custom_text_encoder, self.train_method, i)
         else: 
             output_path = f"{self.output_dir}/models/diffuser_model_checkpoint_{i}"
-            self.model_loader.save_model(self.model, output_path)
+            self.save_final_pipeline(output_path)
+
+
         save_history(self.output_dir, losses, self.word_print)
         return self.model

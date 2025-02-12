@@ -11,8 +11,10 @@ import torch
 import torch.nn.functional as F
 
 from diffusers import (
-    DDIMScheduler,
     UNet2DConditionModel,
+    DDIMScheduler,
+    AutoencoderKL,
+    StableDiffusionPipeline
 )
 
 from mu.helpers import load_model_from_config
@@ -70,15 +72,17 @@ def id2embedding(tokenizer, all_embeddings, input_ids, device):
     input_embeds = input_one_hot @ all_embeddings
     return input_embeds
 
-def get_models_for_diffusers(diffuser_model_name_or_path,devices, target_ckpt=None, cache_path=None):
+
+def get_models_for_diffusers(diffuser_model_name_or_path, devices, target_ckpt=None, cache_path=None):
     """
-    Loads two copies of a Diffusers UNet model along with their DDIM schedulers.
+    Loads two copies of a Diffusers UNet model along with their DDIM schedulers,
+    and additionally loads the VAE, safety checker (disabled by default), and feature extractor.
     
     Args:
-        model_name_or_path (str): The Hugging Face model identifier or local path.
+        diffuser_model_name_or_path (str): The Hugging Face model identifier or local path.
         target_ckpt (str or None): Path to a target checkpoint to load into the primary model (on devices[0]).
                                    If None, no state dict is loaded.
-        devices (list or tuple): A list/tuple of two devices, e.g. [device0, device1].
+        devices (list or tuple): A list/tuple of devices, e.g. [device0, device1].
         cache_path (str or None): Optional cache directory for pretrained weights.
         
     Returns:
@@ -86,42 +90,63 @@ def get_models_for_diffusers(diffuser_model_name_or_path,devices, target_ckpt=No
         sampler_orig: The DDIM scheduler corresponding to model_orig.
         model: The UNet loaded on devices[0] (optionally updated with target_ckpt).
         sampler: The DDIM scheduler corresponding to model.
+        vae: The AutoencoderKL (VAE) loaded on devices[0].
+        safety_checker: Disabled (None) by default.
+        feature_extractor: The feature extractor from the pipeline.
     """
     
-    # Load the original model (used for e.g. computing loss, etc.) on devices[1]
+    # Load the original UNet model (used for e.g. computing loss) on devices[1]
     model_orig = UNet2DConditionModel.from_pretrained(
         diffuser_model_name_or_path,
         subfolder="unet",
         cache_dir=cache_path
     ).to(devices[1])
     
-    # Create a DDIM scheduler for model_orig. (Note: diffusers DDIMScheduler is used here;
-    # adjust the subfolder or configuration if your scheduler is stored elsewhere.)
+    # Create a DDIM scheduler for the original model
     sampler_orig = DDIMScheduler.from_pretrained(
         diffuser_model_name_or_path,
         subfolder="scheduler",
         cache_dir=cache_path
     )
     
-    # Load the second copy of the model on devices[0]
+    # Load the second copy of the UNet model on devices[0]
     model = UNet2DConditionModel.from_pretrained(
         diffuser_model_name_or_path,
         subfolder="unet",
         cache_dir=cache_path
     ).to(devices[0])
     
-    # Optionally load a target checkpoint into model
+    # Optionally load a target checkpoint into the model
     if target_ckpt is not None:
         state_dict = torch.load(target_ckpt, map_location=devices[0])
         model.load_state_dict(state_dict)
     
+    # Create a DDIM scheduler for the second model
     sampler = DDIMScheduler.from_pretrained(
         diffuser_model_name_or_path,
         subfolder="scheduler",
         cache_dir=cache_path
     )
     
-    return model_orig, sampler_orig, model, sampler
+    # Load the VAE model on devices[0]
+    vae = AutoencoderKL.from_pretrained(
+        diffuser_model_name_or_path,
+        subfolder="vae",
+        cache_dir=cache_path
+    ).to(devices[0])
+    
+    # Load safety_checker and feature_extractor via a temporary pipeline.
+    # We disable the safety_checker (to avoid _init_weights errors) by setting safety_checker=None.
+    pipe = StableDiffusionPipeline.from_pretrained(
+        diffuser_model_name_or_path,
+        cache_dir=cache_path,
+        safety_checker=None  # Disable safety_checker; you can implement your own dummy if needed.
+    )
+    safety_checker = None  # Alternatively, set this to a dummy safety checker.
+    feature_extractor = pipe.feature_extractor
+    
+    return model_orig, sampler_orig, model, sampler, vae, safety_checker, feature_extractor
+
 
 def get_models_for_compvis(config_path, compvis_ckpt_path, devices):
     model_orig = load_model_from_config(config_path, compvis_ckpt_path, devices[1])
@@ -776,47 +801,56 @@ def param_choices(model, train_method, component='all', final_layer_norm=False):
 
     # UNet Model Tuning
     else:
-        for name, param in model.model.diffusion_model.named_parameters():
-            # train all layers except x-attns and time_embed layers
+        # For CompVis-style models, the diffusion model is nested in model.model.diffusion_model.
+        # For Diffusers models (e.g. UNet2DConditionModel), the model is the UNet.
+        if hasattr(model, 'model') and hasattr(model.model, 'diffusion_model'):
+            unet = model.model.diffusion_model
+        else:
+            unet = model
+
+        for name, param in unet.named_parameters():
+            # Train all layers except x-attentions and time_embed layers
             if train_method == 'noxattn':
                 if name.startswith('out.') or 'attn2' in name or 'time_embed' in name:
-                    pass
+                    continue
                 else:
                     print(name)
                     parameters.append(param)
                     
-            # train only self attention layers
-            if train_method == 'selfattn':
+            # Train only self-attention layers
+            elif train_method == 'selfattn':
                 if 'attn1' in name:
                     print(name)
                     parameters.append(param)
                     
-            # train only x attention layers
-            if train_method == 'xattn':
+            # Train only x-attention layers
+            elif train_method == 'xattn':
                 if 'attn2' in name:
                     print(name)
                     parameters.append(param)
                     
-            # train all layers
-            if train_method == 'full':
+            # Train all layers
+            elif train_method == 'full':
                 print(name)
                 parameters.append(param)
                 
-            # train all layers except time embed layers
-            if train_method == 'notime':
+            # Train all layers except time embed layers
+            elif train_method == 'notime':
                 if not (name.startswith('out.') or 'time_embed' in name):
                     print(name)
                     parameters.append(param)
-            if train_method == 'xlayer':
-                if 'attn2' in name:
-                    if 'output_blocks.6.' in name or 'output_blocks.8.' in name:
-                        print(name)
-                        parameters.append(param)
-            if train_method == 'selflayer':
-                if 'attn1' in name:
-                    if 'input_blocks.4.' in name or 'input_blocks.7.' in name:
-                        print(name)
-                        parameters.append(param)
+                    
+            # Train specific x-layer blocks
+            elif train_method == 'xlayer':
+                if 'attn2' in name and ('output_blocks.6.' in name or 'output_blocks.8.' in name):
+                    print(name)
+                    parameters.append(param)
+                    
+            # Train specific self-layer blocks
+            elif train_method == 'selflayer':
+                if 'attn1' in name and ('input_blocks.4.' in name or 'input_blocks.7.' in name):
+                    print(name)
+                    parameters.append(param)
     
     return parameters
 
