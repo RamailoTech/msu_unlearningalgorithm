@@ -82,7 +82,7 @@ class CustomInstallCommand(_install):
 
 setup(
     name="unlearn_diff",
-    version="1.0.4",
+    version="1.0.5",
     author="nebulaanish",
     author_email="nebulaanish@gmail.com",
     description="Unlearning Algorithms",
