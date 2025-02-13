@@ -1,4 +1,5 @@
 import os
+import re
 from mu.core.base_config import BaseConfig
 from pathlib import Path
 
@@ -30,6 +31,8 @@ class EraseDiffConfig(BaseConfig):
         self.use_sample = True
         self.num_workers = 4
         self.pin_memory = True
+        self.encoder_component = ["all", "ffn", "attn"]
+        self.norm_layer = False
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -46,6 +49,22 @@ class EraseDiffConfig(BaseConfig):
             "notime",
             "xlayer",
             "selflayer",
+            "text_encoder_layer_full",
+            "text_encoder_layer0",
+            "text_encoder_layer01",
+            "text_encoder_layer012",
+            "text_encoder_layer0123",
+            "text_encoder_layer01234",
+            "text_encoder_layer012345",
+            "text_encoder_layer0123456",
+            "text_encoder_layer01234567",
+            "text_encoder_layer012345678",
+            "text_encoder_layer0123456789",
+            "text_encoder_layer012345678910",
+            "text_encoder_layer01234567891011",
+            "text_encoder_layer0_11",
+            "text_encoder_layer01_1011",
+            "text_encoder_layer012_91011",
         ]
         if self.epochs <= 0:
             raise ValueError("epochs should be a positive integer.")

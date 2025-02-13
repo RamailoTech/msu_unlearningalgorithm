@@ -43,7 +43,7 @@ class UnifiedConceptEditingConfig(BaseConfig):
         self.add_prompts = False  # Whether to add additional prompts
 
         # Preserver concepts (comma-separated if multiple)
-        self.preserver_concepts = (
+        self.preserve_concepts = (
             "A Lion image"  # Comma-separated string of preserver concepts
         )
 
