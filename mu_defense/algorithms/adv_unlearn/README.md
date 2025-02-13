@@ -152,12 +152,12 @@ Below is a detailed description of the configuration fields available in the `ad
    * **diffusers_model_name_or_path**  
      *Description*: Model name or path for the diffusers (if used).  
      *Type*: `str`  
-     *Example*: (an empty string by default)
+     *Example*: `outputs/forget_me_not/finetuned_models/Abstractionism`
 
    * **target_ckpt**  
      *Description*: Optionally load a target checkpoint into the model for diffuser sampling.  
      *Type*: Typically `str` or `None`  
-     *Example*: `None`
+     *Example*: `path to target checkpoint path`
 
 2. **Devices & IO**
 
@@ -333,6 +333,7 @@ Below is a detailed description of the configuration fields available in the `ad
      *Description*: Backend framework to be used (e.g., CompVis).  
      *Type*: `str`  
      *Example*: `compvis`
+     *Choices*: `compvis` or `diffusers`
 
 
 ## Directory Structure

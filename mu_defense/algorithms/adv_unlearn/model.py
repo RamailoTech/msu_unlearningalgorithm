@@ -1,13 +1,14 @@
 # mu_defense/algorithms/adv_unlearn/model.py
 
 import torch
+
 from transformers import CLIPTextModel, CLIPTokenizer
+from diffusers import StableDiffusionPipeline, AutoencoderKL
+
 from mu_defense.core import BaseModel 
 from mu_attack.tasks.utils.text_encoder import CustomTextEncoder
 from mu_defense.algorithms.adv_unlearn.utils import get_models_for_compvis, get_models_for_diffusers
 
-# For diffusers components:
-from diffusers import StableDiffusionPipeline, AutoencoderKL
 
 class AdvUnlearnModel(BaseModel):
     def __init__(self, config: dict):

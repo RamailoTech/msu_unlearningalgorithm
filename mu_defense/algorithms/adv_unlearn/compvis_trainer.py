@@ -108,7 +108,6 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
             compvis_ckpt_path=config.get("compvis_ckpt_path", ""),
             backend=config['backend'],
             diffusers_model_name_or_path="",
-            target_ckpt="",
             project=config.get("project_name", "default_project"),
             experiment_name=config.get("experiment_name", "default_experiment")
         )
