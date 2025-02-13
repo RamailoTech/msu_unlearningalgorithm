@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Config - Unlearn Diff</title>
+    <title>Soft prompt - Unlearn Diff</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Config";
-        var mkdocs_page_input_path = "mu_attack/configs/hard_prompt.md";
+        var mkdocs_page_name = "Soft prompt";
+        var mkdocs_page_input_path = "mu_attack/attack/soft_prompt.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -151,44 +151,44 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Unlearn Mu Attack</span></p>
-              <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" >Hard Prompt</a>
-    <ul class="current">
-                <li class="toctree-l2"><a class="reference internal" href="../../attack/hard_prompt/">Usage</a>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" >Hard Prompt</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../hard_prompt/">Usage</a>
                 </li>
-                <li class="toctree-l2 current"><a class="reference internal current" href="#">Config</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/hard_prompt/">Config</a>
                 </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >No attack</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../attack/no_attack/">Usage</a>
+                <li class="toctree-l2"><a class="reference internal" href="../no_attack/">Usage</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../no_attack/">Config</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/no_attack/">Config</a>
                 </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Random</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../attack/random/">Usage</a>
+                <li class="toctree-l2"><a class="reference internal" href="../random/">Usage</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../random/">Config</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/random/">Config</a>
                 </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Seed Search</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../attack/seed_search/">Usage</a>
+                <li class="toctree-l2"><a class="reference internal" href="../seed_search/">Usage</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../seed_search/">Config</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/seed_search/">Config</a>
                 </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Text Grad</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../attack/text_grad/">Usage</a>
+                <li class="toctree-l2"><a class="reference internal" href="../text_grad/">Usage</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../text_grad/">Config</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../configs/text_grad/">Config</a>
                 </li>
     </ul>
                   </li>
@@ -282,9 +282,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Unlearn Mu Attack</li>
-          <li class="breadcrumb-item">Hard Prompt</li>
-      <li class="breadcrumb-item active">Config</li>
+      <li class="breadcrumb-item active">Soft prompt</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -293,156 +291,266 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <p><strong>Sample hard_prompt_config for compvis</strong></p>
-<pre><code class="language-python">class HardPromptESDNudityP4DConfigCompvis(BaseConfig):
-    overall: OverallConfig = OverallConfig(
-        task=&quot;P4D&quot;,
-        attacker=&quot;hard_prompt&quot;,
-        logger=&quot;json&quot;,
-        resume=None
-    )
-
-    task: TaskConfig = TaskConfig(
-        classifier_dir=None,
-        sampling_step_num=1,
-        sld=&quot;weak&quot;,
-        sld_concept=&quot;nudity&quot;,
-        negative_prompt=&quot;&quot;,
-        backend=&quot;compvis&quot;
-    )
-
-    attacker: AttackerConfig = AttackerConfig(
-        sequential = True,
-        lr=0.01,
-        weight_decay=0.1
-    )
-
-    logger: LoggerConfig = LoggerConfig(
-        json={&quot;root&quot;: &quot;results/hard_prompt_esd_nudity_P4D_scissorhands&quot;, &quot;name&quot;: &quot;P4d&quot;}
-    )
+                <h2 id="unlearndiffattak">UnlearnDiffAttak</h2>
+<p>This project implements a novel adversarial unlearning framework designed to perform soft prompt attacks on diffusion models. The primary objective is to subtly perturb the latent conditioning (or prompt) in order to manipulate the generated outputs, such as images, in a controlled and adversarial manner. </p>
+<h3 id="create-environment">Create Environment</h3>
+<pre><code>create_env &lt;algorithm_name&gt;
 </code></pre>
-<p><strong>Sample hard_prompt config json for compvis</strong></p>
-<pre><code class="language-json">{
-    &quot;overall&quot;: {
-        &quot;task&quot;: &quot;P4D&quot;,
-        &quot;attacker&quot;: &quot;hard_prompt&quot;,
-        &quot;logger&quot;: &quot;json&quot;,
-        &quot;resume&quot;: null
-    },
-    &quot;task&quot;: {
-        &quot;concept&quot;: &quot;nudity&quot;,
-        &quot;compvis_ckpt_path&quot;: &quot;outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth&quot;,
-        &quot;compvis_config_path&quot;:&quot;mu/algorithms/scissorhands/configs/model_config.yaml&quot;,
-        &quot;cache_path&quot;: &quot;.cache&quot;,
-        &quot;dataset_path&quot;: &quot;outputs/dataset/i2p_nude&quot;,
-        &quot;criterion&quot;: &quot;l2&quot;,
-        &quot;classifier_dir&quot;: null,
-        &quot;sampling_step_num&quot;: 1,
-        &quot;sld&quot;: &quot;weak&quot;,
-        &quot;sld_concept&quot;: &quot;nudity&quot;,
-        &quot;negative_prompt&quot;: &quot;&quot;,
-        &quot;backend&quot;:&quot;compvis&quot;
-    },
-    &quot;attacker&quot;: {
-        &quot;insertion_location&quot;: &quot;prefix_k&quot;,
-        &quot;k&quot;: 5,
-        &quot;iteration&quot;: 1,
-        &quot;seed_iteration&quot;: 1,
-        &quot;attack_idx&quot;: 0,
-        &quot;eval_seed&quot;: 0,
-        &quot;universal&quot;: false,
-        &quot;sequential&quot;: true,
-        &quot;lr&quot;: 0.01,
-        &quot;weight_decay&quot;: 0.1
-    },
-    &quot;logger&quot;: {
-        &quot;json&quot;: {
-            &quot;root&quot;: &quot;results/hard_prompt_esd_nudity_P4D_scissorhands&quot;,
-            &quot;name&quot;: &quot;P4d&quot;
-        }
-    }
-}
+<p>eg: <code>create_env mu_attack</code></p>
+<pre><code>conda activate &lt;environment_name&gt;
 </code></pre>
-<p><strong>Sample hard_prompt_config for diffusers</strong></p>
-<pre><code class="language-python">class HardPromptESDNudityP4DConfigDiffusers(BaseConfig):
-    overall: OverallConfig = OverallConfig(
-        task=&quot;P4D&quot;,
-        attacker=&quot;hard_prompt&quot;,
-        logger=&quot;json&quot;,
-        resume=None
-    )
+<p>eg: <code>conda activate mu_attack</code></p>
+<h3 id="run-soft-prompt-attack">Run Soft Prompt Attack</h3>
+<ol>
+<li><strong>Soft Prompt Attack - compvis</strong></li>
+</ol>
+<pre><code class="language-python">
+from mu_attack.execs.adv_attack import AdvAttack
+from mu_attack.configs.adv_unlearn import adv_attack_config
+from mu.algorithms.esd.configs import esd_train_mu
 
-    task: TaskConfig = TaskConfig(
-        classifier_dir=None,
-        sampling_step_num=1,
-        sld=&quot;weak&quot;,
-        sld_concept=&quot;nudity&quot;,
-        negative_prompt=&quot;&quot;,
-        backend=&quot;diffusers&quot;
-    )
 
-    attacker: AttackerConfig = AttackerConfig(
-        sequential = True,
-        lr=0.01,
-        weight_decay=0.1
-    )
+def mu_defense():
+    adv_unlearn = AdvAttack(
+        config=adv_attack_config,
+        compvis_ckpt_path = &quot;/home/ubuntu/Projects/dipesh/unlearn_diff/models/sd-v1-4-full-ema.ckpt&quot;,
+        attack_step = 2,
+        backend = &quot;compvis&quot;,
+        config_path = esd_train_mu.model_config_path
 
-    logger: LoggerConfig = LoggerConfig(
-        json={
-            &quot;root&quot;: &quot;results/hard_prompt_esd_nudity_P4D_scissorhands&quot;,
-            &quot;name&quot;: &quot;P4d&quot;
-            }
     )
+    adv_unlearn.attack()
+
+if __name__ == &quot;__main__&quot;:
+    mu_defense()
+
 </code></pre>
-<p><strong>Sample hard_prompt config json for diffusers</strong></p>
-<pre><code class="language-json">{
-    &quot;overall&quot;: {
-        &quot;task&quot;: &quot;P4D&quot;,
-        &quot;attacker&quot;: &quot;hard_prompt&quot;,
-        &quot;logger&quot;: &quot;json&quot;,
-        &quot;resume&quot;: null
-    },
-    &quot;task&quot;: {
-        &quot;concept&quot;: &quot;nudity&quot;,
-        &quot;diffusers_model_name_or_path&quot;: &quot;/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/forget_me_not/finetuned_models/Abstractionism&quot;,
-        &quot;target_ckpt&quot;: &quot;files/pretrained/SD-1-4/ESD_ckpt/Nudity-ESDx1-UNET-SD.pt&quot;,
-        &quot;cache_path&quot;: &quot;.cache&quot;,
-        &quot;dataset_path&quot;: &quot;/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude&quot;,
-        &quot;criterion&quot;: &quot;l2&quot;,
-        &quot;classifier_dir&quot;: null,
-        &quot;sampling_step_num&quot;: 1,
-        &quot;sld&quot;: &quot;weak&quot;,
-        &quot;sld_concept&quot;: &quot;nudity&quot;,
-        &quot;negative_prompt&quot;: &quot;&quot;,
-        &quot;backend&quot;:&quot;diffusers&quot;
-    },
-    &quot;attacker&quot;: {
-        &quot;insertion_location&quot;: &quot;prefix_k&quot;,
-        &quot;k&quot;: 5,
-        &quot;iteration&quot;: 1,
-        &quot;seed_iteration&quot;: 1,
-        &quot;attack_idx&quot;: 0,
-        &quot;eval_seed&quot;: 0,
-        &quot;universal&quot;: false,
-        &quot;sequential&quot;: true,
-        &quot;lr&quot;: 0.01,
-        &quot;weight_decay&quot;: 0.1
-    },
-    &quot;logger&quot;: {
-        &quot;json&quot;: {
-            &quot;root&quot;: &quot;results/hard_prompt_esd_nudity_P4D_semipermeable_membrane&quot;,
-            &quot;name&quot;: &quot;P4d&quot;
-        }
-    }
-}
+<ol>
+<li><strong>Soft Prompt Attack - diffuser</strong></li>
+</ol>
+<pre><code class="language-python">from mu_attack.execs.adv_attack import AdvAttack
+from mu_attack.configs.adv_unlearn import adv_attack_config
+
+
+def mu_defense():
+
+    adv_unlearn = AdvAttack(
+        config=adv_attack_config,
+        diffusers_model_name_or_path = &quot;/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50&quot;,
+        attack_step = 2,
+        backend = &quot;diffusers&quot;
+
+    )
+    adv_unlearn.attack()
+
+if __name__ == &quot;__main__&quot;:
+    mu_defense()
+
 </code></pre>
+<p><strong>Run the python file in offline mode</strong></p>
+<pre><code class="language-bash">WANDB_MODE=offline python_file.py
+</code></pre>
+<p><strong>Code Explanation &amp; Important Notes</strong></p>
+<ul>
+<li>from mu_attack.configs.adv_unlearn import adv_unlearn_config
+→ This imports the predefined Soft Prompt Attack configuration. It sets up the attack parameters and methodologies.</li>
+</ul>
+<p><strong>How It Works</strong> 
+* Default Values: The script first loads default values from the train config file as in configs section.</p>
+<ul>
+<li>
+<p>Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.</p>
+</li>
+<li>
+<p>Final Configuration: The script merges the configs and convert them into dictionary to proceed with the training. </p>
+</li>
+</ul>
+<h3 id="description-of-fields-in-soft-prompt-attack-config">Description of fields in soft prompt attack config</h3>
+<ol>
+<li>
+<p>Model setup</p>
+</li>
+<li>
+<p>config_path : Path to the inference configuration file for Stable Diffusion v1.4.</p>
+<ul>
+<li>Type: str</li>
+<li>Default: "model_config.yaml"</li>
+</ul>
+</li>
+<li>
+<p>compvis_ckpt_path : Path to the Stable Diffusion v1.4 checkpoint file.</p>
+<ul>
+<li>Type: str</li>
+<li>Default: "models/sd-v1-4-full-ema.ckpt"</li>
+</ul>
+</li>
+<li>
+<p>encoder_model_name_or_path : Path to the pre-trained encoder model used for text-to-image training.</p>
+<ul>
+<li>Type: str</li>
+<li>Default: "CompVis/stable-diffusion-v1-4"</li>
+</ul>
+</li>
+<li>
+<p>diffusers_model_name_or_path : Path to the Diffusers-based implementation of the model.</p>
+<ul>
+<li>Type: str</li>
+<li>Default: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"</li>
+</ul>
+</li>
+<li>
+<p>target_ckpt : Checkpoint path for sampling. If None, it uses the default model.</p>
+<ul>
+<li>Type: str</li>
+<li>Default: None</li>
+</ul>
+</li>
+<li>
+<p>Devices &amp; I/O</p>
+</li>
+<li>
+<p>devices : Specifies the CUDA devices used for training.</p>
+<ul>
+<li>Type: str</li>
+<li>Default: "0,0"</li>
+</ul>
+</li>
+<li>
+<p>seperator : Defines the separator used when processing multiple words for unlearning.</p>
+<ul>
+<li>Type: str</li>
+<li>Default: None</li>
+</ul>
+</li>
+<li>
+<p>cache_path : Path where intermediate results and cache files are stored.</p>
+<ul>
+<li>Type: str</li>
+<li>Default: ".cache"</li>
+</ul>
+</li>
+<li>
+<p>Image &amp; Diffusion Sampling</p>
+</li>
+<li>
+<p>start_guidance : Guidance scale used for generating the initial image.</p>
+<ul>
+<li>Type: float</li>
+<li>Default: 3.0</li>
+</ul>
+</li>
+<li>
+<p>ddim_steps : Number of DDIM sampling steps used for inference.</p>
+<ul>
+<li>Type: int</li>
+<li>Default: 50</li>
+</ul>
+</li>
+<li>
+<p>image_size : The resolution of images generated during training.</p>
+<ul>
+<li>Type: int</li>
+<li>Default: 512</li>
+</ul>
+</li>
+<li>
+<p>ddim_eta : Noise scaling factor for DDIM inference.</p>
+<ul>
+<li>Type: float</li>
+<li>Default: 0</li>
+</ul>
+</li>
+<li>
+<p>prompt: The text prompt associated with the concept to erase.</p>
+<ul>
+<li>Type: str</li>
+<li>Default: "nudity"</li>
+</ul>
+</li>
+<li>
+<p>attack_method: The adversarial attack method used during training.</p>
+<ul>
+<li>Type: str</li>
+<li>Choices: ["pgd", "multi_pgd", "fast_at", "free_at"]</li>
+<li>Default: "pgd"</li>
+</ul>
+</li>
+<li>
+<p>ddim_eta: The DDIM sampling noise parameter.</p>
+<ul>
+<li>Type: float</li>
+<li>Default: 0</li>
+</ul>
+</li>
+<li>
+<p>Adversarial Attack Hyperparameters</p>
+</li>
+<li>
+<p>adv_prompt_num: Number of prompt tokens used for adversarial learning.</p>
+<ul>
+<li>Type: int</li>
+<li>Default: 1</li>
+</ul>
+</li>
+<li>
+<p>attack_embd_type: Type of embedding targeted for attack.</p>
+<ul>
+<li>Type: str</li>
+<li>Choices: ["word_embd", "condition_embd"]</li>
+<li>Default: "word_embd"</li>
+</ul>
+</li>
+<li>
+<p>attack_type: The type of attack applied.</p>
+<ul>
+<li>Type: str</li>
+<li>Choices: ["replace_k", "add", "prefix_k", "suffix_k", "mid_k", "insert_k", "per_k_words"]</li>
+<li>Default: "prefix_k"</li>
+</ul>
+</li>
+<li>
+<p>attack_init: Method for initializing adversarial attacks.</p>
+<ul>
+<li>Type: str</li>
+<li>Choices: ["random", "latest"]</li>
+<li>Default: "latest"</li>
+</ul>
+</li>
+<li>
+<p>attack_step: Number of attack optimization steps.</p>
+<ul>
+<li>Type: int</li>
+<li>Default: 30</li>
+</ul>
+</li>
+<li>
+<p>attack_lr: Learning rate for adversarial attack updates.</p>
+<ul>
+<li>Type: float</li>
+<li>Default: 1e-3</li>
+</ul>
+</li>
+<li>
+<p>Backend &amp; Logging</p>
+</li>
+<li>
+<p>backend: Specifies the backend for diffusion-based training.</p>
+<ul>
+<li>Type: str</li>
+<li>Default: "diffusers"</li>
+</ul>
+</li>
+<li>
+<p>project_name: Name of the WandB project for logging.</p>
+<ul>
+<li>Type: str</li>
+<li>Default: "quick-canvas-machine-unlearning"</li>
+</ul>
+</li>
+</ol>
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../../attack/hard_prompt/" class="btn btn-neutral float-left" title="Usage"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../../attack/no_attack/" class="btn btn-neutral float-right" title="Usage">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -464,10 +572,6 @@
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../../attack/hard_prompt/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../../attack/no_attack/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

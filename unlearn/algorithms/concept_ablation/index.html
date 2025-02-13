@@ -57,23 +57,13 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#downloading-data-and-models">Downloading data and models.</a>
     </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#run-train">Run Train</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#example-command">Example Command</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#running-the-training-script-in-offline-mode">Running the Training Script in Offline Mode</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#overriding-configuration-via-command-line">Overriding Configuration via Command Line</a>
+    <li class="toctree-l4"><a class="reference internal" href="#example-usage">Example usage</a>
     </li>
         </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#directory-structure">Directory Structure</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#how-it-works">How It Works</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#directory-structure">Directory Structure</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#configuration-file-train_configyaml">Configuration File (train_config.yaml)</a>
         <ul>
@@ -249,14 +239,80 @@
     </ul>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Evaluation</span></p>
+              <p class="caption"><span class="caption-text">Unlearn Mu Defense</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../../mu_attack/mu_attack_evaluation/">Usage</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../mu_defense/adv_unlearn/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../mu_defense/config/">Config</a>
                   </li>
               </ul>
+              <p class="caption"><span class="caption-text">Evaluation</span></p>
               <ul>
-                <li class="toctree-l1"><a class="" href="../../../algorithms/contributing.md">Contributing</a>
+                  <li class="toctree-l1"><a class="reference internal" >Concept Ablation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/concept_ablation/">Evaluation</a>
                 </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Erase Diff</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/erase_diff/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >ESD</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/esd/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Forget Me Not</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/forget_me_not/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Saliency Unlearning</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/saliency/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Scissor Hands</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/scissorhands/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Selective Amnesia</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="../../../evaluation/selective_amnesia.md">Usage</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Semi Permeable Membrane</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/semipermeable_membrane/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Unified Concept Editing</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/uce/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >mu_attack</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="../../../evaluation/mu_attack.md">Usage</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">docs</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -336,33 +392,37 @@
 ls -lh ./data/quick-canvas-dataset/sample/
 </code></pre>
 <hr />
-<h2 id="run-train">Run Train</h2>
-<h3 id="example-command">Example Command</h3>
-<pre><code class="language-bash">python -m mu.algorithms.concept_ablation.scripts.train \
---config_path mu/algorithms/concept_ablation/configs/train_config.yaml \
---prompts mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt
+<h3 id="example-usage">Example usage</h3>
+<p>Add the following code snippet to a python script <code>trainer.py</code>. Run the script using <code>python trainer.py</code>.</p>
+<pre><code class="language-python">from mu.algorithms.concept_ablation.algorithm import (
+    ConceptAblationAlgorithm,
+)
+from mu.algorithms.concept_ablation.configs import (
+    concept_ablation_train_mu,
+    ConceptAblationConfig,
+)
+
+if __name__ == &quot;__main__&quot;:
+
+    concept_ablation_train_mu.lightning.trainer.max_steps = 5
+
+    algorithm = ConceptAblationAlgorithm(
+        concept_ablation_train_mu,
+        config_path=&quot;/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/concept_ablation/configs/train_config.yaml&quot;,
+        ckpt_path=&quot;/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt&quot;,
+        prompts=&quot;/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt&quot;,
+        output_dir=&quot;/opt/dlami/nvme/outputs&quot;,
+        # devices=&quot;1&quot;,
+    )
+    algorithm.run()
 </code></pre>
-<h3 id="running-the-training-script-in-offline-mode">Running the Training Script in Offline Mode</h3>
-<pre><code class="language-bash">WANDB_MODE=offline python -m mu.algorithms.concept_ablation.scripts.train \
---config_path mu/algorithms/concept_ablation/configs/train_config.yaml \
---prompts /home/ubuntu/Projects/Palistha/msu_unlearningalgorithm/mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt
-</code></pre>
-<h3 id="overriding-configuration-via-command-line">Overriding Configuration via Command Line</h3>
-<p>You can override configuration parameters by passing them directly as arguments during runtime.</p>
-<p><strong>Example Usage with Command-Line Arguments:</strong></p>
-<pre><code class="language-bash">python -m mu.algorithms.concept_ablation.scripts.train \
---config_path mu/algorithms/concept_ablation/configs/train_config.yaml \
---batch_size 8 \
---base_lr 1e-5 \
---devices 0,1 \
---output_dir outputs/experiment_2
-</code></pre>
-<p><strong>Explanation:</strong>
-* <code>--config_path</code>: Specifies the YAML configuration file.
-* <code>--batch_size</code>: Overrides the batch size to 8.
-* <code>--base_lr</code>: Updates the base learning rate to 1e-5.
-* <code>--devices</code>: Specifies the GPUs (e.g., device 0 and 1).
-* <code>--output_dir</code>: Sets a custom output directory for the experiment.</p>
+<h2 id="notes">Notes</h2>
+<ol>
+<li>Ensure all dependencies are installed as per the environment file.</li>
+<li>The training process generates logs in the <code>logs/</code> directory for easy monitoring.</li>
+<li>Use appropriate CUDA devices for optimal performance during training.</li>
+<li>Regularly verify dataset and model configurations to avoid errors during execution.</li>
+</ol>
 <hr />
 <h2 id="directory-structure">Directory Structure</h2>
 <ul>
@@ -373,22 +433,6 @@ ls -lh ./data/quick-canvas-dataset/sample/
 <li><code>callbacks/</code>: Custom callbacks for logging and monitoring training.</li>
 <li><code>utils.py</code>: Utility functions.</li>
 </ul>
-<hr />
-<h2 id="how-it-works">How It Works</h2>
-<ol>
-<li><strong>Default Configuration:</strong> Loads values from the specified YAML file (<code>--config_path</code>).</li>
-<li><strong>Command-Line Overrides:</strong> Updates the configuration with values provided as command-line arguments.</li>
-<li><strong>Training Execution:</strong> Initializes the <code>ConceptAblationAlgorithm</code> and trains the model using the provided dataset, model checkpoint, and configuration.</li>
-<li><strong>Output:</strong> Saves the fine-tuned model and logs training metrics in the specified output directory.</li>
-</ol>
-<hr />
-<h2 id="notes">Notes</h2>
-<ol>
-<li>Ensure all dependencies are installed as per the environment file.</li>
-<li>The training process generates logs in the <code>logs/</code> directory for easy monitoring.</li>
-<li>Use appropriate CUDA devices for optimal performance during training.</li>
-<li>Regularly verify dataset and model configurations to avoid errors during execution.</li>
-</ol>
 <h2 id="configuration-file-train_configyaml">Configuration File (<code>train_config.yaml</code>)</h2>
 <h3 id="training-parameters">Training Parameters</h3>
 <ul>

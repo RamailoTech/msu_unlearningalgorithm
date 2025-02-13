@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Mu attack evaluation - Unlearn Diff</title>
+    <title>Config - Unlearn Diff</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Mu attack evaluation";
-        var mkdocs_page_input_path = "mu_attack/mu_attack_evaluation.md";
+        var mkdocs_page_name = "Config";
+        var mkdocs_page_input_path = "mu_defense/config.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -154,50 +154,52 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" >Hard Prompt</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../attack/hard_prompt/">Usage</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../mu_attack/attack/hard_prompt/">Usage</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../configs/hard_prompt/">Config</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../mu_attack/configs/hard_prompt/">Config</a>
                 </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >No attack</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../attack/no_attack/">Usage</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../mu_attack/attack/no_attack/">Usage</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../configs/no_attack/">Config</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../mu_attack/configs/no_attack/">Config</a>
                 </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Random</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../attack/random/">Usage</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../mu_attack/attack/random/">Usage</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../configs/random/">Config</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../mu_attack/configs/random/">Config</a>
                 </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Seed Search</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../attack/seed_search/">Usage</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../mu_attack/attack/seed_search/">Usage</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../configs/seed_search/">Config</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../mu_attack/configs/seed_search/">Config</a>
                 </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Text Grad</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../attack/text_grad/">Usage</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../mu_attack/attack/text_grad/">Usage</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../configs/text_grad/">Config</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../mu_attack/configs/text_grad/">Config</a>
                 </li>
     </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Unlearn Mu Defense</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../mu_defense/adv_unlearn/">Usage</a>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../adv_unlearn/">Usage</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../mu_defense/config/">Config</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Config</a>
+    <ul class="current">
+    </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Evaluation</span></p>
@@ -282,7 +284,8 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Mu attack evaluation</li>
+          <li class="breadcrumb-item">Unlearn Mu Defense</li>
+      <li class="breadcrumb-item active">Config</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -291,128 +294,95 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h3 id="evaluation">Evaluation:</h3>
-<p>In this section, we assess the performance and robustness of the results generated by the attack algorithms</p>
-<h4 id="running-the-evaluation-framework"><strong>Running the Evaluation Framework</strong></h4>
-<p>Create a file, eg, <code>evaluate.py</code> and use examples and modify your configs to run the file.  </p>
-<p><strong>Example Code</strong></p>
-<pre><code class="language-python">from evaluation.evaluators.asr import ASREvaluator
-from evaluation.evaluators.clip_score import ClipScoreEvaluator
-from evaluation.evaluators.mu_attack_fid import FIDEvaluator
-from mu_attack.configs.evaluation import attack_evaluation_config
+                <h4 id="sample-config-for-advattack-mu_defense">Sample config for Advattack (mu_defense)</h4>
+<pre><code class="language-python">#mu_defense/algorithms/adv_unlearn/configs/adv_unlearn_config.py
+
+import os
+from pathlib import Path
+from mu_defense.core.base_config import BaseConfig
 
 
-def main():
-    # Initialize the configuration
-    config = attack_evaluation_config
-    config.asr.root = &quot;/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d&quot;
-    config.asr.root_no_attack = &quot;/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/no_attack_esd_nudity/NoAttackEsdNudity&quot;
-    config.clip.devices = &quot;0&quot;
-    config.clip.image_path = &quot;/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d/images&quot;
-    config.clip.log_path = &quot;/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d/log.json&quot;
-    config.fid.ref_batch_path = &quot;/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d/images&quot;
-    config.fid.sample_batch_path = &quot;/home/ubuntu/Projects/balaram/unlearn_diff_attack/outputs/dataset/i2p_nude/imgs&quot;
+class AdvUnlearnConfig(BaseConfig):
+    def __init__(self, **kwargs):
+        # Inference &amp; Model Paths
+        self.model_config_path = &quot;configs/stable-diffusion/v1-inference.yaml&quot; #for compvis
+        self.compvis_ckpt_path = &quot;models/sd-v1-4-full-ema.ckpt&quot;
+        self.encoder_model_name_or_path = &quot;CompVis/stable-diffusion-v1-4&quot;
+        self.cache_path = &quot;.cache&quot;
 
-    # Common output path
-    config.output_path = &quot;/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/evaluation/results.json&quot;
+        self.diffusers_model_name_or_path = &quot;&quot;
+        self.target_ckpt = None #Optionally load a target checkpoint into model for diffuser sampling
 
-    # Initialize and run the ASR evaluator
-    asr_evaluator = ASREvaluator(
-        config = attack_evaluation_config,
-        root=config.asr.root,
-        root_no_attack=config.asr.root_no_attack,
-        output_path=config.output_path
-    )
-    print(&quot;Running ASR Evaluator...&quot;)
-    asr_evaluator.run()
+        # Devices &amp; IO
+        self.devices = &quot;0,0&quot;  # You can later parse this string into a list if needed.
+        self.seperator = None
+        self.output_dir = &quot;outputs/adv_unlearn&quot;
 
-    # Initialize and run the CLIP Score evaluator
-    clip_evaluator = ClipScoreEvaluator(
-        config = attack_evaluation_config,
-        image_path=config.clip.image_path,
-        log_path=config.clip.log_path,
-        output_path=config.output_path,
-        devices = config.clip.devices
-    )
-    print(&quot;Running CLIP Score Evaluator...&quot;)
-    clip_evaluator.run()
+        # Image &amp; Diffusion Sampling
+        self.image_size = 512
+        self.ddim_steps = 50
+        self.start_guidance = 3.0
+        self.negative_guidance = 1.0
 
-    # Initialize and run the FID evaluator
-    fid_evaluator = FIDEvaluator(
-        config = attack_evaluation_config,
-        ref_batch_path=config.fid.ref_batch_path,
-        sample_batch_path=config.fid.sample_batch_path,
-        output_path=config.output_path
-    )
-    print(&quot;Running FID Evaluator...&quot;)
-    fid_evaluator.run()
+        # Training Setup
+        self.prompt = &quot;nudity&quot;
+        self.dataset_retain = &quot;coco_object&quot;  # Choices: 'coco_object', 'coco_object_no_filter', 'imagenet243', 'imagenet243_no_filter'
+        self.retain_batch = 5
+        self.retain_train = &quot;iter&quot;  # Options: 'iter' or 'reg'
+        self.retain_step = 1
+        self.retain_loss_w = 1.0
+        self.ddim_eta = 0
 
+        self.train_method = &quot;text_encoder_full&quot;   #choices: text_encoder_full', 'text_encoder_layer0', 'text_encoder_layer01', 'text_encoder_layer012', 'text_encoder_layer0123', 'text_encoder_layer01234', 'text_encoder_layer012345', 'text_encoder_layer0123456', 'text_encoder_layer01234567', 'text_encoder_layer012345678', 'text_encoder_layer0123456789', 'text_encoder_layer012345678910', 'text_encoder_layer01234567891011', 'text_encoder_layer0_11','text_encoder_layer01_1011', 'text_encoder_layer012_91011', 'noxattn', 'selfattn', 'xattn', 'full', 'notime', 'xlayer', 'selflayer
+        self.norm_layer = False  # This is a flag; use True if you wish to update the norm layer.
+        self.attack_method = &quot;pgd&quot;  # Choices: 'pgd', 'multi_pgd', 'fast_at', 'free_at'
+        self.component = &quot;all&quot;     # Choices: 'all', 'ffn', 'attn'
+        self.iterations = 10
+        self.save_interval = 200
+        self.lr = 1e-5
 
-if __name__ == &quot;__main__&quot;:
-    main()
+        # Adversarial Attack Hyperparameters
+        self.adv_prompt_num = 1
+        self.attack_embd_type = &quot;word_embd&quot;  # Choices: 'word_embd', 'condition_embd'
+        self.attack_type = &quot;prefix_k&quot;         # Choices: 'replace_k', 'add', 'prefix_k', 'suffix_k', 'mid_k', 'insert_k', 'per_k_words'
+        self.attack_init = &quot;latest&quot;           # Choices: 'random', 'latest'
+        self.attack_step = 30
+        self.attack_init_embd = None
+        self.adv_prompt_update_step = 1
+        self.attack_lr = 1e-3
+        self.warmup_iter = 200
 
+        #backend
+        self.backend = &quot;compvis&quot;
 
+        # Override default values with any provided keyword arguments.
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def validate_config(self):
+        &quot;&quot;&quot;
+        Perform basic validation on the config parameters.
+        &quot;&quot;&quot;
+        if self.retain_batch &lt;= 0:
+            raise ValueError(&quot;retain_batch should be a positive integer.&quot;)
+        if self.lr &lt;= 0:
+            raise ValueError(&quot;Learning rate (lr) should be positive.&quot;)
+        if self.image_size &lt;= 0:
+            raise ValueError(&quot;Image size should be a positive integer.&quot;)
+        if self.iterations &lt;= 0:
+            raise ValueError(&quot;Iterations must be a positive integer.&quot;)
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
+
+adv_unlearn_config = AdvUnlearnConfig()
 </code></pre>
-<p><strong>Running the Training Script in Offline Mode</strong></p>
-<pre><code class="language-bash">WANDB_MODE=offline python evaluate.py
-</code></pre>
-<p><strong>How It Works</strong> 
-* Default Values: The script first loads default values from the evluation config file as in configs section.</p>
-<ul>
-<li>
-<p>Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.</p>
-</li>
-<li>
-<p>Final Configuration: The script merges the configs and convert them into dictionary to proceed with the evaluation. </p>
-</li>
-</ul>
-<p><strong>Evaluation Metrics:</strong></p>
-<ul>
-<li>
-<p>Attack Succes Rate (ASR)</p>
-</li>
-<li>
-<p>Fréchet inception distance(FID): evaluate distributional quality of image generations, lower is better.</p>
-</li>
-<li>
-<p>CLIP score : measure contextual alignment with prompt descriptions, higher is better.</p>
-</li>
-</ul>
-<p><strong>Configuration File Structure for Evaluator</strong></p>
-<ul>
-<li>
-<p>ASR Evaluator Configuration</p>
-<ul>
-<li>root: Directory containing results with attack.</li>
-<li>root-no-attack: Directory containing results without attack.</li>
-</ul>
-</li>
-<li>
-<p>Clip Evaluator Configuration</p>
-<ul>
-<li>image_path: Path to the directory containing generated images to evaluate.</li>
-<li>devices: Device ID(s) to use for evaluation. Example: "0" for the first GPU or "0,1" for multiple GPUs.</li>
-<li>log_path: Path to the log file containing prompt for the generated images.</li>
-<li>model_name_or_path: Path or model name for the pre-trained CLIP model. Default is "openai/clip-vit-base-patch32".</li>
-</ul>
-</li>
-<li>
-<p>FID Evaluator Configuration</p>
-<ul>
-<li>ref_batch_path: Path to the directory containing reference images.</li>
-<li>sample_batch_path: Path to the directory containing generated/sample images.</li>
-</ul>
-</li>
-<li>
-<p>Global Configuration</p>
-<ul>
-<li>output_path: Path to save the evaluation results as a JSON file.</li>
-</ul>
-</li>
-</ul>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../adv_unlearn/" class="btn btn-neutral float-left" title="Usage"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../evaluation/concept_ablation/" class="btn btn-neutral float-right" title="Evaluation">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -434,6 +404,10 @@ if __name__ == &quot;__main__&quot;:
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
+      <span><a href="../adv_unlearn/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../evaluation/concept_ablation/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
