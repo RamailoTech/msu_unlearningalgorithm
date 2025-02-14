@@ -11,10 +11,6 @@ from diffusers import StableDiffusionPipeline
 from mu.core.base_sampler import BaseSampler  
 from stable_diffusion.constants.const import theme_available, class_available
 
-#TODO to remove this
-theme_available = ['Abstractionism', 'Bricks', 'Cartoon']
-class_available = ['Architectures', 'Bears', 'Birds']
-
 
 class ForgetMeNotSampler(BaseSampler):
     """ForgetMeNot Image Generator class extending a hypothetical BaseImageGenerator."""

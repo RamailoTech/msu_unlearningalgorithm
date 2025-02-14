@@ -3,13 +3,14 @@ docs_dir: docs
 site_dir: docs_build  
 
 nav:
-  - Home: README.md
-  - Attack: attack/Readme_MU_Attack.md 
   - Unlearn Algorithms:
+    - Home: README.md
     - Concept Ablation: 
       - Usage: unlearn/algorithms/concept_ablation.md
-      # - Examples: examples/concept_ablation.md
-      # - Configs: configs/concept_ablation.md
+      - Examples: unlearn/examples/concept_ablation.md
+      - Configs: unlearn/configs/concept_ablation.md
+      - Evaluation: evaluation/concept_ablation.md
+
     - Erase Diff: 
       - Usage: unlearn/algorithms/erase_diff.md 
       - Examples: unlearn/examples/erase_diff.md
@@ -42,8 +43,9 @@ nav:
 
     - Selective Amnesia: 
       - Usage: unlearn/algorithms/selective_amnesia.md
-    #   - Examples: examples/selective_amnesia.md
-    #   - Configs: configs/selective_amnesia.md
+      - Examples: unlearn/examples/selective_amnesia.md
+      - Configs: unlearn/configs/selective_amnesia.md
+
     - Semi Permeable Membrane: 
       - Usage: unlearn/algorithms/semipermeable_membrane.md
       - Examples: unlearn/examples/semipermeable_membrane.md
