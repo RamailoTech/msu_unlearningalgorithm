@@ -10,10 +10,8 @@ dependencies:
   - torchvision=0.12.0
   - numpy=1.19.2
   - onnxruntime
-  - terminaltables=3.1.10
-  - scipy==1.10.1
-  - huggingface_hub==0.25.1
   - pip:
+      - huggingface_hub==0.25.1
       - albumentations==0.4.3
       - datasets==2.8.0
       - diffusers==0.32.1
@@ -60,6 +58,7 @@ dependencies:
       - open_clip_torch
       - wandb==0.18.7
       - quadprog
-      - unlearn_diff
       - fire==0.7.0
+      - terminaltables==3.1.10
       - git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
+      - unlearn_diff
