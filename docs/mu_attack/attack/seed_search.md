@@ -5,9 +5,15 @@ This repository contains the implementation of UnlearnDiffAttack for seed search
 
 
 ### Create Environment 
-```bash
-conda env create -f environment.yaml
 ```
+create_env <algorithm_name>
+```
+eg: ```create_env mu_attack```
+
+```
+conda activate <environment_name>
+```
+eg: ```conda activate mu_attack```
 
 ### Generate Dataset
 

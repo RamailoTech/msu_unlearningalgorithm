@@ -13,29 +13,29 @@ You can run the evaluation framework using the `evaluate.py` script located in t
 conda activate <env_name>
 ```
 
-```bash
-python -m mu.algorithms.semipermeable_membrane.scripts.evaluate \
---config_path mu/algorithms/semipermeable_membrane/configs/evaluation_config.yaml
+Add the following code to `evaluate.py`
+
+```python
+from mu.algorithms.semipermeable_membrane import SemipermeableMembraneEvaluator
+from mu.algorithms.semipermeable_membrane.configs import (
+    semipermeable_membrane_eval_config
+)
+
+evaluator = SemipermeableMembraneEvaluator(
+    semipermeable_membrane_eval_config,
+    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors",
+    spm_path = ["/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"],
+    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/",
+    model_config = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/mu_semipermeable_membrane_spm/configs"
+)
+evaluator.run()
 ```
 
-
-**Running in Offline Mode:**
-
-```bash
-WANDB_MODE=offline python -m mu.algorithms.semipermeable_membrane.scripts.evaluate \
---config_path mu/algorithms/semipermeable_membrane/configs/evaluation_config.yaml
-```
-
-
-**Example with CLI Overrides:**
+**Run the script**
 
 ```bash
-python -m mu.algorithms.semipermeable_membrane.scripts.evaluate \
-    --config_path mu/algorithms/semipermeable_membrane/configs/evaluation_config.yaml \
-    --devices "0" \
-    --seed 123 \
-    --cfg_text 8.5 \
-    --batch_size 16
+python evaluate.py
 ```
 
 

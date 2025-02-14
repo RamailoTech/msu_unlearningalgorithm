@@ -60,5 +60,5 @@ lightning:
       every_n_train_steps: 10000
 
   trainer:
-    max_steps: 50
+    max_steps: 5
 
