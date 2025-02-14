@@ -9,6 +9,10 @@ dependencies:
   - pytorch=1.11.0
   - torchvision=0.12.0
   - numpy=1.19.2
+  - onnxruntime
+  - terminaltables=3.1.10
+  - scipy==1.10.1
+  - huggingface_hub==0.25.1
   - pip:
       - albumentations==0.4.3
       - datasets==2.8.0
@@ -58,3 +62,4 @@ dependencies:
       - quadprog
       - unlearn_diff
       - fire==0.7.0
+      - git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
