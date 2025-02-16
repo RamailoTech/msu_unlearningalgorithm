@@ -19,13 +19,9 @@ class AdvUnlearnTrainer(BaseTrainer):
         # Setup components based on the backend.
         if self.backend == "compvis":
             self.logger.info("Using Compvis backend for adversarial unlearning.")
-            
-            # Create the CompVis trainer.
             self.trainer = AdvUnlearnCompvisTrainer(model, config, devices)
         if self.backend == "diffusers":
             self.logger.info("Using Diffusers backend for adversarial unlearning.")
-            
-            # Create the diffuser trainer.
             self.trainer = AdvUnlearnDiffuserTrainer(model, config, devices)
             
 

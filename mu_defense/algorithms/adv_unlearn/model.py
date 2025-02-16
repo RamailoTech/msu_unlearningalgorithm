@@ -68,7 +68,7 @@ class AdvUnlearnModel(BaseModel):
         Save the model's state dictionary or pretrained files.
         """
         if self.backend == "compvis":
-            torch.save({"state_dict": model.state_dict()}, output_path)
+            torch.save(model.state_dict(), output_path)
         elif self.backend == "diffusers":
             model.save_pretrained(output_path)
 

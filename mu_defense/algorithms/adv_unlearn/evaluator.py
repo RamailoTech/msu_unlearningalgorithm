@@ -11,30 +11,37 @@ from PIL import Image
 from torchvision import models, transforms
 from T2IBenchmark import calculate_fid
 
+from mu_defense.algorithms.adv_unlearn.configs import MUDefenseEvaluationConfig
 from evaluation.core import DefenseBaseEvaluator
 
 
 class MUDefenseEvaluator(DefenseBaseEvaluator):
     """Evaluator for the defense."""
     
-    def __init__(self, config):
+    def __init__(self, config: MUDefenseEvaluationConfig,**kwargs):
         """Initialize the evaluator."""
-        super().__init__(config)
+        super().__init__(config, **kwargs)
+        self.config = config.__dict__
+        for key, value in kwargs.items():
+            setattr(config, key, value)
         self.job = self.config.get("job") 
-        self.gen_imgs_path = self.config["gen_imgs_path"]
+        self.gen_imgs_path = self.config.get("gen_imgs_path")
         self.coco_imgs_path = self.config.get("coco_imgs_path")
         self.prompt_path = self.config.get("prompt_path")
         self.classify_prompt_path = self.config.get("classify_prompt_path", "data/prompts/imagenette_5k.csv")
         self.classification_model_path = self.config.get("classification_model_path")
+        self.devices = self.config.get("devices")
+        self.devices = [f'cuda:{int(d.strip())}' for d in self.devices.split(',')]
 
         self.logger = logging.getLogger(__name__)
 
         self._parse_config()
         self.load_model()
+        config.validate_config()
         self.results = {}
 
     
-    def _load_model(self):
+    def load_model(self):
         """Load models needed for evaluation."""
         if self.job == 'clip':
             self.clip_model = CLIPModel.from_pretrained(self.classification_model_path).to(self.devices[0])

@@ -18,7 +18,7 @@ from mu_defense.algorithms.adv_unlearn.utils import (
     get_train_loss_retain_diffuser,
     save_text_encoder,
     save_history,
-    sample_model_for_diffuser
+    sample_model_for_diffuser,
 )
 
 
@@ -198,24 +198,20 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
         pipeline.save_pretrained(output_path,safe_serialization=True)
 
     def train(self):
-        """
-        Execute the adversarial unlearning training loop.
-        """
         ddim_eta = self.ddim_eta
-
         quick_sample_till_t = lambda x, s, code, batch, t: sample_model_for_diffuser(
             self.model, self.sampler,
             x, self.image_size, self.image_size, self.ddim_steps, s, ddim_eta,
             start_code=code, n_samples=batch, till_T=t, verbose=False
         )
         losses = []
-        history = []
         global_step = 0
         attack_round = 0 
 
         pbar = tqdm(range(self.iterations))
         for i in pbar:
-            torch.cuda.empty_cache() 
+            torch.cuda.empty_cache()
+            # --- ADVERSARIAL PROMPT UPDATE ---
             if i % self.adv_prompt_update_step == 0:
                 if self.retain_dataset.check_unseen_prompt_count() < self.retain_batch:
                     self.retain_dataset.reset()
@@ -226,26 +222,26 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
                     max_length=self.tokenizer.model_max_length,
                     return_tensors="pt",
                     truncation=True
-                )
-                text_embeddings = id2embedding(
-                    self.tokenizer,
-                    self.all_embeddings,
-                    text_input.input_ids.to(self.devices[0]),
-                    self.devices[0]
-                )
-
-
+                ).to(self.devices[0])
+                
+                # Compute text embeddings on device
+                with torch.no_grad():
+                    text_embeddings = id2embedding(
+                        self.tokenizer,
+                        self.all_embeddings,
+                        text_input.input_ids,
+                        self.devices[0]
+                    )
                 emb_0 = self.encode_text("")
                 emb_p = self.encode_text(word)
 
-
                 if i >= self.warmup_iter:
+                    # Set models to eval for adversarial prompt update to save memory
                     self.custom_text_encoder.text_encoder.eval()
                     self.custom_text_encoder.text_encoder.requires_grad_(False)
                     self.model.eval()
 
                     adv_word_embd, adv_input_ids = self.adv_attack.attack(word, global_step, attack_round)
-
                     if self.attack_embd_type == 'word_embd':
                         self.adv_word_embd, self.adv_input_ids = adv_word_embd, adv_input_ids
                     elif self.attack_embd_type == 'condition_embd':
@@ -254,14 +250,14 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
                     global_step += self.attack_step
                     attack_round += 1 
 
+            # --- TRAINING MODE ---
             if 'text_encoder' in self.train_method:
                 self.custom_text_encoder.text_encoder.train()
                 self.custom_text_encoder.text_encoder.requires_grad_(True)
-                self.model.train()  # Allow gradients to flow through conditioning
-                # Optionally, freeze model parameters so that only the text encoder is updated:
+                self.model.train()  # Allow gradients through conditioning
+                # Optionally freeze model parameters for non-updated parts
                 for param in self.model.parameters():
                     param.requires_grad = False
-
             else:
                 self.custom_text_encoder.text_encoder.eval()
                 self.custom_text_encoder.text_encoder.requires_grad_(False)
@@ -269,6 +265,7 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
 
             self.optimizer.zero_grad()
 
+            # --- RETENTION BRANCH ---
             if self.retain_train == 'reg':
                 retain_words = self.retain_dataset.get_random_prompts(self.retain_batch)
                 retain_text_inputs = self.tokenizer(
@@ -278,169 +275,82 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
                     max_length=77,
                     return_tensors="pt"
                 ).to(self.devices[0])
-
                 with torch.no_grad():
                     retain_emb_p = self.text_encoder(retain_text_inputs.input_ids)[0]
-
-                # Match batch size
+                # Match batch size for latent generation
                 retain_start_code = torch.randn((self.retain_batch, 4, self.image_size // 8, self.image_size // 8), device=self.devices[0])
-
-                retain_z = quick_sample_till_t(
-                    retain_emb_p.to(self.devices[0]),
-                    self.start_guidance,
-                    retain_start_code,
-                    self.retain_batch,
-                    int(torch.randint(self.ddim_steps, (1,), device=self.devices[0]))
-                )
-
+                with torch.cuda.amp.autocast():
+                    retain_z = quick_sample_till_t(
+                        retain_emb_p,
+                        self.start_guidance,
+                        retain_start_code,
+                        self.retain_batch,
+                        int(torch.randint(self.ddim_steps, (1,), device=self.devices[0]))
+                    )
             else:
                 retain_emb_p = None
                 retain_emb_n = None
 
-            if i < self.warmup_iter:
-                input_ids = text_input.input_ids.to(self.devices[0])
-                emb_n = self.custom_text_encoder(
-                    input_ids=input_ids,
-                    inputs_embeds=text_embeddings
-                )[0]
-                loss = get_train_loss_retain_diffuser(
-                    self.retain_batch, self.retain_train, self.retain_loss_w,
-                    self.model, self.model_orig, self.custom_text_encoder, self.sampler,
-                    emb_0, emb_p, retain_emb_p, emb_n, retain_emb_n, self.start_guidance,
-                    self.negative_guidance, self.devices, self.ddim_steps, ddim_eta,
-                    self.image_size, self.criteria, input_ids, self.attack_embd_type
-                )
-            else:
-                if self.attack_embd_type == 'word_embd':
+            # --- MAIN TRAINING BRANCH ---
+            # Wrap forward pass in autocast to reduce memory usage
+            with torch.cuda.amp.autocast():
+                if i < self.warmup_iter:
+                    input_ids = text_input.input_ids
+                    emb_n = self.custom_text_encoder(
+                        input_ids=input_ids,
+                        inputs_embeds=text_embeddings
+                    )[0]
                     loss = get_train_loss_retain_diffuser(
                         self.retain_batch, self.retain_train, self.retain_loss_w,
                         self.model, self.model_orig, self.custom_text_encoder, self.sampler,
-                        emb_0, emb_p, retain_emb_p, None, retain_emb_n, self.start_guidance,
+                        emb_0, emb_p, retain_emb_p, emb_n, retain_emb_n, self.start_guidance,
                         self.negative_guidance, self.devices, self.ddim_steps, ddim_eta,
-                        self.image_size, self.criteria, self.adv_input_ids, self.attack_embd_type,
-                        self.adv_word_embd
+                        self.image_size, self.criteria, input_ids, self.attack_embd_type
                     )
-                elif self.attack_embd_type == 'condition_embd':
-                    loss = get_train_loss_retain_diffuser(
-                        self.retain_batch, self.retain_train, self.retain_loss_w,
-                        self.model, self.model_orig, self.custom_text_encoder, self.sampler,
-                        emb_0, emb_p, retain_emb_p, None, retain_emb_n, self.start_guidance,
-                        self.negative_guidance, self.devices, self.ddim_steps, ddim_eta,
-                        self.image_size, self.criteria, self.adv_input_ids, self.attack_embd_type,
-                        self.adv_condition_embd
-                    )
+                else:
+                    if self.attack_embd_type == 'word_embd':
+                        loss = get_train_loss_retain_diffuser(
+                            self.retain_batch, self.retain_train, self.retain_loss_w,
+                            self.model, self.model_orig, self.custom_text_encoder, self.sampler,
+                            emb_0, emb_p, retain_emb_p, None, retain_emb_n, self.start_guidance,
+                            self.negative_guidance, self.devices, self.ddim_steps, ddim_eta,
+                            self.image_size, self.criteria, self.adv_input_ids, self.attack_embd_type,
+                            self.adv_word_embd
+                        )
+                    elif self.attack_embd_type == 'condition_embd':
+                        loss = get_train_loss_retain_diffuser(
+                            self.retain_batch, self.retain_train, self.retain_loss_w,
+                            self.model, self.model_orig, self.custom_text_encoder, self.sampler,
+                            emb_0, emb_p, retain_emb_p, None, retain_emb_n, self.start_guidance,
+                            self.negative_guidance, self.devices, self.ddim_steps, ddim_eta,
+                            self.image_size, self.criteria, self.adv_input_ids, self.attack_embd_type,
+                            self.adv_condition_embd
+                        )
+            # Backward pass and optimizer step
             loss.backward()
+            self.optimizer.step()
+            global_step += 1
+
             losses.append(loss.item())
             pbar.set_postfix({"loss": loss.item()})
-            history.append(loss.item())
             wandb.log({'Train_Loss': loss.item()}, step=global_step)
             wandb.log({'Attack_Loss': 0.0}, step=global_step)
-            global_step += 1
-            self.optimizer.step()
 
+            # Free memory for variables no longer needed
+            del loss, text_input, text_embeddings, emb_n
+            torch.cuda.empty_cache()
 
-        if self.retain_train == 'iter':
-            for r in range(self.retain_step):
-                torch.cuda.empty_cache()
-                self.optimizer.zero_grad()
-                if self.retain_dataset.check_unseen_prompt_count() < self.retain_batch:
-                    self.retain_dataset.reset()
-                retain_words = self.retain_dataset.get_random_prompts(self.retain_batch)
-                t_enc = torch.randint(self.ddim_steps, (1,), device=self.devices[0])
-                og_num = round((int(t_enc.item()) / self.ddim_steps) * 1000)
-                og_num_lim = round(((int(t_enc.item()) + 1) / self.ddim_steps) * 1000)
-                t_enc_ddpm = torch.randint(og_num, og_num_lim, (1,), device=self.devices[0])
-                retain_start_code = torch.randn((self.retain_batch, 4, 64, 64)).to(self.devices[0])
-                retain_text_inputs = self.tokenizer(
-                    retain_words,
-                    padding="max_length",
-                    truncation=True,
-                    max_length=77,  
-                    return_tensors="pt"
-                ).to(self.devices[0])
-
-                with torch.no_grad():
-                    retain_emb_p = self.text_encoder(retain_text_inputs.input_ids)[0]
-
-                retain_z = quick_sample_till_t(
-                    retain_emb_p.to(self.devices[0]),
-                    self.start_guidance,
-                    retain_start_code,
-                    self.retain_batch,
-                    int(t_enc.item())
-                )
-
-                # Frozen branch (no gradients)
-                with torch.no_grad():
-                    with autocast():
-                        retain_e_p = self.model_orig(
-                            retain_z.to(self.devices[0]),
-                            t_enc_ddpm.to(self.devices[0]),
-                            encoder_hidden_states=retain_emb_p.to(self.devices[0])
-                        ).sample
-
-                # Compute trainable conditioning first
-                retain_text_input = self.tokenizer(
-                    retain_words,
-                    padding="max_length",
-                    max_length=self.tokenizer.model_max_length,
-                    return_tensors="pt",
-                    truncation=True
-                )
-                retain_input_ids = retain_text_input.input_ids.to(self.devices[0])
-                retain_text_embeddings = id2embedding(
-                    self.tokenizer,
-                    self.all_embeddings,
-                    retain_text_input.input_ids.to(self.devices[0]),
-                    self.devices[0]
-                )
-                retain_text_embeddings = retain_text_embeddings.reshape(
-                    self.retain_batch, -1, retain_text_embeddings.shape[-1]
-                )
-                # This branch should track gradients
-                retain_emb_n = self.custom_text_encoder(
-                    input_ids=retain_input_ids,
-                    inputs_embeds=retain_text_embeddings
-                )[0]
-
-
-
-                with autocast():
-                    retain_e_n = self.model(
-                        retain_z.to(self.devices[0]),
-                        t_enc_ddpm.to(self.devices[0]),
-                        encoder_hidden_states=retain_emb_n.to(self.devices[0])
-                    ).sample
-
-                retain_loss = self.criteria(
-                    retain_e_n.to(self.devices[0]),
-                    retain_e_p.to(self.devices[0])
-                )
-                
-                retain_loss.backward()
-                self.optimizer.step()
-                torch.cuda.empty_cache() 
-            
-
-            if (i + 1) % self.config['save_interval'] == 0 and (i + 1) != self.iterations and (i + 1) >= self.config['save_interval']:
-                if 'text_encoder' in self.train_method:
-                    save_text_encoder(self.output_dir, self.custom_text_encoder, self.train_method, i)
-                else:
-                    output_path = f"{self.output_dir}/models/model_checkpoint_{i}.pt"
-                    self.model_loader.save_model(self.model, output_path)
-                save_history(self.output_dir, losses, self.word_print)
-
+        # Save final model, etc.
         self.model.eval()
         self.custom_text_encoder.text_encoder.eval()
         self.custom_text_encoder.text_encoder.requires_grad_(False)
         if 'text_encoder' in self.train_method:
             save_text_encoder(self.output_dir, self.custom_text_encoder, self.train_method, i)
-            output_path = f"{self.output_dir}/models/diffuser_model_checkpoint_{i}"
-            self.save_final_pipeline(output_path)
         else: 
             output_path = f"{self.output_dir}/models/diffuser_model_checkpoint_{i}"
             self.save_final_pipeline(output_path)
-
-
         save_history(self.output_dir, losses, self.word_print)
         return self.model
+
+
+   
