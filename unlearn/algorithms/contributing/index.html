@@ -476,9 +476,13 @@
 <p><strong>Folder Structure</strong>:</p>
 <ul>
 <li>Create a new file or subfolder under <code>mu_attack/attackers/</code> with a clear, descriptive name (e.g., <code>my_new_attack.py</code> or <code>mu_attack/attackers/my_new_attack/</code>).</li>
-<li>If creating a subfolder, include:</li>
-<li>The main implementation file (e.g., <code>attack.py</code>).</li>
+<li>If creating a subfolder, include essential files specific to attack implementation:<ul>
+<li><strong>Attacks</strong>: The main implementation file for the attack logic (e.g., <code>attack.py</code>).</li>
+<li><strong>Execs</strong>: Scripts or modules that execute the attack routines.</li>
+<li><strong>Tasks</strong>: Task definitions for integrating and testing the attack.</li>
 <li>Any helper modules or configuration files specific to your attack.</li>
+</ul>
+</li>
 <li>Update or add corresponding YAML configuration files and config class under <code>mu_attack/configs/</code> if your attack requires custom settings.</li>
 </ul>
 </li>
