@@ -1,7 +1,7 @@
-# ref: 
+# ref:
 # - https://github.com/p1atdev/LECO/blob/main/train_util.py
 
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Tuple
 
 import ast
 import importlib
@@ -12,7 +12,9 @@ from transformers import CLIPTextModel, CLIPTokenizer
 from diffusers import UNet2DConditionModel, SchedulerMixin, DiffusionPipeline
 from diffusers.optimization import SchedulerType, TYPE_TO_SCHEDULER_FUNCTION
 
-from mu.algorithms.semipermeable_membrane.src.models.model_util import SDXL_TEXT_ENCODER_TYPE
+from mu.algorithms.semipermeable_membrane.src.models.model_util import (
+    SDXL_TEXT_ENCODER_TYPE,
+)
 
 from tqdm import tqdm
 
@@ -31,7 +33,8 @@ def get_random_noise(
         (
             batch_size,
             UNET_IN_CHANNELS,
-            height // VAE_SCALE_FACTOR,  # 縦と横これであってるのかわからないけど、どっちにしろ大きな問題は発生しないのでこれでいいや
+            height
+            // VAE_SCALE_FACTOR,  # 縦と横これであってるのかわからないけど、どっちにしろ大きな問題は発生しないのでこれでいいや
             width // VAE_SCALE_FACTOR,
         ),
         generator=generator,
@@ -84,7 +87,7 @@ def text_encode(text_encoder: CLIPTextModel, tokens):
 def encode_prompts(
     tokenizer: CLIPTokenizer,
     text_encoder: CLIPTokenizer,
-    prompts: list[str],
+    prompts: List[str],
     return_tokens: bool = False,
 ):
     text_tokens = text_tokenize(tokenizer, prompts)
@@ -115,11 +118,11 @@ def text_encode_xl(
 
 
 def encode_prompts_xl(
-    tokenizers: list[CLIPTokenizer],
-    text_encoders: list[SDXL_TEXT_ENCODER_TYPE],
-    prompts: list[str],
+    tokenizers: List[CLIPTokenizer],
+    text_encoders: List[SDXL_TEXT_ENCODER_TYPE],
+    prompts: List[str],
     num_images_per_prompt: int = 1,
-) -> tuple[torch.FloatTensor, torch.FloatTensor]:
+) -> Tuple[torch.FloatTensor, torch.FloatTensor]:
     # text_encoder and text_encoder_2's penuultimate layer's output
     text_embeds_list = []
     pooled_text_embeds = None  # always text_encoder_2's pool
@@ -272,7 +275,7 @@ def diffusion_xl(
     unet: UNet2DConditionModel,
     scheduler: SchedulerMixin,
     latents: torch.FloatTensor,  # ただのノイズだけのlatents
-    text_embeddings: tuple[torch.FloatTensor, torch.FloatTensor],
+    text_embeddings: Tuple[torch.FloatTensor, torch.FloatTensor],
     add_text_embeddings: torch.FloatTensor,  # pooled なやつ
     add_time_ids: torch.FloatTensor,
     guidance_scale: float = 1.0,
@@ -342,8 +345,8 @@ def get_add_time_ids(
 
 def get_optimizer(config, trainable_params):
     # "Optimizer to use: AdamW, AdamW8bit, Lion, SGDNesterov, SGDNesterov8bit, PagedAdamW8bit, Lion8bit, PagedLion8bit, DAdaptation(DAdaptAdamPreprint), DAdaptAdaGrad, DAdaptAdam, DAdaptAdan, DAdaptAdanIP, DAdaptLion, DAdaptSGD, Adafactor"
-    print("config",config)
-    print("type",type(config))
+    print("config", config)
+    print("type", type(config))
     optimizer_type = config.train.optimizer_type
     if optimizer_type is None or optimizer_type == "":
         optimizer_type = "AdamW"
@@ -365,7 +368,9 @@ def get_optimizer(config, trainable_params):
         try:
             import lion_pytorch
         except ImportError:
-            raise ImportError("No lion_pytorch / lion_pytorch がインストールされていないようです")
+            raise ImportError(
+                "No lion_pytorch / lion_pytorch がインストールされていないようです"
+            )
         print(f"use Lion optimizer | {optimizer_kwargs}")
         optimizer_class = lion_pytorch.Lion
         optimizer = optimizer_class(trainable_params, lr=lr, **optimizer_kwargs)
@@ -374,7 +379,9 @@ def get_optimizer(config, trainable_params):
         try:
             import bitsandbytes as bnb
         except ImportError:
-            raise ImportError("No bitsandbytes / bitsandbytesがインストールされていないようです")
+            raise ImportError(
+                "No bitsandbytes / bitsandbytesがインストールされていないようです"
+            )
 
         if optimizer_type == "AdamW8bit".lower():
             print(f"use 8-bit AdamW optimizer | {optimizer_kwargs}")
@@ -390,7 +397,9 @@ def get_optimizer(config, trainable_params):
                 optimizer_kwargs["momentum"] = 0.9
 
             optimizer_class = bnb.optim.SGD8bit
-            optimizer = optimizer_class(trainable_params, lr=lr, nesterov=True, **optimizer_kwargs)
+            optimizer = optimizer_class(
+                trainable_params, lr=lr, nesterov=True, **optimizer_kwargs
+            )
 
         elif optimizer_type == "Lion8bit".lower():
             print(f"use 8-bit Lion optimizer | {optimizer_kwargs}")
@@ -422,13 +431,20 @@ def get_optimizer(config, trainable_params):
     elif optimizer_type == "SGDNesterov".lower():
         print(f"use SGD with Nesterov optimizer | {optimizer_kwargs}")
         if "momentum" not in optimizer_kwargs:
-            print(f"SGD with Nesterov must be with momentum, set momentum to 0.9 / SGD with Nesterovはmomentum指定が必須のため0.9に設定します")
+            print(
+                f"SGD with Nesterov must be with momentum, set momentum to 0.9 / SGD with Nesterovはmomentum指定が必須のため0.9に設定します"
+            )
             optimizer_kwargs["momentum"] = 0.9
 
         optimizer_class = torch.optim.SGD
-        optimizer = optimizer_class(trainable_params, lr=lr, nesterov=True, **optimizer_kwargs)
+        optimizer = optimizer_class(
+            trainable_params, lr=lr, nesterov=True, **optimizer_kwargs
+        )
 
-    elif optimizer_type.startswith("DAdapt".lower()) or optimizer_type == "Prodigy".lower():
+    elif (
+        optimizer_type.startswith("DAdapt".lower())
+        or optimizer_type == "Prodigy".lower()
+    ):
         # check lr and lr_count, and print warning
         actual_lr = lr
         lr_count = 1
@@ -456,10 +472,15 @@ def get_optimizer(config, trainable_params):
                 import dadaptation
                 import dadaptation.experimental as experimental
             except ImportError:
-                raise ImportError("No dadaptation / dadaptation がインストールされていないようです")
+                raise ImportError(
+                    "No dadaptation / dadaptation がインストールされていないようです"
+                )
 
             # set optimizer
-            if optimizer_type == "DAdaptation".lower() or optimizer_type == "DAdaptAdamPreprint".lower():
+            if (
+                optimizer_type == "DAdaptation".lower()
+                or optimizer_type == "DAdaptAdamPreprint".lower()
+            ):
                 optimizer_class = experimental.DAdaptAdamPreprint
                 print(f"use D-Adaptation AdamPreprint optimizer | {optimizer_kwargs}")
             elif optimizer_type == "DAdaptAdaGrad".lower():
@@ -490,7 +511,9 @@ def get_optimizer(config, trainable_params):
             try:
                 import prodigyopt
             except ImportError:
-                raise ImportError("No Prodigy / Prodigy がインストールされていないようです")
+                raise ImportError(
+                    "No Prodigy / Prodigy がインストールされていないようです"
+                )
 
             print(f"use Prodigy optimizer | {optimizer_kwargs}")
             optimizer_class = prodigyopt.Prodigy
@@ -500,15 +523,21 @@ def get_optimizer(config, trainable_params):
         # 引数を確認して適宜補正する
         if "relative_step" not in optimizer_kwargs:
             optimizer_kwargs["relative_step"] = True  # default
-        if not optimizer_kwargs["relative_step"] and optimizer_kwargs.get("warmup_init", False):
-            print(f"set relative_step to True because warmup_init is True / warmup_initがTrueのためrelative_stepをTrueにします")
+        if not optimizer_kwargs["relative_step"] and optimizer_kwargs.get(
+            "warmup_init", False
+        ):
+            print(
+                f"set relative_step to True because warmup_init is True / warmup_initがTrueのためrelative_stepをTrueにします"
+            )
             optimizer_kwargs["relative_step"] = True
         print(f"use Adafactor optimizer | {optimizer_kwargs}")
 
         if optimizer_kwargs["relative_step"]:
             print(f"relative_step is true / relative_stepがtrueです")
             if lr != 0.0:
-                print(f"learning rate is used as initial_lr / 指定したlearning rateはinitial_lrとして使用されます")
+                print(
+                    f"learning rate is used as initial_lr / 指定したlearning rateはinitial_lrとして使用されます"
+                )
             config.train.lr = None
 
             # trainable_paramsがgroupだった時の処理：lrを削除する
@@ -520,12 +549,16 @@ def get_optimizer(config, trainable_params):
 
                 if has_group_lr:
                     # 一応argsを無効にしておく TODO 依存関係が逆転してるのであまり望ましくない
-                    print(f"unet_lr and text_encoder_lr are ignored / unet_lrとtext_encoder_lrは無視されます")
+                    print(
+                        f"unet_lr and text_encoder_lr are ignored / unet_lrとtext_encoder_lrは無視されます"
+                    )
                     config.train.unet_lr = None
                     config.train.text_encoder_lr = None
 
             if config.train.lr_scheduler != "adafactor":
-                print(f"use adafactor_scheduler / スケジューラにadafactor_schedulerを使用します")
+                print(
+                    f"use adafactor_scheduler / スケジューラにadafactor_schedulerを使用します"
+                )
             config.train.lr_scheduler = f"adafactor:{lr}"  # ちょっと微妙だけど
 
             lr = None
@@ -535,9 +568,13 @@ def get_optimizer(config, trainable_params):
                     f"because max_grad_norm is set, clip_grad_norm is enabled. consider set to 0 / max_grad_normが設定されているためclip_grad_normが有効になります。0に設定して無効にしたほうがいいかもしれません"
                 )
             if config.train.lr_scheduler != "constant_with_warmup":
-                print(f"constant_with_warmup will be good / スケジューラはconstant_with_warmupが良いかもしれません")
+                print(
+                    f"constant_with_warmup will be good / スケジューラはconstant_with_warmupが良いかもしれません"
+                )
             if optimizer_kwargs.get("clip_threshold", 1.0) != 1.0:
-                print(f"clip_threshold=1.0 will be good / clip_thresholdは1.0が良いかもしれません")
+                print(
+                    f"clip_threshold=1.0 will be good / clip_thresholdは1.0が良いかもしれません"
+                )
 
         optimizer_class = transformers.optimization.Adafactor
         optimizer = optimizer_class(trainable_params, lr=lr, **optimizer_kwargs)
@@ -565,7 +602,7 @@ def get_optimizer(config, trainable_params):
     optimizer_args = ",".join([f"{k}={v}" for k, v in optimizer_kwargs.items()])
 
     return optimizer_name, optimizer_args, optimizer
-    
+
 
 def get_scheduler_fix(config, optimizer: Optimizer, num_processes: int = 1):
     """
@@ -573,12 +610,17 @@ def get_scheduler_fix(config, optimizer: Optimizer, num_processes: int = 1):
     """
     name = config.train.lr_scheduler
     num_warmup_steps: Optional[int] = config.train.lr_warmup_steps
-    num_training_steps = config.train.iterations * num_processes  # * args.gradient_accumulation_steps
+    num_training_steps = (
+        config.train.iterations * num_processes
+    )  # * args.gradient_accumulation_steps
     num_cycles = config.train.lr_scheduler_num_cycles
     power = config.train.lr_scheduler_power
 
     lr_scheduler_kwargs = {}  # get custom lr_scheduler kwargs
-    if config.train.lr_scheduler_args is not None and len(config.train.lr_scheduler_args) > 0:
+    if (
+        config.train.lr_scheduler_args is not None
+        and len(config.train.lr_scheduler_args) > 0
+    ):
         for arg in config.train.lr_scheduler_args:
             key, value = arg.split("=")
             value = ast.literal_eval(value)
@@ -586,7 +628,9 @@ def get_scheduler_fix(config, optimizer: Optimizer, num_processes: int = 1):
 
     def wrap_check_needless_num_warmup_steps(return_vals):
         if num_warmup_steps is not None and num_warmup_steps != 0:
-            raise ValueError(f"{name} does not require `num_warmup_steps`. Set None or 0.")
+            raise ValueError(
+                f"{name} does not require `num_warmup_steps`. Set None or 0."
+            )
         return return_vals
 
     if name.startswith("adafactor"):
@@ -595,27 +639,39 @@ def get_scheduler_fix(config, optimizer: Optimizer, num_processes: int = 1):
         ), f"adafactor scheduler must be used with Adafactor optimizer / adafactor schedulerはAdafactorオプティマイザと同時に使ってください"
         initial_lr = float(name.split(":")[1])
         # print("adafactor scheduler init lr", initial_lr)
-        return wrap_check_needless_num_warmup_steps(transformers.optimization.AdafactorSchedule(optimizer, initial_lr))
+        return wrap_check_needless_num_warmup_steps(
+            transformers.optimization.AdafactorSchedule(optimizer, initial_lr)
+        )
 
     name = SchedulerType(name)
     schedule_func = TYPE_TO_SCHEDULER_FUNCTION[name]
 
     if name == SchedulerType.CONSTANT:
-        return wrap_check_needless_num_warmup_steps(schedule_func(optimizer, **lr_scheduler_kwargs))
+        return wrap_check_needless_num_warmup_steps(
+            schedule_func(optimizer, **lr_scheduler_kwargs)
+        )
 
     if name == SchedulerType.PIECEWISE_CONSTANT:
-        return schedule_func(optimizer, **lr_scheduler_kwargs)  # step_rules and last_epoch are given as kwargs
+        return schedule_func(
+            optimizer, **lr_scheduler_kwargs
+        )  # step_rules and last_epoch are given as kwargs
 
     # All other schedulers require `num_warmup_steps`
     if num_warmup_steps is None:
-        raise ValueError(f"{name} requires `num_warmup_steps`, please provide that argument.")
+        raise ValueError(
+            f"{name} requires `num_warmup_steps`, please provide that argument."
+        )
 
     if name == SchedulerType.CONSTANT_WITH_WARMUP:
-        return schedule_func(optimizer, num_warmup_steps=num_warmup_steps, **lr_scheduler_kwargs)
+        return schedule_func(
+            optimizer, num_warmup_steps=num_warmup_steps, **lr_scheduler_kwargs
+        )
 
     # All other schedulers require `num_training_steps`
     if num_training_steps is None:
-        raise ValueError(f"{name} requires `num_training_steps`, please provide that argument.")
+        raise ValueError(
+            f"{name} requires `num_training_steps`, please provide that argument."
+        )
 
     if name == SchedulerType.COSINE_WITH_RESTARTS:
         return schedule_func(
@@ -628,13 +684,22 @@ def get_scheduler_fix(config, optimizer: Optimizer, num_processes: int = 1):
 
     if name == SchedulerType.POLYNOMIAL:
         return schedule_func(
-            optimizer, num_warmup_steps=num_warmup_steps, num_training_steps=num_training_steps, power=power, **lr_scheduler_kwargs
+            optimizer,
+            num_warmup_steps=num_warmup_steps,
+            num_training_steps=num_training_steps,
+            power=power,
+            **lr_scheduler_kwargs,
         )
 
-    return schedule_func(optimizer, num_warmup_steps=num_warmup_steps, num_training_steps=num_training_steps, **lr_scheduler_kwargs)
+    return schedule_func(
+        optimizer,
+        num_warmup_steps=num_warmup_steps,
+        num_training_steps=num_training_steps,
+        **lr_scheduler_kwargs,
+    )
 
 
-def get_random_resolution_in_bucket(bucket_resolution: int = 512) -> tuple[int, int]:
+def get_random_resolution_in_bucket(bucket_resolution: int = 512) -> Tuple[int, int]:
     max_resolution = bucket_resolution
     min_resolution = bucket_resolution // 2
 
@@ -648,21 +713,24 @@ def get_random_resolution_in_bucket(bucket_resolution: int = 512) -> tuple[int, 
 
     return height, width
 
-def text2img(pipe: DiffusionPipeline,
-             prompts: Union[str, list[str]], 
-             negative_prompt: Union[str, list[str]] = "", 
-             width: int = 512, 
-             height: int = 512,
-             num_inference_steps: int = 30,
-             guidance_scale: int = 7.5,
-             seed: int = None,
-             generate_num: int = 1,
-             tag: str = "",
-             **kwargs):
+
+def text2img(
+    pipe: DiffusionPipeline,
+    prompts: Union[str, List[str]],
+    negative_prompt: Union[str, List[str]] = "",
+    width: int = 512,
+    height: int = 512,
+    num_inference_steps: int = 30,
+    guidance_scale: int = 7.5,
+    seed: int = None,
+    generate_num: int = 1,
+    tag: str = "",
+    **kwargs,
+):
     # to avoid CUDA-OOM, generate images prompt-by-prompt, unless generate_num is 1
-    
+
     samples = []
-    
+
     if generate_num == 1:
         if isinstance(prompts, str):
             prompts = [prompts]
@@ -678,7 +746,10 @@ def text2img(pipe: DiffusionPipeline,
             num_images_per_prompt=generate_num,
             generator=torch.manual_seed(seed) if seed is not None else None,
         ).images
-        texts = [f"sample/{prompt.replace(' ', '_')}{'(' + tag + ')' if tag else ''}" for prompt in prompts]
+        texts = [
+            f"sample/{prompt.replace(' ', '_')}{'(' + tag + ')' if tag else ''}"
+            for prompt in prompts
+        ]
         samples = list(zip(texts, images))
     else:
         for prompt in prompts:
@@ -692,27 +763,34 @@ def text2img(pipe: DiffusionPipeline,
                 num_images_per_prompt=generate_num,
                 generator=torch.manual_seed(seed) if seed is not None else None,
             ).images
-            texts = [f"sample/{prompt.replace(' ', '_')}({tag}{', ' if tag else ''}{i})" for i in range(generate_num)]
+            texts = [
+                f"sample/{prompt.replace(' ', '_')}({tag}{', ' if tag else ''}{i})"
+                for i in range(generate_num)
+            ]
             samples.extend(list(zip(texts, images)))
-    
+
     return samples
 
+
 @torch.no_grad()
-def latent2img(pipe: DiffusionPipeline,
-               scheduler,
-               noise_pred: torch.FloatTensor,
-               latents: torch.FloatTensor,
-               timestep: int,
-               tag: str = "ori",
-               **kwargs):
-    
+def latent2img(
+    pipe: DiffusionPipeline,
+    scheduler,
+    noise_pred: torch.FloatTensor,
+    latents: torch.FloatTensor,
+    timestep: int,
+    tag: str = "ori",
+    **kwargs,
+):
+
     noise_pred = noise_pred.cuda()
     latents = latents.cuda()
     latents = scheduler.step(noise_pred, timestep, latents).prev_sample
-    imgs = pipe.vae.decode(latents / pipe.vae.config.scaling_factor, return_dict=False)[0]
+    imgs = pipe.vae.decode(latents / pipe.vae.config.scaling_factor, return_dict=False)[
+        0
+    ]
     do_denormalize = [True] * imgs.shape[0]
     imgs = pipe.image_processor.postprocess(imgs, do_denormalize=do_denormalize)
     samples = [(f"sample/latent({tag}, {i})", img) for i, img in enumerate(imgs)]
-    
+
     return samples
-    

@@ -1,9 +1,10 @@
+from typing import List
 from pydantic import BaseModel
 import torch
 import yaml
 
 class GenerationConfig(BaseModel):
-    prompts: list[str] = []
+    prompts: List[str] = []
     negative_prompt: str = "bad anatomy,watermark,extra digit,signature,worst quality,jpeg artifacts,normal quality,low quality,long neck,lowres,error,blurry,missing fingers,fewer digits,missing arms,text,cropped,Humpbacked,bad hands,username"
     unconditional_prompt: str = ""
     width: int = 512
