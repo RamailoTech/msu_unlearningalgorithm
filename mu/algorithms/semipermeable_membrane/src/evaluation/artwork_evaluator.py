@@ -1,11 +1,14 @@
 import json
 import os
 from argparse import ArgumentParser
+from typing import List
 
 import pandas as pd
 from prettytable import PrettyTable
 
-from mu.algorithms.semipermeable_membrane.src.configs.generation_config import GenerationConfig
+from mu.algorithms.semipermeable_membrane.src.configs.generation_config import (
+    GenerationConfig,
+)
 
 from .eval_util import clip_score
 from .evaluator import Evaluator, GenerationDataset
@@ -31,7 +34,7 @@ ARTWORK_DATASETS = {
 class ArtworkDataset(GenerationDataset):
     def __init__(
         self,
-        datasets: list[str],
+        datasets: List[str],
         save_folder: str = "benchmark/generated_imgs/",
         base_cfg: GenerationConfig = GenerationConfig(),
         num_images_per_prompt: int = 20,
@@ -106,7 +109,11 @@ class ArtworkEvaluator(Evaluator):
             for prompt, img_paths in data.items():
                 score += clip_score(
                     img_paths,
-                    [prompt] * len(img_paths) if self.eval_with_template else [dataset.replace("_", " ")] * len(img_paths),
+                    (
+                        [prompt] * len(img_paths)
+                        if self.eval_with_template
+                        else [dataset.replace("_", " ")] * len(img_paths)
+                    ),
                 ).mean().item() * len(img_paths)
                 num_images += len(img_paths)
             scores[dataset] = score / num_images

@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Literal, Optional, List
 
 import yaml
 
@@ -20,7 +20,7 @@ class NetworkConfig(BaseModel):
     alpha: float = 1.0
 
 
-class TrainConfig(BaseModel):    
+class TrainConfig(BaseModel):
     precision: PRECISION_TYPES = "float32"
     noise_scheduler: Literal["ddim", "ddpm", "lms", "euler_a"] = "ddim"
 
@@ -32,7 +32,7 @@ class TrainConfig(BaseModel):
     text_encoder_lr: float = 5e-5
 
     optimizer_type: str = "AdamW8bit"
-    optimizer_args: list[str] = None
+    optimizer_args: List[str] = None
 
     lr_scheduler: str = "cosine_with_restarts"
     lr_warmup_steps: int = 500
@@ -56,10 +56,12 @@ class LoggingConfig(BaseModel):
     use_wandb: bool = False
     run_name: str = None
     verbose: bool = False
-    
+
     interval: int = 50
-    prompts: list[str] = []
-    negative_prompt: str = "bad anatomy,watermark,extra digit,signature,worst quality,jpeg artifacts,normal quality,low quality,long neck,lowres,error,blurry,missing fingers,fewer digits,missing arms,text,cropped,Humpbacked,bad hands,username"
+    prompts: List[str] = []
+    negative_prompt: str = (
+        "bad anatomy,watermark,extra digit,signature,worst quality,jpeg artifacts,normal quality,low quality,long neck,lowres,error,blurry,missing fingers,fewer digits,missing arms,text,cropped,Humpbacked,bad hands,username"
+    )
     anchor_prompt: str = ""
     width: int = 512
     height: int = 512
@@ -68,16 +70,20 @@ class LoggingConfig(BaseModel):
     seed: int = None
     generate_num: int = 1
     eval_num: int = 10
-    
+
+
 class InferenceConfig(BaseModel):
     use_wandb: bool = False
-    negative_prompt: str = "bad anatomy,watermark,extra digit,signature,worst quality,jpeg artifacts,normal quality,low quality,long neck,lowres,error,blurry,missing fingers,fewer digits,missing arms,text,cropped,Humpbacked,bad hands,username"
+    negative_prompt: str = (
+        "bad anatomy,watermark,extra digit,signature,worst quality,jpeg artifacts,normal quality,low quality,long neck,lowres,error,blurry,missing fingers,fewer digits,missing arms,text,cropped,Humpbacked,bad hands,username"
+    )
     width: int = 512
     height: int = 512
     num_inference_steps: int = 20
     guidance_scale: float = 7.5
-    seeds: list[int] = None    
+    seeds: List[int] = None
     precision: PRECISION_TYPES = "float32"
+
 
 class OtherConfig(BaseModel):
     use_xformers: bool = False
@@ -85,7 +91,7 @@ class OtherConfig(BaseModel):
 
 class RootConfig(BaseModel):
     prompts_file: Optional[str] = None
-    
+
     pretrained_model: PretrainedModelConfig
 
     network: Optional[NetworkConfig] = None
