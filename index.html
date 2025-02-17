@@ -43,8 +43,6 @@
               <ul class="current">
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#features">Features</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#supported-algorithms">Supported Algorithms</a>
@@ -61,11 +59,7 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#prerequisities">Prerequisities</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#create-environment-default">Create environment (Default):</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#optionalcreate-environment-for-algorithm">Optional(Create environment for algorithm):</a>
-    </li>
-        </ul>
+    <li class="toctree-l3"><a class="reference internal" href="#create-environment">Create environment:</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#activate-environment">Activate environment:</a>
     </li>
@@ -227,14 +221,86 @@
     </ul>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Evaluation</span></p>
+              <p class="caption"><span class="caption-text">Unlearn Mu Defense</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="mu_attack/mu_attack_evaluation/">Usage</a>
+                  <li class="toctree-l1"><a class="reference internal" href="mu_defense/adv_unlearn/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="mu_defense/config/">Config</a>
                   </li>
               </ul>
+              <p class="caption"><span class="caption-text">Evaluation</span></p>
               <ul>
-                <li class="toctree-l1"><a class="" href="algorithms/contributing.md">Contributing</a>
+                  <li class="toctree-l1"><a class="reference internal" >Concept Ablation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="evaluation/concept_ablation/">Evaluation</a>
                 </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Erase Diff</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="evaluation/erase_diff/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >ESD</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="evaluation/esd/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Forget Me Not</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="evaluation/forget_me_not/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Saliency Unlearning</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="evaluation/saliency/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Scissor Hands</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="evaluation/scissorhands/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Selective Amnesia</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="evaluation/selective_amnesia.md">Usage</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Semi Permeable Membrane</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="evaluation/semipermeable_membrane/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Unified Concept Editing</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="evaluation/uce/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >mu_attack</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="mu_attack/mu_attack_evaluation/">Usage</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >mu_defense</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="mu_defense/evaluation/">Usage</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="unlearn/algorithms/contributing/">docs</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -260,11 +326,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="unlearn-diff">Unlearn Diff</h1>
-<p>Unlearn Diff is an open-source Python package designed to streamline the development of unlearning algorithms and establish a standardized evaluation pipeline for diffusion models. It provides researchers and practitioners with tools to implement, evaluate, and extend unlearning algorithms effectively.</p>
-<h3 id="documentation"><a href="https://ramailotech.github.io/msu_unlearningalgorithm/"><strong>Documentation</strong></a></h3>
-<p>You can find the full documentation for this project at the url given below.
-https://ramailotech.github.io/msu_unlearningalgorithm/</p>
+                <h1 id="unlearn">Unlearn</h1>
+<p>Unlearn is an open-source Python package designed to streamline the development of unlearning algorithms and establish a standardized evaluation pipeline for diffusion models. It provides researchers and practitioners with tools to implement, evaluate, and extend unlearning algorithms effectively.</p>
 <h2 id="features">Features</h2>
 <ul>
 <li>
@@ -389,16 +452,14 @@ For detailed information on each algorithm, please refer to the respective <code
 <p>After installing <code>conda</code>, ensure it is available in your PATH by running. You may require to restart the terminal session:</p>
 <pre><code class="language-bash">conda --version
 </code></pre>
-<h3 id="create-environment-default">Create environment (Default):</h3>
-<pre><code>create_env
+<h3 id="create-environment">Create environment:</h3>
+<pre><code>create_env &lt;algorithm_name&gt;
 </code></pre>
-<h4 id="optionalcreate-environment-for-algorithm">Optional(Create environment for algorithm):</h4>
-<pre><code>create_env erase_diff
-</code></pre>
+<p>eg: <code>create_env erase_diff</code></p>
 <h3 id="activate-environment">Activate environment:</h3>
 <pre><code>conda activate &lt;environment_name&gt;
 </code></pre>
-<p>eg: <code>conda activate UnlearnDiff</code></p>
+<p>eg: <code>conda activate mu_erase_diff</code></p>
 <p>The <algorithm_name> has to be one of the folders in the <code>mu/algorithms</code> folder.</p>
 <h3 id="downloading-data-and-models">Downloading data and models.</h3>
 <p>After you install the package, you can use the following commands to download.</p>

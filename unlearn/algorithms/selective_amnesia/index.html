@@ -133,15 +133,9 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#example-command">Example Command</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#running-the-training-script-in-offline-mode">Running the Training Script in Offline Mode</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#overriding-configuration-via-command-line">Overriding Configuration via Command Line</a>
+    <li class="toctree-l4"><a class="reference internal" href="#run-train">Run train</a>
     </li>
         </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#directory-structure">Directory Structure</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#how-it-works">How It Works</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a>
     </li>
@@ -239,14 +233,86 @@
     </ul>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Evaluation</span></p>
+              <p class="caption"><span class="caption-text">Unlearn Mu Defense</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../../mu_attack/mu_attack_evaluation/">Usage</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../mu_defense/adv_unlearn/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../mu_defense/config/">Config</a>
                   </li>
               </ul>
+              <p class="caption"><span class="caption-text">Evaluation</span></p>
               <ul>
-                <li class="toctree-l1"><a class="" href="../../../algorithms/contributing.md">Contributing</a>
+                  <li class="toctree-l1"><a class="reference internal" >Concept Ablation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/concept_ablation/">Evaluation</a>
                 </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Erase Diff</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/erase_diff/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >ESD</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/esd/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Forget Me Not</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/forget_me_not/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Saliency Unlearning</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/saliency/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Scissor Hands</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/scissorhands/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Selective Amnesia</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="../../../evaluation/selective_amnesia.md">Usage</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Semi Permeable Membrane</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/semipermeable_membrane/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Unified Concept Editing</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/uce/">Evaluation</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >mu_attack</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../mu_attack/mu_attack_evaluation/">Usage</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >mu_defense</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../mu_defense/evaluation/">Usage</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">docs</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -344,44 +410,35 @@ ls -lh ./data/quick-canvas-dataset/sample/
 </ol>
 <pre><code>python -m mu.algorithms.selective_amnesia.scripts.train --config_path mu/algorithms/selective_amnesia/configs/train_config.yaml --full_fisher_dict_pkl_path /path/full_fisher_dict.pkl
 </code></pre>
-<h3 id="running-the-training-script-in-offline-mode">Running the Training Script in Offline Mode</h3>
-<pre><code>WANDB_MODE=offline python -m mu.algorithms.selective_amnesia.scripts.train --config_path mu/algorithms/selective_amnesia/configs/train_config.yaml --full_fisher_dict_pkl_path /path/full_fisher_dict.pkl
+<h3 id="run-train">Run train</h3>
+<p>Create a file, eg, <code>my_trainer.py</code> and use examples and modify your configs to run the file.  </p>
+<pre><code class="language-python">from mu.algorithms.selective_amnesia.algorithm import SelectiveAmnesiaAlgorithm
+from mu.algorithms.selective_amnesia.configs import (
+    selective_amnesia_config_quick_canvas,
+)
+
+algorithm = SelectiveAmnesiaAlgorithm(
+    selective_amnesia_config_quick_canvas,
+    ckpt_path=&quot;/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt&quot;,
+    raw_dataset_dir=(
+        &quot;/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample&quot;
+    ),
+)
+algorithm.run()
+
 </code></pre>
-<h3 id="overriding-configuration-via-command-line">Overriding Configuration via Command Line</h3>
-<p>You can override configuration parameters by passing them directly as arguments during runtime.</p>
-<p><strong>Example Usage with Command-Line Arguments:</strong></p>
-<pre><code class="language-bash">python -m mu.algorithms.selective_amnesia.scripts.train \
---config_path mu/algorithms/selective_amnesia/configs/train_config.yaml \
---train_batch_size 8 \
---max_epochs 100 \
---devices 0,1 \
---output_dir outputs/experiment_2
+<pre><code class="language-bash">WANDB_MODE=offline python my_trainer.py
 </code></pre>
-<p><strong>Explanation:</strong>
-* <code>--config_path</code>: Specifies the YAML configuration file.
-* <code>--train_batch_size</code>: Overrides the training batch size to 8.
-* <code>--max_epochs</code>: Updates the maximum number of training epochs to 100.
-* <code>--devices</code>: Specifies the GPUs (e.g., device 0 and 1).
-* <code>--output_dir</code>: Sets a custom output directory for the experiment.</p>
-<hr />
-<h2 id="directory-structure">Directory Structure</h2>
+<p><strong>How It Works</strong> 
+* Default Values: The script first loads default values from the train config file as in configs section.</p>
 <ul>
-<li><code>algorithm.py</code>: Core implementation of the Selective Amnesia Algorithm.</li>
-<li><code>configs/</code>: Configuration files for training and generation.</li>
-<li><code>data_handler.py</code>: Data handling and preprocessing.</li>
-<li><code>scripts/train.py</code>: Script to train the Selective Amnesia Algorithm.</li>
-<li><code>callbacks/</code>: Custom callbacks for logging and monitoring training.</li>
-<li><code>utils.py</code>: Utility functions.</li>
+<li>
+<p>Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.</p>
+</li>
+<li>
+<p>Final Configuration: The script merges the configs and convert them into dictionary to proceed with the training. </p>
+</li>
 </ul>
-<hr />
-<h2 id="how-it-works">How It Works</h2>
-<ol>
-<li><strong>Default Configuration:</strong> Loads values from the specified YAML file (<code>--config_path</code>).</li>
-<li><strong>Command-Line Overrides:</strong> Updates the configuration with values provided as command-line arguments.</li>
-<li><strong>Training Execution:</strong> Initializes the <code>SelectiveAmnesiaAlgorithm</code> and trains the model using the provided dataset, model checkpoint, and configuration.</li>
-<li><strong>Output:</strong> Saves the fine-tuned model and logs training metrics in the specified output directory.</li>
-</ol>
-<hr />
 <h2 id="notes">Notes</h2>
 <ol>
 <li>Ensure all dependencies are installed as per the environment file.</li>
