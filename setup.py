@@ -37,7 +37,7 @@ check_conda()
 
 setup(
     name="unlearn_diff",
-    version="1.0.9",
+    version="1.1.0",
     author="nebulaanish",
     author_email="nebulaanish@gmail.com",
     description="Unlearning Algorithms",
