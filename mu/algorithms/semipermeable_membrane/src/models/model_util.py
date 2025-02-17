@@ -1,4 +1,4 @@
-from typing import Literal, Union, Optional,Tuple,List
+from typing import Literal, Union, Optional, Tuple, List
 
 import torch
 from transformers import CLIPTextModel, CLIPTokenizer, CLIPTextModelWithProjection
@@ -33,7 +33,11 @@ def load_diffusers_model(
     v2: bool = False,
     clip_skip: Optional[int] = None,
     weight_dtype: torch.dtype = torch.float32,
-) -> Tuple[CLIPTokenizer, CLIPTextModel, UNet2DConditionModel,]:
+) -> Tuple[
+    CLIPTokenizer,
+    CLIPTextModel,
+    UNet2DConditionModel,
+]:
 
     if v2:
         tokenizer = CLIPTokenizer.from_pretrained(
@@ -80,12 +84,12 @@ def load_checkpoint_model(
     v2: bool = False,
     clip_skip: Optional[int] = None,
     weight_dtype: torch.dtype = torch.float32,
-    device = "cuda",
+    device="cuda",
 ) -> Tuple[CLIPTokenizer, CLIPTextModel, UNet2DConditionModel, DiffusionPipeline]:
     print(f"Loading checkpoint from {checkpoint_path}")
     if checkpoint_path == "BAAI/AltDiffusion":
         pipe = AltDiffusionPipeline.from_pretrained(
-            "BAAI/AltDiffusion", 
+            "BAAI/AltDiffusion",
             upcast_attention=True if v2 else False,
             torch_dtype=weight_dtype,
             cache_dir=DIFFUSERS_CACHE_DIR,
@@ -118,7 +122,13 @@ def load_models(
     v2: bool = False,
     v_pred: bool = False,
     weight_dtype: torch.dtype = torch.float32,
-) -> Tuple[CLIPTokenizer, CLIPTextModel, UNet2DConditionModel, SchedulerMixin, DiffusionPipeline, ]:
+) -> Tuple[
+    CLIPTokenizer,
+    CLIPTextModel,
+    UNet2DConditionModel,
+    SchedulerMixin,
+    DiffusionPipeline,
+]:
     tokenizer, text_encoder, unet, pipe = load_checkpoint_model(
         pretrained_model_name_or_path, v2=v2, weight_dtype=weight_dtype
     )
@@ -134,7 +144,7 @@ def load_models(
 def load_diffusers_model_xl(
     pretrained_model_name_or_path: str,
     weight_dtype: torch.dtype = torch.float32,
-) -> Tuple[list[CLIPTokenizer], list[SDXL_TEXT_ENCODER_TYPE], UNet2DConditionModel,]:
+):
     # returns tokenizer, tokenizer_2, text_encoder, text_encoder_2, unet
 
     tokenizers = [
@@ -226,7 +236,7 @@ def create_noise_scheduler(
     scheduler_name: AVAILABLE_SCHEDULERS = "ddpm",
     prediction_type: Literal["epsilon", "v_prediction"] = "epsilon",
 ) -> SchedulerMixin:
-    
+
     name = scheduler_name.lower().replace(" ", "_")
     if name == "ddim":
         # https://huggingface.co/docs/diffusers/v0.17.1/en/api/schedulers/ddim

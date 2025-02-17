@@ -4,7 +4,7 @@ from torch.optim import Adam
 from tqdm import tqdm
 import logging
 from pytorch_lightning import seed_everything
-import os 
+import os
 from packaging import version
 import pytorch_lightning as pl
 from omegaconf import OmegaConf
@@ -46,7 +46,7 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
         self.logger = logging.getLogger(__name__)
         self.setup_optimizer()
 
-    def setup_optimizer(self,*args, **kwargs):
+    def setup_optimizer(self, *args, **kwargs):
         """
         Setup the optimizer based on the training configuration.
         Adjust parameter groups or other attributes as per concept ablation needs.
@@ -57,7 +57,9 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
         """
         Execute the training loop.
         """
-        configs = [OmegaConf.load(cfg) for cfg in [self.config_path, self.model_config_path]]
+        configs = [
+            OmegaConf.load(cfg) for cfg in [self.config_path, self.model_config_path]
+        ]
         config = OmegaConf.merge(*configs)
 
         lightning_config = config.pop("lightning", OmegaConf.create())
@@ -66,7 +68,7 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
 
         trainer_config["accelerator"] = "gpu"
 
-        trainer_config["devices"] = self.opt_config.get('devices')
+        trainer_config["devices"] = self.opt_config.get("devices")
         trainer_config["strategy"] = "ddp"
         cpu = False
 
@@ -76,9 +78,9 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
 
         trainer_kwargs = dict()
 
-        seed = self.opt_config.get('seed', 42)
-        wandb_entity = self.opt_config.get('wandb_entity', "")
-        output_dir = self.opt_config.get('output_dir', "")
+        seed = self.opt_config.get("seed", 42)
+        wandb_entity = self.opt_config.get("wandb_entity", "")
+        output_dir = self.opt_config.get("output_dir", "")
 
         os.makedirs(output_dir, exist_ok=True)
 
@@ -99,18 +101,18 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
                     "dir": output_dir,
                     "id": f"selective_amnesia_{self.opt_config.get('template_name')}",
                     "resume": "allow",
-                    "entity": 'selective-amnesia',
-                }
+                    "entity": "selective-amnesia",
+                },
             },
             "tensorboard": {
                 "target": "pytorch_lightning.loggers.TensorBoardLogger",
                 "params": {
                     "name": "tensorboard",
                     "save_dir": output_dir,
-                }
+                },
             },
         }
-        
+
         if wandb_entity is not None:
             default_logger_cfg = default_logger_cfgs["wandb"]
         else:
@@ -132,7 +134,7 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
                 "filename": "{epoch:06}",
                 "verbose": True,
                 "save_last": True,
-            }
+            },
         }
         if hasattr(self.model, "monitor"):
             self.logger.info(f"Monitoring {self.model.monitor} as checkpoint metric.")
@@ -146,8 +148,10 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
         modelckpt_cfg = OmegaConf.merge(default_modelckpt_cfg, modelckpt_cfg)
         self.logger.info(f"Merged modelckpt-cfg: \n{modelckpt_cfg}")
 
-        if version.parse(pl.__version__) < version.parse('1.4.0'):
-            trainer_kwargs["checkpoint_callback"] = instantiate_from_config(modelckpt_cfg)
+        if version.parse(pl.__version__) < version.parse("1.4.0"):
+            trainer_kwargs["checkpoint_callback"] = instantiate_from_config(
+                modelckpt_cfg
+            )
 
         # add callback which sets up log directory
         default_callbacks_cfg = {
@@ -161,30 +165,26 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
                     "cfgdir": cfgdir,
                     "config": config,
                     "lightning_config": lightning_config,
-                }
+                },
             },
             "image_logger": {
                 "target": "mu.algorithms.selective_amnesia.callbacks.ImageLogger",
-                "params": {
-                    "batch_frequency": 750,
-                    "max_images": 4,
-                    "clamp": True
-                }
+                "params": {"batch_frequency": 750, "max_images": 4, "clamp": True},
             },
             "learning_rate_logger": {
                 "target": "mu.algorithms.selective_amnesia.callbacks.LearningRateMonitor",
                 "params": {
                     "logging_interval": "step",
                     # "log_momentum": True
-                }
+                },
             },
             "cuda_callback": {
                 "target": "mu.algorithms.selective_amnesia.callbacks.CUDACallback"
             },
         }
 
-        if version.parse(pl.__version__) >= version.parse('1.4.0'):
-            default_callbacks_cfg.update({'checkpoint_callback': modelckpt_cfg})
+        if version.parse(pl.__version__) >= version.parse("1.4.0"):
+            default_callbacks_cfg.update({"checkpoint_callback": modelckpt_cfg})
 
         if "callbacks" in lightning_config:
             callbacks_cfg = lightning_config.callbacks
@@ -192,50 +192,73 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
             callbacks_cfg = OmegaConf.create()
 
         callbacks_cfg = OmegaConf.merge(default_callbacks_cfg, callbacks_cfg)
-        if ('ignore_keys_callback' in callbacks_cfg) and self.opt_config.get('ckpt_path'):
-            callbacks_cfg.ignore_keys_callback.params['ckpt_path'] = self.opt_config.get('ckpt_path')
-        elif 'ignore_keys_callback' in callbacks_cfg:
-            del callbacks_cfg['ignore_keys_callback']
+        if ("ignore_keys_callback" in callbacks_cfg) and self.opt_config.get(
+            "ckpt_path"
+        ):
+            callbacks_cfg.ignore_keys_callback.params["ckpt_path"] = (
+                self.opt_config.get("ckpt_path")
+            )
+        elif "ignore_keys_callback" in callbacks_cfg:
+            del callbacks_cfg["ignore_keys_callback"]
 
-        trainer_kwargs["callbacks"] = [instantiate_from_config(callbacks_cfg[k]) for k in callbacks_cfg]
+        trainer_kwargs["callbacks"] = [
+            instantiate_from_config(callbacks_cfg[k]) for k in callbacks_cfg
+        ]
 
-        trainer = Trainer.from_argparse_args(trainer_opt,**trainer_kwargs)
+        trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
 
-        trainer.logdir = output_dir 
+        trainer.logdir = output_dir
 
-        config.data.params.raw_dataset_dir = self.opt_config.get('raw_dataset_dir')
-        config.data.params.processed_dataset_dir = self.opt_config.get('processed_dataset_dir')
-        config.data.params.dataset_type = self.opt_config.get('dataset_type')
-        config.data.params.template = self.opt_config.get('template')
-        config.data.params.template_name = self.opt_config.get('template_name')
-        config.data.params.use_sample = self.opt_config.get('use_sample')
+        config.data.params.raw_dataset_dir = self.opt_config.get("raw_dataset_dir")
+        config.data.params.processed_dataset_dir = self.opt_config.get(
+            "processed_dataset_dir"
+        )
+        config.data.params.dataset_type = self.opt_config.get("dataset_type")
+        config.data.params.template = self.opt_config.get("template")
+        config.data.params.template_name = self.opt_config.get("template_name")
+        config.data.params.use_sample = self.opt_config.get("use_sample")
 
-        config = SelectiveAmnesiaDataHandler.update_config_based_on_template(self.opt_config.get('raw_dataset_dir'), self.opt_config.get('processed_dataset_dir'), config, self.opt_config.get('template'), self.opt_config.get('template_name'), self.opt_config.get('dataset_type'), self.opt_config.get('use_sample'))
+        config = SelectiveAmnesiaDataHandler.update_config_based_on_template(
+            self.opt_config.get("raw_dataset_dir"),
+            self.opt_config.get("processed_dataset_dir"),
+            config,
+            self.opt_config.get("template"),
+            self.opt_config.get("template_name"),
+            self.opt_config.get("dataset_type"),
+            self.opt_config.get("use_sample"),
+        )
         data = instantiate_from_config(config.data)
         data.prepare_data()
         data.setup()
 
         self.logger.info("#### Data #####")
         for k in data.datasets:
-            self.logger.info(f"{k}, {data.datasets[k].__class__.__name__}, {len(data.datasets[k])}")
+            self.logger.info(
+                f"{k}, {data.datasets[k].__class__.__name__}, {len(data.datasets[k])}"
+            )
 
         # configure learning rate
-        bs, base_lr = config.data.params.train_batch_size, config.model.base_learning_rate
+        bs, base_lr = (
+            config.data.params.train_batch_size,
+            config.model.base_learning_rate,
+        )
         if not cpu:
-            ngpu = len(lightning_config.trainer.devices.strip(",").split(','))
+            ngpu = len(lightning_config.trainer.devices.strip(",").split(","))
         else:
             ngpu = 1
-        if 'accumulate_grad_batches' in lightning_config.trainer:
+        if "accumulate_grad_batches" in lightning_config.trainer:
             accumulate_grad_batches = lightning_config.trainer.accumulate_grad_batches
         else:
             accumulate_grad_batches = 1
         self.logger.info(f"accumulate_grad_batches = {accumulate_grad_batches}")
         lightning_config.trainer.accumulate_grad_batches = accumulate_grad_batches
-        if config.get('scale_lr'):
+        if config.get("scale_lr"):
             self.model.learning_rate = accumulate_grad_batches * ngpu * bs * base_lr
             self.logger.info(
                 "Setting learning rate to {:.2e} = {} (accumulate_grad_batches) * {} (num_gpus) * {} (batchsize) * {:.2e} (base_lr)".format(
-                    self.model.learning_rate, accumulate_grad_batches, ngpu, bs, base_lr))
+                    self.model.learning_rate, accumulate_grad_batches, ngpu, bs, base_lr
+                )
+            )
         else:
             self.model.learning_rate = base_lr
             self.logger.info("++++ NOT USING LR SCALING ++++")
@@ -254,7 +277,6 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
             if trainer.global_rank == 0:
                 pudb.set_trace()
 
-
         signal.signal(signal.SIGUSR1, melk)
         signal.signal(signal.SIGUSR2, divein)
 
@@ -265,4 +287,3 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
         except Exception:
             melk()
             raise
-
