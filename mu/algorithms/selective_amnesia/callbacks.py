@@ -8,7 +8,10 @@ from PIL import Image
 import time
 
 # from pytorch_lightning.utilities import rank_zero_info, rank_zero_only
-from pytorch_lightning.utilities.distributed import rank_zero_only, rank_zero_info
+from pytorch_lightning.utilities.distributed import (
+    rank_zero_only,
+    rank_zero_info,
+)
 import numpy as np
 
 
@@ -185,7 +188,7 @@ class ImageLogger(Callback):
             try:
                 self.log_steps.pop(0)
             except IndexError as e:
-                rank_zero_print(e)
+                rank_zero_info(e)
                 pass
             return True
         return False

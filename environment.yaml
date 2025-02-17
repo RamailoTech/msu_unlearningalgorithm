@@ -1,4 +1,4 @@
-name: merged_env
+name: UnlearnDiff
 channels:
   - pytorch
   - defaults
@@ -63,4 +63,5 @@ dependencies:
       - fire==0.7.0
       - terminaltables==3.1.10
       - git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
+      - git+https://github.com/boomb0om/text2image-benchmark
       - unlearn_diff
