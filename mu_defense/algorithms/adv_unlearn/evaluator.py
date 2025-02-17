@@ -28,9 +28,10 @@ class MUDefenseEvaluator(DefenseBaseEvaluator):
         self.gen_imgs_path = self.config.get("gen_imgs_path")
         self.coco_imgs_path = self.config.get("coco_imgs_path")
         self.prompt_path = self.config.get("prompt_path")
-        self.classify_prompt_path = self.config.get("classify_prompt_path", "data/prompts/imagenette_5k.csv")
+        self.classify_prompt_path = self.config.get("classify_prompt_path")
         self.classification_model_path = self.config.get("classification_model_path")
         self.devices = self.config.get("devices")
+        self.output_path = self.config.get("output_path")
         self.devices = [f'cuda:{int(d.strip())}' for d in self.devices.split(',')]
 
         self.logger = logging.getLogger(__name__)
@@ -82,14 +83,15 @@ class MUDefenseEvaluator(DefenseBaseEvaluator):
         else:
             average_clip_score = 0.0
         
-        result_str = f"Mean CLIP Score = {average_clip_score}"
-        self.results['clip'] = result_str
+        result_str = f"{average_clip_score}"
+        self.results['clip score'] = result_str
         return result_str
     
     def calculate_fid_score(self):
         """Calculate the Fréchet Inception Distance (FID) score."""
+
         fid, _ = calculate_fid(self.gen_imgs_path, self.coco_imgs_path)
-        result_str = f"FID = {fid}"
+        result_str = f"{fid}"
         self.results['fid'] = result_str
         return result_str
 
@@ -97,18 +99,24 @@ class MUDefenseEvaluator(DefenseBaseEvaluator):
         """Save the evaluation results to a JSON file."""
         # Choose file name based on the results available.
         if "fid" in result_data and "clip" in result_data:
-            file_path = self.gen_imgs_path + '_results.json'
+            file_path = self.output_path + '_results.json'
         elif "fid" in result_data:
-            file_path = self.gen_imgs_path + '_fid.json'
+            file_path = self.output_path + '_fid.json'
         elif "clip" in result_data:
-            file_path = self.gen_imgs_path + '_clip.json'
+            file_path = self.output_path + '_clip.json'
         else:
-            file_path = self.gen_imgs_path + '_results.json'
+            file_path = self.output_path + '_results.json'
+        
+        # Create the output directory if it does not exist
+        output_dir = os.path.dirname(file_path)
+        if not os.path.exists(output_dir) and output_dir != "":
+            os.makedirs(output_dir, exist_ok=True)
         
         with open(file_path, 'w', encoding='utf-8') as file:
             json.dump(result_data, file, indent=4)
         
         self.logger.info(f"Results saved to {file_path}")
+
 
     def run(self):
         """Run the evaluation process."""
@@ -132,3 +140,5 @@ class MUDefenseEvaluator(DefenseBaseEvaluator):
 
         self.logger.info(result_data)
         self.save_results(result_data)
+
+

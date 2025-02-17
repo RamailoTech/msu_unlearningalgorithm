@@ -92,7 +92,7 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
         self.attack_lr = self.config['attack_lr']
         self.adv_prompt_update_step = self.config['adv_prompt_update_step']
         self.ddim_eta = self.config['ddim_eta']
-        self.backend = self.config['backend']
+
 
         self.logger = logging.getLogger(__name__)
 
@@ -346,9 +346,11 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
         self.custom_text_encoder.text_encoder.requires_grad_(False)
         if 'text_encoder' in self.train_method:
             save_text_encoder(self.output_dir, self.custom_text_encoder, self.train_method, i)
+            self.logger.info(f"Output saved to {self.output_dir} dir")
         else: 
-            output_path = f"{self.output_dir}/models/diffuser_model_checkpoint_{i}"
-            self.save_final_pipeline(output_path)
+            # output_path = f"{self.output_dir}/models/diffuser_model_checkpoint_{i}"
+            self.save_final_pipeline(self.output_dir)
+            self.logger.info(f"Output saved to {self.output_dir} dir")
         save_history(self.output_dir, losses, self.word_print)
         return self.model
 
