@@ -162,7 +162,7 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#run-attack">Run Attack</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#description-of-fields-in-config-file">Description of fields in config file</a>
+    <li class="toctree-l3"><a class="reference internal" href="#description-of-fields-in-config-json-file">Description of fields in config json file</a>
     </li>
     </ul>
                 </li>
@@ -203,86 +203,14 @@
     </ul>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Unlearn Mu Defense</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../../mu_defense/adv_unlearn/">Usage</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../../mu_defense/config/">Config</a>
-                  </li>
-              </ul>
               <p class="caption"><span class="caption-text">Evaluation</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" >Concept Ablation</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/concept_ablation/">Evaluation</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Erase Diff</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/erase_diff/">Evaluation</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >ESD</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/esd/">Evaluation</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Forget Me Not</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/forget_me_not/">Evaluation</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Saliency Unlearning</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/saliency/">Evaluation</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Scissor Hands</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/scissorhands/">Evaluation</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Selective Amnesia</a>
-    <ul>
-                <li class="toctree-l2"><a class="" href="../../../evaluation/selective_amnesia.md">Usage</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Semi Permeable Membrane</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/semipermeable_membrane/">Evaluation</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Unified Concept Editing</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../../evaluation/uce/">Evaluation</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >mu_attack</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../mu_attack_evaluation/">Usage</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >mu_defense</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../../mu_defense/evaluation/">Usage</a>
-                </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../mu_attack_evaluation/">Usage</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Contributing</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../../unlearn/algorithms/contributing/">docs</a>
-                  </li>
+                <li class="toctree-l1"><a class="" href="../../../algorithms/contributing.md">Contributing</a>
+                </li>
               </ul>
       </div>
     </div>
@@ -312,15 +240,14 @@
                 <h2 id="unlearndiffattak">UnlearnDiffAttak</h2>
 <p>This repository contains the implementation of UnlearnDiffAttack for hard prompt attack, a framework for evaluating the robustness of safety-driven unlearned Models using adversarial prompts.</p>
 <h3 id="create-environment">Create Environment</h3>
-<pre><code class="language-bash">create_env &lt;algorithm_name&gt;
-
+<pre><code>create_env &lt;algorithm_name&gt;
 </code></pre>
-<p><strong>Example</strong></p>
-<pre><code class="language-bash">create_env mu_attack
-
+<p>eg: <code>create_env mu_attack</code></p>
+<pre><code>conda activate &lt;environment_name&gt;
 </code></pre>
+<p>eg: <code>conda activate mu_attack</code></p>
 <h3 id="generate-dataset">Generate Dataset</h3>
-<pre><code class="language-bash">python -m scripts.generate_dataset --prompts_path data/prompts/prompts.csv --concept i2p_nude --save_path outputs/dataset
+<pre><code>python -m scripts.generate_dataset --prompts_path data/prompts/prompts.csv --concept i2p_nude --save_path outputs/dataset
 </code></pre>
 <h3 id="run-attack">Run Attack</h3>
 <ol>
@@ -404,7 +331,7 @@ if __name__ == &quot;__main__&quot;:
 <li>from mu_attack.configs.nudity import hard_prompt_esd_nudity_P4D_diffusers_config
 → This imports the predefined Hard Prompt Attack configuration for nudity unlearning in the diffusers model. It sets up the attack parameters and methodologies.</li>
 </ol>
-<h3 id="description-of-fields-in-config-file">Description of fields in config file</h3>
+<h3 id="description-of-fields-in-config-json-file">Description of fields in config json file</h3>
 <ol>
 <li>overall</li>
 </ol>
