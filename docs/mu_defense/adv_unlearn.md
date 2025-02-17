@@ -3,6 +3,20 @@
 
 This repository is for mu_defense that implements adversarial unlearning by integrating a soft prompt attack into the training loop. In this process, a random prompt is selected and its embedding is adversarially perturbed—either at the word or conditional embedding level—to steer the model into unlearning unwanted associations while preserving overall performance.
 
+
+### Installation
+```
+pip install unlearn_diff
+```
+
+### Prerequisities
+Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
+
+- **Miniconda** (recommended): [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
+- **Anaconda**: [https://www.anaconda.com/products/distribution](https://www.anaconda.com/products/distribution)
+
+After installing `conda`, ensure it is available in your PATH by running. You may require to restart the terminal session:
+
 ### Create Environment 
 
 ```bash

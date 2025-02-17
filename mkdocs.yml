@@ -104,6 +104,8 @@ nav:
       - Usage: evaluation/uce.md
     - mu_attack: 
       - Usage: evaluation/mu_attack.md
+    - mu_defense:
+      - Usage: mu_defense/evaluation.md
 
   - Contributing: 
     - docs: unlearn/algorithms/contributing.md

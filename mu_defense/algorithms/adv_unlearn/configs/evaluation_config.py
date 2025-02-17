@@ -6,7 +6,6 @@ from mu.core.base_config import BaseConfig
 
 class MUDefenseEvaluationConfig(BaseConfig):
     def __init__(self):
-        self.job = "fid, clip"
         self.gen_imgs_path = "outputs/adv_unlearn/models_visualizations_imagenette/SD-v1-4/"
         self.coco_imgs_path = "coco_dataset/extracted_files/coco_sample"
         self.prompt_path = "data/prompts/coco_10k.csv"

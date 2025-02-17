@@ -48,8 +48,7 @@ def generate_image():
         prompts_path = "data/prompts/sample_prompt.csv",
         num_samples = 1,
         folder_suffix = "imagenette",
-        devices = "0",
-        encoder_model_name_or_path =  "CompVis/stable-diffusion-v1-4"
+        devices = "0"
 
     )
     generate_image.generate_images()
@@ -79,12 +78,18 @@ WANDB_MODE=offline python image_generator.py
 - **model_name:**  
   **Type:** `str`  
   **Description:** Name of the model to use. Options include `"SD-v1-4"`, `"SD-V2"`, `"SD-V2-1"`, etc.
+  **required:** False
+
+  - **encoder_model_name_or_path**  
+     *Description*: Model name or path for the encoder.
+     *Type*: `str`  
+     *Example*: `CompVis/stable-diffusion-v1-4`
 
 - **target_ckpt:**  
   **Type:** `str`  
   **Description:** Path to the target checkpoint.  
   - If empty, the script will load the default model weights.  
-  - If provided, it supports both Diffusers-format checkpoints (directory) and CompVis checkpoints (file ending with `.pt`).
+  - If provided, it supports both Diffusers-format checkpoints (directory) and CompVis checkpoints (file ending with `.pt`). For CompVis, use the checkpoint of the model saved as Diffuser format.
 
 - **save_path:**  
   **Type:** `str`  
@@ -193,8 +198,8 @@ WANDB_MODE=offline python evaluate.py
 
 - **job:**  
   **Type:** `str`  
-  **Description:** Comma-separated list of evaluation tasks to perform.  
-  **Example:** `"fid, clip"`
+  **Description:** Evaluation tasks to perform. If nothing is passed it cacluates both.
+  **Example:** `"fid"` or `"clip"`
 
 - **gen_imgs_path:**  
   **Type:** `str`  

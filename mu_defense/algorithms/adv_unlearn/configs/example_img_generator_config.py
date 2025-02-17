@@ -18,6 +18,7 @@ class ImageGeneratorConfig(BaseConfig):
         self.from_case = 0
         self.folder_suffix = ""
         self.origin_or_target = "target" #target or origin
+        self.encoder_model_name_or_path = "CompVis/stable-diffusion-v1-4"
 
 
     def validate_config(self):
