@@ -1,4 +1,4 @@
-#mu/algorithms/saliency_unlearning/sampler.py
+# mu/algorithms/saliency_unlearning/sampler.py
 
 import os
 import logging
@@ -9,11 +9,11 @@ from PIL import Image
 from torch import autocast
 from pytorch_lightning import seed_everything
 
-from mu.core.base_sampler import BaseSampler        
+from mu.core.base_sampler import BaseSampler
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 from stable_diffusion.constants.const import theme_available, class_available
 from mu.helpers import load_config
-from mu.helpers.utils import load_ckpt_from_config,load_style_generated_images,load_style_ref_images,calculate_fid
+from mu.helpers.utils import load_ckpt_from_config
 
 
 class SaliencyUnlearningSampler(BaseSampler):
@@ -22,7 +22,7 @@ class SaliencyUnlearningSampler(BaseSampler):
     def __init__(self, config: dict, **kwargs):
         """
         Initialize the SaliencyUnlearningSampler with a YAML config (or dict).
-        
+
         Args:
             config (Dict[str, Any]): Dictionary of hyperparams / settings.
             **kwargs: Additional keyword arguments that can override config entries.
@@ -30,7 +30,9 @@ class SaliencyUnlearningSampler(BaseSampler):
         super().__init__()
 
         self.config = config
-        self.device = config.get("device", "cuda" if torch.cuda.is_available() else "cpu")
+        self.device = config.get(
+            "device", "cuda" if torch.cuda.is_available() else "cpu"
+        )
         self.model = None
         self.sampler = None
         self.logger = logging.getLogger(__name__)
@@ -52,8 +54,8 @@ class SaliencyUnlearningSampler(BaseSampler):
         """
         Sample (generate) images using the loaded model and sampler, based on the config.
         """
-        steps = self.config["ddim_steps"]       
-        cfg_text = self.config["cfg_text"]    
+        steps = self.config["ddim_steps"]
+        cfg_text = self.config["cfg_text"]
         seed = self.config["seed"]
         H = self.config["image_height"]
         W = self.config["image_width"]
@@ -64,22 +66,24 @@ class SaliencyUnlearningSampler(BaseSampler):
         for test_theme in theme_available:
             theme_path = os.path.join(output_dir, test_theme)
             os.makedirs(theme_path, exist_ok=True)
-        
+
         self.logger.info(f"Generating images and saving to {output_dir}")
 
         # Set random seed
         seed_everything(seed)
-    
+
         for test_theme in theme_available:
             for object_class in class_available:
-                prompt = f"A {object_class} image in {test_theme.replace('_',' ')} style."
+                prompt = (
+                    f"A {object_class} image in {test_theme.replace('_',' ')} style."
+                )
                 self.logger.info(f"Sampling prompt: {prompt}")
                 with torch.no_grad():
                     with autocast(self.device):
                         with self.model.ema_scope():
                             # Prepare conditioning
-                            uc = self.model.get_learned_conditioning([""])  
-                            c  = self.model.get_learned_conditioning(prompt)
+                            uc = self.model.get_learned_conditioning([""])
+                            c = self.model.get_learned_conditioning(prompt)
                             shape = [4, H // 8, W // 8]
 
                             # Generate samples using the sampler
@@ -92,21 +96,27 @@ class SaliencyUnlearningSampler(BaseSampler):
                                 unconditional_guidance_scale=cfg_text,
                                 unconditional_conditioning=uc,
                                 eta=ddim_eta,
-                                x_T=None
+                                x_T=None,
                             )
 
                             # Convert generated samples to image
                             x_samples_ddim = self.model.decode_first_stage(samples_ddim)
-                            x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
-                            x_samples_ddim = x_samples_ddim.cpu().permute(0, 2, 3, 1).numpy()
+                            x_samples_ddim = torch.clamp(
+                                (x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0
+                            )
+                            x_samples_ddim = (
+                                x_samples_ddim.cpu().permute(0, 2, 3, 1).numpy()
+                            )
                             assert len(x_samples_ddim) == 1
 
                             # Convert to uint8 format
                             x_sample = x_samples_ddim[0]
                             if isinstance(x_sample, torch.Tensor):
-                                x_sample = (255. * x_sample.cpu().detach().numpy()).round()
+                                x_sample = (
+                                    255.0 * x_sample.cpu().detach().numpy()
+                                ).round()
                             else:
-                                x_sample = (255. * x_sample).round()
+                                x_sample = (255.0 * x_sample).round()
                             x_sample = x_sample.astype(np.uint8)
                             img = Image.fromarray(x_sample)
 

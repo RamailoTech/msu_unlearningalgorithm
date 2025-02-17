@@ -1,7 +1,7 @@
 # Model Configuration
 c_guidance: 7.5
-batch_size: 4
-num_timesteps: 1000
+batch_size: 1
+num_timesteps: 1
 image_size: 512
 
 model_config_path: "mu/algorithms/saliency_unlearning/configs/model_config.yaml"
