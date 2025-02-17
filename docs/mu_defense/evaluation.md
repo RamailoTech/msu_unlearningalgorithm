@@ -65,6 +65,7 @@ WANDB_MODE=offline python image_generator.py
 ```
 
 **How It Works** 
+
 * Default Values: The script first loads default values from the evluation config file as in configs section.
 
 * Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
