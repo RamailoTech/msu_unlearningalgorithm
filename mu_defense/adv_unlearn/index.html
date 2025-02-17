@@ -197,6 +197,10 @@
               <ul class="current">
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Usage</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#prerequisities">Prerequisities</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#create-environment">Create Environment</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#example-usage-to-run-defense-for-compvis">Example usage to Run Defense for compvis</a>
@@ -276,7 +280,13 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >mu_attack</a>
     <ul>
-                <li class="toctree-l2"><a class="" href="../../evaluation/mu_attack.md">Usage</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../mu_attack/mu_attack_evaluation/">Usage</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >mu_defense</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../evaluation/">Usage</a>
                 </li>
     </ul>
                   </li>
@@ -312,6 +322,16 @@
               
                 <h2 id="mu_defense">MU_DEFENSE</h2>
 <p>This repository is for mu_defense that implements adversarial unlearning by integrating a soft prompt attack into the training loop. In this process, a random prompt is selected and its embedding is adversarially perturbed—either at the word or conditional embedding level—to steer the model into unlearning unwanted associations while preserving overall performance.</p>
+<h3 id="installation">Installation</h3>
+<pre><code>pip install unlearn_diff
+</code></pre>
+<h3 id="prerequisities">Prerequisities</h3>
+<p>Ensure <code>conda</code> is installed on your system. You can install Miniconda or Anaconda:</p>
+<ul>
+<li><strong>Miniconda</strong> (recommended): <a href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a></li>
+<li><strong>Anaconda</strong>: <a href="https://www.anaconda.com/products/distribution">https://www.anaconda.com/products/distribution</a></li>
+</ul>
+<p>After installing <code>conda</code>, ensure it is available in your PATH by running. You may require to restart the terminal session:</p>
 <h3 id="create-environment">Create Environment</h3>
 <pre><code class="language-bash">create_env &lt;algorithm_name&gt;
 

@@ -260,7 +260,13 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >mu_attack</a>
     <ul>
-                <li class="toctree-l2"><a class="" href="../../evaluation/mu_attack.md">Usage</a>
+                <li class="toctree-l2"><a class="reference internal" href="../../mu_attack/mu_attack_evaluation/">Usage</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >mu_defense</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../evaluation/">Usage</a>
                 </li>
     </ul>
                   </li>
@@ -375,6 +381,66 @@ class AdvUnlearnConfig(BaseConfig):
             os.makedirs(self.output_dir)
 
 adv_unlearn_config = AdvUnlearnConfig()
+</code></pre>
+<h4 id="sample-config-for-image-generator-for-mu_defense">Sample config for image generator for mu_defense</h4>
+<pre><code class="language-python"># mu_defense/algorithms/adv_unlearn/configs/example_img_generator_config.py
+
+import os
+
+from mu.core.base_config import BaseConfig
+
+class ImageGeneratorConfig(BaseConfig):
+    def __init__(self):
+        self.model_name = &quot;SD-v1-4&quot;
+        self.target_ckpt = &quot;&quot;
+        self.save_path = &quot;&quot;
+        self.prompts_path = &quot;data/prompts/visualization_example.csv&quot;
+        self.device = &quot;0&quot;
+        self.guidance_scale = 7.5
+        self.image_size = 512
+        self.ddim_steps = 100
+        self.num_samples = 1
+        self.from_case = 0
+        self.folder_suffix = &quot;&quot;
+        self.origin_or_target = &quot;target&quot; #target or origin
+        self.encoder_model_name_or_path = &quot;CompVis/stable-diffusion-v1-4&quot;
+
+
+    def validate_config(self):
+        &quot;&quot;&quot;
+        Perform basic validation on the config parameters.
+        &quot;&quot;&quot;
+        if not os.path.exists(self.prompt_path):
+            raise FileNotFoundError(f&quot;Prompt dataset file {self.prompt_path} does not exist.&quot;)
+
+example_image_generator_config = ImageGeneratorConfig()
+</code></pre>
+<h3 id="sample-config-for-evaluation-framework-for-mu_defense">Sample config for evaluation framework for mu_defense</h3>
+<pre><code class="language-python"># mu_defense/algorithms/adv_unlearn/configs/evaluation_config.py
+
+import os
+
+from mu.core.base_config import BaseConfig
+
+class MUDefenseEvaluationConfig(BaseConfig):
+    def __init__(self):
+        self.job = &quot;fid, clip&quot;
+        self.gen_imgs_path = &quot;outputs/adv_unlearn/models_visualizations_imagenette/SD-v1-4/&quot;
+        self.coco_imgs_path = &quot;coco_dataset/extracted_files/coco_sample&quot;
+        self.prompt_path = &quot;data/prompts/coco_10k.csv&quot;
+        self.classify_prompt_path = &quot;data/prompts/imagenette_5k.csv&quot;
+        self.devices = &quot;0,0&quot;
+        self.classification_model_path = &quot;openai/clip-vit-base-patch32&quot;
+        self.output_path = &quot;outputs/adv_unlearn/evaluation&quot;
+
+    def validate_config(self):
+        &quot;&quot;&quot;
+        Perform basic validation on the config parameters.
+        &quot;&quot;&quot;
+        if not os.path.exists(self.prompt_path):
+            raise FileNotFoundError(f&quot;Prompt dataset file {self.prompt_path} does not exist.&quot;)
+
+mu_defense_evaluation_config = MUDefenseEvaluationConfig()
 </code></pre>
               
             </div>
