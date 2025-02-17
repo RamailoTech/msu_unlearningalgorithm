@@ -1,8 +1,10 @@
-# Unlearn
+# Unlearn Diff
 
-Unlearn is an open-source Python package designed to streamline the development of unlearning algorithms and establish a standardized evaluation pipeline for diffusion models. It provides researchers and practitioners with tools to implement, evaluate, and extend unlearning algorithms effectively.
+Unlearn Diff is an open-source Python package designed to streamline the development of unlearning algorithms and establish a standardized evaluation pipeline for diffusion models. It provides researchers and practitioners with tools to implement, evaluate, and extend unlearning algorithms effectively.
 
-
+### [**Documentation**](https://ramailotech.github.io/msu_unlearningalgorithm/)
+You can find the full documentation for this project at the url given below.
+https://ramailotech.github.io/msu_unlearningalgorithm/
 ## Features
 
 - **Comprehensive Algorithm Support**: Includes commonly used concept erasing and machine unlearning algorithms tailored for diffusion models. Each algorithm is encapsulated and standardized in terms of input-output formats.
@@ -50,7 +52,7 @@ The project is organized to facilitate scalability and maintainability.
 
 - **`models/`**: Repository of trained models and checkpoints.
 
-- **`mu/`**: Core source code.
+- **`mu/`**: Core source code for machine unlearning.
   - **`algorithms/`**: Implementation of various algorithms. Each algorithm has its own subdirectory containing code and a `README.md` with detailed documentation.
     - **`esd/`**: ESD algorithm components.
       - `README.md`: Documentation specific to the ESD algorithm.
@@ -60,6 +62,7 @@ The project is organized to facilitate scalability and maintainability.
       - `environment.yaml`: Environment setup for ESD.
       - `model.py`: Model architectures specific to ESD.
       - `sampler.py`: Sampling methods used during training or inference.
+      - `evaluator.py`: Evaluation of ESD algorithm.
       - `scripts/train.py`: Training script for ESD.
       - `trainer.py`: Training routines and optimization strategies.
       - `utils.py`: Utility functions and helpers.
@@ -72,6 +75,7 @@ The project is organized to facilitate scalability and maintainability.
     - `base_model.py`: Base class for model definitions.
     - `base_sampler.py`: Base class for sampling methods.
     - `base_trainer.py`: Base class for training routines.
+    - `base_config.py`: Base class for config class.
   - **`datasets/`**: Dataset management and utilities.
     - `__init__.py`: Initializes the dataset package.
     - `dataset.py`: Dataset classes and methods.
@@ -81,10 +85,69 @@ The project is organized to facilitate scalability and maintainability.
     - `helper.py`: General-purpose helper functions.
     - `logger.py`: Logging utilities to standardize logging practices.
     - `path_setup.py`: Path configurations and environment setup.
-
+- **`mu_attack/`**: Core source code for attack.
+  - **`attackers/`**: Implementation of each of the attacks.
+    - **`hard_prompt.py`**: Implementation for hard prompt attack.
+    - **`no_attack.py`**: Implementation for no attack.
+    - **`random.py`**: Implementation for random attack.
+    - **`seed_search.py`**: Implementation for seed search attack.
+    - **`soft_prompt.py`**: Implementation for soft_prompt attack.
+    - **`text_grad.py`**: Implementation for text_grad attack.
+  - **`configs`**: Configuration files for attackers and evaluation tasks.
+    - **`adv_unlearn`**: Config class for adversial unlearning.
+    - **`evaluation`**: Config class for evaluation.
+    - **`illegal`**: Config class for illegal.
+    - **`nudity`**: Config class for nudity.
+    - **`object`**: Config class for object.
+    - **`style`**: Config class for style.
+    - **`violence`**: Config class for violence.
+  - **`core/`**: Foundational classes and utilities.
+    - **`base_attacker.py`**: Abstract base class for attack implementations.
+    - **`base_config.py`**: Base class for config class.
+    - **`base_stable_diffusion.py`**: Base class for stable diffusion pipeline.
+    - **`base_task.py`**: Base class for tasks.
+  - **`datasets/`**: Script to generate dataset.
+  - **`exces/`**: Implemenation of attacks.
+    - **`adv_attack.py`** : Implementation of advattack.
+    - **`attack.py`** : Main orchestration class that implements attacks.
+  - **`helpers/`**: Utility functions and helpers.
+    - **`utils.py`**: Contains utility functions used in mu_attack.
+  - **`loggers/`**: Logging utilities to standardize logging practices.
+  - **`tasks/`**: Contains tasks for attacks.
+    - **`utils/`**: Utilities for tasks.
+    - **`classifier.py`**: Implementation of classifier task.
+    - **`p4d.py`**: Implementation of p4d task.
+    - **`transfer.py`**: Implementation of transfer task.
+    - **`sd_compvis.py`**: Base stable diffusion pipeline implementation for compvis model.
+    - **`sd_diffuser.py`**: Base stable diffusion pipeline implementation for diffuser model.
+  - `environment.yaml`: Environment setup for attack.
+- **`mu_defense/`**: Core source code for defense i.e adversial unlearning.
+  - **`algorithms/`**: Algorithms for defense.
+    - **`adv_unlearn/`**: Implementation of defense algorithm (adv_unlearn).
+      - **`configs/`**: Configuration files for AdvUnlearn, evaluation and image generation tasks.
+        - **`adv_unlearn_config.py`**: Configuration class for AdvUnlearn.
+        - **`evaluation_config.py`**: Configuration class for evaluation for AdvUnlearn.
+        - **`example_img_generator_config.py`**: Configuration class for image generation for AdvUnlearn evaluation.
+      - `algorithm.py`: Core implementation of AdvUnlearn.
+      - `trainer.py`: Core training routines and optimization strategies.
+      - `compvis_trainer.py`: Compvis specific training routines and optimization strategies.
+      - `diffuser_trainer.py`: Diffuser specific training routines and optimization strategies.
+      - `generate_example_image.py`: Implementation of image generation for evaluation for both compvis and diffuser.
+      - `evaluator.py`: Implementation of evaluation framework for adv_unlearn.
+      - `model.py`: Script to load Compvis and diffuser model.
+      - `utils.py`: Utility function used in AdvUnlearn.
+      - `README.md`: Docs for AdvUnlearn.
+    - **`core/`**: Foundational classes and utilities.
+      - `base_algorithm.py`: Abstract base class for algorithm implementations.
+      - `base_data_handler.py`: Base class for data handling.
+      - `base_model.py`: Base class for model definitions.
+      - `base_config.py`: Base class for config class.
+      - `base_trainer.py`: Base class for training routines.
+    - `environment.yaml`: Environment setup for defense.
 - **`tests/`**: Test suites for ensuring code reliability.
 - **`stable_diffusion/`**: Components for stable diffusion.
 - **`lora_diffusion/`**: Components for the LoRA Diffusion.
+
 
 ## Datasets
 
@@ -111,17 +174,20 @@ After installing `conda`, ensure it is available in your PATH by running. You ma
 ```bash
 conda --version
 ```
-### Create environment:
+### Create environment (Default):
 ```
-create_env <algorithm_name>
+create_env
 ```
-eg: ```create_env erase_diff```
+#### Optional(Create environment for algorithm):
+```
+create_env erase_diff
+```
 
 ### Activate environment:
 ```
 conda activate <environment_name>
 ```
-eg: ```conda activate mu_erase_diff```
+eg: ```conda activate UnlearnDiff```
 
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 
@@ -160,21 +226,5 @@ After you install the package, you can use the following commands to download.
 
 
 ### Run Train <br>
-Each algorithm has their own script to run the algorithm, Some also have different process all together. Follow usage section in readme for the algorithm you want to run with the help of the github repository. You will need to create a `train_config.yaml` anywhere in your machine, and pass it's path as `--config_path` parameter.
+Each algorithm has their own script to run the algorithm, Some also have different process all together. Follow usage section in readme for the algorithm you want to run with the help of the github repository. You will need to run the code snippet provided in usage section with necessary configuration passed. 
 
-Here is an example for Erase_diff algorithm.
-  ```
-  WANDB_MODE=offline python -m mu.algorithms.erase_diff.scripts.train \
---config_path <path_to_config_in_your_machine>
-  ```
-
-The default algorithm specific `train_config.yaml` makes use of the `model_config.yaml` with default settings. You can also create your own `model_config.yaml` and update it's path in the `train_config.yaml` file to tweak the original model parameters. The details about each parameter in config files are written in the readme for each of the algorithm. 
-
-**NOTE**
-Make sure to update these parameters in `train_config.yaml`. Otherwise, the train script will not run properly. Also, update other parameters as per your usage.
-```yaml
-model_config_path: "configs/erase_diff/model_config.yaml"  # path to model_config.yaml. 
-ckpt_path: "models/compvis/style50/compvis.ckpt"  # Checkpoint path for compvis or diffuser model
-raw_dataset_dir: "data/i2p-dataset/sample" # path where your dataset was downloaded
-processed_dataset_dir: "mu/algorithms/erase_diff/data"  # path to directory, where you want the trained model data to be stored
-```
