@@ -295,6 +295,12 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#folder-structure">Folder Structure</a>
     </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#adding-a-new-attack">Adding a New Attack</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#adding-a-new-defense">Adding a New Defense</a>
+        <ul>
     <li class="toctree-l3"><a class="reference internal" href="#creating-an-environment">Creating an Environment</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a>
@@ -388,6 +394,33 @@
 <p><strong><code>helpers/</code></strong><br />
   Shared utility functions (e.g., logging, path setup, config loading).</p>
 </li>
+<li>
+<p><strong><code>mu_attack/</code> &amp; <code>mu_defense/</code></strong>:<br />
+  These directories contain the implementation of attack strategies and defensive unlearning mechanisms, respectively. Each contains:</p>
+</li>
+<li><strong>Attack Modules (<code>mu_attack/</code>)</strong>:<ul>
+<li><code>attackers/</code>: Different attack implementations (e.g., hard/soft prompts, seed search).</li>
+<li><code>configs/</code>: YAML configuration files for attack routines.</li>
+<li><code>tasks/</code>: Task definitions to evaluate attack efficacy.</li>
+</ul>
+</li>
+<li>
+<p><strong>Defense Modules (<code>mu_defense/</code>)</strong>:</p>
+<ul>
+<li><code>algorithms/</code>: Defensive algorithms including adversarial unlearning methods.</li>
+<li><code>configs/</code>: Configurations for training and evaluating defenses.</li>
+</ul>
+</li>
+<li>
+<p><strong>Other Directories</strong>:</p>
+</li>
+<li><strong><code>data/</code></strong>: Contains datasets.</li>
+<li><strong><code>docs/</code></strong>: Project documentation and API references.</li>
+<li><strong><code>outputs/</code></strong>: Generated outputs from algorithms.</li>
+<li><strong><code>logs/</code></strong>: Log files for debugging.</li>
+<li><strong><code>models/</code></strong>: Trained models and checkpoints.</li>
+<li><strong><code>tests/</code></strong>: Test suites to ensure code reliability.</li>
+<li><strong><code>stable_diffusion/</code></strong> &amp; <strong><code>lora_diffusion/</code></strong>: Diffusion components.</li>
 </ul>
 <hr />
 <h2 id="how-to-contribute">How to Contribute</h2>
@@ -420,22 +453,95 @@
 <h3 id="folder-structure">Folder Structure</h3>
 <ol>
 <li><strong>Create a new subfolder</strong> in <code>mu/algorithms/</code> with a clear, descriptive name (e.g., <code>my_new_algo</code>).  </li>
-<li>Inside this subfolder, include the following (at minimum):</li>
+<li>
+<p>Inside this subfolder, include the following (at minimum):</p>
+<ul>
 <li><code>algorithm.py</code>  </li>
 <li><code>trainer.py</code>  </li>
 <li><code>scripts/train.py</code> (and optionally <code>scripts/evaluate.py</code> if your training and evaluation are separate)  </li>
 <li><code>configs/</code> containing YAML config files for training, evaluation, etc.  </li>
 <li><code>environment.yaml</code> specifying dependencies for <code>conda</code>  </li>
 <li><code>Readme.md</code> explaining how to install, run, and configure your new algorithm  </li>
-<li>
-<p>(Optional) <code>data_handler.py</code>, <code>datasets/</code>, <code>model.py</code>, <code>sampler.py</code>, <code>utils.py</code>, etc., depending on your algorithm’s design.</p>
+<li>(Optional) <code>data_handler.py</code>, <code>datasets/</code>, <code>model.py</code>, <code>sampler.py</code>, <code>utils.py</code>, etc., depending on your algorithm’s design.</li>
+</ul>
 </li>
 <li>
 <p><strong>Extend or import</strong> from base classes in <code>mu/core/</code> if your algorithm logic aligns with any existing abstract classes (e.g., <code>BaseAlgorithm</code>, <code>BaseTrainer</code>, etc.). This ensures code consistency and easier maintenance.</p>
 </li>
 </ol>
+<h2 id="adding-a-new-attack">Adding a New Attack</h2>
+<p>To add a new attack method, follow these guidelines:</p>
+<ol>
+<li>
+<p><strong>Folder Structure</strong>:</p>
+<ul>
+<li>Create a new file or subfolder under <code>mu_attack/attackers/</code> with a clear, descriptive name (e.g., <code>my_new_attack.py</code> or <code>mu_attack/attackers/my_new_attack/</code>).</li>
+<li>If creating a subfolder, include:</li>
+<li>The main implementation file (e.g., <code>attack.py</code>).</li>
+<li>Any helper modules or configuration files specific to your attack.</li>
+<li>Update or add corresponding YAML configuration files and config class under <code>mu_attack/configs/</code> if your attack requires custom settings.</li>
+</ul>
+</li>
+<li>
+<p><strong>Implementation</strong>:</p>
+<ul>
+<li>Extend or import from the base class <code>BaseAttacker</code> (located in <code>mu_attack/core/base_attacker.py</code>) if applicable.</li>
+<li>Ensure that your attack method adheres to the input-output standards defined by the project.</li>
+</ul>
+</li>
+<li>
+<p><strong>Documentation &amp; Testing</strong>:</p>
+<ul>
+<li>Add detailed documentation within your new attack module and update the main documentation if needed.</li>
+<li>Include tests covering your new attack method under the appropriate test directories.</li>
+</ul>
+</li>
+<li>
+<p><strong>Environment</strong>:</p>
+<ul>
+<li>If your attack method has unique dependencies, update the <code>environment.yaml</code> file within the relevant directory or provide instructions in your documentation on how to create a dedicated environment. Also update the common environment file that is located in the project's root directory.</li>
+</ul>
+</li>
+</ol>
+<h2 id="adding-a-new-defense">Adding a New Defense</h2>
+<p>To integrate a new defense mechanism, please follow these steps:</p>
+<ol>
+<li>
+<p><strong>Folder Structure</strong>:</p>
+<ul>
+<li>Create a new subfolder under <code>mu_defense/algorithms/</code> with a descriptive name (e.g., <code>my_new_defense</code>).</li>
+<li>Within this subfolder, include essential files such as:</li>
+<li><code>algorithm.py</code>: Contains the core logic of your defense method.</li>
+<li><code>trainer.py</code>: Contains training routines and optimization strategies.</li>
+<li><code>configs/</code>: Include configuration class for training and evaluation.</li>
+<li><code>environment.yaml</code>: Specify dependencies unique to your defense method.</li>
+<li><code>Readme.md</code>: Document usage instructions, configuration details, and any other relevant information.</li>
+</ul>
+</li>
+<li>
+<p><strong>Implementation</strong>:</p>
+<ul>
+<li>Extend or use base classes provided in <code>mu_defense/algorithms/core/</code> (e.g., <code>base_algorithm.py</code>, <code>base_trainer.py</code>) to ensure consistency with existing methods.</li>
+<li>Implement any unique evaluation metrics or procedures if your defense requires them.</li>
+</ul>
+</li>
+<li>
+<p><strong>Documentation &amp; Testing</strong>:</p>
+<ul>
+<li>Document your defense method thoroughly within its <code>Readme.md</code> and update the global documentation if necessary.</li>
+<li>Provide tests for your defense implementation to ensure its reliability and compatibility with the rest of the system.</li>
+</ul>
+</li>
+<li>
+<p><strong>Environment</strong>:</p>
+<ul>
+<li>If your defense algorithm has specific dependencies, use the provided <code>environment.yaml</code> file as a template and adjust it accordingly. Include clear instructions for users to create and activate the environment. Also update the common environment file that is located in the project's root directory.</li>
+</ul>
+</li>
+</ol>
 <h3 id="creating-an-environment">Creating an Environment</h3>
-<p>To keep dependencies organized, each algorithm has its own <code>environment.yaml</code>. Contributors are encouraged to:</p>
+<p>The default environment file is located in the project root directory (<code>environment.yaml</code>). Contributors should update this file as needed to include any new packages required by their contributions. If your module or algorithm requires unique dependencies, you may add a dedicated environment file in its respective directory, but be sure to update and maintain the default environment in the root.</p>
+<p>Optionally, to keep dependencies organized, each algorithm has its own <code>environment.yaml</code>. Contributors are encouraged to:</p>
 <ul>
 <li>Specify all required packages (e.g., <code>torch</code>, <code>torchvision</code>, <code>diffusers</code>, etc.).  </li>
 <li>Name the environment after the algorithm, e.g., <code>mu_&lt;algorithm_name&gt;</code>.  </li>
