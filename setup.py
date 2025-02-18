@@ -37,12 +37,16 @@ check_conda()
 
 
 class CustomInstallCommand(_install):
-
     def run(self):
+        # Ensure this script runs only during `pip install` or equivalent
+        if sys.argv[1] in ["sdist", "bdist_wheel"]:
+            # Skip the custom installation during the build process
+            return super().run()
+
         import yaml
 
-        # Run the standard installation process.
-        _install.run(self)
+        # Run the standard installation process
+        super().run()
 
         # Step 1: Use the environment.yaml to either update or create the conda environment.
         print("\nProcessing environment.yaml ...")
