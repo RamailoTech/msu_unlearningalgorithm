@@ -300,30 +300,43 @@
             <div class="section" itemprop="articleBody">
               
                 <p><strong>Sample config for random attack for compvis</strong></p>
-<pre><code class="language-python">class RandomESDNudityCompvis(BaseConfig):
+<pre><code class="language-python"># mu_attack/configs/nudity/no_attack_esd_nudity_classifier_diffuser.py
+
+from mu_attack.core.base_config import BaseConfig, OverallConfig, TaskConfig, AttackerConfig, LoggerConfig
+
+
+class NoAttackESDNudityClassifierConfigDiffusers(BaseConfig):
     overall: OverallConfig = OverallConfig(
         task=&quot;classifier&quot;,
-        attacker=&quot;random&quot;,
+        attacker=&quot;no_attack&quot;,
         logger=&quot;json&quot;,
         resume=None
     )
 
     task: TaskConfig = TaskConfig(
+        classifier_dir=None,
         sampling_step_num=1,
+        target_ckpt= &quot;files/pretrained/SD-1-4/ESD_ckpt/Nudity-ESDx1-UNET-SD.pt&quot;,
+        criterion=&quot;l1&quot;,
         sld=&quot;weak&quot;,
         sld_concept=&quot;nudity&quot;,
         negative_prompt=&quot;sth&quot;,
-        backend=&quot;compvis&quot;
+        backend=&quot;diffusers&quot;
     )
 
     attacker: AttackerConfig = AttackerConfig(
-        sequential=True,
-        attack_idx=1
+        iteration=1,
+        no_attack = {
+            &quot;dataset_path&quot;: &quot;outputs/dataset/i2p_nude&quot;
+        }
     )
 
     logger: LoggerConfig = LoggerConfig(
-        json={&quot;root&quot;: &quot;results/random_esd_nudity_scissorhands&quot;, &quot;name&quot;: &quot;Hard Prompt&quot;}
+        json={&quot;root&quot;: &quot;results/no_attack_esd_nudity_esd&quot;, &quot;name&quot;: &quot;NoAttackEsdNudity&quot;}
     )
+
+no_attack_esd_nudity_classifier_diffusers_config = NoAttackESDNudityClassifierConfigDiffusers()
+
 
 </code></pre>
 <p><strong>Sample compvis config json for random attack</strong></p>

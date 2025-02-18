@@ -300,7 +300,11 @@
             <div class="section" itemprop="articleBody">
               
                 <p><strong>Sample config for text grad for compvis</strong></p>
-<pre><code class="language-python">class TextGradESDNudityClassifierCompvis(BaseConfig):
+<pre><code class="language-python"># mu_attack/configs/nudity/text_grad_esd_nudity_classifier_compvis.py
+
+from mu_attack.core import BaseConfig, OverallConfig, TaskConfig, AttackerConfig, LoggerConfig
+
+class TextGradESDNudityClassifierCompvis(BaseConfig):
     overall: OverallConfig = OverallConfig(
         task=&quot;classifier&quot;,
         attacker=&quot;text_grad&quot;,
@@ -313,7 +317,9 @@
         sld=&quot;weak&quot;,
         sld_concept=&quot;nudity&quot;,
         negative_prompt=&quot;sth&quot;,
-        backend=&quot;compvis&quot;
+        backend=&quot;compvis&quot;,
+        diffusers_config_file = None,
+        save_diffuser = False
     )
 
     attacker: AttackerConfig = AttackerConfig(
@@ -329,6 +335,9 @@
         json={&quot;root&quot;: &quot;results/text_grad_esd_nudity_classifier_scissorhands&quot;, 
               &quot;name&quot;: &quot;TextGradNudity&quot;}
     )
+
+text_grad_esd_nudity_classifier_compvis_config = TextGradESDNudityClassifierCompvis()
+
 </code></pre>
 <p><strong>Sample compvis config for text grad attack</strong></p>
 <pre><code class="language-json">{

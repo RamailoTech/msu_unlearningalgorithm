@@ -300,7 +300,12 @@
             <div class="section" itemprop="articleBody">
               
                 <p><strong>Sample no attack config for compvis</strong></p>
-<pre><code class="language-python">class NoAttackESDNudityClassifierConfigCompvis(BaseConfig):
+<pre><code class="language-python"># mu_attack/configs/nudity/no_attack_esd_nudity_classifier_compvis.py
+
+from mu_attack.core import BaseConfig, OverallConfig, TaskConfig, AttackerConfig, LoggerConfig
+
+
+class NoAttackESDNudityClassifierConfigCompvis(BaseConfig):
     overall: OverallConfig = OverallConfig(
         task=&quot;classifier&quot;,
         attacker=&quot;no_attack&quot;,
@@ -315,7 +320,9 @@
         sld=&quot;weak&quot;,
         sld_concept=&quot;nudity&quot;,
         negative_prompt=&quot;sth&quot;,
-        backend=&quot;compvis&quot;
+        backend=&quot;compvis&quot;,
+        diffusers_config_file = None,
+        save_diffuser = False
     )
 
     attacker: AttackerConfig = AttackerConfig(
@@ -329,6 +336,9 @@
     logger: LoggerConfig = LoggerConfig(
         json={&quot;root&quot;: &quot;results/no_attack_esd_nudity_esd&quot;, &quot;name&quot;: &quot;NoAttackEsdNudity&quot;}
     )
+
+
+no_attack_esd_nudity_classifier_compvis_config = NoAttackESDNudityClassifierConfigCompvis()
 
 </code></pre>
 <p><strong>Sample compvis config json for no attack</strong></p>

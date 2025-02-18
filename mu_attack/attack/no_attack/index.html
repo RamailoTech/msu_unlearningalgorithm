@@ -312,19 +312,22 @@
                 <h2 id="unlearndiffattak">UnlearnDiffAttak</h2>
 <p>This repository contains the implementation of UnlearnDiffAttack for No-attack, a framework for evaluating the robustness of safety-driven unlearned Models using adversarial prompts.</p>
 <h3 id="create-environment">Create Environment</h3>
-<pre><code>create_env &lt;algorithm_name&gt;
+<p>If you prefer not to use the default environment, you can create and activate a dedicated environment for mu_attack.</p>
+<pre><code class="language-bash">create_env &lt;algorithm_name&gt;
+
 </code></pre>
-<p>eg: <code>create_env mu_attack</code></p>
-<pre><code>conda activate &lt;environment_name&gt;
+<p><strong>Example</strong></p>
+<pre><code class="language-bash">create_env mu_attack
+
 </code></pre>
-<p>eg: <code>conda activate mu_attack</code></p>
 <h3 id="generate-dataset">Generate Dataset</h3>
-<pre><code>python -m scripts.generate_dataset --prompts_path data/prompts/prompts.csv --concept i2p_nude --save_path outputs/dataset
+<pre><code class="language-bash">python -m scripts.generate_dataset --prompts_path data/prompts/prompts.csv --concept i2p_nude --save_path outputs/dataset
 </code></pre>
 <h3 id="run-attack">Run Attack</h3>
 <ol>
 <li><strong>No Attack - compvis</strong></li>
 </ol>
+<p>Use the following code if you wish to run the hard prompt attack using the CompVis model directly (without converting it into Diffusers format):</p>
 <pre><code class="language-python">from mu_attack.configs.nudity import no_attack_esd_nudity_classifier_compvis_config
 from mu_attack.execs.attack import MUAttack
 from mu.algorithms.scissorhands.configs import scissorhands_train_mu
@@ -347,6 +350,37 @@ def run_attack_for_nudity():
 if __name__ == &quot;__main__&quot;:
     run_attack_for_nudity()
 </code></pre>
+<ol>
+<li><strong>No Attack – CompVis to Diffusers Conversion</strong></li>
+</ol>
+<p>If you want to convert the CompVis model into the Diffusers format before running the attack, use the following code. Note: For the conversion to take place, set task.save_diffuser to True and to use the converted model task.sld should be set to None.</p>
+<pre><code class="language-python">from mu_attack.configs.nudity import no_attack_esd_nudity_classifier_compvis_config
+from mu_attack.execs.attack import MUAttack
+from mu.algorithms.scissorhands.configs import scissorhands_train_mu
+
+def run_attack_for_nudity():
+
+    overridable_params = {
+        &quot;task.compvis_ckpt_path&quot; : &quot;outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth&quot;,
+        &quot;task.compvis_config_path&quot; : scissorhands_train_mu.model_config_path,
+        &quot;task.dataset_path&quot; : &quot;outputs/dataset/i2p_nude&quot;,
+        &quot;logger.json.root&quot; : &quot;results/hard_prompt_esd_nudity_P4D_scissorhands&quot;,
+    &quot;attacker.no_attack.dataset_path&quot; : &quot;outputs/dataset/i2p_nude&quot;,
+        &quot;task.save_diffuser&quot;: True, # This flag triggers conversion
+        &quot;task.sld&quot;: None, # Set sld to None for conversion
+        &quot;task.model_name&quot;: &quot;SD-v1-4&quot;
+    }
+
+    MUAttack(
+        config=no_attack_esd_nudity_classifier_compvis_config,
+        **overridable_params
+    )
+
+if __name__ == &quot;__main__&quot;:
+    run_attack_for_nudity()
+</code></pre>
+<p><strong>For Conversion:</strong></p>
+<p>When converting a CompVis model to the Diffusers format, ensure that task.save_diffuser is set to True and task.sld is set to None. This instructs the pipeline to perform the conversion during initialization and then load the converted checkpoint.</p>
 <p><strong>Code Explanation &amp; Important Notes</strong></p>
 <ol>
 <li>
@@ -499,6 +533,27 @@ Example: "nudity"</p>
 Example: "sth"</p>
 </li>
 <li>
+<p>model_name: Name of the model. The model_name parameter determines which base Stable Diffusion model is used by the pipeline.</p>
+<p>Type: str
+Example: "SD-v1-4"
+Choices: "SD-v1-4", "SD-V2", "SD-V2-1"</p>
+</li>
+<li>
+<p>save_diffuser: A Boolean flag that determines whether the CompVis model should be converted into the Diffusers format before being used.</p>
+<p>Type: str
+Example: True</p>
+<p>Behavior:
+* If set to True, the pipeline will perform a conversion of the CompVis model into the Diffusers format and then load the converted checkpoint.</p>
+<ul>
+<li>If set to False, the conversion is skipped and the model remains in its original CompVis format for use and uses compvis based implementation.</li>
+</ul>
+</li>
+<li>
+<p>converted_model_folder_path: Folder path to save the converted compvis model to diffuser.</p>
+<p>Type: str
+Example: "outputs"</p>
+</li>
+<li>
 <p>backend: Specifies the backend model i.e "diffusers".</p>
 <p>Type: str
 Options: "diffusers" or "compvis"</p>
@@ -569,18 +624,18 @@ Example: "results/hard_prompt_esd_nudity_P4D"</p>
 </li>
 <li>
 <p>name: Name for the log file or experiment.</p>
-<ul>
-<li>Type: str</li>
+</li>
+<li>
+<p>Type: str</p>
+</li>
 <li>Example: "NoAttackEsdNudity"</li>
 </ul>
-</li>
-</ul>
 <p>Example usage:</p>
-<p><code>json
-"json": {
+<pre><code>"json": {
         "root": "results/no_attack_esd_nudity_esd",
         "name": "NoAttackEsdNudity"
-    }</code></p>
+    }
+</code></pre>
 </li>
 </ul>
               

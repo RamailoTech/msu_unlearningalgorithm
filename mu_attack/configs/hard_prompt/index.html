@@ -300,7 +300,12 @@
             <div class="section" itemprop="articleBody">
               
                 <p><strong>Sample hard_prompt_config for compvis</strong></p>
-<pre><code class="language-python">class HardPromptESDNudityP4DConfigCompvis(BaseConfig):
+<pre><code class="language-python"># mu_attack/configs/nudity/hard_prompt_esd_nudity_P4D_compvis.py
+
+import os
+from mu_attack.core import BaseConfig, OverallConfig, TaskConfig, AttackerConfig, LoggerConfig
+
+class HardPromptESDNudityP4DConfigCompvis(BaseConfig):
     overall: OverallConfig = OverallConfig(
         task=&quot;P4D&quot;,
         attacker=&quot;hard_prompt&quot;,
@@ -314,7 +319,11 @@
         sld=&quot;weak&quot;,
         sld_concept=&quot;nudity&quot;,
         negative_prompt=&quot;&quot;,
-        backend=&quot;compvis&quot;
+        backend=&quot;compvis&quot;,
+        diffusers_config_file = None,
+        save_diffuser = False,
+        converted_model_folder_path = &quot;outputs&quot;
+
     )
 
     attacker: AttackerConfig = AttackerConfig(
@@ -326,6 +335,9 @@
     logger: LoggerConfig = LoggerConfig(
         json={&quot;root&quot;: &quot;results/hard_prompt_esd_nudity_P4D_scissorhands&quot;, &quot;name&quot;: &quot;P4d&quot;}
     )
+
+hard_prompt_esd_nudity_P4D_compvis_config = HardPromptESDNudityP4DConfigCompvis()
+
 </code></pre>
 <p><strong>Sample hard_prompt config json for compvis</strong></p>
 <pre><code class="language-json">{

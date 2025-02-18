@@ -300,7 +300,11 @@
             <div class="section" itemprop="articleBody">
               
                 <p><strong>Sample config for seed search attack for compvis</strong></p>
-<pre><code class="language-python">class SeedSearchESDNudityClassifierCompvis(BaseConfig):
+<pre><code class="language-python"># mu_attack/configs/nudity/seed_search_esd_nudity_classifier_compvis.py
+
+from mu_attack.core import BaseConfig, OverallConfig, TaskConfig, AttackerConfig, LoggerConfig
+
+class SeedSearchESDNudityClassifierCompvis(BaseConfig):
     overall: OverallConfig = OverallConfig(
         task=&quot;classifier&quot;,
         attacker=&quot;seed_search&quot;,
@@ -313,7 +317,9 @@
         sld=&quot;weak&quot;,
         sld_concept=&quot;nudity&quot;,
         negative_prompt=&quot;sth&quot;,
-        backend=&quot;compvis&quot;
+        backend=&quot;compvis&quot;,
+        diffusers_config_file = None,
+        save_diffuser = False
     )
 
     attacker: AttackerConfig = AttackerConfig(
