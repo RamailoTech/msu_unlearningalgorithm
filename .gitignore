@@ -25,3 +25,4 @@ venv/
 build/*
 dist/*
 unlearn_diff.egg-info/*
+docs_build/

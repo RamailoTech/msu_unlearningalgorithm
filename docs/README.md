@@ -1,8 +1,10 @@
-# Unlearn
+# Unlearn Diff
 
-Unlearn is an open-source Python package designed to streamline the development of unlearning algorithms and establish a standardized evaluation pipeline for diffusion models. It provides researchers and practitioners with tools to implement, evaluate, and extend unlearning algorithms effectively.
+Unlearn Diff is an open-source Python package designed to streamline the development of unlearning algorithms and establish a standardized evaluation pipeline for diffusion models. It provides researchers and practitioners with tools to implement, evaluate, and extend unlearning algorithms effectively.
 
-
+### [**Documentation**](https://ramailotech.github.io/msu_unlearningalgorithm/)
+You can find the full documentation for this project at the url given below.
+https://ramailotech.github.io/msu_unlearningalgorithm/
 ## Features
 
 - **Comprehensive Algorithm Support**: Includes commonly used concept erasing and machine unlearning algorithms tailored for diffusion models. Each algorithm is encapsulated and standardized in terms of input-output formats.
@@ -111,17 +113,20 @@ After installing `conda`, ensure it is available in your PATH by running. You ma
 ```bash
 conda --version
 ```
-### Create environment:
+### Create environment (Default):
 ```
-create_env <algorithm_name>
+create_env
 ```
-eg: ```create_env erase_diff```
+#### Optional(Create environment for algorithm):
+```
+create_env erase_diff
+```
 
 ### Activate environment:
 ```
 conda activate <environment_name>
 ```
-eg: ```conda activate mu_erase_diff```
+eg: ```conda activate UnlearnDiff```
 
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 
