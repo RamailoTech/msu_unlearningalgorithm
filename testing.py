@@ -240,8 +240,8 @@ if __name__ == "__main__":
     # run_scissorhands()
     # run_attack_for_nudity()
     # run_mu_defense_compvis()
-    # run_mu_defense_diffuser()  # TODO
+    # run_mu_defense_diffuser() 
 
-    run_selective_amnesia()  # blocker
+    # run_selective_amnesia() 
     # run_semipermeable()
     # run_unified_concept_editing()

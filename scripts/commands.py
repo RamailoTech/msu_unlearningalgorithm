@@ -48,26 +48,26 @@ def download_models(model_name):
     execute_script(script_path, model_name)
 
 
-def env_manager(algorithm, env_name=None):
-    """Creates a Conda environment for a specific algorithm."""
-    if not str(algorithm).lower() == "mu_attack":
+def env_manager(algorithm):
+    if not algorithm:
+        env_file = os.path.join(BASE_DIR, "..", "environment.yaml")
+    else:
         env_file = os.path.join(
             BASE_DIR, "..", "mu", "algorithms", algorithm, "environment.yaml"
         )
-    else:
-        env_file = os.path.join("mu_attack", "environment.yaml")
-
-    if env_name == "default":
-        env_file = "environment.yaml"
 
     if not os.path.exists(env_file):
-        sys.exit(f"Environment file not found for algorithm '{algorithm}'.")
+        sys.exit(
+            f"Environment file not found for algorithm '{algorithm or 'root'}' at {env_file}."
+        )
+
     with open(env_file, "r") as file:
         env_data = yaml.safe_load(file)
-        default_env_name = env_data.get("name", f"{algorithm}_env")
+        env_name = env_data.get("name")
+        if not env_name:
+            sys.exit("Error: 'name' not specified in the environment.yaml file.")
 
-    env_name = env_name if env_name else default_env_name
-    cmd = ["conda", "env", "create", "--name", env_name, "--file", env_file]
+    cmd = ["conda", "env", "create", "-f", env_file]
     try:
         subprocess.check_call(cmd)
         print(f"Conda environment '{env_name}' created successfully.")
@@ -113,13 +113,9 @@ def create_env_cli():
     parser.add_argument(
         "algorithm",
         nargs="?",
-        help="Name of the algorithm for which to create the environment.",
-        default="default",
-    )
-    parser.add_argument(
-        "--env_name",
-        default="default",
-        help="Name of the Conda environment (optional).",
+        default="",
+        help="Name of the algorithm for which to create the environment. "
+        "If not provided, the root-level environment.yaml will be used.",
     )
     args = parser.parse_args()
-    env_manager(args.algorithm, args.env_name)
+    env_manager(args.algorithm)
