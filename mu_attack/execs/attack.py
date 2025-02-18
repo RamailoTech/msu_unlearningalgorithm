@@ -153,7 +153,7 @@ class MUAttack:
 
     def print_config(self):
         self.logger.info("===== CONFIG =====")
-        self.logger.info(json.dumps(self.config, indent=4))
+        self.logger.info(json.dumps(self.config, default=str,indent=4))
         self.logger.info("==================\n")
 
     def setup_seed(self):

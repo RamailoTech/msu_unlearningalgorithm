@@ -14,7 +14,9 @@ class TextGradESDIllegalClassifierConfigCompvis(BaseConfig):
         concept = "harm",
         criterion = "l2",
         classifier_dir=None,
-        backend="compvis"
+        backend="compvis",
+        diffusers_config_file = None,
+        save_diffuser = False
     )
 
     attacker: AttackerConfig = AttackerConfig(

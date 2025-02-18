@@ -13,7 +13,9 @@ class HardPromptESDViolenceP4DConfigCompvis(BaseConfig):
     task: TaskConfig = TaskConfig(
         concept = "harm",
         classifier_dir=None,
-        backend="compvis"
+        backend="compvis",
+        diffusers_config_file = None,
+        save_diffuser = False
     )
 
     attacker: AttackerConfig = AttackerConfig(

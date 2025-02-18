@@ -13,7 +13,9 @@ class HardPromptESDChurchP4DConfigCompvis(BaseConfig):
     task: TaskConfig = TaskConfig(
         classifier_dir=None,
         concept = "church",
-        backend="compvis"
+        backend="compvis",
+        diffusers_config_file = None,
+        save_diffuser = False
     )
 
     attacker: AttackerConfig = AttackerConfig(

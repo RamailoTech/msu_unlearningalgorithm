@@ -7,6 +7,7 @@ from PIL import Image
 from uuid import uuid4
 
 from mu_attack.core import Task
+from mu_attack.helpers.utils import save_model
 
 from mu_attack.tasks.sd_diffusers import BaseDiffusersPipeline
 from mu_attack.tasks.sd_compvis import BaseCompvisPipeline
@@ -20,6 +21,7 @@ from mu_attack.tasks.utils.datasets import get as get_dataset
 class Transfer_DiffusersPipeline(BaseDiffusersPipeline):
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
+        self.load_model() 
         if self.sld is None:
             # Load target checkpoint for U-Net or Text Encoder
             if 'TextEncoder' in self.target_ckpt or 'text_encoder' in self.target_ckpt:
@@ -51,11 +53,15 @@ class TransferTask(Task):
         dataset_path,
         criterion,
         sampling_step_num,
+        model_name,
         target_ckpt=None,
         diffusers_model_name_or_path=None,
         compvis_config_path=None,
         compvis_ckpt_path=None,
+        diffusers_config_file=None,  # Diffusers config file for conversion
+        save_diffuser=False, 
         n_samples = 50,
+        converted_model_folder_path = "outputs",
         classifier_dir = None,
         ):
         self.logger = logging.getLogger(__name__)
@@ -77,8 +83,9 @@ class TransferTask(Task):
                 negative_prompt=negative_prompt, 
                 target_ckpt=target_ckpt
                 )
-        else:
-            self.pipe = Transfer_CompvisPipeline(
+        elif self.backend == "compvis":
+            if save_diffuser:
+                compvis_pipe = Transfer_CompvisPipeline(
                             config_path=compvis_config_path, 
                             ckpt_path=compvis_ckpt_path, 
                             device="cuda", 
@@ -91,8 +98,53 @@ class TransferTask(Task):
                             negative_prompt=negative_prompt, 
                             target_ckpt=target_ckpt
                         )
-
-        self.pipe.load_model()
+                compvis_pipe.load_model()
+                self.model = compvis_pipe.model 
+                
+                self.logger.info("Converting CompVis model to Diffusers format...")
+                save_model(
+                    folder_path=converted_model_folder_path,
+                    model=self.model, 
+                    name="UNet",
+                    num=None,  # No epoch number if not needed
+                    compvis_config_file=compvis_config_path,
+                    diffusers_config_file=diffusers_config_file,
+                    device="cuda",
+                    save_compvis=True,
+                    save_diffusers=True,
+                )
+                converted_model_path = os.path.join(converted_model_folder_path,"models", "Diffusers-UNet-Unet.pt")
+                self.logger.info(f"Converted Diffusers model saved to {converted_model_path}")
+                
+                self.pipe = Transfer_DiffusersPipeline(
+                    model_name_or_path=diffusers_model_name_or_path, 
+                    device="cuda",
+                    cache_path=cache_path,
+                    classifier_dir=classifier_dir,
+                    criterion=criterion,
+                    concept=concept,
+                    sld=sld,
+                    sld_concept=sld_concept,
+                    negative_prompt=negative_prompt,
+                    target_ckpt=converted_model_path,  # Use the converted checkpoint
+                    model_name = model_name
+                )
+                self.pipe.load_model()
+            else:
+                self.pipe = Transfer_CompvisPipeline(
+                                config_path=compvis_config_path, 
+                                ckpt_path=compvis_ckpt_path, 
+                                device="cuda", 
+                                cache_path=cache_path, 
+                                classifier_dir=classifier_dir, 
+                                criterion=criterion, 
+                                concept=concept,
+                                sld=sld,
+                                sld_concept=sld_concept,
+                                negative_prompt=negative_prompt, 
+                                target_ckpt=target_ckpt
+                            )
+                self.pipe.load_model()
 
         self.T = 1000
         self.n_samples = n_samples
