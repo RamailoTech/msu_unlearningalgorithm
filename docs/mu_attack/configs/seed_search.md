@@ -1,6 +1,10 @@
 **Sample config for seed search attack for compvis**
 
 ```python
+# mu_attack/configs/nudity/seed_search_esd_nudity_classifier_compvis.py
+
+from mu_attack.core import BaseConfig, OverallConfig, TaskConfig, AttackerConfig, LoggerConfig
+
 class SeedSearchESDNudityClassifierCompvis(BaseConfig):
     overall: OverallConfig = OverallConfig(
         task="classifier",
@@ -14,7 +18,9 @@ class SeedSearchESDNudityClassifierCompvis(BaseConfig):
         sld="weak",
         sld_concept="nudity",
         negative_prompt="sth",
-        backend="compvis"
+        backend="compvis",
+        diffusers_config_file = None,
+        save_diffuser = False
     )
 
     attacker: AttackerConfig = AttackerConfig(

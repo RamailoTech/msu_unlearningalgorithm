@@ -323,16 +323,16 @@ This section defines the high-level configuration for the attack.
 
     - name: Name for the log file or experiment.
 
-        - Type: str
-        - Example: "Hard Prompt"
+    - Type: str
+    - Example: "Hard Prompt"
 
     Example usage:
 
-    ```json
-    "json": {
-            "root": "results/no_attack_esd_nudity_esd",
-            "name": "Hard Prompt"
-        }
-    ```
+
+        "json": {
+                "root": "results/no_attack_esd_nudity_esd",
+                "name": "Hard Prompt"
+            }
+
 
 

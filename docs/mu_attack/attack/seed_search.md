@@ -330,11 +330,10 @@ This section defines the high-level configuration for the attack.
 
     Example usage:
 
-    ```json
-    "json": {
-            "root": "results/seed_search_esd_nudity_esd",
-            "name": "Seed Search Nudity"
-        }
-    ```
+        "json": {
+                "root": "results/seed_search_esd_nudity_esd",
+                "name": "Seed Search Nudity"
+            }
+
 
 

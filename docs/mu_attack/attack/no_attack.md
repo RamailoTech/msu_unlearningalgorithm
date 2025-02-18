@@ -335,16 +335,16 @@ This section defines the high-level configuration for the attack.
 
     - name: Name for the log file or experiment.
 
-        - Type: str
-        - Example: "NoAttackEsdNudity"
+    - Type: str
+    - Example: "NoAttackEsdNudity"
 
     Example usage:
 
-    ```json
-    "json": {
-            "root": "results/no_attack_esd_nudity_esd",
-            "name": "NoAttackEsdNudity"
-        }
-    ```
+
+        "json": {
+                "root": "results/no_attack_esd_nudity_esd",
+                "name": "NoAttackEsdNudity"
+            }
+
 
 

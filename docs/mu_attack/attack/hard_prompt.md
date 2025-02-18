@@ -27,6 +27,7 @@ python -m scripts.generate_dataset --prompts_path data/prompts/prompts.csv --con
 
 
 ### Run Attack 
+
 1. **Hard Prompt Attack - compvis**
 
 Use the following code if you wish to run the hard prompt attack using the CompVis model directly (without converting it into Diffusers format):
@@ -331,16 +332,17 @@ This section defines the high-level configuration for the attack.
 
 * name: Name for the log file or experiment.
 
-        - Type: str
-        - Example: "P4D"
+    - Type: str
+    - Example: "P4D"
 
     Example usage:
 
-    ```json
-    "json": {
+        {
+        "json": {
             "root": "results/no_attack_esd_nudity_esd",
             "name": "P4D"
+            }
         }
-    ```
+
 
 

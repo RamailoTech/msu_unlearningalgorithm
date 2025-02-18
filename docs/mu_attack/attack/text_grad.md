@@ -343,11 +343,10 @@ This section defines the high-level configuration for the attack.
 
     Example usage:
 
-    ```json
-    "json": {
-            "root": "results/text_grad_esd_nudity_esd",
-            "name": "TextGradNudity"
-        }
-    ```
+        "json": {
+                "root": "results/text_grad_esd_nudity_esd",
+                "name": "TextGradNudity"
+            }
+
 
 
