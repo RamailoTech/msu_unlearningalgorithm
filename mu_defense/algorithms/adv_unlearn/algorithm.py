@@ -57,6 +57,7 @@ class AdvUnlearnAlgorithm(BaseAlgorithm):
             model=self.model,
             config=self.config,
             devices=self.devices,
+            
         )
         self.trainer.trainer.adv_attack.model_orig = self.model.model_orig
         self.trainer.trainer.adv_attack.sampler_orig = self.model.sampler_orig

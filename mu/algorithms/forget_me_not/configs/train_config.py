@@ -105,9 +105,7 @@ class ForgetMeNotAttnConfig(BaseConfig):
             )
 
         if not os.path.exists(self.processed_dataset_dir):
-            raise FileNotFoundError(
-                f"Directory '{self.processed_dataset_dir}' does not exist."
-            )
+            os.makedirs(self.processed_dataset_dir)
 
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
@@ -177,9 +175,7 @@ class ForgetMeNotTiConfig(BaseConfig):
                 f"Directory '{self.raw_dataset_dir}' does not exist."
             )
         if not os.path.exists(self.processed_dataset_dir):
-            raise FileNotFoundError(
-                f"Directory '{self.processed_dataset_dir}' does not exist."
-            )
+            os.makedirs(self.processed_dataset_dir)
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 
@@ -192,9 +188,9 @@ class ForgetMeNotTiConfig(BaseConfig):
             raise ValueError("Train batch size must be positive.")
 
 
-ForgetMeNotAttnConfig
+# ForgetMeNotAttnConfig
 
-forget_me_not_train_ti_mu = ForgetMeNotAttnConfig()
+forget_me_not_train_ti_mu = ForgetMeNotTiConfig()
 forget_me_not_train_ti_mu.dataset_type = "unlearncanvas"
 forget_me_not_train_ti_mu.raw_dataset_dir = "data/quick-canvas-dataset/sample"
 

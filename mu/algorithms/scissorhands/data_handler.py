@@ -229,7 +229,14 @@ class ScissorHandsDataHandler(BaseDataHandler):
                     path_list.append(image_path)
                 else:
                     self.logger.warning(f"Image not found: {image_path}")
-
+            
+            prompts_txt_path = os.path.join(seed_dir, 'prompts.txt')
+            images_txt_path = os.path.join(seed_dir, 'images.txt')
+   
+            with open(prompts_txt_path, 'w') as f:
+                f.write('\n'.join(prompt_list))
+            with open(images_txt_path, 'w') as f:
+                f.write('\n'.join(path_list))
         self.logger.info("Dataset generation (I2P) completed.")
 
     def load_data(self, data_path: str) -> Any:
