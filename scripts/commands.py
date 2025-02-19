@@ -50,7 +50,7 @@ def download_models(model_name):
 
 def env_manager(algorithm):
     if not algorithm:
-        env_file = os.path.join(BASE_DIR, "..", "environment.yaml")
+        env_file = os.path.join(BASE_DIR, "..", "scripts/environment.yaml")
     else:
         env_file = os.path.join(
             BASE_DIR, "..", "mu", "algorithms", algorithm, "environment.yaml"

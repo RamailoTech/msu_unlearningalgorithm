@@ -99,7 +99,7 @@ class CustomInstallCommand(_install):
 
 setup(
     name="unlearn_diff",
-    version="1.1.1",
+    version="1.1.5",
     author="nebulaanish",
     author_email="nebulaanish@gmail.com",
     description="Unlearning Algorithms",
@@ -113,7 +113,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     package_data={
-        "": ["mu/algorithms/**/environment.yaml"],
+        "": ["environment.yaml", "mu/algorithms/**/environment.yaml"],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -134,7 +134,6 @@ setup(
         ],
     },
     cmdclass={
-        'install': CustomInstallCommand,
-    }
+        "install": CustomInstallCommand,
+    },
 )
-
