@@ -25,6 +25,7 @@ class AdvUnlearnConfig(BaseConfig):
         # Devices & IO
         self.devices = "0,0"  # You can later parse this string into a list if needed.
         self.seperator = None
+
         self.output_dir = "outputs/adv_unlearn"
 
         # Image & Diffusion Sampling
@@ -65,6 +66,12 @@ class AdvUnlearnConfig(BaseConfig):
 
         # backend
         self.backend = "compvis"
+
+        experiment_name = f'AdvUnlearn-{self.prompt}-method_{self.train_method}_{self.component}-Attack_{self.attack_method}-Retain_{self.dataset_retain}_{self.retain_train}_{self.retain_loss_w}-lr_{self.lr}-AttackLr_{self.attack_lr}-{self.attack_type}_adv_num_{self.adv_prompt_num}-{self.attack_embd_type}-attack_init_{self.attack_init}-attack_step_{self.attack_step}-adv_update_{self.adv_prompt_update_step}-warmup_iter_{self.warmup_iter}'
+    
+        self.output_dir = Path("./outputs/results_with_retaining") / self.prompt / self.dataset_retain / self.attack_method /  f'AttackLr_{self.attack_lr}' / self.train_method / f'{self.component}' / self.attack_type / experiment_name
+
+
 
         # Override default values with any provided keyword arguments.
         for key, value in kwargs.items():

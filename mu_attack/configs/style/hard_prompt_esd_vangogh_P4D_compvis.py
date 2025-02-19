@@ -13,7 +13,9 @@ class HardPromptESDVangoghP4DConfigCompvis(BaseConfig):
     task: TaskConfig = TaskConfig(
         concept = "vangogh",
         classifier_dir="results/checkpoint-2800",
-        backend="compvis"
+        backend="compvis",
+        diffusers_config_file = None,
+        save_diffuser = False
     )
 
     attacker: AttackerConfig = AttackerConfig(

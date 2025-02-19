@@ -78,10 +78,36 @@ nav:
     - Text Grad:
       - Usage: mu_attack/attack/text_grad.md
       - Config: mu_attack/configs/text_grad.md
+
+  - Unlearn Mu Defense:
+    - Usage: mu_defense/adv_unlearn.md
+    - Config: mu_defense/config.md
   
   - Evaluation :
-    - Usage: mu_attack/mu_attack_evaluation.md
+    - Concept Ablation:
+      - Usage: evaluation/concept_ablation.md
+    - Erase Diff: 
+      - Usage: evaluation/erase_diff.md
+    - ESD: 
+      - Usage: evaluation/esd.md
+    - Forget Me Not: 
+      - Usage: evaluation/forget_me_not.md
+    - Saliency Unlearning: 
+      - Usage: evaluation/saliency.md
+    - Scissor Hands: 
+      - Usage: evaluation/scissorhands.md
+    - Selective Amnesia: 
+      - Usage: evaluation/selective_amnesia.md
+    - Semi Permeable Membrane: 
+      - Usage: evaluation/semipermeable_membrane.md
+    - Unified Concept Editing: 
+      - Usage: evaluation/uce.md
+    - mu_attack: 
+      - Usage: mu_attack/mu_attack_evaluation.md
+    - mu_defense:
+      - Usage: mu_defense/evaluation.md
 
-  - Contributing: algorithms/contributing.md
+  - Contributing: 
+    - docs: unlearn/algorithms/contributing.md
 theme:
   name: readthedocs  

@@ -2,16 +2,19 @@
 
 from pathlib import Path
 import torch
+
 from transformers import CLIPTextModel, CLIPTokenizer
+from diffusers import StableDiffusionPipeline, AutoencoderKL
+
+
 from mu_defense.core import BaseModel
+
 from mu_attack.tasks.utils.text_encoder import CustomTextEncoder
 from mu_defense.algorithms.adv_unlearn.utils import (
     get_models_for_compvis,
     get_models_for_diffusers,
 )
 
-# For diffusers components:
-from diffusers import StableDiffusionPipeline, AutoencoderKL
 
 
 class AdvUnlearnModel(BaseModel):
@@ -84,7 +87,7 @@ class AdvUnlearnModel(BaseModel):
         output_dir = Path(output_path).parent
         output_dir.mkdir(parents=True, exist_ok=True)
         if self.backend == "compvis":
-            torch.save({"state_dict": model.state_dict()}, output_path)
+            torch.save(model.state_dict(), output_path)
         elif self.backend == "diffusers":
             model.save_pretrained(output_path)
 

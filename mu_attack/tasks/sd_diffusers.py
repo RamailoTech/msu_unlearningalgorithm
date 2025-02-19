@@ -20,7 +20,7 @@ from mu_attack.core import BaseStableDiffusionPipeline
 
 class BaseDiffusersPipeline(BaseStableDiffusionPipeline):
     
-    def __init__(self, model_name_or_path,cache_path, device, concept,  sld, sld_concept, negative_prompt, target_ckpt, criterion, classifier_dir,*args,**kwargs):
+    def __init__(self, model_name_or_path,cache_path, device, concept,  sld, sld_concept, negative_prompt, target_ckpt, criterion, classifier_dir,model_name=None,*args,**kwargs):
         super().__init__()
         self.model_name_or_path = model_name_or_path
         self.device = device
@@ -31,6 +31,7 @@ class BaseDiffusersPipeline(BaseStableDiffusionPipeline):
         self.negative_prompt = negative_prompt
         self.target_ckpt = target_ckpt
         self.classifier_dir = classifier_dir
+        self.model_name = model_name 
         self.criterion = torch.nn.L1Loss() if criterion == 'l1' else torch.nn.MSELoss()
         
         # placeholders for loaded modules
@@ -46,14 +47,32 @@ class BaseDiffusersPipeline(BaseStableDiffusionPipeline):
         self.clip_model = None
         self.all_embeddings = None
 
+        if self.model_name == 'SD-v1-4':
+            self.dir_ = "CompVis/stable-diffusion-v1-4"
+        elif self.model_name == 'SD-V2':
+            self.dir_ = "stabilityai/stable-diffusion-2-base"
+        elif self.model_name == 'SD-V2-1':
+            self.dir_ = "stabilityai/stable-diffusion-2-1-base"
+        else:
+            self.dir_ = "CompVis/stable-diffusion-v1-4"
+
     def load_model(self):
-        self.tokenizer = CLIPTokenizer.from_pretrained(self.model_name_or_path, subfolder="tokenizer", cache_dir=self.cache_path)
-        self.text_encoder = CLIPTextModel.from_pretrained(self.model_name_or_path, subfolder="text_encoder", cache_dir=self.cache_path).to(self.device)
-        self.vae = AutoencoderKL.from_pretrained(self.model_name_or_path,subfolder="vae", cache_dir=self.cache_path).to(self.device)
-        self.custom_text_encoder = CustomTextEncoder(self.text_encoder).to(self.device)
-        self.all_embeddings = self.custom_text_encoder.get_all_embedding().unsqueeze(0)
-        self.unet_sd = UNet2DConditionModel.from_pretrained(self.model_name_or_path, subfolder="unet", cache_dir=self.cache_path).to(self.device)
-        self.target_unet_sd = deepcopy(self.unet_sd)
+        if self.target_ckpt is not None:
+            self.vae = AutoencoderKL.from_pretrained(self.dir_, subfolder="vae").to(self.device)
+            self.tokenizer = CLIPTokenizer.from_pretrained(self.dir_, subfolder="tokenizer")
+            self.text_encoder = CLIPTextModel.from_pretrained(self.dir_, subfolder="text_encoder").to(self.device)
+            self.custom_text_encoder = CustomTextEncoder(self.text_encoder).to(self.device)
+            self.all_embeddings = self.custom_text_encoder.get_all_embedding().unsqueeze(0)
+            self.unet_sd = UNet2DConditionModel.from_pretrained(self.dir_, subfolder="unet").to(self.device)
+            self.target_unet_sd = deepcopy(self.unet_sd)
+        else:
+            self.tokenizer = CLIPTokenizer.from_pretrained(self.model_name_or_path, subfolder="tokenizer", cache_dir=self.cache_path)
+            self.text_encoder = CLIPTextModel.from_pretrained(self.model_name_or_path, subfolder="text_encoder", cache_dir=self.cache_path).to(self.device)
+            self.vae = AutoencoderKL.from_pretrained(self.model_name_or_path,subfolder="vae", cache_dir=self.cache_path).to(self.device)
+            self.custom_text_encoder = CustomTextEncoder(self.text_encoder).to(self.device)
+            self.all_embeddings = self.custom_text_encoder.get_all_embedding().unsqueeze(0)
+            self.unet_sd = UNet2DConditionModel.from_pretrained(self.model_name_or_path, subfolder="unet", cache_dir=self.cache_path).to(self.device)
+            self.target_unet_sd = deepcopy(self.unet_sd)
 
         if self.sld is None:
             self.target_unet_sd.load_state_dict(torch.load(self.target_ckpt, map_location=self.device))

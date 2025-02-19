@@ -5,6 +5,7 @@ from tqdm import tqdm
 import random
 import wandb
 import logging
+from pathlib import Path
 from torch.nn import MSELoss
 
 from mu.core import BaseTrainer
@@ -14,7 +15,8 @@ from mu_defense.algorithms.adv_unlearn.utils import (
     get_train_loss_retain,
     save_text_encoder,
     save_history,
-    sample_model
+    sample_model,
+    save_model
 )
 
 
@@ -28,7 +30,7 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
     Trainer for adversarial unlearning.
 
     This trainer performs the adversarial prompt update and retention-based
-    regularized training loop for CompVis/Diffusers models.
+    regularized training loop for CompVis models.
     """
     def __init__(self, model, config: dict, devices: list, **kwargs):
         """
@@ -84,7 +86,7 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
         self.attack_lr = self.config['attack_lr']
         self.adv_prompt_update_step = self.config['adv_prompt_update_step']
         self.ddim_eta = self.config['ddim_eta']
-
+        
         self.logger = logging.getLogger(__name__)
 
         attack_config = AdvAttackConfig(
@@ -108,7 +110,6 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
             compvis_ckpt_path=config.get("compvis_ckpt_path", ""),
             backend=config['backend'],
             diffusers_model_name_or_path="",
-            target_ckpt="",
             project=config.get("project_name", "default_project"),
             experiment_name=config.get("experiment_name", "default_experiment")
         )
@@ -351,8 +352,7 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
                 if 'text_encoder' in self.train_method:
                     save_text_encoder(self.output_dir, self.custom_text_encoder, self.train_method, i)
                 else:
-                    output_path = f"{self.output_dir}/models/model_checkpoint_{i}.pt"
-                    self.model_loader.save_model(self.model, output_path)
+                    save_model(self.output_dir, self.model, self.train_method, i, save_compvis=True, save_diffusers=True, compvis_config_file=self.model_config_path, diffusers_config_file=None)
                 save_history(self.output_dir, losses, self.word_print)
 
         self.model.eval()
@@ -360,8 +360,9 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
         self.custom_text_encoder.text_encoder.requires_grad_(False)
         if 'text_encoder' in self.train_method:
             save_text_encoder(self.output_dir, self.custom_text_encoder, self.train_method, i)
+            self.logger.info(f"Output saved to {self.output_dir} dir")
         else: 
-            output_path = f"{self.output_dir}/models/compvis_model_checkpoint_{i}.pt"
-            self.model_loader.save_model(self.model, output_path)
+            save_model(self.output_dir, self.model, self.train_method, i, save_compvis=True, save_diffusers=True, compvis_config_file=self.model_config_path, diffusers_config_file=None)
+            self.logger.info(f"Output saved to {self.output_dir} dir")
         save_history(self.output_dir, losses, self.word_print)
         return self.model

@@ -17,7 +17,11 @@ class HardPromptESDNudityP4DConfigCompvis(BaseConfig):
         sld="weak",
         sld_concept="nudity",
         negative_prompt="",
-        backend="compvis"
+        backend="compvis",
+        diffusers_config_file = None,
+        save_diffuser = False,
+        converted_model_folder_path = "outputs"
+
     )
 
     attacker: AttackerConfig = AttackerConfig(

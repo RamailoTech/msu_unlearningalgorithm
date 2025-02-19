@@ -2,6 +2,11 @@
 
 
 ```python
+# mu_attack/configs/nudity/no_attack_esd_nudity_classifier_compvis.py
+
+from mu_attack.core import BaseConfig, OverallConfig, TaskConfig, AttackerConfig, LoggerConfig
+
+
 class NoAttackESDNudityClassifierConfigCompvis(BaseConfig):
     overall: OverallConfig = OverallConfig(
         task="classifier",
@@ -17,7 +22,9 @@ class NoAttackESDNudityClassifierConfigCompvis(BaseConfig):
         sld="weak",
         sld_concept="nudity",
         negative_prompt="sth",
-        backend="compvis"
+        backend="compvis",
+        diffusers_config_file = None,
+        save_diffuser = False
     )
 
     attacker: AttackerConfig = AttackerConfig(
@@ -31,6 +38,9 @@ class NoAttackESDNudityClassifierConfigCompvis(BaseConfig):
     logger: LoggerConfig = LoggerConfig(
         json={"root": "results/no_attack_esd_nudity_esd", "name": "NoAttackEsdNudity"}
     )
+
+
+no_attack_esd_nudity_classifier_compvis_config = NoAttackESDNudityClassifierConfigCompvis()
 
 ```
 

@@ -134,6 +134,7 @@ setup(
         ],
     },
     cmdclass={
-        "install": CustomInstallCommand,
-    },
+        'install': CustomInstallCommand,
+    }
 )
+

@@ -9,7 +9,6 @@ dependencies:
   - pytorch=1.11.0
   - torchvision=0.12.0
   - numpy=1.23.5
-  - huggingface_hub==0.25.1
   - pip:
     - albumentations==0.4.3
     - diffusers==0.12.1
@@ -25,6 +24,7 @@ dependencies:
     - einops==0.3.0
     - torch-fidelity==0.3.0
     - transformers==4.25.1
+    - huggingface_hub==0.25.1
     - torchmetrics==0.6.0
     - kornia==0.6
     - timm==1.0.11
@@ -33,4 +33,5 @@ dependencies:
     - tabulate
     - -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
     - -e git+https://github.com/openai/CLIP.git@main#egg=clip
+    - -e git+https://github.com/boomb0om/text2image-benchmark
 

@@ -14,7 +14,9 @@ class SeedSearchESDChurchClassifierConfigCompvis(BaseConfig):
         classifier_dir=None,
         concept = "church",
         backend="compvis",
-        criterion = "l1"
+        criterion = "l1",
+        diffusers_config_file = None,
+        save_diffuser = False
     )
 
     attacker: AttackerConfig = AttackerConfig(

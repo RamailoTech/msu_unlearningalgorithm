@@ -18,7 +18,9 @@ class NoAttackESDNudityClassifierConfigCompvis(BaseConfig):
         sld="weak",
         sld_concept="nudity",
         negative_prompt="sth",
-        backend="compvis"
+        backend="compvis",
+        diffusers_config_file = None,
+        save_diffuser = False
     )
 
     attacker: AttackerConfig = AttackerConfig(

@@ -5,24 +5,29 @@ This repository contains the implementation of UnlearnDiffAttack for No-attack, 
 
 
 ### Create Environment 
-```
+If you prefer not to use the default environment, you can create and activate a dedicated environment for mu_attack.
+
+```bash
 create_env <algorithm_name>
-```
-eg: ```create_env mu_attack```
 
 ```
-conda activate <environment_name>
+
+**Example**
+```bash
+create_env mu_attack
+
 ```
-eg: ```conda activate mu_attack```
+
 ### Generate Dataset
-```
+
+```bash
 python -m scripts.generate_dataset --prompts_path data/prompts/prompts.csv --concept i2p_nude --save_path outputs/dataset
 ```
 
-
-
 ### Run Attack 
 1. **No Attack - compvis**
+
+Use the following code if you wish to run the hard prompt attack using the CompVis model directly (without converting it into Diffusers format):
 
 ```python
 from mu_attack.configs.nudity import no_attack_esd_nudity_classifier_compvis_config
@@ -47,6 +52,42 @@ def run_attack_for_nudity():
 if __name__ == "__main__":
     run_attack_for_nudity()
 ```
+
+2.  **No Attack – CompVis to Diffusers Conversion**
+
+If you want to convert the CompVis model into the Diffusers format before running the attack, use the following code. Note: For the conversion to take place, set task.save_diffuser to True and to use the converted model task.sld should be set to None.
+
+```python
+from mu_attack.configs.nudity import no_attack_esd_nudity_classifier_compvis_config
+from mu_attack.execs.attack import MUAttack
+from mu.algorithms.scissorhands.configs import scissorhands_train_mu
+
+def run_attack_for_nudity():
+
+    overridable_params = {
+        "task.compvis_ckpt_path" : "outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
+        "task.compvis_config_path" : scissorhands_train_mu.model_config_path,
+        "task.dataset_path" : "outputs/dataset/i2p_nude",
+        "logger.json.root" : "results/hard_prompt_esd_nudity_P4D_scissorhands",
+    "attacker.no_attack.dataset_path" : "outputs/dataset/i2p_nude",
+        "task.save_diffuser": True, # This flag triggers conversion
+        "task.sld": None, # Set sld to None for conversion
+        "task.model_name": "SD-v1-4"
+    }
+
+    MUAttack(
+        config=no_attack_esd_nudity_classifier_compvis_config,
+        **overridable_params
+    )
+
+if __name__ == "__main__":
+    run_attack_for_nudity()
+```
+
+
+**For Conversion:**
+
+When converting a CompVis model to the Diffusers format, ensure that task.save_diffuser is set to True and task.sld is set to None. This instructs the pipeline to perform the conversion during initialization and then load the converted checkpoint.
 
 
 **Code Explanation & Important Notes**
@@ -203,6 +244,27 @@ This section defines the high-level configuration for the attack.
     Type: str
     Example: "sth"
 
+* model_name: Name of the model. The model_name parameter determines which base Stable Diffusion model is used by the pipeline.
+
+    Type: str
+    Example: "SD-v1-4"
+    Choices: "SD-v1-4", "SD-V2", "SD-V2-1"
+
+* save_diffuser: A Boolean flag that determines whether the CompVis model should be converted into the Diffusers format before being used.
+
+    Type: str
+    Example: True
+
+    Behavior:
+    * If set to True, the pipeline will perform a conversion of the CompVis model into the Diffusers format and then load the converted checkpoint.
+
+    * If set to False, the conversion is skipped and the model remains in its original CompVis format for use and uses compvis based implementation.
+
+* converted_model_folder_path: Folder path to save the converted compvis model to diffuser.
+
+    Type: str
+    Example: "outputs"
+
 * backend: Specifies the backend model i.e "diffusers".
 
     Type: str
@@ -273,16 +335,16 @@ This section defines the high-level configuration for the attack.
 
     - name: Name for the log file or experiment.
 
-        - Type: str
-        - Example: "NoAttackEsdNudity"
+    - Type: str
+    - Example: "NoAttackEsdNudity"
 
     Example usage:
 
-    ```json
-    "json": {
-            "root": "results/no_attack_esd_nudity_esd",
-            "name": "NoAttackEsdNudity"
-        }
-    ```
+
+        "json": {
+                "root": "results/no_attack_esd_nudity_esd",
+                "name": "NoAttackEsdNudity"
+            }
+
 
 

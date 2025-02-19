@@ -34,6 +34,9 @@ class TaskConfig(BaseModel):
     dataset_path: str = None
     criterion: str = "l2"
     backend: Literal["compvis", "diffusers"]
+    converted_model_folder_path: str = "outputs"
+    model_name : Optional[str] = "SD-v1-4"
+    save_diffuser: Optional[bool]  = True
     compvis_ckpt_path: Optional[str] = None
     compvis_config_path: Optional[str] = None
     diffusers_model_name_or_path : Optional[str] = None
@@ -43,6 +46,8 @@ class TaskConfig(BaseModel):
     sld_concept: Optional[str] = None
     negative_prompt: Optional[str] = None
     classifier_dir: Optional[str] =  None
+    diffusers_config_file: Optional[str] = None
+    
     
 
 class BaseConfig(BaseModel):

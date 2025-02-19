@@ -6,15 +6,22 @@ import random
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from omegaconf import OmegaConf
 
 import torch
 import torch.nn.functional as F
 
 from diffusers import (
-    UNet2DConditionModel,
-    DDIMScheduler,
     AutoencoderKL,
-    StableDiffusionPipeline
+    DDIMScheduler,
+    DPMSolverMultistepScheduler,
+    EulerAncestralDiscreteScheduler,
+    EulerDiscreteScheduler,
+    HeunDiscreteScheduler,
+    LMSDiscreteScheduler,
+    PNDMScheduler,
+    StableDiffusionPipeline,
+    UNet2DConditionModel,
 )
 
 from mu.helpers import load_model_from_config
@@ -149,13 +156,15 @@ def get_models_for_diffusers(diffuser_model_name_or_path, devices, target_ckpt=N
 
 
 def get_models_for_compvis(config_path, compvis_ckpt_path, devices):
-    model_orig = load_model_from_config(config_path, compvis_ckpt_path, devices[1])
+    model_orig = load_model_from_config(config_path, compvis_ckpt_path, devices[0])
     sampler_orig = DDIMSampler(model_orig)
 
     model = load_model_from_config(config_path, compvis_ckpt_path, devices[0])
     sampler = DDIMSampler(model)
 
+    # return model_orig, sampler_orig
     return model_orig, sampler_orig, model, sampler
+
 
 
 @torch.no_grad()
@@ -202,7 +211,10 @@ def sample_model_for_diffuser(model, scheduler, c, h, w, ddim_steps, scale, ddim
         # Update the latents with the original (unduplicated) latents.
         latents = scheduler.step(noise_pred, t, latents).prev_sample
 
+
     return latents
+
+
 
 
 
@@ -1214,3 +1226,145 @@ def save_history(folder_path, losses, word_print):
     with open(f'{folder_path}/loss.txt', 'w') as f:
         f.writelines([str(i) for i in losses])
     plot_loss(losses,f'{folder_path}/loss.png' , word_print, n=3)
+
+
+def save_model(folder_path, model, name, num, compvis_config_file=None, diffusers_config_file=None, device='cpu', save_compvis=True, save_diffusers=True):
+    # SAVE MODEL
+
+    # PATH = f'{FOLDER}/{model_type}-word_{word_print}-method_{train_method}-sg_{start_guidance}-ng_{neg_guidance}-iter_{i+1}-lr_{lr}-startmodel_{start_model}-numacc_{numacc}.pt'
+    folder_path = f'{folder_path}/models'
+    os.makedirs(folder_path, exist_ok=True)
+    if num is not None:
+        path = f'{folder_path}/Compvis-UNet-{name}-epoch_{num}.pt'
+    else:
+        path = f'{folder_path}/Compvis-UNet-{name}.pt'
+    if save_compvis:
+        torch.save(model.state_dict(), path)
+
+    if save_diffusers:
+        print('Saving Model in Diffusers Format') 
+        savemodelDiffusers(path, name, compvis_config_file, diffusers_config_file, device=device )
+
+def savemodelDiffusers(path, name, compvis_config_file, diffusers_config_file, device='cpu'):
+    checkpoint_path = path
+
+    original_config_file = compvis_config_file
+    config_file = diffusers_config_file
+    num_in_channels = 4
+    scheduler_type = 'ddim'
+    pipeline_type = None
+    image_size = 512
+    prediction_type = 'epsilon'
+    extract_ema = False
+    dump_path = path.replace('Compvis','Diffusers')
+    upcast_attention = False
+
+
+    if device is None:
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        checkpoint = torch.load(checkpoint_path, map_location=device)
+    else:
+        checkpoint = torch.load(checkpoint_path, map_location=device)
+
+    # Sometimes models don't have the global_step item
+    if "global_step" in checkpoint:
+        global_step = checkpoint["global_step"]
+    else:
+        print("global_step key not found in model")
+        global_step = None
+
+    if "state_dict" in checkpoint:
+        checkpoint = checkpoint["state_dict"]
+    upcast_attention = upcast_attention
+    if original_config_file is None:
+        key_name = "model.diffusion_model.input_blocks.2.1.transformer_blocks.0.attn2.to_k.weight"
+
+        if key_name in checkpoint and checkpoint[key_name].shape[-1] == 1024:
+            if not os.path.isfile("v2-inference-v.yaml"):
+                # model_type = "v2"
+                os.system(
+                    "wget https://raw.githubusercontent.com/Stability-AI/stablediffusion/main/configs/stable-diffusion/v2-inference-v.yaml"
+                    " -O v2-inference-v.yaml"
+                )
+            original_config_file = "./v2-inference-v.yaml"
+
+            if global_step == 110000:
+                # v2.1 needs to upcast attention
+                upcast_attention = True
+        else:
+            if not os.path.isfile("v1-inference.yaml"):
+                # model_type = "v1"
+                os.system(
+                    "wget https://raw.githubusercontent.com/CompVis/stable-diffusion/main/configs/stable-diffusion/v1-inference.yaml"
+                    " -O v1-inference.yaml"
+                )
+            original_config_file = "./v1-inference.yaml"
+
+    original_config = OmegaConf.load(original_config_file)
+
+    if num_in_channels is not None:
+        original_config["model"]["params"]["unet_config"]["params"]["in_channels"] = num_in_channels
+
+    if (
+        "parameterization" in original_config["model"]["params"]
+        and original_config["model"]["params"]["parameterization"] == "v"
+    ):
+        if prediction_type is None:
+            # NOTE: For stable diffusion 2 base it is recommended to pass `prediction_type=="epsilon"`
+            # as it relies on a brittle global step parameter here
+            prediction_type = "epsilon" if global_step == 875000 else "v_prediction"
+        if image_size is None:
+            # NOTE: For stable diffusion 2 base one has to pass `image_size==512`
+            # as it relies on a brittle global step parameter here
+            image_size = 512 if global_step == 875000 else 768
+    else:
+        if prediction_type is None:
+            prediction_type = "epsilon"
+        if image_size is None:
+            image_size = 512
+
+    num_train_timesteps = original_config.model.params.timesteps
+    beta_start = original_config.model.params.linear_start
+    beta_end = original_config.model.params.linear_end
+    scheduler = DDIMScheduler(
+        beta_end=beta_end,
+        beta_schedule="scaled_linear",
+        beta_start=beta_start,
+        num_train_timesteps=num_train_timesteps,
+        steps_offset=1,
+        clip_sample=False,
+        set_alpha_to_one=False,
+        prediction_type=prediction_type,
+    )
+    # make sure scheduler works correctly with DDIM
+    scheduler.register_to_config(clip_sample=False)
+
+    if scheduler_type == "pndm":
+        config = dict(scheduler.config)
+        config["skip_prk_steps"] = True
+        scheduler = PNDMScheduler.from_config(config)
+    elif scheduler_type == "lms":
+        scheduler = LMSDiscreteScheduler.from_config(scheduler.config)
+    elif scheduler_type == "heun":
+        scheduler = HeunDiscreteScheduler.from_config(scheduler.config)
+    elif scheduler_type == "euler":
+        scheduler = EulerDiscreteScheduler.from_config(scheduler.config)
+    elif scheduler_type == "euler-ancestral":
+        scheduler = EulerAncestralDiscreteScheduler.from_config(scheduler.config)
+    elif scheduler_type == "dpm":
+        scheduler = DPMSolverMultistepScheduler.from_config(scheduler.config)
+    elif scheduler_type == "ddim":
+        scheduler = scheduler
+    else:
+        raise ValueError(f"Scheduler of type {scheduler_type} doesn't exist!")
+
+    # Convert the UNet2DConditionModel model.
+    unet_config = create_unet_diffusers_config(original_config, image_size=image_size)
+    unet_config["upcast_attention"] = False
+    unet = UNet2DConditionModel(**unet_config)
+
+    converted_unet_checkpoint = convert_ldm_unet_checkpoint(
+        checkpoint, unet_config, path=checkpoint_path, extract_ema=extract_ema
+    )
+    torch.save(converted_unet_checkpoint, dump_path)    
+

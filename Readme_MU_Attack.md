@@ -97,6 +97,7 @@ This section defines the high-level configuration for the attack.
     Type: str
     Example: ""
 
+
 * backend: Specifies the backend model i.e "diffuser".
 
 
@@ -249,6 +250,27 @@ This section defines the high-level configuration for the attack.
     Type: str
     Example: ""
 
+* model_name: Name of the model. The model_name parameter determines which base Stable Diffusion model is used by the pipeline.
+
+    Type: str
+    Example: "SD-v1-4"
+    Choices: "SD-v1-4", "SD-V2", "SD-V2-1"
+
+* save_diffuser: A Boolean flag that determines whether the CompVis model should be converted into the Diffusers format before being used.
+
+    Type: str
+    Example: True
+
+    Behavior:
+    * If set to True, the pipeline will perform a conversion of the CompVis model into the Diffusers format and then load the converted checkpoint.
+
+    * If set to False, the conversion is skipped and the model remains in its original CompVis format for use and uses compvis based implementation.
+
+* converted_model_folder_path: Folder path to save the converted compvis model to diffuser.
+
+    Type: str
+    Example: "outputs"
+
 * backend: Specifies the backend model i.e "compvis".
 
 
@@ -323,14 +345,81 @@ This section defines the high-level configuration for the attack.
 
 * compvis
 
-```bash
-python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/hard_prompt_esd_nudity_P4D_compvis.json
+
+```python
+from mu_attack.configs.nudity import hard_prompt_esd_nudity_P4D_compvis_config
+from mu_attack.execs.attack import MUAttack
+from mu.algorithms.scissorhands.configs import scissorhands_train_mu
+
+def run_attack_for_nudity():
+
+    overridable_params = {
+        "task.compvis_ckpt_path":"/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
+        "task.compvis_config_path": scissorhands_train_mu.model_config_path,
+        "task.dataset_path":"/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
+        "logger.json.root":"results/hard_prompt_esd_nudity_P4D_scissorhands",
+        "task.save_diffuser": False,
+    }
+
+    MUAttack(
+        config=hard_prompt_esd_nudity_P4D_compvis_config,
+        **overridable_params
+    )
+
+if __name__ == "__main__":
+    run_attack_for_nudity()
+```
+
+Alternatively, if you want to convert compvis model to diffuser, use the following code snippet.
+
+```python
+from mu_attack.configs.nudity import hard_prompt_esd_nudity_P4D_compvis_config
+from mu_attack.execs.attack import MUAttack
+from mu.algorithms.scissorhands.configs import scissorhands_train_mu
+
+def run_attack_for_nudity():
+
+    overridable_params = {
+        "task.compvis_ckpt_path":"/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
+        "task.compvis_config_path": scissorhands_train_mu.model_config_path,
+        "task.dataset_path":"/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
+        "logger.json.root":"results/hard_prompt_esd_nudity_P4D_scissorhands",
+        "task.save_diffuser": True,
+        "task.sld": None,
+        "task.model_name": "SD-v1-4"
+    }
+
+    MUAttack(
+        config=hard_prompt_esd_nudity_P4D_compvis_config,
+        **overridable_params
+    )
+
+if __name__ == "__main__":
+    run_attack_for_nudity()
+
 ```
 
 * diffuser
 
-```bash
-python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/hard_prompt_esd_nudity_P4D_diffuser.json
+```python
+from mu_attack.configs.nudity import hard_prompt_esd_nudity_P4D_diffusers_config
+from mu_attack.execs.attack import MUAttack
+
+def run_attack_for_nudity():
+
+    overridable_params = {
+       "task.diffusers_model_name_or_path" : "/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/forget_me_not/finetuned_models/Abstractionism",
+        "task.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
+        "logger.json.root" :"results/hard_prompt_esd_nudity_P4D_abstractionism"
+    }
+
+    MUAttack(
+        config=hard_prompt_esd_nudity_P4D_diffusers_config,
+        **overridable_params
+    )
+
+if __name__ == "__main__":
+    run_attack_for_nudity()
 ```
 
 
@@ -338,60 +427,86 @@ python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/hard_pro
 
 * compvis
 
-```bash
-python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/random_esd_nudity_compvis.json
+
+```python
+from mu_attack.configs.nudity import no_attack_esd_nudity_classifier_compvis_config
+from mu_attack.execs.attack import MUAttack
+from mu.algorithms.scissorhands.configs import scissorhands_train_mu
+
+def run_attack_for_nudity():
+
+    overridable_params = {
+    "task.compvis_ckpt_path" : "/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
+    "task.compvis_config_path" : scissorhands_train_mu.model_config_path,
+    "task.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
+    "logger.json.root" : "results/hard_prompt_esd_nudity_P4D_scissorhands",
+    "attacker.no_attack.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
+    "task.save_diffuser": False,
+    }
+
+    MUAttack(
+        config=no_attack_esd_nudity_classifier_compvis_config,
+        **overridable_params
+    )
+
+if __name__ == "__main__":
+    run_attack_for_nudity()
+```
+
+Alternatively, if you want to convert compvis model to diffuser, use the following code snippet.
+
+```python
+from mu_attack.configs.nudity import no_attack_esd_nudity_classifier_compvis_config
+from mu_attack.execs.attack import MUAttack
+from mu.algorithms.scissorhands.configs import scissorhands_train_mu
+
+def run_attack_for_nudity():
+
+    overridable_params = {
+    "task.compvis_ckpt_path" : "/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
+    "task.compvis_config_path" : scissorhands_train_mu.model_config_path,
+    "task.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
+    "logger.json.root" : "results/hard_prompt_esd_nudity_P4D_scissorhands",
+    "attacker.no_attack.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
+    "task.save_diffuser": True,
+    "task.sld": None,
+    "task.model_name": "SD-v1-4"
+    }
+
+    MUAttack(
+        config=no_attack_esd_nudity_classifier_compvis_config,
+        **overridable_params
+    )
+
+if __name__ == "__main__":
+    run_attack_for_nudity()
 ```
 
 * diffuser
 
-```bash
-python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/random_esd_nudity_diffuser.json
+```python
+from mu_attack.configs.nudity import no_attack_esd_nudity_classifier_diffusers_config
+from mu_attack.execs.attack import MUAttack
+
+def run_attack_for_nudity():
+
+    overridable_params = {
+    "task.diffusers_model_name_or_path" :"/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/forget_me_not/finetuned_models/Abstractionism",
+    "task.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
+    "logger.json.root" : "results/hard_prompt_esd_nudity_P4D_abstrc",
+    "attacker.no_attack.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude"
+    }
+
+    MUAttack(
+        config=no_attack_esd_nudity_classifier_diffusers_config,
+        **overridable_params
+    )
+
+if __name__ == "__main__":
+    run_attack_for_nudity()
 ```
 
 
-
-3. Seed Search
-
-* compvis
-
-```bash
-python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/seed_search_esd_nudity_classifier_compvis.json
-```
-
-* diffusers
-
-```bash
-python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/seed_search_esd_nudity_classifier_diffuser.json
-```
-
-4. Text Grad
-
-* compvis
-
-```bash
-python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/text_grad_esd_nudity_classifier_compvis.json
-```
-
-* diffusers
-
-```bash
-python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/text_grad_esd_nudity_classifier_diffuser.json
-```
-
-
-### Run No Attack
-
-* compvis
-
-```bash
-python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/no_attack_esd_nudity_classifier_compvis.json
-```
-
-* diffusers
-
-```bash
-python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/no_attack_esd_nudity_classifier_diffuser.json
-```
 
 
 ### Mass Attack
@@ -422,57 +537,29 @@ Create a file, eg, `evaluate.py` and use examples and modify your configs to run
 **Example Code**
 
 ```python
-from evaluation.evaluators.asr import ASREvaluator
-from evaluation.evaluators.clip_score import ClipScoreEvaluator
-from evaluation.evaluators.mu_attack_fid import FIDEvaluator
 from mu_attack.configs.evaluation import attack_evaluation_config
-
+from mu_attack.execs.evaluator import MuAttackEvaluator
 
 def main():
-    # Initialize the configuration
     config = attack_evaluation_config
-    config.asr.root = "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d"
-    config.asr.root_no_attack = "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/no_attack_esd_nudity/NoAttackEsdNudity"
+    config = attack_evaluation_config
+    config.asr.root = "results/hard_prompt_esd_nudity_P4D_abstractionism/P4d"
+    config.asr.root_no_attack = "results/hard_prompt_esd_nudity_P4D_abstrc/NoAttackEsdNudity"
     config.clip.devices = "0"
-    config.clip.image_path = "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d/images"
-    config.clip.log_path = "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d/log.json"
-    config.fid.ref_batch_path = "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d/images"
-    config.fid.sample_batch_path = "/home/ubuntu/Projects/balaram/unlearn_diff_attack/outputs/dataset/i2p_nude/imgs"
+    config.clip.image_path = "results/hard_prompt_esd_nudity_P4D_abstractionism/P4d/images"
+    config.clip.log_path = "results/hard_prompt_esd_nudity_P4D_abstractionism/P4d/log.json"
+    config.fid.ref_batch_path = "results/hard_prompt_esd_nudity_P4D_abstractionism/P4d/images"
+    config.fid.sample_batch_path = "data/i2p/nude"
 
     # Common output path
-    config.output_path = "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/evaluation/results.json"
+    config.output_path = "results/evaluation/results.json"
 
-    # Initialize and run the ASR evaluator
-    asr_evaluator = ASREvaluator(
-        config = attack_evaluation_config,
-        root=config.asr.root,
-        root_no_attack=config.asr.root_no_attack,
-        output_path=config.output_path
-    )
-    print("Running ASR Evaluator...")
-    asr_evaluator.run()
-
-    # Initialize and run the CLIP Score evaluator
-    clip_evaluator = ClipScoreEvaluator(
-        config = attack_evaluation_config,
-        image_path=config.clip.image_path,
-        log_path=config.clip.log_path,
-        output_path=config.output_path,
-        devices = config.clip.devices
-    )
-    print("Running CLIP Score Evaluator...")
-    clip_evaluator.run()
-
-    # Initialize and run the FID evaluator
-    fid_evaluator = FIDEvaluator(
-        config = attack_evaluation_config,
-        ref_batch_path=config.fid.ref_batch_path,
-        sample_batch_path=config.fid.sample_batch_path,
-        output_path=config.output_path
-    )
-    print("Running FID Evaluator...")
-    fid_evaluator.run()
-
+    evaluator = MuAttackEvaluator(config)
+    
+    # Run the evaluation (this will run ASR, CLIP, and FID evaluators)
+    results = evaluator.run()
+    
+    print("Evaluation Results:",results)
 
 if __name__ == "__main__":
     main()

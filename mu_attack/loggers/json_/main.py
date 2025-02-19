@@ -15,7 +15,7 @@ class JSONLogger(BaseLogger):
         os.makedirs(self.ckpt_root, exist_ok=True)
         os.makedirs(self.img_root, exist_ok=True)
         with open(os.path.join(root, 'config.json'), 'w') as f:
-            json.dump(config, f)
+            json.dump(config, f, default=str)
             f.flush()
 
         self.log_path = os.path.join(root, 'log.json')
