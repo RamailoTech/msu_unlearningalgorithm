@@ -1,5 +1,4 @@
-
-name: merged_env
+name: UnlearnDiff
 channels:
   - pytorch
   - defaults
@@ -15,6 +14,7 @@ dependencies:
       - huggingface_hub==0.25.1
       - albumentations==0.4.3
       - datasets==2.8.0
+      - bitsandbytes
       - diffusers==0.32.1
       - opencv-python==4.10.0.84
       - mediapipe==0.10.11
@@ -22,7 +22,7 @@ dependencies:
       - invisible-watermark
       - imageio==2.9.0
       - imageio-ffmpeg==0.4.2
-      - pytorch-lightning==1.7.7
+      - pytorch-lightning==1.8.5
       - omegaconf==2.1.1
       - test-tube>=0.7.5
       - streamlit>=0.73.1
@@ -59,7 +59,9 @@ dependencies:
       - open_clip_torch
       - wandb==0.18.7
       - quadprog
+      - xformers
       - fire==0.7.0
       - terminaltables==3.1.10
       - git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
+      - git+https://github.com/boomb0om/text2image-benchmark
       - unlearn_diff

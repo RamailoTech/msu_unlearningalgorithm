@@ -1,10 +1,10 @@
+import json
 from setuptools import setup, find_packages
-from setuptools.command.install import install as _install
 import os
 import subprocess
 import sys
-import json
-import yaml
+from setuptools.command.install import install as _install
+
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -38,8 +38,15 @@ check_conda()
 
 class CustomInstallCommand(_install):
     def run(self):
-        # Run the standard installation process.
-        _install.run(self)
+        # Ensure this script runs only during `pip install` or equivalent
+        if sys.argv[1] in ["sdist", "bdist_wheel"]:
+            # Skip the custom installation during the build process
+            return super().run()
+
+        import yaml
+
+        # Run the standard installation process
+        super().run()
 
         # Step 1: Use the environment.yaml to either update or create the conda environment.
         print("\nProcessing environment.yaml ...")
@@ -92,7 +99,7 @@ class CustomInstallCommand(_install):
 
 setup(
     name="unlearn_diff",
-    version="1.0.5",
+    version="1.1.1",
     author="nebulaanish",
     author_email="nebulaanish@gmail.com",
     description="Unlearning Algorithms",

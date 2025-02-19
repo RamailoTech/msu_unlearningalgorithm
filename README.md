@@ -113,17 +113,20 @@ After installing `conda`, ensure it is available in your PATH by running. You ma
 ```bash
 conda --version
 ```
-### Create environment:
+### Create environment (Default):
 ```
-create_env <algorithm_name>
+create_env
 ```
-eg: ```create_env erase_diff```
+#### Optional(Create environment for algorithm):
+```
+create_env erase_diff
+```
 
 ### Activate environment:
 ```
 conda activate <environment_name>
 ```
-eg: ```conda activate mu_erase_diff```
+eg: ```conda activate UnlearnDiff```
 
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 

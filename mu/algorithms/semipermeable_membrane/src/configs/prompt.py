@@ -1,5 +1,4 @@
-from typing import Literal, Optional, Union
-
+from typing import Literal, Optional, Union, Dict, List
 import yaml
 from pathlib import Path
 import pandas as pd
@@ -9,13 +8,16 @@ from pydantic import BaseModel, root_validator
 from transformers import CLIPTextModel, CLIPTokenizer
 import torch
 
-from mu.algorithms.semipermeable_membrane.src.misc.clip_templates import imagenet_templates
+from mu.algorithms.semipermeable_membrane.src.misc.clip_templates import (
+    imagenet_templates,
+)
 from mu.algorithms.semipermeable_membrane.src.engine.train_util import encode_prompts
 
 ACTION_TYPES = Literal[
     "erase",
     "erase_with_la",
 ]
+
 
 class PromptEmbedsXL:
     text_embeds: torch.FloatTensor
@@ -24,11 +26,12 @@ class PromptEmbedsXL:
     def __init__(self, embeds) -> None:
         self.text_embeds, self.pooled_embeds = embeds
 
+
 PROMPT_EMBEDDING = Union[torch.FloatTensor, PromptEmbedsXL]
 
 
 class PromptEmbedsCache:
-    prompts: dict[str, PROMPT_EMBEDDING] = {}
+    prompts: Dict[str, PROMPT_EMBEDDING] = {}
 
     def __setitem__(self, __name: str, __value: PROMPT_EMBEDDING) -> None:
         self.prompts[__name] = __value
@@ -52,7 +55,7 @@ class PromptSettings(BaseModel):  # yaml
     batch_size: int = 1  # default is 1
     dynamic_crops: bool = False  # default is False. only used when model is XL
     use_template: bool = False  # default is False
-    
+
     la_strength: float = 1000.0
     sampling_batch_size: int = 4
 
@@ -75,7 +78,7 @@ class PromptSettings(BaseModel):  # yaml
 
 
 class PromptEmbedsPair:
-    target: PROMPT_EMBEDDING  # the concept that do not want to generate 
+    target: PROMPT_EMBEDDING  # the concept that do not want to generate
     positive: PROMPT_EMBEDDING  # generate the concept
     unconditional: PROMPT_EMBEDDING  # uncondition (default should be empty)
     neutral: PROMPT_EMBEDDING  # base condition (default should be empty)
@@ -104,7 +107,7 @@ class PromptEmbedsPair:
         self.positive = positive
         self.unconditional = unconditional
         self.neutral = neutral
-        
+
         self.settings = settings
 
         self.use_template = settings.use_template
@@ -114,13 +117,12 @@ class PromptEmbedsPair:
         self.batch_size = settings.batch_size
         self.dynamic_crops = settings.dynamic_crops
         self.action = settings.action
-        
+
         self.la_strength = settings.la_strength
         self.sampling_batch_size = settings.sampling_batch_size
-        
-        
+
     def _prepare_embeddings(
-        self, 
+        self,
         cache: PromptEmbedsCache,
         tokenizer: CLIPTokenizer,
         text_encoder: CLIPTextModel,
@@ -137,8 +139,7 @@ class PromptEmbedsPair:
             self.target = cache[target_prompt]
         else:
             self.target = encode_prompts(tokenizer, text_encoder, [target_prompt])
-        
-    
+
     def _erase(
         self,
         target_latents: torch.FloatTensor,  # "van gogh"
@@ -158,14 +159,14 @@ class PromptEmbedsPair:
             "loss/erase": erase_loss,
         }
         return losses
-        
+
     def _erase_with_la(
         self,
         target_latents: torch.FloatTensor,  # "van gogh"
         positive_latents: torch.FloatTensor,  # "van gogh"
         neutral_latents: torch.FloatTensor,  # ""
-        anchor_latents: torch.FloatTensor, 
-        anchor_latents_ori: torch.FloatTensor, 
+        anchor_latents: torch.FloatTensor,
+        anchor_latents_ori: torch.FloatTensor,
         **kwargs,
     ):
         anchoring_loss = self.loss_fn(anchor_latents, anchor_latents_ori)
@@ -177,7 +178,7 @@ class PromptEmbedsPair:
         losses = {
             "loss": erase_loss + self.la_strength * anchoring_loss,
             "loss/erase": erase_loss,
-            "loss/anchoring": anchoring_loss
+            "loss/anchoring": anchoring_loss,
         }
         return losses
 
@@ -193,7 +194,7 @@ class PromptEmbedsPair:
             raise ValueError("action must be erase or erase_with_la")
 
 
-def load_prompts_from_yaml(path: str | Path) -> list[PromptSettings]:
+def load_prompts_from_yaml(path: Union[str, Path]) -> List[PromptSettings]:
     with open(path, "r") as f:
         prompts = yaml.safe_load(f)
 
@@ -204,23 +205,29 @@ def load_prompts_from_yaml(path: str | Path) -> list[PromptSettings]:
 
     return prompt_settings
 
-def load_prompts_from_table(path: str | Path) -> list[PromptSettings]:
+
+def load_prompts_from_table(path: Union[str, Path]) -> List[PromptSettings]:
     # check if the file ends with .csv
     if not path.endswith(".csv"):
         raise ValueError("prompts file must be a csv file")
     df = pd.read_csv(path)
     prompt_settings = []
     for _, row in df.iterrows():
-        prompt_settings.append(PromptSettings(**dict(
-            target=str(row.prompt),
-            seed=int(row.get('sd_seed', row.evaluation_seed)),
-            case_number=int(row.get('case_number', -1)),
-        )))
+        prompt_settings.append(
+            PromptSettings(
+                **dict(
+                    target=str(row.prompt),
+                    seed=int(row.get("sd_seed", row.evaluation_seed)),
+                    case_number=int(row.get("case_number", -1)),
+                )
+            )
+        )
     return prompt_settings
+
 
 def compute_rotation_matrix(target: torch.FloatTensor):
     """Compute the matrix that rotate unit vector to target.
-    
+
     Args:
         target (torch.FloatTensor): target vector.
     """
