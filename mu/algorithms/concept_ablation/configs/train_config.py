@@ -161,9 +161,7 @@ class ConceptAblationConfig(BaseConfig):
         if not os.path.exists(self.raw_dataset_dir):
             raise FileNotFoundError(f"Directory {self.raw_dataset_dir} does not exist.")
         if not os.path.exists(self.processed_dataset_dir):
-            raise FileNotFoundError(
-                f"Directory {self.processed_dataset_dir} does not exist."
-            )
+            os.makedirs(self.processed_dataset_dir)
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
         if not os.path.exists(self.ckpt_path):
