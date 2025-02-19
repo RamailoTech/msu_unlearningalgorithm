@@ -10,8 +10,8 @@ from pytorch_lightning import seed_everything
 import torch
 
 from transformers import CLIPTextModel, CLIPTokenizer
-
-from stable_diffusion.constants.const import theme_available, class_available
+from mu.datasets.constants import *
+# from stable_diffusion.constants.const import theme_available, class_available
 from mu.core.base_sampler import BaseSampler
 from mu.algorithms.semipermeable_membrane.src.configs.generation_config import (
     GenerationConfig,
@@ -63,6 +63,9 @@ class SemipermeableMembraneSampler(BaseSampler):
         self.spms = None
         self.erased_prompt_embeds = None
         self.erased_prompt_tokens = None
+        self.use_sample = self.config.get('use_sample')
+        self.theme_available = uc_sample_theme_available_eval if self.use_sample else uc_theme_available
+        self.class_available = uc_sample_class_available_eval if self.use_sample else uc_class_available
         self.logger = logging.getLogger(__name__)
 
     def _parse_precision(self, precision: str) -> torch.dtype:
@@ -220,7 +223,7 @@ class SemipermeableMembraneSampler(BaseSampler):
             f"{self.config['model_config_path']}/{self.config['theme']}/config.yaml"
         )
 
-        for test_theme in theme_available:
+        for test_theme in self.theme_available:
             theme_path = os.path.join(output_dir, test_theme)
             os.makedirs(theme_path, exist_ok=True)
         self.logger.info(f"Generating images and saving to {output_dir}")
@@ -228,8 +231,8 @@ class SemipermeableMembraneSampler(BaseSampler):
         seed_everything(seed)
 
         with torch.no_grad():
-            for test_theme in theme_available:
-                for object_class in class_available:
+            for test_theme in self.theme_available:
+                for object_class in self.class_available:
                     prompt = f"A {object_class} image in {test_theme.replace('_', ' ')} style."
 
                     prompt += self.model_config.unconditional_prompt

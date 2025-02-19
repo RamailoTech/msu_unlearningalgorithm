@@ -21,3 +21,7 @@ uc_sample_class_list = "Architectures"
 uc_sample_theme_available=["Abstractionism"]
 
 uc_sample_class_available = ["Architectures"]
+
+
+uc_sample_theme_available_eval = ["Abstractionism", "Bricks"]  #use for evalaution only
+uc_sample_class_available_eval =  ["Architectures", "Bears", "Birds"]

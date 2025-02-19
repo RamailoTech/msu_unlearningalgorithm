@@ -8,7 +8,9 @@ from .uc_const import (
     uc_sample_theme_available,
     uc_sample_class_available,
     uc_sample_class_list,
-    uc_sample_style_list
+    uc_sample_style_list,
+    uc_sample_theme_available_eval,
+    uc_sample_class_available_eval
 )
 
 from .i2p_const import (
@@ -26,5 +28,7 @@ __all__ = [
     "uc_sample_theme_available",
     "uc_sample_class_available",
     "i2p_sample_categories",
-    "i2p_categories"
+    "i2p_categories",
+    "uc_sample_theme_available_eval",
+    "uc_sample_class_available_eval"
 ]

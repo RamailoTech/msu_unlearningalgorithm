@@ -11,8 +11,8 @@ from diffusers import AutoencoderKL, UNet2DConditionModel
 from diffusers import LMSDiscreteScheduler
 
 from mu.core.base_sampler import BaseSampler        
-from stable_diffusion.constants.const import theme_available, class_available
-
+# from stable_diffusion.constants.const import theme_available, class_available
+from mu.datasets.constants import *
 
 class UnifiedConceptEditingSampler(BaseSampler):
     """Unified Concept editing Image Generator class extending a hypothetical BaseImageGenerator."""
@@ -29,6 +29,9 @@ class UnifiedConceptEditingSampler(BaseSampler):
 
         self.config = config
         self.device = self.config['devices'][0]
+        self.use_sample = self.config.get('use_sample')
+        self.theme_available = uc_sample_theme_available_eval if self.use_sample else uc_theme_available
+        self.class_available = uc_sample_class_available_eval if self.use_sample else uc_class_available
         self.model = None
         self.sampler = None
         self.tokenizer = None
@@ -86,13 +89,13 @@ class UnifiedConceptEditingSampler(BaseSampler):
         ddim_eta = self.config["ddim_eta"]
         output_dir = self.config["sampler_output_dir"]
 
-        for test_theme in theme_available:
+        for test_theme in self.theme_available:
             theme_path = os.path.join(output_dir, test_theme)
             os.makedirs(theme_path, exist_ok=True)
         self.logger.info(f"Generating images and saving to {output_dir}")
        
-        for test_theme in theme_available:
-            for object_class in class_available:
+        for test_theme in self.theme_available:
+            for object_class in self.class_available:
                 filename = f"{test_theme}_{object_class}_seed_{seed}.jpg"
                 output_path = os.path.join(output_dir, test_theme, filename)
                 if os.path.exists(output_path):
