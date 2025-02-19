@@ -2,6 +2,28 @@ import argparse
 import os
 from mu_attack.datasets.dataset_generator import DatasetGenerator
 
+
+def execute_dataset_generation(args_dict):
+    # Initialize the generator with specified arguments
+    generator = DatasetGenerator(
+        device=args_dict["device"],
+        guidance_scale=args_dict["guidance_scale"],
+        image_size=args_dict["image_size"],
+        ddim_steps=args_dict["ddim_steps"],
+        num_samples=args_dict["num_samples"],
+        cache_dir=args_dict["cache_dir"]
+    )
+
+    # Generate images using the provided arguments
+    generator.generate_images(
+        prompts_path=args_dict["prompts_path"],
+        save_path=args_dict["save_path"],
+        concept=args_dict["concept"],
+        from_case=args_dict["from_case"],
+        ckpt=args_dict["ckpt"]
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description="Generate a dataset of images using Diffusers.")
     parser.add_argument('--prompts_path', type=str, required=True, help="Path to the CSV file containing prompts.")
@@ -18,24 +40,9 @@ def main():
 
     args = parser.parse_args()
 
-    # Initialize the generator with specified arguments
-    generator = DatasetGenerator(
-        device=args.device,
-        guidance_scale=args.guidance_scale,
-        image_size=args.image_size,
-        ddim_steps=args.ddim_steps,
-        num_samples=args.num_samples,
-        cache_dir=args.cache_dir
-    )
+    args_dict = vars(args)
+    execute_dataset_generation(args_dict = args_dict)
 
-    # Generate images using the provided arguments
-    generator.generate_images(
-        prompts_path=args.prompts_path,
-        save_path=args.save_path,
-        concept=args.concept,
-        from_case=args.from_case,
-        ckpt=args.ckpt
-    )
 
 if __name__ == "__main__":
     main()

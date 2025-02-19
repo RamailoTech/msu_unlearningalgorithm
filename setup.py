@@ -131,6 +131,7 @@ setup(
             "create_env=scripts.commands:create_env_cli",
             "download_data=scripts.commands:download_data_cli",
             "download_model=scripts.commands:download_models_cli",
+            "generate_attack_dataset=scripts.commands:generate_dataset_cli"
         ],
     },
     cmdclass={
