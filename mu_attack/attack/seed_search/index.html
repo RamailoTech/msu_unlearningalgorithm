@@ -325,7 +325,7 @@
 <ol>
 <li><strong>Seed search Attack - compvis</strong></li>
 </ol>
-<p>Use the following code if you wish to run the hard prompt attack using the CompVis model directly (without converting it into Diffusers format):</p>
+<p>Use the following code if you wish to run the seed search attack using the CompVis model directly (without converting it into Diffusers format):</p>
 <pre><code class="language-python">from mu_attack.configs.nudity import seed_search_esd_nudity_classifier_compvis_config
 from mu_attack.execs.attack import MUAttack
 from mu.algorithms.scissorhands.configs import scissorhands_train_mu
@@ -337,7 +337,7 @@ def run_attack_for_nudity():
     &quot;task.compvis_config_path&quot; : scissorhands_train_mu.model_config_path,
     &quot;task.dataset_path&quot; : &quot;/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude&quot;,
     &quot;attacker.text_grad.lr&quot;: 0.02,
-    &quot;logger.json.root&quot; : &quot;results/hard_prompt_esd_nudity_P4D_scissorhands&quot;
+    &quot;logger.json.root&quot; : &quot;results/seed_search_esd_nudity_P4D_scissorhands&quot;
 
     }
 
@@ -364,7 +364,7 @@ def run_attack_for_nudity():
         &quot;task.compvis_config_path&quot; : scissorhands_train_mu.model_config_path,
         &quot;task.dataset_path&quot; : &quot;/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude&quot;,
         &quot;attacker.text_grad.lr&quot;: 0.02,
-        &quot;logger.json.root&quot; : &quot;results/hard_prompt_esd_nudity_P4D_scissorhands&quot;,
+        &quot;logger.json.root&quot; : &quot;results/seed_search_esd_nudity_P4D_scissorhands&quot;,
         &quot;task.save_diffuser&quot;: True, # This flag triggers conversion
         &quot;task.sld&quot;: None, # Set sld to None for conversion
         &quot;task.model_name&quot;: &quot;SD-v1-4&quot;
@@ -384,8 +384,8 @@ if __name__ == &quot;__main__&quot;:
 <p><strong>Code Explanation &amp; Important Notes</strong></p>
 <ol>
 <li>
-<p>from mu_attack.configs.nudity import hard_prompt_esd_nudity_P4D_compvis_config
-→ This imports the predefined Hard Prompt Attack configuration for nudity unlearning in the CompVis model. It sets up the attack parameters and methodologies.</p>
+<p>from mu_attack.configs.nudity import seed_search_esd_nudity_P4D_compvis_config
+→ This imports the predefined seed search Attack configuration for nudity unlearning in the CompVis model. It sets up the attack parameters and methodologies.</p>
 </li>
 <li>
 <p>from mu.algorithms.scissorhands.configs import scissorhands_train_mu
@@ -406,9 +406,9 @@ if __name__ == &quot;__main__&quot;:
     &quot;task.compvis_ckpt_path&quot;: &quot;outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth&quot;,
     &quot;task.compvis_config_path&quot;: scissorhands_train_mu.model_config_path,  # Overrides model config
     &quot;task.dataset_path&quot;: &quot;outputs/dataset/i2p_nude&quot;,  # Overrides dataset path
-    &quot;logger.json.root&quot;: &quot;results/hard_prompt_esd_nudity_P4D_scissorhands&quot;,  # Overrides logging path
+    &quot;logger.json.root&quot;: &quot;results/seed_search_esd_nudity_P4D_scissorhands&quot;,  # Overrides logging path
     &quot;attacker.k&quot; = 3,
-    &quot;attacker.no_attack.dataset_path&quot; = &quot;path/to/dataset&quot; #overrides the datset path for no attack
+    &quot;attacker.seed_search.dataset_path&quot; = &quot;path/to/dataset&quot; #overrides the datset path for no attack
 }
 
 </code></pre>
@@ -610,7 +610,7 @@ Example: true</p>
 <li>
 <p>root: Path to the directory where logs will be saved.</p>
 <p>Type: str
-Example: "results/hard_prompt_esd_nudity_P4D"</p>
+Example: "results/seed_search_esd_nudity_P4D"</p>
 </li>
 <li>
 <p>name: Name for the log file or experiment.</p>
