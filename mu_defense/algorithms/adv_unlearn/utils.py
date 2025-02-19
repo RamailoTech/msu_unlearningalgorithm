@@ -6,6 +6,7 @@ import random
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
 from omegaconf import OmegaConf
 
 import torch
@@ -27,6 +28,7 @@ from diffusers import (
 from mu.helpers import load_model_from_config
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 
+current_dir = Path(__file__).parent.parent.parent
 
 class PromptDataset:
     def __init__(self, csv_file):
@@ -57,17 +59,19 @@ class PromptDataset:
     def check_unseen_prompt_count(self):
         return len(self.unseen_indices)
 
-def retain_prompt(dataset_retain):
+def retain_prompt(dataset_retain, use_sample):
     # Prompt Dataset to be retained
 
     if dataset_retain == 'imagenet243':
-        retain_dataset = PromptDataset('data/prompts/train/imagenet243_retain.csv')
+        retain_dataset = PromptDataset(current_dir + 'data/prompts/train/imagenet243_retain.csv')
     elif dataset_retain == 'imagenet243_no_filter':
-        retain_dataset = PromptDataset('data/prompts/train/imagenet243_no_filter_retain.csv')
+        retain_dataset = PromptDataset(current_dir + 'data/prompts/train/imagenet243_no_filter_retain.csv')
+    elif dataset_retain == 'coco_object' and use_sample:
+        retain_dataset = PromptDataset(current_dir + 'data/prompts/train/coco_object_retain_sample.csv')
     elif dataset_retain == 'coco_object':
-        retain_dataset = PromptDataset('data/prompts/train/coco_object_retain.csv')
+        retain_dataset = PromptDataset(current_dir + 'data/prompts/train/coco_object_retain.csv')
     elif dataset_retain == 'coco_object_no_filter':
-        retain_dataset = PromptDataset('data/prompts/train/coco_object_no_filter_retain.csv')
+        retain_dataset = PromptDataset(current_dir + 'data/prompts/train/coco_object_no_filter_retain.csv')
     else:
         raise ValueError('Invalid dataset for retaining prompts')
     

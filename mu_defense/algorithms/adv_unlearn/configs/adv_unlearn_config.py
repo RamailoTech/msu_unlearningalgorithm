@@ -25,6 +25,7 @@ class AdvUnlearnConfig(BaseConfig):
         # Devices & IO
         self.devices = "0,0"  # You can later parse this string into a list if needed.
         self.seperator = None
+        self.use_sample = True
 
         self.output_dir = "outputs/adv_unlearn"
 

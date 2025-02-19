@@ -12,10 +12,11 @@ class AdvUnlearnDatasetHandler(BaseDatasetHandler):
     AdvUnlearnDatasetHandler handles prompt cleaning and retaining dataset creation
     specifically for adversarial unlearning.
     """
-    def __init__(self,prompt, seperator, dataset_retain):
+    def __init__(self,prompt, seperator, dataset_retain, use_sample):
         self.prompt = prompt
         self.seperator = seperator
         self.dataset_retain = dataset_retain
+        self.use_sample = use_sample
 
         self.logger = logging.getLogger(__name__)
 
@@ -46,5 +47,5 @@ class AdvUnlearnDatasetHandler(BaseDatasetHandler):
         """
         Create and return the retaining dataset using the helper function.
         """
-        dataset = retain_prompt(self.dataset_retain)
+        dataset = retain_prompt(self.dataset_retain, self.use_sample)
         return dataset

@@ -92,6 +92,7 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
         self.attack_lr = self.config['attack_lr']
         self.adv_prompt_update_step = self.config['adv_prompt_update_step']
         self.ddim_eta = self.config['ddim_eta']
+        self.use_sample = self.config['use_sample']
 
 
         self.logger = logging.getLogger(__name__)
@@ -133,7 +134,8 @@ class AdvUnlearnDiffuserTrainer(BaseTrainer):
         self.dataset_handler = AdvUnlearnDatasetHandler(
             prompt=self.prompt,
             seperator=self.seperator,
-            dataset_retain=self.dataset_retain
+            dataset_retain=self.dataset_retain,
+            use_sample = self.use_sample
         )
         self.words, self.word_print = self.dataset_handler.setup_prompt()
         self.retain_dataset = self.dataset_handler.setup_dataset()
