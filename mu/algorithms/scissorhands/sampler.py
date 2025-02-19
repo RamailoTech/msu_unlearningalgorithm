@@ -10,7 +10,8 @@ from torch import autocast
 from pytorch_lightning import seed_everything
       
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
-from stable_diffusion.constants.const import theme_available, class_available
+# from stable_diffusion.constants.const import theme_available, class_available
+from mu.datasets.constants import *
 from mu.core.base_sampler import BaseSampler  
 from mu.helpers import load_config
 from mu.helpers.utils import load_ckpt_from_config
@@ -34,6 +35,9 @@ class ScissorHandsSampler(BaseSampler):
         self.device = self.config["devices"][0]
         self.model = None
         self.sampler = None
+        self.use_sample = self.config.get('use_sample')
+        self.theme_available = uc_sample_theme_available_eval if self.use_sample else uc_theme_available
+        self.class_available = uc_sample_class_available_eval if self.use_sample else uc_class_available
         self.logger = logging.getLogger(__name__)
 
     def load_model(self) -> None:
@@ -62,7 +66,7 @@ class ScissorHandsSampler(BaseSampler):
         output_dir = self.config["sampler_output_dir"]
 
         # Generate directories for each theme
-        for test_theme in theme_available:
+        for test_theme in self.theme_available:
             theme_path = os.path.join(output_dir, test_theme)
             os.makedirs(theme_path, exist_ok=True)
         
@@ -71,8 +75,8 @@ class ScissorHandsSampler(BaseSampler):
         # Set random seed
         seed_everything(seed)
     
-        for test_theme in theme_available:
-            for object_class in class_available:
+        for test_theme in self.theme_available:
+            for object_class in self.class_available:
                 prompt = f"A {object_class} image in {test_theme.replace('_',' ')} style."
                 self.logger.info(f"Sampling prompt: {prompt}")
                 with torch.no_grad():

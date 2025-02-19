@@ -12,13 +12,6 @@ from tqdm import tqdm
 from torch import nn
 from torchvision.models import inception_v3
 
-from stable_diffusion.constants.const import theme_available, class_available
-
-
-# TODO remove this
-theme_available = ["Abstractionism", "Bricks"]
-class_available = ["Architectures", "Bears", "Birds"]
-# class_available = ['Architectures']
 
 def to_cuda(elements):
     """Transfers elements to CUDA if GPU is available."""
@@ -179,7 +172,7 @@ def calculate_fid(images1, images2, use_multiprocessing=False, batch_size=64):
 
 
 def load_style_generated_images(
-    path, exclude="Abstractionism", seed=[188, 288, 588, 688, 888]
+    path, theme_available,class_available,exclude="Abstractionism", seed=[188, 288, 588, 688, 888]
 ):
     """Loads all .png or .jpg images from a given path
     Warnings: Expects all images to be of same dtype and shape.
@@ -189,6 +182,9 @@ def load_style_generated_images(
         final_images: np.array of image dtype and shape.
     """
     image_paths = []
+
+    # if use_sample:
+    #     class_available = ["Architectures"]
 
     if exclude is not None:
         if exclude in theme_available:
@@ -227,7 +223,7 @@ def load_style_generated_images(
     return final_images
 
 
-def load_style_ref_images(path, exclude="Seed_Images"):
+def load_style_ref_images(path,theme_available,class_available,use_sample, exclude="Seed_Images"):
     """Loads all .png or .jpg images from a given path
     Warnings: Expects all images to be of same dtype and shape.
     Args:
@@ -237,9 +233,9 @@ def load_style_ref_images(path, exclude="Seed_Images"):
     """
     image_paths = []
 
-    # TODO remove this
-    theme_available = ["Abstractionism", "Bricks"]
-    class_available = ["Architectures"]
+
+    if use_sample:
+        class_available = ["Architectures"]
     if exclude is not None:
         # assert exclude in theme_available, f"{exclude} not in {theme_available}"
         if exclude in theme_available:

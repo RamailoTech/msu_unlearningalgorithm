@@ -9,8 +9,8 @@ from torchvision import transforms
 from diffusers import StableDiffusionPipeline
 
 from mu.core.base_sampler import BaseSampler  
-from stable_diffusion.constants.const import theme_available, class_available
-
+# from stable_diffusion.constants.const import theme_available, class_available
+from mu.datasets.constants import *
 
 class ForgetMeNotSampler(BaseSampler):
     """ForgetMeNot Image Generator class extending a hypothetical BaseImageGenerator."""
@@ -29,6 +29,9 @@ class ForgetMeNotSampler(BaseSampler):
         self.device = self.config['devices'][0]
         self.pipe = None
         self.sampler = None
+        self.use_sample = self.config.get('use_sample')
+        self.theme_available = uc_sample_theme_available_eval if self.use_sample else uc_theme_available
+        self.class_available = uc_sample_class_available_eval if self.use_sample else uc_class_available
         self.logger = logging.getLogger(__name__)
 
     def load_model(self) -> None:
@@ -63,7 +66,7 @@ class ForgetMeNotSampler(BaseSampler):
         ddim_eta = self.config["ddim_eta"]
         output_dir = self.config["sampler_output_dir"]
 
-        for test_theme in theme_available:
+        for test_theme in self.theme_available:
             theme_path = os.path.join(output_dir, test_theme)
             os.makedirs(theme_path, exist_ok=True)
         self.logger.info(f"Generating images and saving to {output_dir}")
@@ -71,8 +74,8 @@ class ForgetMeNotSampler(BaseSampler):
         # Disable NSFW checker
         self.pipe.safety_checker = self.dummy
 
-        for test_theme in theme_available:
-            for object_class in class_available:
+        for test_theme in self.theme_available:
+            for object_class in self.class_available:
                 for cfg_text in cfg_text_list:
                     prompt = f"A {object_class} image in {test_theme} style"
                     self.logger.info(f"Generating: {prompt}")

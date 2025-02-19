@@ -27,7 +27,7 @@ python -m scripts.generate_dataset --prompts_path data/prompts/prompts.csv --con
 ### Run Attack 
 1. **No Attack - compvis**
 
-Use the following code if you wish to run the hard prompt attack using the CompVis model directly (without converting it into Diffusers format):
+Use the following code if you wish to run the no attack using the CompVis model directly (without converting it into Diffusers format):
 
 ```python
 from mu_attack.configs.nudity import no_attack_esd_nudity_classifier_compvis_config
@@ -40,7 +40,7 @@ def run_attack_for_nudity():
     "task.compvis_ckpt_path" : "outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
     "task.compvis_config_path" : scissorhands_train_mu.model_config_path,
     "task.dataset_path" : "outputs/dataset/i2p_nude",
-    "logger.json.root" : "results/hard_prompt_esd_nudity_P4D_scissorhands",
+    "logger.json.root" : "results/no_attack_esd_nudity_P4D_scissorhands",
    "attacker.no_attack.dataset_path" : "outputs/dataset/i2p_nude"
     }
 
@@ -68,7 +68,7 @@ def run_attack_for_nudity():
         "task.compvis_ckpt_path" : "outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
         "task.compvis_config_path" : scissorhands_train_mu.model_config_path,
         "task.dataset_path" : "outputs/dataset/i2p_nude",
-        "logger.json.root" : "results/hard_prompt_esd_nudity_P4D_scissorhands",
+        "logger.json.root" : "results/no_attack_esd_nudity_P4D_scissorhands",
     "attacker.no_attack.dataset_path" : "outputs/dataset/i2p_nude",
         "task.save_diffuser": True, # This flag triggers conversion
         "task.sld": None, # Set sld to None for conversion
@@ -92,8 +92,8 @@ When converting a CompVis model to the Diffusers format, ensure that task.save_d
 
 **Code Explanation & Important Notes**
 
-1. from mu_attack.configs.nudity import hard_prompt_esd_nudity_P4D_compvis_config
-→ This imports the predefined Hard Prompt Attack configuration for nudity unlearning in the CompVis model. It sets up the attack parameters and methodologies.
+1. from mu_attack.configs.nudity import no_attack_esd_nudity_P4D_compvis_config
+→ This imports the predefined No Attack configuration for nudity unlearning in the CompVis model. It sets up the attack parameters and methodologies.
 
 2. from mu.algorithms.scissorhands.configs import scissorhands_train_mu
 → Imports the Scissorhands model configuration, required to set the task.compvis_config_path parameter correctly.
@@ -112,7 +112,7 @@ overridable_params = {
     "task.compvis_ckpt_path": "outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
     "task.compvis_config_path": scissorhands_train_mu.model_config_path,  # Overrides model config
     "task.dataset_path": "outputs/dataset/i2p_nude",  # Overrides dataset path
-    "logger.json.root": "results/hard_prompt_esd_nudity_P4D_scissorhands",  # Overrides logging path
+    "logger.json.root": "results/no_attack_esd_nudity_P4D_scissorhands",  # Overrides logging path
     "attacker.k" = 3,
     "attacker.no_attack.dataset_path" = "path/to/dataset" #overrides the datset path for no attack
 }
@@ -130,7 +130,7 @@ def run_no_attack_for_nudity():
     overridable_params = {
     "task.diffusers_model_name_or_path" :"outputs/forget_me_not/finetuned_models/Abstractionism",
     "task.dataset_path" : "outputs/dataset/i2p_nude",
-    "logger.json.root" : "results/hard_prompt_esd_nudity_P4D_abstrc",
+    "logger.json.root" : "results/no_attack_esd_nudity_P4D_abstrc",
     "attacker.no_attack.dataset_path" : "outputs/dataset/i2p_nude"
     }
 
@@ -330,7 +330,7 @@ This section defines the high-level configuration for the attack.
     - root: Path to the directory where logs will be saved.
 
         Type: str
-        Example: "results/hard_prompt_esd_nudity_P4D"
+        Example: "results/no_attack_esd_nudity_P4D"
 
 
     - name: Name for the log file or experiment.

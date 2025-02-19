@@ -29,7 +29,7 @@ python -m scripts.generate_dataset --prompts_path data/prompts/prompts.csv --con
 
 1. **Text Grad Attack - compvis**
 
-Use the following code if you wish to run the hard prompt attack using the CompVis model directly (without converting it into Diffusers format):
+Use the following code if you wish to run the seed search attack using the CompVis model directly (without converting it into Diffusers format):
 
 ```python
 from mu_attack.configs.nudity import text_grad_esd_nudity_classifier_compvis_config
@@ -43,7 +43,7 @@ def run_attack_for_nudity():
     "task.compvis_config_path" : scissorhands_train_mu.model_config_path,
     "task.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
     "attacker.text_grad.lr": 0.02,
-    "logger.json.root" : "results/hard_prompt_esd_nudity_P4D_scissorhands"
+    "logger.json.root" : "results/seed_search_esd_nudity_P4D_scissorhands"
 
     }
 
@@ -72,7 +72,7 @@ def run_attack_for_nudity():
         "task.compvis_config_path" : scissorhands_train_mu.model_config_path,
         "task.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
         "attacker.text_grad.lr": 0.02,
-        "logger.json.root" : "results/hard_prompt_esd_nudity_P4D_scissorhands",
+        "logger.json.root" : "results/seed_search_esd_nudity_P4D_scissorhands",
         "task.save_diffuser": True, # This flag triggers conversion
         "task.sld": None, # Set sld to None for conversion
         "task.model_name": "SD-v1-4"
@@ -113,7 +113,7 @@ overridable_params = {
     "task.compvis_ckpt_path": "outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
     "task.compvis_config_path": scissorhands_train_mu.model_config_path,  # Overrides model config
     "task.dataset_path": "outputs/dataset/i2p_nude",  # Overrides dataset path
-    "logger.json.root": "results/hard_prompt_esd_nudity_P4D_scissorhands",  # Overrides logging path
+    "logger.json.root": "results/seed_search_esd_nudity_P4D_scissorhands",  # Overrides logging path
     "attacker.k" = 3,
     "attacker.no_attack.dataset_path" = "path/to/dataset" #overrides the datset path for no attack
 }
@@ -333,7 +333,7 @@ This section defines the high-level configuration for the attack.
     - root: Path to the directory where logs will be saved.
 
         Type: str
-        Example: "results/hard_prompt_esd_nudity_P4D"
+        Example: "results/seed_search_esd_nudity_P4D"
 
 
     - name: Name for the log file or experiment.
