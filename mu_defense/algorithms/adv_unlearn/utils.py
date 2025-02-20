@@ -66,8 +66,6 @@ def retain_prompt(dataset_retain):
         retain_dataset = PromptDataset(current_dir /'data/prompts/train/imagenet243_retain.csv')
     elif dataset_retain == 'imagenet243_no_filter':
         retain_dataset = PromptDataset(current_dir / 'data/prompts/train/imagenet243_no_filter_retain.csv')
-    # elif dataset_retain == 'coco_object' and use_sample:
-    #     retain_dataset = PromptDataset(current_dir /'data/prompts/train/coco_object_retain_sample.csv')
     elif dataset_retain == 'coco_object':
         retain_dataset = PromptDataset(current_dir / 'data/prompts/train/coco_object_retain.csv')
     elif dataset_retain == 'coco_object_no_filter':
