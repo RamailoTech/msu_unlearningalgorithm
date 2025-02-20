@@ -99,7 +99,7 @@ class CustomInstallCommand(_install):
 
 setup(
     name="unlearn_diff",
-    version="1.1.26",
+    version="1.1.27",
     author="nebulaanish",
     author_email="nebulaanish@gmail.com",
     description="Unlearning Algorithms",
@@ -131,7 +131,7 @@ setup(
             "create_env=scripts.commands:create_env_cli",
             "download_data=scripts.commands:download_data_cli",
             "download_model=scripts.commands:download_models_cli",
-            "generate_attack_dataset=scripts.generate_dataset_cli.generate_dataset_cli"
+            "generate_attack_dataset=scripts.generate_dataset_cli:generate_dataset_cli"
         ],
     },
     cmdclass={
