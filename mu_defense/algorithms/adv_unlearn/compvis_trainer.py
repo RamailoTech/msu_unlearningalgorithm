@@ -66,7 +66,6 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
         self.lr = self.config['lr']
         self.model_config_path = self.config['model_config_path']
         self.output_dir = self.config['output_dir']
-        
 
         # Retention and attack parameters.
         self.dataset_retain = self.config['dataset_retain']
@@ -87,7 +86,6 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
         self.attack_lr = self.config['attack_lr']
         self.adv_prompt_update_step = self.config['adv_prompt_update_step']
         self.ddim_eta = self.config['ddim_eta']
-        self.use_sample = self.config.get('use_sample')
         
         self.logger = logging.getLogger(__name__)
 
@@ -127,8 +125,7 @@ class AdvUnlearnCompvisTrainer(BaseTrainer):
         self.dataset_handler = AdvUnlearnDatasetHandler(
             prompt=self.prompt,
             seperator=self.seperator,
-            dataset_retain=self.dataset_retain,
-            use_sample = self.use_sample
+            dataset_retain=self.dataset_retain
         )
         self.words, self.word_print = self.dataset_handler.setup_prompt()
         self.retain_dataset = self.dataset_handler.setup_dataset()
