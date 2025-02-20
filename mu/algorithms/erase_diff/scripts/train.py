@@ -2,8 +2,9 @@
 
 import argparse
 import os
-from pathlib import Path
 import logging
+
+from pathlib import Path
 
 from mu.algorithms.erase_diff.algorithm import EraseDiffAlgorithm
 from mu.algorithms.erase_diff.configs.train_config import (

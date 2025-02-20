@@ -1,8 +1,11 @@
+# mu/algorithms/saliency_unlearning/masking.py
+
+import os
+import logging
+
 import torch
 from torch.nn import MSELoss
 from tqdm import tqdm
-import os
-import logging
 
 def accumulate_gradients_for_mask(model, forget_loader, prompt, c_guidance, device, lr=1e-5, num_timesteps=1000, threshold=0.5, batch_size=4):
     """

@@ -3,20 +3,20 @@ import os
 import logging
 import timm
 import json
-from tqdm import tqdm
-from typing import Any, Dict
 
 import torch
 from PIL import Image
+from tqdm import tqdm
 from torchvision import transforms
 from torch.nn import functional as F
+from typing import Any, Dict
    
-from stable_diffusion.constants.const import theme_available, class_available
 from mu.datasets.constants import *
 from evaluation.core import BaseEvaluator
-from evaluation.evaluators.mu_fid import load_style_generated_images,load_style_ref_images,calculate_fid, tensor_to_float
 from mu.algorithms.erase_diff import EraseDiffSampler
 from mu.algorithms.erase_diff.configs import ErasediffEvaluationConfig
+from stable_diffusion.constants.const import theme_available, class_available
+from evaluation.evaluators.mu_fid import load_style_generated_images,load_style_ref_images,calculate_fid, tensor_to_float
 
 
 class EraseDiffEvaluator(BaseEvaluator):
@@ -100,8 +100,6 @@ class EraseDiffEvaluator(BaseEvaluator):
         seed_list = self.config.get("seed_list", [188, 288, 588, 688, 888])
         dry_run = self.config.get("dry_run", False)
         task = self.config['task']  
-        # theme_available = self.theme_available
-        # class_available = self.class_available
 
         if theme is not None:
             input_dir = os.path.join(input_dir, theme)

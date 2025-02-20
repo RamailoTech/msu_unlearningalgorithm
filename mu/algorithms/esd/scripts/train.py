@@ -4,9 +4,9 @@ import argparse
 import os
 import logging
 
+from mu.helpers.path_setup import *
 from mu.algorithms.esd.algorithm import ESDAlgorithm
 from mu.helpers import setup_logger, load_config, setup_logger
-from mu.helpers.path_setup import *
 from mu.algorithms.esd.configs import ESDConfig
 
 

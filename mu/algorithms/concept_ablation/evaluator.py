@@ -3,10 +3,10 @@
 import os
 import logging
 import timm
-from tqdm import tqdm
 import json
-from typing import Any, Dict
 
+from tqdm import tqdm
+from typing import Any, Dict
 import torch
 from PIL import Image
 from torchvision import transforms

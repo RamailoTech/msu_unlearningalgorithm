@@ -1,9 +1,10 @@
 # mu/algorithms/selective_amnesia/scripts/train.py
 
-import argparse
 import os
-from pathlib import Path
 import logging
+import argparse
+
+from pathlib import Path
 
 from mu.algorithms.selective_amnesia.algorithm import SelectiveAmnesiaAlgorithm
 from mu.helpers import setup_logger, load_config, str2bool

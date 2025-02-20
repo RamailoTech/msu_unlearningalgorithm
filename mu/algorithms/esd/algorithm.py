@@ -1,8 +1,11 @@
+# mu/algorithms/esd/algorithm.py
+
 import torch
 import wandb
+import logging
+
 from typing import Dict
 from pathlib import Path
-import logging
 
 from mu.core import BaseAlgorithm
 from mu.algorithms.esd.model import ESDModel

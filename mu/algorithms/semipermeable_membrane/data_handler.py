@@ -1,7 +1,8 @@
 # mu/algorithms/semipermeable_membrane/data_handler.py
 
-from typing import Any, Dict
 import logging
+
+from typing import Any, Dict
 
 from mu.core import BaseDataHandler
 from mu.algorithms.semipermeable_membrane.src.configs.prompt import PromptSettings

@@ -1,17 +1,16 @@
 # mu/algorithms/erase_diff/data_handler.py
 
 import os
+import logging
+
 import pandas as pd
 from typing import Any, Dict
 from torch.utils.data import DataLoader
-import logging
 
-
-from mu.algorithms.erase_diff.datasets.erase_diff_dataset import EraseDiffDataset
 from mu.datasets.constants import *
 from mu.core import BaseDataHandler
 from mu.helpers import read_text_lines
-
+from mu.algorithms.erase_diff.datasets.erase_diff_dataset import EraseDiffDataset
 
 class EraseDiffDataHandler(BaseDataHandler):
     """

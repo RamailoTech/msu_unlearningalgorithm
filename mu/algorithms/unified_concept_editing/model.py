@@ -1,13 +1,13 @@
 # mu/algorithms/unified_concept_editing/model.py
 
 import torch
-from typing import Any, List, Optional
 import logging
 import copy
-from tqdm import tqdm
 import ast
-from diffusers import StableDiffusionPipeline
 
+from typing import Any, List, Optional
+from tqdm import tqdm
+from diffusers import StableDiffusionPipeline
 
 from mu.core import BaseModel
 

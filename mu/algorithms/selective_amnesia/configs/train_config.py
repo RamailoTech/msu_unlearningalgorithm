@@ -27,7 +27,7 @@ class SelectiveAmnesiaConfig(BaseConfig):
         )
         self.template = "style"  # Template to use
         self.template_name = "Abstractionism"  # Template name
-        self.replay_prompt_path = "mu/algorithms/selective_amnesia/data/fim_prompts_sample.txt"  # Path for replay prompts
+        self.replay_prompt_path = "mu/algorithms/selective_amnesia/data/fim_prompts.txt"  # Path for replay prompts
 
         # Output configurations
         self.output_dir = "outputs/selective_amnesia/finetuned_models"  # Output directory to save results

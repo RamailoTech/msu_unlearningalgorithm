@@ -88,20 +88,21 @@
 # - To provide medical advice and medical results interpretation;
 # - To generate or disseminate information for the purpose to be used for administration of justice, law enforcement, immigration or asylum processes, such as predicting an individual will commit fraud/crime commitment (e.g. by text profiling, drawing causal relationships between assertions made in documents, indiscriminate and arbitrarily-targeted use).
 import os
+import sys
 
 import numpy as np
 import torch
 from einops import rearrange, repeat
-import sys
+from pytorch_lightning.utilities import rank_zero_only
+from torch import einsum
+from torch.optim.lr_scheduler import LambdaLR
+from torchvision.utils import make_grid
+
 from stable_diffusion.ldm.models.autoencoder import AutoencoderKL, IdentityFirstStage
 from stable_diffusion.ldm.models.diffusion.ddpm_ca import LatentDiffusion as LatentDiffusion
 from stable_diffusion.ldm.modules.attention import BasicTransformerBlock as BasicTransformerBlock
 from stable_diffusion.ldm.modules.attention import CrossAttention as CrossAttention
 from stable_diffusion.ldm.util import default, instantiate_from_config, isimage, ismap, log_txt_as_img
-from pytorch_lightning.utilities import rank_zero_only
-from torch import einsum
-from torch.optim.lr_scheduler import LambdaLR
-from torchvision.utils import make_grid
 
 
 class CustomDiffusion(LatentDiffusion):

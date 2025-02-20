@@ -4,9 +4,9 @@ import os
 import json
 import logging
 import timm
+
 from tqdm import tqdm
 from PIL import Image
-
 import torch
 from torchvision import transforms
 from torch.nn import functional as F

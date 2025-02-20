@@ -1,6 +1,10 @@
+# mu/algorithms/selective_amnesia/utils.py
+
 import torch
-from stable_diffusion.ldm.data.base import Txt2ImgIterableBaseDataset
+
 import numpy as np
+
+from stable_diffusion.ldm.data.base import Txt2ImgIterableBaseDataset
 
 def modify_weights(w, scale=1e-6, n=2):
     """

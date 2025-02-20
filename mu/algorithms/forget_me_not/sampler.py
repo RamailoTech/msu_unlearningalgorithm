@@ -9,7 +9,6 @@ from torchvision import transforms
 from diffusers import StableDiffusionPipeline
 
 from mu.core.base_sampler import BaseSampler  
-# from stable_diffusion.constants.const import theme_available, class_available
 from mu.datasets.constants import *
 
 class ForgetMeNotSampler(BaseSampler):

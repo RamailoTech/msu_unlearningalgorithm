@@ -3,12 +3,12 @@
 import os
 import math
 import logging
-from typing import Dict
-from tqdm import tqdm
 import torch
-from torch.optim import AdamW
 import itertools
 
+from typing import Dict
+from tqdm import tqdm
+from torch.optim import AdamW
 from diffusers.optimization import get_scheduler
 import torch.optim as optim
 import torch.nn.functional as F

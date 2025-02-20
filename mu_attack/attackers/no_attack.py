@@ -1,10 +1,10 @@
 #mu_attack/attackers/no_attack.py
 
+import logging 
+
 import torch
 import torch.nn.functional as F
 import numpy as np
-
-import logging 
 
 from mu_attack.core import Attacker
 from mu_attack.helpers import get_dataset

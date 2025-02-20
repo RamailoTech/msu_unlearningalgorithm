@@ -10,7 +10,6 @@ from PIL import Image
 from torch import autocast
 from pytorch_lightning import seed_everything
 
-# from stable_diffusion.constants.const import theme_available, class_available
 from mu.datasets.constants import *
 from mu.core import BaseSampler
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler

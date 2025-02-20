@@ -1,18 +1,18 @@
 # forget_me_not/datasets/forget_me_not_ti_dataset.py
 
+import cv2
 import random
+
+import numpy as np
+import mediapipe as mp
 from pathlib import Path
 from typing import Optional
-
-import cv2
-import numpy as np
 from PIL import Image, ImageFilter
 from torchvision import transforms
-import mediapipe as mp
 
-
-from mu.datasets import BaseDataset, UnlearnCanvasDataset, I2PDataset
 from mu.helpers import read_text_lines
+from mu.datasets import BaseDataset, UnlearnCanvasDataset, I2PDataset
+
 # Templates for object and style prompts
 OBJECT_TEMPLATE = [
     "an image of {}"

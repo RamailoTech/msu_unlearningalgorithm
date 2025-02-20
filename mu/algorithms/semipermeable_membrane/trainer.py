@@ -2,10 +2,11 @@
 
 import logging
 import torch
+import gc
+
 from torch.nn import MSELoss
 from tqdm import tqdm
 from pathlib import Path
-
 
 from mu.algorithms.semipermeable_membrane.model import SemipermeableMembraneModel
 from mu.algorithms.semipermeable_membrane.data_handler import SemipermeableMembraneDataHandler
@@ -16,8 +17,6 @@ from mu.algorithms.semipermeable_membrane.src.configs.prompt import PromptEmbeds
 from mu.algorithms.semipermeable_membrane.src.engine.sampling import sample
 from mu.algorithms.semipermeable_membrane.src.configs.config import RootConfig 
 
-
-import gc
 
 
 class SemipermeableMembraneTrainer(BaseTrainer):

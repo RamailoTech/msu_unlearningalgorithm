@@ -1,6 +1,5 @@
 # mu/algorithms/concept_ablation/algorithm.py
 
-from mu.core.base_config import BaseConfig
 import torch
 import wandb
 from typing import Dict
@@ -8,7 +7,7 @@ import logging
 from pathlib import Path
 
 from mu.core import BaseAlgorithm
-# from mu.algorithms.concept_ablation.data_handler import ConceptAblationDataHandler
+from mu.core.base_config import BaseConfig
 from mu.algorithms.concept_ablation.model import ConceptAblationModel
 from mu.algorithms.concept_ablation.trainer import ConceptAblationTrainer
 from mu.algorithms.concept_ablation.configs import ConceptAblationConfig

@@ -1,10 +1,11 @@
 # mu_defense/algorithms/adv_unlearn/compvis_trainer.py
 
 import torch
-from tqdm import tqdm
 import random
 import wandb
 import logging
+
+from tqdm import tqdm
 from pathlib import Path
 from torch.nn import MSELoss
 

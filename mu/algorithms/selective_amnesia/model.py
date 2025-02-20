@@ -1,12 +1,12 @@
 # mu/algorithms/selective_amnesia/model.py
 
 import torch
-from pathlib import Path
-from typing import Any
 import logging 
 
-from stable_diffusion.ldm.util import instantiate_from_config
+from pathlib import Path
+from typing import Any
 
+from stable_diffusion.ldm.util import instantiate_from_config
 from mu.core import BaseModel
 from mu.helpers import  load_config_from_yaml, rank_zero_print
 from mu.algorithms.selective_amnesia.utils import modify_weights

@@ -5,8 +5,8 @@ import logging
 import torch
 import timm
 import json
-from tqdm import tqdm
 
+from tqdm import tqdm
 from PIL import Image  
 from torchvision import transforms
 from torch.nn import functional as F

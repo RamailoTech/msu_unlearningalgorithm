@@ -1,9 +1,10 @@
 # mu/algorithms/forget_me_not/model.py
 
-import logging
-from typing import List
-import torch
 import re
+import torch
+import logging
+
+from typing import List
 from diffusers import UNet2DConditionModel, AutoencoderKL
 from transformers import CLIPTextModel, CLIPTokenizer
 from transformers import AutoTokenizer, PretrainedConfig

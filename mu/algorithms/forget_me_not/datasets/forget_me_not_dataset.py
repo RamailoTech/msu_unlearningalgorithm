@@ -1,15 +1,14 @@
 # forget_me_not/datasets/forget_me_not_dataset.py
 
-from pathlib import Path
-
-from torchvision import transforms
 import torch 
+from PIL import Image
+from pathlib import Path
+from torchvision import transforms
 
 from lora_diffusion.patch_lora import safe_open, parse_safeloras_embeds, apply_learned_embed_in_clip
 
 from mu.algorithms.forget_me_not.model import ForgetMeNotModel
 from mu.datasets import BaseDataset
-from PIL import Image
 from mu.helpers import read_text_lines
 
 

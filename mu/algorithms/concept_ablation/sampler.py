@@ -2,16 +2,16 @@
 
 import os
 import logging
-import numpy as np
 
+import numpy as np
 from PIL import Image
 import torch
 from torch import autocast
 from pytorch_lightning import seed_everything
 
-from mu.core.base_sampler import BaseSampler        
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
-# from stable_diffusion.constants.const import theme_available, class_available
+
+from mu.core.base_sampler import BaseSampler        
 from mu.datasets.constants import *
 from mu.helpers import load_config
 from mu.helpers.utils import load_ckpt_from_config

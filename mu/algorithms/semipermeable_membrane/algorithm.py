@@ -1,14 +1,14 @@
 # mu/algorithms/semipermeable_membrane/algorithm.py
 
-from mu.core.base_config import BaseConfig
 import torch
 import wandb
-from typing import Dict
 import logging
+
+from typing import Dict
 from pathlib import Path
 
 from mu.core import BaseAlgorithm
-
+from mu.core.base_config import BaseConfig
 from mu.algorithms.semipermeable_membrane.model import SemipermeableMembraneModel
 from mu.algorithms.semipermeable_membrane.data_handler import (
     SemipermeableMembraneDataHandler,

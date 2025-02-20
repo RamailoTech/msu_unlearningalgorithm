@@ -1,19 +1,18 @@
 import glob
 import os
 import logging
-from pathlib import Path
-import time
 
-import numpy as np
 import torch
-import torch.multiprocessing as mp
-from pytorch_lightning import seed_everything
+import numpy as np
+from PIL import Image
+from pathlib import Path
 from torch import autocast
 from tqdm import tqdm, trange
 from einops import rearrange
-from PIL import Image
-from torchvision.utils import make_grid
 from omegaconf import OmegaConf
+import torch.multiprocessing as mp
+from pytorch_lightning import seed_everything
+from torchvision.utils import make_grid
 
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 from stable_diffusion.ldm.util import instantiate_from_config

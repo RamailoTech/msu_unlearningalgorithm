@@ -2,8 +2,9 @@
 
 import argparse
 import os
-from pathlib import Path
 import logging
+
+from pathlib import Path
 
 from mu.algorithms.scissorhands.algorithm import ScissorHandsAlgorithm
 from mu.helpers import setup_logger, load_config

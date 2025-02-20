@@ -1,6 +1,7 @@
 # mu/algorithms/saliency_unlearning/configs/evaluation_config.py
 
 import os
+
 from pathlib import Path
 
 from mu.core.base_config import BaseConfig

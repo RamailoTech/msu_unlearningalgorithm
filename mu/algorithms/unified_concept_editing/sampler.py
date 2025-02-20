@@ -5,13 +5,11 @@ import logging
 
 from PIL import Image
 import torch
-
 from transformers import CLIPTextModel, CLIPTokenizer
 from diffusers import AutoencoderKL, UNet2DConditionModel
 from diffusers import LMSDiscreteScheduler
 
 from mu.core.base_sampler import BaseSampler        
-# from stable_diffusion.constants.const import theme_available, class_available
 from mu.datasets.constants import *
 
 class UnifiedConceptEditingSampler(BaseSampler):

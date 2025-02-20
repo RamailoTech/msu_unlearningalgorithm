@@ -1,10 +1,10 @@
 # mu/algorithms/forget_me_not/scripts/train_attn.py
 
-import argparse
 import os
-from pathlib import Path
+import argparse
 import logging
 
+from pathlib import Path
 
 from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
 from mu.helpers import setup_logger, load_config

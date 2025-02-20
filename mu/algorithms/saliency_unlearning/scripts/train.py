@@ -2,8 +2,9 @@
 
 import argparse
 import os
-from pathlib import Path
 import logging
+
+from pathlib import Path
 
 from mu.algorithms.saliency_unlearning.algorithm import SaliencyUnlearnAlgorithm
 from mu.helpers import setup_logger, load_config

@@ -4,8 +4,8 @@ import os
 import logging
 import timm
 import json
-from tqdm import tqdm
 
+from tqdm import tqdm
 from PIL import Image
 import torch
 from torchvision import transforms

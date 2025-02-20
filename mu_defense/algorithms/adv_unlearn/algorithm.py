@@ -1,10 +1,11 @@
 # mu/algorithms/adv_unlearn/algorithm.py
 
-from mu.core.base_config import BaseConfig
 import wandb
 import logging
+
 from pathlib import Path
 
+from mu.core.base_config import BaseConfig
 from mu.core import BaseAlgorithm
 from mu_defense.algorithms.adv_unlearn import AdvUnlearnModel
 from mu_defense.algorithms.adv_unlearn.trainer import AdvUnlearnTrainer

@@ -1,23 +1,20 @@
 # mu/algorithms/erase_diff/sampler.py
 
 import os
-import numpy as np
 import logging
 
 import torch
+import numpy as np
 from PIL import Image
 from torch import autocast
 from pytorch_lightning import seed_everything
 
 from mu.core.base_sampler import BaseSampler  
-# from stable_diffusion.constants.const import theme_available, class_available
 from mu.datasets.constants import *
 from mu.core import BaseSampler
-from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 from mu.helpers import load_config
 from mu.helpers.utils import load_ckpt_from_config
-
-
+from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 
 class EraseDiffSampler(BaseSampler):
     """EraseDiff Image Generator class extending a hypothetical BaseImageGenerator."""

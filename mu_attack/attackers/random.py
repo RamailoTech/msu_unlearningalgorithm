@@ -1,8 +1,9 @@
 #mu_attack/attackers/random.py 
 
+import logging
+
 import torch
 import torch.nn.functional as F
-import logging
 
 from mu_attack.core import Attacker
 

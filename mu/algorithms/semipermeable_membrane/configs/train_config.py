@@ -1,4 +1,7 @@
+# mu/algorithms/semipermeable_membrane/configs/train_config.py
+
 import os
+
 from mu.core.base_config import BaseConfig
 
 

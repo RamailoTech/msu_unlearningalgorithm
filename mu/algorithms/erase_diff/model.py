@@ -1,9 +1,10 @@
 # mu/algorithms/erase_diff/model.py
 
+import logging 
 import torch
+
 from pathlib import Path
 from typing import Any
-import logging 
 
 from mu.core import BaseModel
 from mu.helpers import load_model_from_config

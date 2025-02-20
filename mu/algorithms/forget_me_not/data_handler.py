@@ -1,11 +1,12 @@
 # mu/algorithms/forget_me_not/data_handler.py
 
 import os
+import logging
+import torch
+
 import pandas as pd
 from typing import Any, Dict, Optional
 from torch.utils.data import DataLoader
-import logging
-import torch
 
 from mu.datasets.constants import *
 from mu.core import BaseDataHandler

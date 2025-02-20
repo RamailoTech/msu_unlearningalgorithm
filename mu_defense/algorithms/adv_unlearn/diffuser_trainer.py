@@ -1,14 +1,13 @@
 # mu_defense/algorithms/adv_unlearn/diffuser_trainer.py
 
 import torch
-from tqdm import tqdm
 import random
 import wandb
 import logging
 
+from tqdm import tqdm
 from torch.cuda.amp import autocast
 from torch.nn import MSELoss
-
 from diffusers import StableDiffusionPipeline
 
 from mu.core import BaseTrainer

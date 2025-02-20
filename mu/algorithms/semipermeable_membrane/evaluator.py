@@ -4,10 +4,10 @@ import os
 import logging
 import json
 import timm
+import torch
+
 from tqdm import tqdm
 from PIL import Image
-
-import torch
 from torchvision import transforms
 from torch.nn import functional as F
 

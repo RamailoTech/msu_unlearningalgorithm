@@ -2,16 +2,16 @@
 
 import os
 import logging
-from typing import List, Literal, Set
+
+import torch
 from PIL import Image
 from pathlib import Path
-
+from typing import List, Literal, Set
 from pytorch_lightning import seed_everything
-import torch
-
 from transformers import CLIPTextModel, CLIPTokenizer
 from mu.datasets.constants import *
-# from stable_diffusion.constants.const import theme_available, class_available
+
+
 from mu.core.base_sampler import BaseSampler
 from mu.algorithms.semipermeable_membrane.src.configs.generation_config import (
     GenerationConfig,
