@@ -42,7 +42,7 @@ class SelectiveAmnesiaConfig(BaseConfig):
         self.data = {
             "target": "mu.algorithms.selective_amnesia.data_handler.SelectiveAmnesiaDataHandler",
             "params": {
-                "train_batch_size": 4,
+                "train_batch_size": 2,
                 "val_batch_size": 6,
                 "num_workers": 1,
                 "num_val_workers": 0,  # Avoid val dataloader issue

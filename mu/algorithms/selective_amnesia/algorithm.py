@@ -48,7 +48,7 @@ class SelectiveAmnesiaAlgorithm(BaseAlgorithm):
             model=self.model,
             config=self.config,
             device=str(self.device),
-            config_path=self.config_path,
+            config_path=self.config,
         )
 
     def run(self):
