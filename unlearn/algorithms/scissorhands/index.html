@@ -383,6 +383,7 @@ ls -lh ./data/quick-canvas-dataset/sample/
 <h2 id="run-train">Run Train</h2>
 <p>Create a file, eg, <code>my_trainer.py</code> and use examples and modify your configs to run the file.  </p>
 <p><strong>Example Code</strong></p>
+<p><strong>Using quick canvas dataset</strong></p>
 <pre><code class="language-python">from mu.algorithms.scissorhands.algorithm import ScissorHandsAlgorithm
 from mu.algorithms.scissorhands.configs import (
     scissorhands_train_mu,
@@ -395,6 +396,27 @@ algorithm = ScissorHandsAlgorithm(
         &quot;/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample&quot;
     ),
     output_dir=&quot;/opt/dlami/nvme/outputs&quot;,
+    dataset_type = &quot;unlearncanvas&quot;,
+    template = &quot;style&quot;,
+    template_name = &quot;Abstractionism&quot;,
+    use_sample = True # to train on sample dataset
+)
+algorithm.run()
+</code></pre>
+<p><strong>Using i2p dataset</strong></p>
+<pre><code class="language-python">from mu.algorithms.scissorhands.algorithm import ScissorHandsAlgorithm
+from mu.algorithms.scissorhands.configs import (
+    scissorhands_train_i2p,
+)
+
+algorithm = ScissorHandsAlgorithm(
+    scissorhands_train_i2p,
+    ckpt_path=&quot;/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt&quot;,
+    raw_dataset_dir = &quot;data/i2p-dataset/sample&quot;,
+    output_dir=&quot;/opt/dlami/nvme/outputs&quot;,
+    use_sample = True, # to train on sample dataset
+    dataset_type = &quot;i2p&quot;,
+    template_name = &quot;self-harm&quot;
 )
 algorithm.run()
 </code></pre>

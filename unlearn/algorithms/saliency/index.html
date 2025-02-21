@@ -111,9 +111,9 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#directory-structure">Directory Structure</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#description-of-arguments-in-mask_configyaml">Description of Arguments in mask_config.yaml</a>
+    <li class="toctree-l4"><a class="reference internal" href="#description-of-configs-used-to-generate-mask">Description of configs used to generate mask:</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#description-of-arguments-train_configyaml">Description of Arguments train_config.yaml</a>
+    <li class="toctree-l4"><a class="reference internal" href="#description-of-arguments-used-to-train-saliency-unlearning">Description of Arguments used to train saliency unlearning.</a>
     </li>
         </ul>
     </li>
@@ -381,13 +381,47 @@ ls -lh ./data/quick-canvas-dataset/sample/
 </code></pre>
 <hr />
 <h2 id="usage">Usage</h2>
-<p>To train the saliency unlearning algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the <code>train.py</code> script located in the <code>scripts</code> directory.</p>
+<p>Before training saliency unlearning algorithm you need to generate mask. Use the following code snippet to generate mask.</p>
 <p><strong>Step 1: Generate mask</strong></p>
-<pre><code class="language-bash">python -m mu.algorithms.saliency_unlearning.scripts.generate_mask \
---config_path mu/algorithms/saliency_unlearning/configs/mask_config.yaml
+<p><strong>using unlearn canvas dataset</strong></p>
+<pre><code class="language-python">from mu.algorithms.saliency_unlearning.algorithm import MaskingAlgorithm
+from mu.algorithms.saliency_unlearning.configs import saliency_unlearning_generate_mask_mu
+
+generate_mask = MaskingAlgorithm(
+    saliency_unlearning_generate_mask_mu,
+    ckpt_path = &quot;/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt&quot;,
+    raw_dataset_dir = &quot;/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample&quot;,
+    dataset_type = &quot;unlearncanvas&quot;,
+    use_sample = True, #to use sample dataset
+    output_dir =  &quot;outputs/saliency_unlearning/masks&quot;, #output path to save mask
+    template_name = &quot;Abstractionism&quot;,
+    template = &quot;style&quot;
+    )
+
+if __name__ == &quot;__main__&quot;:
+    generate_mask.run()
+</code></pre>
+<p><strong>using i2p dataset</strong></p>
+<pre><code class="language-python">from mu.algorithms.saliency_unlearning.algorithm import MaskingAlgorithm
+from mu.algorithms.saliency_unlearning.configs import saliency_unlearning_generate_mask_i2p
+
+generate_mask = MaskingAlgorithm(
+    saliency_unlearning_generate_mask_i2p,
+    ckpt_path = &quot;/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt&quot;,
+    raw_dataset_dir = &quot;/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample&quot;,
+    dataset_type = &quot;unlearncanvas&quot;,
+    use_sample = True, #to use sample dataset
+    output_dir =  &quot;outputs/saliency_unlearning/masks&quot;, #output path to save mask
+    template_name = &quot;self-harm&quot;,
+    template = &quot;i2p&quot;
+    )
+
+if __name__ == &quot;__main__&quot;:
+    generate_mask.run()
 </code></pre>
 <h3 id="run-train">Run Train</h3>
-<p>Create a file, eg, <code>my_trainer.py</code> and use examples and modify your configs to run the file.  </p>
+<p><strong>Using  quick canvas dataset</strong></p>
+<p>To train the saliency unlearning algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the <code>train.py</code> script located in the <code>scripts</code> directory.</p>
 <p><strong>Example Code</strong></p>
 <pre><code class="language-python">from mu.algorithms.saliency_unlearning.algorithm import (
     SaliencyUnlearningAlgorithm,
@@ -399,6 +433,29 @@ from mu.algorithms.saliency_unlearning.configs import (
 algorithm = SaliencyUnlearningAlgorithm(
     saliency_unlearning_train_mu,
     output_dir=&quot;/opt/dlami/nvme/outputs&quot;,
+    dataset_type = &quot;unlearncanvas&quot;
+    template_name = &quot;Abstractionism&quot;, #concept to erase
+    template = &quot;style&quot;,
+    use_sample = True #to run on sample dataset.
+)
+algorithm.run()
+</code></pre>
+<p><strong>Using i2p dataset</strong></p>
+<pre><code class="language-python">from mu.algorithms.saliency_unlearning.algorithm import (
+    SaliencyUnlearningAlgorithm,
+)
+from mu.algorithms.saliency_unlearning.configs import (
+    saliency_unlearning_train_i2p,
+)
+
+algorithm = SaliencyUnlearningAlgorithm(
+    saliency_unlearning_train_i2p,
+    raw_dataset_dir = &quot;data/i2p-dataset/sample&quot;,
+    output_dir=&quot;/opt/dlami/nvme/outputs&quot;,
+    template_name = &quot;self-harm&quot;, #concept to erase
+    template = &quot;style&quot;,
+    dataset_type = &quot;i2p&quot;,
+    use_sample = True #to run on sample dataset.
 )
 algorithm.run()
 </code></pre>
@@ -448,8 +505,7 @@ algorithm.run()
 </li>
 </ol>
 <p><br></p>
-<h3 id="description-of-arguments-in-mask_configyaml">Description of Arguments in mask_config.yaml</h3>
-<p>The <code>config/mask_config.yaml</code> file is a configuration file for generating saliency masks using the <code>scripts/generate_mask.py</code> script. It defines various parameters related to the model, dataset, output, and training. Below is a detailed description of each section and parameter:</p>
+<h3 id="description-of-configs-used-to-generate-mask">Description of configs used to generate mask:</h3>
 <p><strong>Model Configuration</strong></p>
 <p>These parameters specify settings for the Stable Diffusion model and guidance configurations.</p>
 <ul>
@@ -581,8 +637,8 @@ algorithm.run()
 </ul>
 </li>
 </ul>
-<h3 id="description-of-arguments-train_configyaml">Description of Arguments train_config.yaml</h3>
-<p>The <code>scripts/train.py</code> script is used to fine-tune the Stable Diffusion model to perform saliency-based unlearning. This script relies on a configuration file (<code>config/train_config.yaml</code>) and supports additional runtime arguments for further customization. Below is a detailed description of each argument:</p>
+<h3 id="description-of-arguments-used-to-train-saliency-unlearning">Description of Arguments used to train saliency unlearning.</h3>
+<p>The following configs are used to fine-tune the Stable Diffusion model to perform saliency-based unlearning. This script relies on a configuration class <code>SaliencyUnlearningConfig</code>  and supports additional runtime arguments for further customization. Below is a detailed description of each argument:</p>
 <p><strong>General Arguments</strong></p>
 <ul>
 <li>

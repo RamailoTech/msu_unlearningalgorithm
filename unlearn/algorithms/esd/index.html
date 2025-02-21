@@ -81,7 +81,9 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#downloading-data-and-models">Downloading data and models.</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#run-train">Run Train</a>
+    <li class="toctree-l3"><a class="reference internal" href="#run-train-using-quick-canvas-dataset">Run Train using quick canvas dataset</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#run-train-using-i2p-dataset">Run Train using i2p dataset</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#directory-structure">Directory Structure</a>
         <ul>
@@ -376,7 +378,7 @@
 ls -lh ./data/quick-canvas-dataset/sample/
 </code></pre>
 <hr />
-<h2 id="run-train">Run Train</h2>
+<h2 id="run-train-using-quick-canvas-dataset">Run Train using quick canvas dataset</h2>
 <p>Create a file, eg, <code>my_trainer.py</code> and use examples and modify your configs to run the file.  </p>
 <p><strong>Example Code</strong></p>
 <pre><code class="language-python">from mu.algorithms.esd.algorithm import ESDAlgorithm
@@ -390,6 +392,31 @@ algorithm = ESDAlgorithm(
     raw_dataset_dir=(
         &quot;/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample&quot;
     ),
+    template_name = &quot;Abstractionism&quot;, #concept to erase
+    dataset_type = &quot;unlearncanvas&quot; ,
+    use_sample = True, #train on sample dataset
+    output_dir = &quot;outputs/esd/finetuned_models&quot; #output dir to save finetuned models
+
+)
+algorithm.run()
+</code></pre>
+<h2 id="run-train-using-i2p-dataset">Run Train using i2p dataset</h2>
+<p>Create a file, eg, <code>my_trainer.py</code> and use examples and modify your configs to run the file.  </p>
+<p><strong>Example Code</strong></p>
+<pre><code class="language-python">from mu.algorithms.esd.algorithm import ESDAlgorithm
+from mu.algorithms.esd.configs import (
+    esd_train_i2p,
+)
+
+algorithm = ESDAlgorithm(
+    esd_train_i2p,
+    ckpt_path=&quot;/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt&quot;,
+    raw_dataset_dir = &quot;data/i2p-dataset/sample&quot;,
+    template_name = &quot;self-harm&quot;, #concept to erase
+    dataset_type = &quot;i2p&quot; ,
+    use_sample = True, #train on sample dataset
+    output_dir = &quot;outputs/esd/finetuned_models&quot; #output dir to save finetuned models
+
 )
 algorithm.run()
 </code></pre>

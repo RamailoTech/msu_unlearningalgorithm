@@ -382,7 +382,8 @@ ls -lh ./data/quick-canvas-dataset/sample/
 <p>To train the Unified Concept Editing algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the <code>train.py</code> script located in the <code>scripts</code> directory.</p>
 <h2 id="run-train">Run Train</h2>
 <p>Create a file, eg, <code>my_trainer.py</code> and use examples and modify your configs to run the file.  </p>
-<p><strong>Example Code</strong></p>
+<p><strong>Example Code</strong>
+<strong>Using quick canvas dataset</strong></p>
 <pre><code class="language-python">from mu.algorithms.unified_concept_editing.algorithm import (
     UnifiedConceptEditingAlgorithm,
 )
@@ -397,6 +398,27 @@ algorithm = UnifiedConceptEditingAlgorithm(
         &quot;/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample&quot;
     ),
     output_dir=&quot;/opt/dlami/nvme/outputs&quot;,
+)
+algorithm.run()
+</code></pre>
+<p><strong>Using i2p dataset</strong></p>
+<pre><code class="language-python">from mu.algorithms.unified_concept_editing.algorithm import (
+    UnifiedConceptEditingAlgorithm,
+)
+from mu.algorithms.unified_concept_editing.configs import (
+    unified_concept_editing_train_i2p,
+)
+
+algorithm = UnifiedConceptEditingAlgorithm(
+    unified_concept_editing_train_i2p,
+    ckpt_path=&quot;/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50/&quot;,
+    raw_dataset_dir=(
+        &quot;/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample&quot;
+    ),
+    output_dir=&quot;/opt/dlami/nvme/outputs&quot;,
+    use_sample = True # to run on sample dataset
+    dataset_type = &quot;i2p&quot;,
+    template_name = &quot;self-harm&quot;,
 )
 algorithm.run()
 </code></pre>

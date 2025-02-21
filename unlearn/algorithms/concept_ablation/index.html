@@ -57,7 +57,9 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#downloading-data-and-models">Downloading data and models.</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#example-usage">Example usage</a>
+    <li class="toctree-l4"><a class="reference internal" href="#example-usage-for-quick-canvas-dataset">Example usage for quick canvas dataset</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#example-usage-for-i2p-dataset">Example usage for i2p dataset</a>
     </li>
         </ul>
     </li>
@@ -398,7 +400,7 @@
 ls -lh ./data/quick-canvas-dataset/sample/
 </code></pre>
 <hr />
-<h3 id="example-usage">Example usage</h3>
+<h3 id="example-usage-for-quick-canvas-dataset">Example usage for quick canvas dataset</h3>
 <p>Add the following code snippet to a python script <code>trainer.py</code>. Run the script using <code>python trainer.py</code>.</p>
 <pre><code class="language-python">from mu.algorithms.concept_ablation.algorithm import (
     ConceptAblationAlgorithm,
@@ -418,6 +420,37 @@ if __name__ == &quot;__main__&quot;:
         ckpt_path=&quot;/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt&quot;,
         prompts=&quot;/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt&quot;,
         output_dir=&quot;/opt/dlami/nvme/outputs&quot;,
+        template_name = &quot;Abstractionism&quot;, #concept to erase
+        dataset_type = &quot;unlearncanvas&quot; ,
+        use_sample = True, #train on sample dataset
+        # devices=&quot;1&quot;,
+    )
+    algorithm.run()
+</code></pre>
+<h3 id="example-usage-for-i2p-dataset">Example usage for i2p dataset</h3>
+<p>Add the following code snippet to a python script <code>trainer.py</code>. Run the script using <code>python trainer.py</code>.</p>
+<pre><code class="language-python">from mu.algorithms.concept_ablation.algorithm import (
+    ConceptAblationAlgorithm,
+)
+from mu.algorithms.concept_ablation.configs import (
+    concept_ablation_train_i2p,
+    ConceptAblationConfig,
+)
+
+if __name__ == &quot;__main__&quot;:
+
+    concept_ablation_train_i2p.lightning.trainer.max_steps = 5
+
+    algorithm = ConceptAblationAlgorithm(
+        concept_ablation_train_i2p,
+        config_path=&quot;mu/algorithms/concept_ablation/configs/train_config.yaml&quot;,
+        raw_dataset_dir = &quot;data/i2p-dataset/sample&quot;,
+        ckpt_path=&quot;models/compvis/style50/compvis.ckpt&quot;,
+        prompts=&quot;mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt&quot;,
+        output_dir=&quot;/opt/dlami/nvme/outputs&quot;,
+        template_name = &quot;self-harm&quot;, #concept to erase
+        dataset_type = &quot;i2p&quot; ,
+        use_sample = True, #train on sample dataset
         # devices=&quot;1&quot;,
     )
     algorithm.run()

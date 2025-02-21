@@ -383,6 +383,7 @@ ls -lh ./data/quick-canvas-dataset/sample/
 <h2 id="run-train">Run Train</h2>
 <p>Create a file, eg, <code>my_trainer.py</code> and use examples and modify your configs to run the file.  </p>
 <p><strong>Example Code</strong></p>
+<p><strong>Using quick canvas dataset</strong></p>
 <pre><code class="language-python">
 from mu.algorithms.semipermeable_membrane.algorithm import (
     SemipermeableMembraneAlgorithm,
@@ -396,6 +397,29 @@ algorithm = SemipermeableMembraneAlgorithm(
     semipermiable_membrane_train_mu,
     output_dir=&quot;/opt/dlami/nvme/outputs&quot;,
     train={&quot;iterations&quot;: 2},
+    use_sample = True # to run on sample dataset
+
+)
+algorithm.run()
+</code></pre>
+<p><strong>Using quick canvas dataset</strong></p>
+<pre><code class="language-python">
+from mu.algorithms.semipermeable_membrane.algorithm import (
+    SemipermeableMembraneAlgorithm,
+)
+from mu.algorithms.semipermeable_membrane.configs import (
+    semipermiable_membrane_train_i2p,
+    SemipermeableMembraneConfig,
+)
+
+algorithm = SemipermeableMembraneAlgorithm(
+    semipermiable_membrane_train_i2p,
+    output_dir=&quot;/opt/dlami/nvme/outputs&quot;,
+    train={&quot;iterations&quot;: 2},
+    use_sample = True # to run on sample dataset
+    dataset_type = &quot;i2p&quot;,
+    template_name = &quot;self-harm&quot;,
+
 )
 algorithm.run()
 </code></pre>
