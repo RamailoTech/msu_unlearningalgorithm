@@ -3,7 +3,7 @@ seed : 23
 scale_lr : True 
 
 # Model configuration
-model_config_path: "mu/algorithms/selective_amnesia/configs/model_config.yaml"
+model_config_path: "mu/algorithms/selective_amnesia/configs/model_configg.yaml"
 ckpt_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"  # Checkpoint path for Stable Diffusion
 full_fisher_dict_pkl_path : "mu/algorithms/selective_amnesia/data/full_fisher_dict.pkl"
 

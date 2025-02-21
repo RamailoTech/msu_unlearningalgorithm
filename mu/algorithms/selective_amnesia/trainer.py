@@ -18,6 +18,7 @@ from omegaconf import OmegaConf
 from pytorch_lightning.trainer import Trainer
 
 from stable_diffusion.ldm.util import instantiate_from_config
+from mu.algorithms.selective_amnesia.utils import convert_paths
 from mu.algorithms.selective_amnesia.data_handler import SelectiveAmnesiaDataHandler
 from mu.core.base_trainer import BaseTrainer
 
@@ -55,14 +56,19 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
         """
         pass
 
+        
     def train(self):
         """
         Execute the training loop.
         """
-        configs = [
-            OmegaConf.load(cfg) for cfg in [self.config_path, self.model_config_path]
-        ]
-        config = OmegaConf.merge(*configs)
+        # configs = [
+        #     OmegaConf.load(cfg) for cfg in [self.config_path, self.model_config_path]
+        # ]
+        # config = OmegaConf.merge(*configs)
+        clean_config = convert_paths(self.config_path) #fix the posixpath
+        dict_config = OmegaConf.create(clean_config)
+        file_config = OmegaConf.load(self.model_config_path)
+        config = OmegaConf.merge(dict_config, file_config)
 
         lightning_config = config.pop("lightning", OmegaConf.create())
 

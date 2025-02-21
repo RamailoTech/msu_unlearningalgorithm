@@ -17,7 +17,7 @@ from mu.algorithms.saliency_unlearning.masking import (
     accumulate_gradients_for_mask,
     save_mask,
 )
-from mu.algorithms.saliency_unlearning.configs import SaliencyUnlearningConfig
+from mu.algorithms.saliency_unlearning.configs import SaliencyUnlearningConfig, SaliencyUnlearningMaskConfig
 
 
 class SaliencyUnlearnAlgorithm(BaseAlgorithm):
@@ -151,13 +151,22 @@ class MaskingAlgorithm(BaseAlgorithm):
     to accumulate gradients and then creates a mask.
     """
 
-    def __init__(self, config: Dict):
-        self.config = config
+    def __init__(self, config: SaliencyUnlearningMaskConfig, **kwargs):
+        super().__init__(config)
+        self.config = config.__dict__
+        for key, value in kwargs.items():
+            setattr(config, key, value)
+
+        self._parse_config()
+        config.validate_config()
         self.model = None
         self.data_handler = None
         self.device = torch.device(self.config.get("devices", ["cuda:0"])[0])
         self.logger = logging.getLogger(__name__)
         self._setup_components()
+
+    def _parse_config(self):
+        return super()._parse_config()
 
     def _setup_components(self):
         self.logger.info("Setting up components for MaskingAlgorithm...")

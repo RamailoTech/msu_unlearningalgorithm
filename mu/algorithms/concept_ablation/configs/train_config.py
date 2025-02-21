@@ -115,6 +115,8 @@ class ConceptAblationConfig(BaseConfig):
         self.devices = "0,"
         self.reg_caption = ""
         self.reg_caption2 = ""
+        self.datapath = ""
+        self.reg_datapath = None
         self.datapath2 = ""
         self.reg_datapath2 = None
         self.caption2 = ""
