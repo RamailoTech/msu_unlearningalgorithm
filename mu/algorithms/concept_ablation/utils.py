@@ -137,7 +137,8 @@ def sample(data, model, sampler, outpath, ddim_steps=200, n_samples=10, ddim_eta
                         if isinstance(prompts, tuple):
                             prompts = list(prompts)
                         c = model.get_learned_conditioning(prompts)
-                        # shape = [opt.C, opt.H // opt.f, opt.W // opt.f]
+                        # shape = [opt.C, opt.H // opt.f, opt.W // opt.f
+                        c = c.repeat(batch_size, 1, 1)  #TODO added this
                         samples_ddim, _ = sampler.sample(S=ddim_steps,
                                                          conditioning=c,
                                                          batch_size=batch_size,

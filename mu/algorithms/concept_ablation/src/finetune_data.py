@@ -43,7 +43,7 @@ def get_styled_prompt(caption_target, caption):
 class MaskBase(Dataset):
     def __init__(
         self,
-        datapath,
+        datapath = 'mu/algorithms/concept_ablation/data/sd_prompt_Architectures_sample_gen/images.txt',
         reg_datapath=None,
         caption=None,
         reg_caption=None,

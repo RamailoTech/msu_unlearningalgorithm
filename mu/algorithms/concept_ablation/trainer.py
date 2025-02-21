@@ -101,7 +101,7 @@ class ConceptAblationTrainer(BaseTrainer):
             )
             os.makedirs(gen_folder, exist_ok=True)
             ranks = [int(i) for i in trainer_config["devices"].split(",") if i != ""]
-            # ConceptAblationDataHandler.preprocess(self.opt_config, self.model_config_path, gen_folder, ranks)
+            ConceptAblationDataHandler.preprocess(self.opt_config, self.model_config_path, gen_folder, ranks) 
             self.opt_config["datapath"] = str(gen_folder / "images.txt")
             self.opt_config["caption"] = str(gen_folder / "caption.txt")
             if self.opt_config.get("regularization"):
