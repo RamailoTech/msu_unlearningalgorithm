@@ -81,6 +81,9 @@ To train the Unified Concept Editing algorithm to unlearn a specific concept or 
 Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
 **Example Code**
+**Using quick canvas dataset**
+
+
 ```python
 from mu.algorithms.unified_concept_editing.algorithm import (
     UnifiedConceptEditingAlgorithm,
@@ -99,6 +102,31 @@ algorithm = UnifiedConceptEditingAlgorithm(
 )
 algorithm.run()
 ```
+
+**Using i2p dataset**
+
+```python
+from mu.algorithms.unified_concept_editing.algorithm import (
+    UnifiedConceptEditingAlgorithm,
+)
+from mu.algorithms.unified_concept_editing.configs import (
+    unified_concept_editing_train_i2p,
+)
+
+algorithm = UnifiedConceptEditingAlgorithm(
+    unified_concept_editing_train_i2p,
+    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50/",
+    raw_dataset_dir=(
+        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+    ),
+    output_dir="/opt/dlami/nvme/outputs",
+    use_sample = True # to run on sample dataset
+    dataset_type = "i2p",
+    template_name = "self-harm",
+)
+algorithm.run()
+```
+
 
 **Running the Training Script in Offline Mode**
 

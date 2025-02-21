@@ -96,6 +96,9 @@ python -m mu.algorithms.selective_amnesia.scripts.train --config_path mu/algorit
 
 Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
+**Using quick canvas dataset**
+
+
 ```python
 from mu.algorithms.selective_amnesia.algorithm import SelectiveAmnesiaAlgorithm
 from mu.algorithms.selective_amnesia.configs import (
@@ -106,8 +109,37 @@ algorithm = SelectiveAmnesiaAlgorithm(
     selective_amnesia_config_quick_canvas,
     ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
     raw_dataset_dir=(
-        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+        "data/quick-canvas-dataset/sample"
     ),
+    dataset_type = "unlearncanvas",
+    template = "style",
+    template_name = "Abstractionism",
+    use_sample = True # to run on sample dataset
+
+)
+algorithm.run()
+
+```
+
+
+**Using i2p dataset**
+
+
+```python
+from mu.algorithms.selective_amnesia.algorithm import SelectiveAmnesiaAlgorithm
+from mu.algorithms.selective_amnesia.configs import (
+    selective_amnesia_config_i2p,
+)
+
+algorithm = SelectiveAmnesiaAlgorithm(
+    selective_amnesia_config_i2p,
+    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
+    raw_dataset_dir=(
+        "/home/ubuntu/Projects/balaram/packaging/data/i2p/sample"
+    ),
+    dataset_type = "i2p",
+    template_name = "self-harm",
+    use_sample = True # to run on sample dataset
 )
 algorithm.run()
 

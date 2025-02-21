@@ -76,7 +76,9 @@ ls -lh ./data/quick-canvas-dataset/sample/
 ## Run Train
 Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
-1. **Train a Text Inversion**
+1. **Train a Text Inversion using quick canvas dataset**
+
+Before finetuning the model you need to generate safetensors.
 
 ```python
 
@@ -91,7 +93,67 @@ algorithm = ForgetMeNotAlgorithm(
     raw_dataset_dir=(
         "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
     ), 
-    steps=10
+    steps=10,
+    template_name = "Abstractionism", #concept to erase
+    dataset_type = "unlearncanvas" ,
+    use_sample = True, #train on sample dataset
+    output_dir = "outputs/forget_me_not/finetuned_models" #output dir to save finetuned models
+)
+algorithm.run(train_type="train_ti")
+```
+
+**Running the Script in Offlikne Mode**
+
+```bash
+WANDB_MODE=offline python my_trainer_ti.py
+```
+
+2. **Perform Unlearning using quick canvas dataset**
+
+Before running the `train_attn` script, update the `ti_weights_path` parameter in the configuration file to point to the output generated from the Text Inversion (train_ti.py) stage
+
+```python
+from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from mu.algorithms.forget_me_not.configs import (
+    forget_me_not_train_attn_mu,
+)
+
+algorithm = ForgetMeNotAlgorithm(
+    forget_me_not_train_attn_mu,
+    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50",
+    raw_dataset_dir=(
+        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+    ),
+    steps=10,
+    ti_weights_path="outputs/forget_me_not/finetuned_models/Abstractionism/step_inv_10.safetensors",
+    template_name = "Abstractionism", #concept to erase
+    dataset_type = "unlearncanvas" ,
+    use_sample = True, #train on sample dataset
+    output_dir = "outputs/forget_me_not/finetuned_models" #output dir to save finetuned models
+)
+algorithm.run(train_type="train_attn")
+```
+
+1. **Train a Text Inversion using i2p dataset**
+
+Before finetuning the model you need to generate safetensors.
+
+```python
+
+from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from mu.algorithms.forget_me_not.configs import (
+    forget_me_not_train_ti_i2p,
+)
+
+algorithm = ForgetMeNotAlgorithm(
+    forget_me_not_train_ti_i2p,
+    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50",
+    raw_dataset_dir = "data/i2p-dataset/sample",
+    steps=10,
+    template_name = "self-harm", #concept to erase
+    dataset_type = "i2p" ,
+    use_sample = True, #train on sample dataset
+    output_dir = "outputs/forget_me_not/finetuned_models" #output dir to save finetuned models
 )
 algorithm.run(train_type="train_ti")
 ```
@@ -119,10 +181,15 @@ algorithm = ForgetMeNotAlgorithm(
         "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
     ),
     steps=10,
-    ti_weights_path="outputs/forget_me_not/finetuned_models/Abstractionism/step_inv_10.safetensors"
+    ti_weights_path="outputs/forget_me_not/finetuned_models/Abstractionism/step_inv_10.safetensors",
+    use_sample = True, #train on sample dataset
+    output_dir = "outputs/forget_me_not/finetuned_models" ,#output dir to save finetuned models
+    template_name = "self-harm", #concept to erase
+    dataset_type = "i2p" ,
 )
 algorithm.run(train_type="train_attn")
 ```
+
 
 **Running the Script in Offlikne Mode**
 

@@ -76,7 +76,8 @@ ls -lh ./data/quick-canvas-dataset/sample/
 ---
 
 
-## Run Train
+## Run Train using quick canvas dataset
+
 Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
 **Example Code**
@@ -92,6 +93,35 @@ algorithm = ESDAlgorithm(
     raw_dataset_dir=(
         "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
     ),
+    template_name = "Abstractionism", #concept to erase
+    dataset_type = "unlearncanvas" ,
+    use_sample = True, #train on sample dataset
+    output_dir = "outputs/esd/finetuned_models" #output dir to save finetuned models
+    
+)
+algorithm.run()
+```
+
+## Run Train using i2p dataset
+
+Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
+
+**Example Code**
+```python
+from mu.algorithms.esd.algorithm import ESDAlgorithm
+from mu.algorithms.esd.configs import (
+    esd_train_i2p,
+)
+
+algorithm = ESDAlgorithm(
+    esd_train_i2p,
+    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
+    raw_dataset_dir = "data/i2p-dataset/sample",
+    template_name = "self-harm", #concept to erase
+    dataset_type = "i2p" ,
+    use_sample = True, #train on sample dataset
+    output_dir = "outputs/esd/finetuned_models" #output dir to save finetuned models
+    
 )
 algorithm.run()
 ```

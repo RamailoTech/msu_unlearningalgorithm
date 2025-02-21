@@ -229,3 +229,13 @@ After you install the package, you can use the following commands to download.
 
 Each algorithm has their own script to run the algorithm, Some also have different process all together. Follow usage section in readme for the algorithm you want to run with the help of the github repository. You will need to run the code snippet provided in usage section with necessary configuration passed. 
 
+
+**Link to our example usage notebooks**
+
+1. **Erase-diff (compvis model)**
+
+https://github.com/RamailoTech/msu_unlearningalgorithm/blob/main/notebooks/run_erase_diff.ipynb
+
+2. **forget-me-not (Diffuser model)**
+
+https://github.com/RamailoTech/msu_unlearningalgorithm/blob/main/notebooks/run_forget_me_not.ipynb

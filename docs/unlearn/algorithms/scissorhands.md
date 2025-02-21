@@ -81,6 +81,9 @@ To train the ScissorHands algorithm to unlearn a specific concept or style from 
 Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
 **Example Code**
+
+**Using quick canvas dataset**
+
 ```python
 from mu.algorithms.scissorhands.algorithm import ScissorHandsAlgorithm
 from mu.algorithms.scissorhands.configs import (
@@ -94,9 +97,35 @@ algorithm = ScissorHandsAlgorithm(
         "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
     ),
     output_dir="/opt/dlami/nvme/outputs",
+    dataset_type = "unlearncanvas",
+    template = "style",
+    template_name = "Abstractionism",
+    use_sample = True # to train on sample dataset
 )
 algorithm.run()
 ```
+
+**Using i2p dataset**
+
+```python
+from mu.algorithms.scissorhands.algorithm import ScissorHandsAlgorithm
+from mu.algorithms.scissorhands.configs import (
+    scissorhands_train_i2p,
+)
+
+algorithm = ScissorHandsAlgorithm(
+    scissorhands_train_i2p,
+    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
+    raw_dataset_dir = "data/i2p-dataset/sample",
+    output_dir="/opt/dlami/nvme/outputs",
+    use_sample = True, # to train on sample dataset
+    dataset_type = "i2p",
+    template_name = "self-harm"
+)
+algorithm.run()
+```
+
+   
 
 **Running the Training Script in Offline Mode**
 
