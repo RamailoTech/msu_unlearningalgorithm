@@ -1,0 +1,21 @@
+common_config:
+  input_data_dir: "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+  model_dir: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
+  template_name: "Abstractionism"
+erase_diff:
+  output_dir: "test_output/erase_diff/finetuned_models"
+esd:
+  output_dir: "test_output/esd/finetuned_models"
+concept_ablation:
+  output_dir: "test_output/concept_ablation/finetuned_models"
+  prompts: "/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt"
+forget_me_not:
+  output_dir: "test_output/forget_me_not/finetuned_models"
+saliency_unlearning:
+ output_dir: "test_output/saliency_unlearning/finetuned_models"
+semipermeable:
+  output_dir: "test_output/semipermeable/finetuned_models"
+unified_concept_editing:
+  output_dir: "test_output/unified_concept_editing/finetuned_models"
+
+
