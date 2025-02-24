@@ -15,6 +15,7 @@ dependencies:
       - albumentations==0.4.3
       - datasets==2.8.0
       - bitsandbytes
+      - tensorflow==2.12.0
       - diffusers==0.32.1
       - opencv-python==4.10.0.84
       - mediapipe==0.10.11
