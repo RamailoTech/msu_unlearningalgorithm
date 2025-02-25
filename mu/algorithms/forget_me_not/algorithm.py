@@ -123,7 +123,7 @@ class ForgetMeNotAlgorithm(BaseAlgorithm):
 
                 output_name = output_dir / self.config.get(
                     "output_name",
-                    f"forget_me_not_{self.config.get('template_name')}_model.pth",
+                    f"forget_me_not_{self.config.get('template_name')}_model",
                 )
 
                 # Save to WandB
