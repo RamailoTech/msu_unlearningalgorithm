@@ -1,21 +1,78 @@
-common_config:
-  input_data_dir: "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
-  model_dir: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
+common_config_mu:
+  unlearn_canvas_data_dir: "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+  compvis_model_dir: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
+  diffuser_model_dir: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
   template_name: "Abstractionism"
+  use_sample: True
+  dataset_type: "unlearncanvas"
+  template: "style"
+
+common_config_i2p:
+  unlearn_canvas_data_dir: "/home/ubuntu/Projects/Palistha/testing/data/i2p-dataset/sample"
+  compvis_model_dir: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
+  diffuser_model_dir: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
+  template_name: "self-harm"
+  use_sample: True
+  dataset_type: "i2p"
+  template: "style"
+
 erase_diff:
   output_dir: "test_output/erase_diff/finetuned_models"
+
+scissorhands:
+  output_dir: "test_output/scissorhands/finetuned_models"
+
 esd:
   output_dir: "test_output/esd/finetuned_models"
+
 concept_ablation:
   output_dir: "test_output/concept_ablation/finetuned_models"
   prompts: "/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt"
+
 forget_me_not:
-  output_dir: "test_output/forget_me_not/finetuned_models"
+  steps: 10
+  devices: "0"
+  ti_output_dir: "test_output/forget_me_not/ti_models"
+  finetuned_output_dir: "test_output/forget_me_not/finetuned_models"
+
 saliency_unlearning:
+ threshold: 0.5
+ mask_dir: "outputs/saliency_unlearning/masks"
  output_dir: "test_output/saliency_unlearning/finetuned_models"
+
 semipermeable:
   output_dir: "test_output/semipermeable/finetuned_models"
+  train:
+    iterations: 2
+
 unified_concept_editing:
-  output_dir: "test_output/unified_concept_editing/finetuned_models"
+  output_dir: "test_output/uce/finetuned_models"
+
+selective_amnesia:
+  output_dir: "test_output/selective_amnesia/finetuned_models"
+  full_fisher_dict_pkl_path: "/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/selective_amnesia/data/full_fisher_dict.pkl"
+  replay_prompt_path: "mu/algorithms/selective_amnesia/data/fim_prompts_sample.txt"
 
 
+attack:
+  model_and_dataset_path:
+    compvis_model_ckpt: "/home/ubuntu/Projects/Palistha/testing/outputs/erase_diff/finetuned_models/erase_diff_Abstractionism_model.pth"
+    diffusers_model_name_or_path: "/home/ubuntu/Projects/Palistha/testing/outputs/forget_me_not/finetuned_models/Abstractionism"
+    dataset_path: "/home/ubuntu/Projects/Palistha/testing/outputs/dataset/i2p_nude"
+
+  hyperparameter:
+    iterations: 1
+    model_name: "SD-v1-4"
+  output_dirs_compvis:
+    output_dir: "results/esd_nudity_P4D_erase_diff_compvis"
+  output_dir_diffuser:
+    output_dir: "results/esd_nudity_P4D_erase_diff_diffuser"
+
+mu_defense:
+  compvis_ckpt_path: "/home/ubuntu/Projects/Palistha/testing/outputs/erase_diff/finetuned_models/erase_diff_Abstractionism_model.pth"
+  attack_step: 2
+  attack_method: "fast_at"
+  train_method: "noxattn"
+  warmup_iter: 1
+  iterations: 1
+  diffusers_model_name_or_path: "outputs/forget_me_not/finetuned_models/Abstractionism/"
