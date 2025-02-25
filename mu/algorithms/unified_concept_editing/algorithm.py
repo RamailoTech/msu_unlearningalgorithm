@@ -97,7 +97,7 @@ class UnifiedConceptEditingAlgorithm(BaseAlgorithm):
 
                 # Save final model
                 output_name = output_dir / self.config.get(
-                    "output_name", f"uce_{self.config.get('template_name')}_model.pth"
+                    "output_name", f"uce_{self.config.get('template_name')}_model"
                 )
                 self.model.save_model(model, output_name)
                 self.logger.info(f"Trained model saved at {output_name}")
