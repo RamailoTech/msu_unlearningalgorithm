@@ -100,9 +100,18 @@ This section contains the usage guide for the package.
 
 ### Installation
 
+#### Prerequisities
+Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
+
+- **Miniconda** (recommended): [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
+- **Anaconda**: [https://www.anaconda.com/products/distribution](https://www.anaconda.com/products/distribution)
+
+After installing `conda`, ensure it is available in your PATH by running. You may require to restart the terminal session:
+
 Before installing the unlearn_diff package, follow these steps to set up your environment correctly. These instructions ensure compatibility with the required dependencies, including Python, PyTorch, and ONNX Runtime.
 
-Step-by-Step Setup:
+
+**Step-by-Step Setup:**
 
 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:
 
@@ -129,33 +138,14 @@ pip install unlearn_diff
 ```
 
 
-### Prerequisities
-Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
-
-- **Miniconda** (recommended): [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
-- **Anaconda**: [https://www.anaconda.com/products/distribution](https://www.anaconda.com/products/distribution)
-
-After installing `conda`, ensure it is available in your PATH by running. You may require to restart the terminal session:
-
-```bash
-conda --version
-```
-### Create environment (Default):
-```
-create_env
-```
 #### Optional(Create environment for algorithm):
 ```
 create_env erase_diff
 ```
 
-### Activate environment:
-```
-conda activate <environment_name>
-```
-eg: ```conda activate UnlearnDiff```
-
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
+
+
 
 ### Downloading data and models.
 After you install the package, you can use the following commands to download.

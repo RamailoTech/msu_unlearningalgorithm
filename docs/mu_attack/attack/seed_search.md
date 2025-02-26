@@ -38,7 +38,6 @@ def run_attack_for_nudity():
     "task.compvis_ckpt_path" :"/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
     "task.compvis_config_path" : scissorhands_train_mu.model_config_path,
     "task.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
-    "attacker.text_grad.lr": 0.02,
     "logger.json.root" : "results/seed_search_esd_nudity_P4D_scissorhands"
 
     }
@@ -68,7 +67,6 @@ def run_attack_for_nudity():
         "task.compvis_ckpt_path" :"/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
         "task.compvis_config_path" : scissorhands_train_mu.model_config_path,
         "task.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
-        "attacker.text_grad.lr": 0.02,
         "logger.json.root" : "results/seed_search_esd_nudity_P4D_scissorhands",
         "task.save_diffuser": True, # This flag triggers conversion
         "task.sld": None, # Set sld to None for conversion
