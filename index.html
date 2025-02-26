@@ -58,16 +58,12 @@
     <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#prerequisities">Prerequisities</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#create-environment-default">Create environment (Default):</a>
         <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#prerequisities">Prerequisities</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#optionalcreate-environment-for-algorithm">Optional(Create environment for algorithm):</a>
     </li>
         </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#activate-environment">Activate environment:</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#downloading-data-and-models">Downloading data and models.</a>
     </li>
@@ -397,7 +393,7 @@ For detailed information on each algorithm, please refer to the respective <code
 <p><strong><code>models/</code></strong>: Repository of trained models and checkpoints.</p>
 </li>
 <li>
-<p><strong><code>mu/</code></strong>: Core source code for machine unlearning.</p>
+<p><strong><code>mu/</code></strong>: Core source code.</p>
 </li>
 <li><strong><code>algorithms/</code></strong>: Implementation of various algorithms. Each algorithm has its own subdirectory containing code and a <code>README.md</code> with detailed documentation.<ul>
 <li><strong><code>esd/</code></strong>: ESD algorithm components.</li>
@@ -408,7 +404,6 @@ For detailed information on each algorithm, please refer to the respective <code
 <li><code>environment.yaml</code>: Environment setup for ESD.</li>
 <li><code>model.py</code>: Model architectures specific to ESD.</li>
 <li><code>sampler.py</code>: Sampling methods used during training or inference.</li>
-<li><code>evaluator.py</code>: Evaluation of ESD algorithm.</li>
 <li><code>scripts/train.py</code>: Training script for ESD.</li>
 <li><code>trainer.py</code>: Training routines and optimization strategies.</li>
 <li><code>utils.py</code>: Utility functions and helpers.</li>
@@ -423,7 +418,6 @@ For detailed information on each algorithm, please refer to the respective <code
 <li><code>base_model.py</code>: Base class for model definitions.</li>
 <li><code>base_sampler.py</code>: Base class for sampling methods.</li>
 <li><code>base_trainer.py</code>: Base class for training routines.</li>
-<li><code>base_config.py</code>: Base class for config class.</li>
 </ul>
 </li>
 <li><strong><code>datasets/</code></strong>: Dataset management and utilities.<ul>
@@ -433,88 +427,17 @@ For detailed information on each algorithm, please refer to the respective <code
 <li><code>unlearning_canvas_dataset.py</code>: Specific dataset class for unlearning tasks.</li>
 </ul>
 </li>
-<li><strong><code>helpers/</code></strong>: Utility functions and helpers.<ul>
+<li>
+<p><strong><code>helpers/</code></strong>: Utility functions and helpers.</p>
+<ul>
 <li><code>helper.py</code>: General-purpose helper functions.</li>
 <li><code>logger.py</code>: Logging utilities to standardize logging practices.</li>
 <li><code>path_setup.py</code>: Path configurations and environment setup.</li>
 </ul>
 </li>
-<li><strong><code>mu_attack/</code></strong>: Core source code for attack.</li>
-<li><strong><code>attackers/</code></strong>: Implementation of each of the attacks.<ul>
-<li><strong><code>hard_prompt.py</code></strong>: Implementation for hard prompt attack.</li>
-<li><strong><code>no_attack.py</code></strong>: Implementation for no attack.</li>
-<li><strong><code>random.py</code></strong>: Implementation for random attack.</li>
-<li><strong><code>seed_search.py</code></strong>: Implementation for seed search attack.</li>
-<li><strong><code>soft_prompt.py</code></strong>: Implementation for soft_prompt attack.</li>
-<li><strong><code>text_grad.py</code></strong>: Implementation for text_grad attack.</li>
-</ul>
+<li>
+<p><strong><code>tests/</code></strong>: Test suites for ensuring code reliability.</p>
 </li>
-<li><strong><code>configs</code></strong>: Configuration files for attackers and evaluation tasks.<ul>
-<li><strong><code>adv_unlearn</code></strong>: Config class for adversial unlearning.</li>
-<li><strong><code>evaluation</code></strong>: Config class for evaluation.</li>
-<li><strong><code>illegal</code></strong>: Config class for illegal.</li>
-<li><strong><code>nudity</code></strong>: Config class for nudity.</li>
-<li><strong><code>object</code></strong>: Config class for object.</li>
-<li><strong><code>style</code></strong>: Config class for style.</li>
-<li><strong><code>violence</code></strong>: Config class for violence.</li>
-</ul>
-</li>
-<li><strong><code>core/</code></strong>: Foundational classes and utilities.<ul>
-<li><strong><code>base_attacker.py</code></strong>: Abstract base class for attack implementations.</li>
-<li><strong><code>base_config.py</code></strong>: Base class for config class.</li>
-<li><strong><code>base_stable_diffusion.py</code></strong>: Base class for stable diffusion pipeline.</li>
-<li><strong><code>base_task.py</code></strong>: Base class for tasks.</li>
-</ul>
-</li>
-<li><strong><code>datasets/</code></strong>: Script to generate dataset.</li>
-<li><strong><code>exces/</code></strong>: Implemenation of attacks.<ul>
-<li><strong><code>adv_attack.py</code></strong> : Implementation of advattack.</li>
-<li><strong><code>attack.py</code></strong> : Main orchestration class that implements attacks.</li>
-</ul>
-</li>
-<li><strong><code>helpers/</code></strong>: Utility functions and helpers.<ul>
-<li><strong><code>utils.py</code></strong>: Contains utility functions used in mu_attack.</li>
-</ul>
-</li>
-<li><strong><code>loggers/</code></strong>: Logging utilities to standardize logging practices.</li>
-<li><strong><code>tasks/</code></strong>: Contains tasks for attacks.<ul>
-<li><strong><code>utils/</code></strong>: Utilities for tasks.</li>
-<li><strong><code>classifier.py</code></strong>: Implementation of classifier task.</li>
-<li><strong><code>p4d.py</code></strong>: Implementation of p4d task.</li>
-<li><strong><code>transfer.py</code></strong>: Implementation of transfer task.</li>
-<li><strong><code>sd_compvis.py</code></strong>: Base stable diffusion pipeline implementation for compvis model.</li>
-<li><strong><code>sd_diffuser.py</code></strong>: Base stable diffusion pipeline implementation for diffuser model.</li>
-</ul>
-</li>
-<li><code>environment.yaml</code>: Environment setup for attack.</li>
-<li><strong><code>mu_defense/</code></strong>: Core source code for defense i.e adversial unlearning.</li>
-<li><strong><code>algorithms/</code></strong>: Algorithms for defense.<ul>
-<li><strong><code>adv_unlearn/</code></strong>: Implementation of defense algorithm (adv_unlearn).</li>
-<li><strong><code>configs/</code></strong>: Configuration files for AdvUnlearn, evaluation and image generation tasks.<ul>
-<li><strong><code>adv_unlearn_config.py</code></strong>: Configuration class for AdvUnlearn.</li>
-<li><strong><code>evaluation_config.py</code></strong>: Configuration class for evaluation for AdvUnlearn.</li>
-<li><strong><code>example_img_generator_config.py</code></strong>: Configuration class for image generation for AdvUnlearn evaluation.</li>
-</ul>
-</li>
-<li><code>algorithm.py</code>: Core implementation of AdvUnlearn.</li>
-<li><code>trainer.py</code>: Core training routines and optimization strategies.</li>
-<li><code>compvis_trainer.py</code>: Compvis specific training routines and optimization strategies.</li>
-<li><code>diffuser_trainer.py</code>: Diffuser specific training routines and optimization strategies.</li>
-<li><code>generate_example_image.py</code>: Implementation of image generation for evaluation for both compvis and diffuser.</li>
-<li><code>evaluator.py</code>: Implementation of evaluation framework for adv_unlearn.</li>
-<li><code>model.py</code>: Script to load Compvis and diffuser model.</li>
-<li><code>utils.py</code>: Utility function used in AdvUnlearn.</li>
-<li><code>README.md</code>: Docs for AdvUnlearn.</li>
-<li><strong><code>core/</code></strong>: Foundational classes and utilities.</li>
-<li><code>base_algorithm.py</code>: Abstract base class for algorithm implementations.</li>
-<li><code>base_data_handler.py</code>: Base class for data handling.</li>
-<li><code>base_model.py</code>: Base class for model definitions.</li>
-<li><code>base_config.py</code>: Base class for config class.</li>
-<li><code>base_trainer.py</code>: Base class for training routines.</li>
-<li><code>environment.yaml</code>: Environment setup for defense.</li>
-</ul>
-</li>
-<li><strong><code>tests/</code></strong>: Test suites for ensuring code reliability.</li>
 <li><strong><code>stable_diffusion/</code></strong>: Components for stable diffusion.</li>
 <li><strong><code>lora_diffusion/</code></strong>: Components for the LoRA Diffusion.</li>
 </ul>
@@ -523,27 +446,38 @@ For detailed information on each algorithm, please refer to the respective <code
 <h2 id="usage">Usage</h2>
 <p>This section contains the usage guide for the package.</p>
 <h3 id="installation">Installation</h3>
-<pre><code>pip install unlearn_diff
-</code></pre>
-<h3 id="prerequisities">Prerequisities</h3>
+<h4 id="prerequisities">Prerequisities</h4>
 <p>Ensure <code>conda</code> is installed on your system. You can install Miniconda or Anaconda:</p>
 <ul>
 <li><strong>Miniconda</strong> (recommended): <a href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a></li>
 <li><strong>Anaconda</strong>: <a href="https://www.anaconda.com/products/distribution">https://www.anaconda.com/products/distribution</a></li>
 </ul>
 <p>After installing <code>conda</code>, ensure it is available in your PATH by running. You may require to restart the terminal session:</p>
-<pre><code class="language-bash">conda --version
+<p>Before installing the unlearn_diff package, follow these steps to set up your environment correctly. These instructions ensure compatibility with the required dependencies, including Python, PyTorch, and ONNX Runtime.</p>
+<p><strong>Step-by-Step Setup:</strong></p>
+<ol>
+<li>Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:</li>
+</ol>
+<pre><code class="language-bash">conda create -n myenv python=3.8.5
 </code></pre>
-<h3 id="create-environment-default">Create environment (Default):</h3>
-<pre><code>create_env
+<ol>
+<li>Activate the Environment Activate the environment to work within it:</li>
+</ol>
+<pre><code class="language-bash">conda activate myenv
+</code></pre>
+<ol>
+<li>Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:</li>
+</ol>
+<pre><code class="language-bash">conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
+</code></pre>
+<ol>
+<li>Install our unlearn_diff Package using pip:</li>
+</ol>
+<pre><code class="language-bash">pip install unlearn_diff
 </code></pre>
 <h4 id="optionalcreate-environment-for-algorithm">Optional(Create environment for algorithm):</h4>
 <pre><code>create_env erase_diff
 </code></pre>
-<h3 id="activate-environment">Activate environment:</h3>
-<pre><code>conda activate &lt;environment_name&gt;
-</code></pre>
-<p>eg: <code>conda activate UnlearnDiff</code></p>
 <p>The <algorithm_name> has to be one of the folders in the <code>mu/algorithms</code> folder.</p>
 <h3 id="downloading-data-and-models">Downloading data and models.</h3>
 <p>After you install the package, you can use the following commands to download.</p>
