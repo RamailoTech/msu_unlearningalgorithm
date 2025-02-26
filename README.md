@@ -99,9 +99,36 @@ We use the Quick Canvas benchmark dataset, available [here](https://huggingface.
 This section contains the usage guide for the package.
 
 ### Installation
+
+Before installing the unlearn_diff package, follow these steps to set up your environment correctly. These instructions ensure compatibility with the required dependencies, including Python, PyTorch, and ONNX Runtime.
+
+Step-by-Step Setup:
+
+1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:
+
+```bash
+conda create -n myenv python=3.8.5
 ```
+
+2. Activate the Environment Activate the environment to work within it:
+
+```bash
+conda activate myenv
+```
+
+3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:
+
+```bash
+conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
+```
+
+4. Install our unlearn_diff Package using pip:
+
+```bash
 pip install unlearn_diff
 ```
+
+
 ### Prerequisities
 Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
 
