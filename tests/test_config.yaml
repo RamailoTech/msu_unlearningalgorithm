@@ -1,4 +1,4 @@
-common_config_mu:
+common_config_unlearn_canvas_mu:
   unlearn_canvas_data_dir: "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
   compvis_model_dir: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
   diffuser_model_dir: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
@@ -58,7 +58,7 @@ attack:
   model_and_dataset_path:
     compvis_model_ckpt: "/home/ubuntu/Projects/Palistha/testing/outputs/erase_diff/finetuned_models/erase_diff_Abstractionism_model.pth"
     diffusers_model_name_or_path: "/home/ubuntu/Projects/Palistha/testing/outputs/forget_me_not/finetuned_models/Abstractionism"
-    dataset_path: "/home/ubuntu/Projects/Palistha/testing/outputs/dataset/i2p_nude"
+    dataset_path: "/home/ubuntu/Projects/dipesh/testing/outputs/dataset/i2p_nude"
 
   hyperparameter:
     iterations: 1

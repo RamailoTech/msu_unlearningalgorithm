@@ -8,7 +8,7 @@ with open("tests/test_config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
 common_config_unlearn_canvas = config["common_config_unlearn_canvas_mu"]
-common_config_i2p = config["common_config_i2p_i2p"]
+common_config_i2p = config["common_config_i2p"]
 
 # Fixture for erase_diff
 @pytest.fixture
@@ -148,7 +148,7 @@ def test_run_erase_diff(setup_output_dir_erase_diff):
         "Output file does not have .pth extension"
     )
 
-def test_run_esd(setup_output_dir_esd):
+def test_run_esd(setup_output_dir_esd): 
     from mu.algorithms.esd.algorithm import ESDAlgorithm
     from mu.algorithms.esd.configs import esd_train_mu
 
@@ -905,9 +905,6 @@ def test_run_selective_amnesia_i2p(setup_output_dir_selective_amnesia):
     output_dir = config['selective_amnesia']['output_dir']
     pth_files = [f for f in os.listdir(output_dir) if f.endswith('.pth')]
     assert pth_files, f"No .pth file found in {output_dir}"
-
-
-
 
 if __name__ == "__main__":
     pytest.main([__file__])
