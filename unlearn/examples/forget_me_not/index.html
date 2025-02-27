@@ -311,6 +311,19 @@
                 <p>You can modify the parameters, when using config class itself.
 View the config docs to see a list of available parameters that you can use.</p>
 <h3 id="train-a-text-inversion-train_ti">Train a text inversion (train_ti)</h3>
+<p><strong>Using default config</strong></p>
+<pre><code class="language-python">
+from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from mu.algorithms.forget_me_not.configs import (
+    forget_me_not_train_ti_mu,
+)
+
+algorithm = ForgetMeNotAlgorithm(
+    forget_me_not_train_ti_mu
+)
+algorithm.run(train_type=&quot;train_ti&quot;)
+</code></pre>
+<p><strong>Modify some parameters in pre-defined config class</strong></p>
 <pre><code class="language-python">
 from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
 from mu.algorithms.forget_me_not.configs import (
@@ -327,8 +340,36 @@ algorithm = ForgetMeNotAlgorithm(
 )
 algorithm.run(train_type=&quot;train_ti&quot;)
 </code></pre>
+<p><strong>Create your own config class</strong></p>
+<pre><code class="language-python">
+from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from mu.algorithms.forget_me_not.configs import (
+    ForgetMeNotTiConfig,
+)
+
+myconfig = ForgetMeNotTiConfig()
+myconfig.ckpt_path = &quot;models/diffuser/style50&quot;
+myconfig.steps = 1
+
+algorithm = ForgetMeNotAlgorithm(
+    myconfig
+)
+algorithm.run(train_type=&quot;train_ti&quot;)
+</code></pre>
 <h3 id="perform-unlearning-by-using-train-attn">Perform unlearning by using train attn.</h3>
 <p>Before running the <code>train_attn</code> script, update the <code>ti_weights_path</code> parameter in the configuration file to point to the output generated from the Text Inversion (train_ti.py) stage</p>
+<p><strong>Using default config</strong></p>
+<pre><code class="language-python">from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from mu.algorithms.forget_me_not.configs import (
+    forget_me_not_train_attn_mu,
+)
+
+algorithm = ForgetMeNotAlgorithm(
+    forget_me_not_train_attn_mu,
+)
+algorithm.run(train_type=&quot;train_attn&quot;)
+</code></pre>
+<p><strong>Modify some parameters in pre-defined config class</strong></p>
 <pre><code class="language-python">from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
 from mu.algorithms.forget_me_not.configs import (
     forget_me_not_train_attn_mu,
@@ -342,6 +383,21 @@ algorithm = ForgetMeNotAlgorithm(
     ),
     steps=10,
     ti_weights_path=&quot;outputs/forget_me_not/finetuned_models/Abstractionism/step_inv_10.safetensors&quot;
+)
+algorithm.run(train_type=&quot;train_attn&quot;)
+</code></pre>
+<p><strong>Create your own config class</strong></p>
+<pre><code class="language-python">from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from mu.algorithms.forget_me_not.configs import (
+    ForgetMeNotAttnConfig,
+)
+
+myconfig = ForgetMeNotAttnConfig()
+myconfig.ckpt_path = &quot;models/diffuser/style50&quot;
+myconfig.steps = 1
+
+algorithm = ForgetMeNotAlgorithm(
+    myconfig
 )
 algorithm.run(train_type=&quot;train_attn&quot;)
 </code></pre>
