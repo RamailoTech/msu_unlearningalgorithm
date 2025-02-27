@@ -4,7 +4,12 @@ This section provides instructions for running the **evaluation framework** for 
 
 #### **Running the Evaluation Framework**
 
-Create a file, eg, `evaluate.py` and use examples and modify your configs to run the file.  
+Create a file, eg, `evaluate.py` and use examples and modify your configs to run the file. Work within the same environment used to perform unlearning for evaluation as well.
+
+
+**Before running evaluation, download the classifier ckpt from here:**
+
+https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61 
 
 **Example Code**
 
@@ -16,9 +21,9 @@ from mu.algorithms.concept_ablation.configs import (
 
 evaluator = ConceptAblationEvaluator(
     concept_ablation_evaluation_config,
-    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/concept_ablation/finetuned_models/checkpoints/last.ckpt",
-    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
-    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+    ckpt_path="outputs/concept_ablation/finetuned_models/checkpoints/last.ckpt",
+    classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
+    reference_dir= "msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
 )
 evaluator.run()
 ```

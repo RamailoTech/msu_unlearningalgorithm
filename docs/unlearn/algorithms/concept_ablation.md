@@ -7,30 +7,72 @@ This repository provides an implementation of the Concept Ablation algorithm for
 
 ## Installation
 
-### Create the Conda Environment
+#### Prerequisities
+Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
 
-First, create and activate the Conda environment using the provided `environment.yaml` file:
+- **Miniconda** (recommended): [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
+- **Anaconda**: [https://www.anaconda.com/products/distribution](https://www.anaconda.com/products/distribution)
+
+After installing `conda`, ensure it is available in your PATH by running. You may require to restart the terminal session:
+
+Before installing the unlearn_diff package, follow these steps to set up your environment correctly. These instructions ensure compatibility with the required dependencies, including Python, PyTorch, and ONNX Runtime.
+
+
+**Step-by-Step Setup:**
+
+Step 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:
 
 ```bash
-conda env create -f mu/algorithms/concept_ablation/environment.yaml -n mu_concept_ablation
+conda create -n myenv python=3.8.5
+```
+
+Step 2. Activate the Environment Activate the environment to work within it:
+
+```bash
+conda activate myenv
+```
+
+Step 3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:
+
+```bash
+conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
+```
+
+Step 4. Install our unlearn_diff Package using pip:
+
+```bash
+pip install unlearn_diff
+```
+
+Step 5. Install Additional Git Dependencies:
+
+ After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:
+
+```bash
+pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
 ```
 
 ```bash
-conda --version
+pip install git+https://github.com/openai/CLIP.git@main#egg=clip
 ```
-### Create environment:
-```
-create_env <algorithm_name>
-```
-eg: ```create_env concept_ablation```
 
-### Activate environment:
+```bash
+pip install git+https://github.com/crowsonkb/k-diffusion.git
 ```
-conda activate <environment_name>
-```
-eg: ```conda activate concept_ablation```
 
-The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
+```bash
+pip install git+https://github.com/cocodataset/panopticapi.git
+```
+
+```bash
+pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
+```
+
+```bash
+pip install git+https://github.com/boomb0om/text2image-benchmark
+```
+
+
 
 ### Downloading data and models.
 After you install the package, you can use the following commands to download.
@@ -93,9 +135,9 @@ if __name__ == "__main__":
 
     algorithm = ConceptAblationAlgorithm(
         concept_ablation_train_mu,
-        config_path="/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/concept_ablation/configs/train_config.yaml",
-        ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
-        prompts="/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt",
+        config_path="mu/algorithms/concept_ablation/configs/train_config.yaml",
+        ckpt_path="machine_unlearning/models/compvis/style50/compvis.ckpt",
+        prompts="mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt",
         output_dir="/opt/dlami/nvme/outputs",
         template_name = "Abstractionism", #concept to erase
         dataset_type = "unlearncanvas" ,
@@ -236,138 +278,5 @@ if __name__ == "__main__":
     * Example: "0"
 
 
-#### Concept ablation Evaluation Framework
-
-This section provides instructions for running the **evaluation framework** for the Concept ablation algorithm on Stable Diffusion models. The evaluation framework is used to assess the performance of models after applying machine unlearning.
 
 
-#### **Running the Evaluation Framework**
-
-You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/concept_ablation/scripts/` directory.
-
-### **Basic Command to Run Evaluation:**
-
-```bash
-conda activate <env_name>
-```
-
-```bash
-python -m mu.algorithms.concept_ablation.scripts.evaluate \
---config_path mu/algorithms/concept_ablation/configs/evaluation_config.yaml
-```
-
-
-**Running in Offline Mode:**
-
-```bash
-WANDB_MODE=offline python -m mu.algorithms.concept_ablation.scripts.evaluate \
---config_path mu/algorithms/concept_ablation/configs/evaluation_config.yaml
-```
-
-
-**Example with CLI Overrides:**
-
-```bash
-python -m mu.algorithms.concept_ablation.scripts.evaluate \
-    --config_path mu/algorithms/concept_ablation/configs/evaluation_config.yaml \
-    --devices "0" \
-    --seed 123 \
-    --cfg_text 8.5 \
-    --batch_size 16
-```
-
-
-#### **Description of parameters in evaluation_config.yaml**
-
-The `evaluation_config.yaml` file contains the necessary parameters for running the Concept ablation evaluation framework. Below is a detailed description of each parameter along with examples.
-
----
-
-### **Model Configuration:**
-- model_config : Path to the YAML file specifying the model architecture and settings.  
-   - *Type:* `str`  
-   - *Example:* `"mu/algorithms/concept_ablation/configs/model_config.yaml"`
-
-- ckpt_path : Path to the finetuned Stable Diffusion checkpoint file to be evaluated.  
-   - *Type:* `str`  
-   - *Example:* `"outputs/concept_ablation/finetuned_models/concept_ablation_Abstractionism_model.pth"`
-
-- classification_model : Specifies the classification model used for evaluating the generated outputs.  
-   - *Type:* `str`  
-   - *Example:* `"vit_large_patch16_224"`
-
-- model_ckpt_path: Path to pretrained Stable Diffusion model.
-   - *Type*: `str`
-   - *Example*: `models/compvis/style50/compvis.ckpt`
-
----
-
-### **Training and Sampling Parameters:**
-- theme : Specifies the theme or concept being evaluated for removal from the model's outputs.  
-   - *Type:* `str`  
-   - *Example:* `"Bricks"`
-
-- devices : CUDA device IDs to be used for the evaluation process.  
-   - *Type:* `str`  
-   - *Example:* `"0"`  
-
-- cfg_text : Classifier-free guidance scale value for image generation. Higher values increase the strength of the conditioning prompt.  
-   - *Type:* `float`  
-   - *Example:* `9.0`  
-
-- seed : Random seed for reproducibility of results.  
-   - *Type:* `int`  
-   - *Example:* `188`
-
-- ddim_steps : Number of steps for the DDIM (Denoising Diffusion Implicit Models) sampling process.  
-   - *Type:* `int`  
-   - *Example:* `100`
-
-- ddim_eta : DDIM eta value for controlling the amount of randomness during sampling. Set to `0` for deterministic sampling.  
-   - *Type:* `float`  
-   - *Example:* `0.0`
-
-- image_height : Height of the generated images in pixels.  
-   - *Type:* `int`  
-   - *Example:* `512`
-
-- image_width : Width of the generated images in pixels.  
-   - *Type:* `int`  
-   - *Example:* `512`
-
----
-
-### **Output and Logging Parameters:**
-- sampler_output_dir : Directory where generated images will be saved during evaluation.  
-   - *Type:* `str`  
-   - *Example:* `"outputs/eval_results/mu_results/concept_ablation/"`
-
-- eval_output_dir : Directory where evaluation metrics and results will be stored.  
-   - *Type:* `str`  
-   - *Example:* `"outputs/eval_results/mu_results/concept_ablation/"`
-
-- reference_dir : Directory containing original images for comparison during evaluation.  
-   - *Type:* `str`  
-   - *Example:* `"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
-
----
-
-### **Performance and Efficiency Parameters:**
-- multiprocessing : Enables multiprocessing for faster evaluation for FID score. Recommended for large datasets.  
-   - *Type:* `bool`  
-   - *Example:* `False`  
-
-- batch_size : Batch size used during FID computation and evaluation.  
-   - *Type:* `int`  
-   - *Example:* `16`  
-
----
-
-### **Optimization Parameters:**
-- forget_theme : Concept or style intended for removal in the evaluation process.  
-   - *Type:* `str`  
-   - *Example:* `"Bricks"`
-
-- seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  
-   - *Type:* `list`  
-   - *Example:* `["188"]`

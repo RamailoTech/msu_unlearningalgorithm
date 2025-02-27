@@ -47,9 +47,9 @@ if __name__ == "__main__":
 
     algorithm = ConceptAblationAlgorithm(
         concept_ablation_train_mu,
-        config_path="/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/concept_ablation/configs/train_config.yaml",
-        ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
-        prompts="/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt",
+        config_path="mu/algorithms/concept_ablation/configs/train_config.yaml",
+        ckpt_path="machine_unlearning/models/compvis/style50/compvis.ckpt",
+        prompts="mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt",
         output_dir="/opt/dlami/nvme/outputs",
         # devices="1",
     )
@@ -69,7 +69,7 @@ from mu.algorithms.concept_ablation.configs import (
 )
 
 myconfig = ConceptAblationConfig()
-myconfig.ckpt_path = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
+myconfig.ckpt_path = "machine_unlearning/models/compvis/style50/compvis.ckpt"
 myconfig.raw_dataset_dir = (
     "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
 )

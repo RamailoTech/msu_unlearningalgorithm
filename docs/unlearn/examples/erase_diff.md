@@ -23,9 +23,9 @@ from mu.algorithms.erase_diff.configs import (
 
 algorithm = EraseDiffAlgorithm(
     erase_diff_train_mu,
-    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
+    ckpt_path="models/compvis/style50/compvis.ckpt",
     raw_dataset_dir=(
-        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+        "data/quick-canvas-dataset/sample"
     ),
 )
 algorithm.run()
@@ -39,9 +39,9 @@ from mu.algorithms.erase_diff.configs import (
 )
 
 myconfig = EraseDiffConfig()
-myconfig.ckpt_path = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
+myconfig.ckpt_path = "models/compvis/style50/compvis.ckpt"
 myconfig.raw_dataset_dir = (
-    "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+    "data/quick-canvas-dataset/sample"
 )
 
 algorithm = EraseDiffAlgorithm(myconfig)

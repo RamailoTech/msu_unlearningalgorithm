@@ -5,13 +5,14 @@ This section provides instructions for running the **evaluation framework** for 
 
 #### **Running the Evaluation Framework**
 
-You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/forget_me_not/scripts/` directory.
+You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/forget_me_not/scripts/` directory. Work within the same environment used to perform unlearning for evaluation as well.
+
 
 ### **Basic Command to Run Evaluation:**
 
-```bash
-conda activate <env_name>
-```
+**Before running evaluation, download the classifier ckpt from here:**
+
+https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61 
 
 Add the following code to `evaluate.py`
 
@@ -23,9 +24,9 @@ from mu.algorithms.forget_me_not.configs import (
 
 evaluator = ForgetMeNotEvaluator(
     forget_me_not_evaluation_config,
-    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/forget_me_not/finetuned_models/Abstractionism",
-    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
-    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+    ckpt_path="outputs/forget_me_not/finetuned_models/Abstractionism",
+    classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
+    reference_dir= "msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
 )
 evaluator.run()
 ```
@@ -105,7 +106,7 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 
 - reference_dir : Directory containing original images for comparison during evaluation.  
    - *Type:* `str`  
-   - *Example:* `"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
+   - *Example:* `"msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
 
 ---
 

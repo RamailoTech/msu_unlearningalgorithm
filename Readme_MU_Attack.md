@@ -4,10 +4,87 @@
 This repository contains the implementation of UnlearnDiffAtk, a framework for evaluating the robustness of safety-driven unlearned Diffusion Models using adversarial prompts.
 
 
-### Create Environment 
+## Usage
+
+This section contains the usage guide for the package.
+
+### Installation
+
+#### Prerequisities
+Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
+
+- **Miniconda** (recommended): [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
+- **Anaconda**: [https://www.anaconda.com/products/distribution](https://www.anaconda.com/products/distribution)
+
+After installing `conda`, ensure it is available in your PATH by running. You may require to restart the terminal session:
+
+Before installing the unlearn_diff package, follow these steps to set up your environment correctly. These instructions ensure compatibility with the required dependencies, including Python, PyTorch, and ONNX Runtime.
+
+
+**Step-by-Step Setup:**
+
+Step 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:
+
+```bash
+conda create -n myenv python=3.8.5
 ```
-conda env create -f environment.yaml
+
+Step 2. Activate the Environment Activate the environment to work within it:
+
+```bash
+conda activate myenv
 ```
+
+Step 3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:
+
+```bash
+conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
+```
+
+Step 4. Install our unlearn_diff Package using pip:
+
+```bash
+pip install unlearn_diff
+```
+
+Step 5. Install Additional Git Dependencies:
+
+ After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:
+
+```bash
+pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
+```
+
+```bash
+pip install git+https://github.com/openai/CLIP.git@main#egg=clip
+```
+
+```bash
+pip install git+https://github.com/crowsonkb/k-diffusion.git
+```
+
+```bash
+pip install git+https://github.com/cocodataset/panopticapi.git
+```
+
+```bash
+pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
+```
+
+```bash
+pip install git+https://github.com/boomb0om/text2image-benchmark
+```
+
+
+#### Optional(Create environment for specific algorithm):
+
+If you want to create algorithm specific environment then use command given below:
+
+```bash
+create_env erase_diff
+```
+
+The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 
 ### Generate Dataset
 ```
@@ -96,7 +173,6 @@ This section defines the high-level configuration for the attack.
 
     Type: str
     Example: ""
-
 
 * backend: Specifies the backend model i.e "diffuser".
 
@@ -250,27 +326,6 @@ This section defines the high-level configuration for the attack.
     Type: str
     Example: ""
 
-* model_name: Name of the model. The model_name parameter determines which base Stable Diffusion model is used by the pipeline.
-
-    Type: str
-    Example: "SD-v1-4"
-    Choices: "SD-v1-4", "SD-V2", "SD-V2-1"
-
-* save_diffuser: A Boolean flag that determines whether the CompVis model should be converted into the Diffusers format before being used.
-
-    Type: str
-    Example: True
-
-    Behavior:
-    * If set to True, the pipeline will perform a conversion of the CompVis model into the Diffusers format and then load the converted checkpoint.
-
-    * If set to False, the conversion is skipped and the model remains in its original CompVis format for use and uses compvis based implementation.
-
-* converted_model_folder_path: Folder path to save the converted compvis model to diffuser.
-
-    Type: str
-    Example: "outputs"
-
 * backend: Specifies the backend model i.e "compvis".
 
 
@@ -345,81 +400,14 @@ This section defines the high-level configuration for the attack.
 
 * compvis
 
-
-```python
-from mu_attack.configs.nudity import hard_prompt_esd_nudity_P4D_compvis_config
-from mu_attack.execs.attack import MUAttack
-from mu.algorithms.scissorhands.configs import scissorhands_train_mu
-
-def run_attack_for_nudity():
-
-    overridable_params = {
-        "task.compvis_ckpt_path":"/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
-        "task.compvis_config_path": scissorhands_train_mu.model_config_path,
-        "task.dataset_path":"/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
-        "logger.json.root":"results/hard_prompt_esd_nudity_P4D_scissorhands",
-        "task.save_diffuser": False,
-    }
-
-    MUAttack(
-        config=hard_prompt_esd_nudity_P4D_compvis_config,
-        **overridable_params
-    )
-
-if __name__ == "__main__":
-    run_attack_for_nudity()
-```
-
-Alternatively, if you want to convert compvis model to diffuser, use the following code snippet.
-
-```python
-from mu_attack.configs.nudity import hard_prompt_esd_nudity_P4D_compvis_config
-from mu_attack.execs.attack import MUAttack
-from mu.algorithms.scissorhands.configs import scissorhands_train_mu
-
-def run_attack_for_nudity():
-
-    overridable_params = {
-        "task.compvis_ckpt_path":"/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
-        "task.compvis_config_path": scissorhands_train_mu.model_config_path,
-        "task.dataset_path":"/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
-        "logger.json.root":"results/hard_prompt_esd_nudity_P4D_scissorhands",
-        "task.save_diffuser": True,
-        "task.sld": None,
-        "task.model_name": "SD-v1-4"
-    }
-
-    MUAttack(
-        config=hard_prompt_esd_nudity_P4D_compvis_config,
-        **overridable_params
-    )
-
-if __name__ == "__main__":
-    run_attack_for_nudity()
-
+```bash
+python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/hard_prompt_esd_nudity_P4D_compvis.json
 ```
 
 * diffuser
 
-```python
-from mu_attack.configs.nudity import hard_prompt_esd_nudity_P4D_diffusers_config
-from mu_attack.execs.attack import MUAttack
-
-def run_attack_for_nudity():
-
-    overridable_params = {
-       "task.diffusers_model_name_or_path" : "/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/forget_me_not/finetuned_models/Abstractionism",
-        "task.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
-        "logger.json.root" :"results/hard_prompt_esd_nudity_P4D_abstractionism"
-    }
-
-    MUAttack(
-        config=hard_prompt_esd_nudity_P4D_diffusers_config,
-        **overridable_params
-    )
-
-if __name__ == "__main__":
-    run_attack_for_nudity()
+```bash
+python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/hard_prompt_esd_nudity_P4D_diffuser.json
 ```
 
 
@@ -427,86 +415,60 @@ if __name__ == "__main__":
 
 * compvis
 
-
-```python
-from mu_attack.configs.nudity import no_attack_esd_nudity_classifier_compvis_config
-from mu_attack.execs.attack import MUAttack
-from mu.algorithms.scissorhands.configs import scissorhands_train_mu
-
-def run_attack_for_nudity():
-
-    overridable_params = {
-    "task.compvis_ckpt_path" : "/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
-    "task.compvis_config_path" : scissorhands_train_mu.model_config_path,
-    "task.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
-    "logger.json.root" : "results/hard_prompt_esd_nudity_P4D_scissorhands",
-    "attacker.no_attack.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
-    "task.save_diffuser": False,
-    }
-
-    MUAttack(
-        config=no_attack_esd_nudity_classifier_compvis_config,
-        **overridable_params
-    )
-
-if __name__ == "__main__":
-    run_attack_for_nudity()
-```
-
-Alternatively, if you want to convert compvis model to diffuser, use the following code snippet.
-
-```python
-from mu_attack.configs.nudity import no_attack_esd_nudity_classifier_compvis_config
-from mu_attack.execs.attack import MUAttack
-from mu.algorithms.scissorhands.configs import scissorhands_train_mu
-
-def run_attack_for_nudity():
-
-    overridable_params = {
-    "task.compvis_ckpt_path" : "/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
-    "task.compvis_config_path" : scissorhands_train_mu.model_config_path,
-    "task.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
-    "logger.json.root" : "results/hard_prompt_esd_nudity_P4D_scissorhands",
-    "attacker.no_attack.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
-    "task.save_diffuser": True,
-    "task.sld": None,
-    "task.model_name": "SD-v1-4"
-    }
-
-    MUAttack(
-        config=no_attack_esd_nudity_classifier_compvis_config,
-        **overridable_params
-    )
-
-if __name__ == "__main__":
-    run_attack_for_nudity()
+```bash
+python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/random_esd_nudity_compvis.json
 ```
 
 * diffuser
 
-```python
-from mu_attack.configs.nudity import no_attack_esd_nudity_classifier_diffusers_config
-from mu_attack.execs.attack import MUAttack
-
-def run_attack_for_nudity():
-
-    overridable_params = {
-    "task.diffusers_model_name_or_path" :"/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/forget_me_not/finetuned_models/Abstractionism",
-    "task.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
-    "logger.json.root" : "results/hard_prompt_esd_nudity_P4D_abstrc",
-    "attacker.no_attack.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude"
-    }
-
-    MUAttack(
-        config=no_attack_esd_nudity_classifier_diffusers_config,
-        **overridable_params
-    )
-
-if __name__ == "__main__":
-    run_attack_for_nudity()
+```bash
+python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/random_esd_nudity_diffuser.json
 ```
 
 
+
+3. Seed Search
+
+* compvis
+
+```bash
+python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/seed_search_esd_nudity_classifier_compvis.json
+```
+
+* diffusers
+
+```bash
+python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/seed_search_esd_nudity_classifier_diffuser.json
+```
+
+4. Text Grad
+
+* compvis
+
+```bash
+python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/text_grad_esd_nudity_classifier_compvis.json
+```
+
+* diffusers
+
+```bash
+python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/text_grad_esd_nudity_classifier_diffuser.json
+```
+
+
+### Run No Attack
+
+* compvis
+
+```bash
+python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/no_attack_esd_nudity_classifier_compvis.json
+```
+
+* diffusers
+
+```bash
+python -m mu_attack.execs.attack --config_path mu_attack/configs/nudity/no_attack_esd_nudity_classifier_diffuser.json
+```
 
 
 ### Mass Attack
@@ -537,32 +499,61 @@ Create a file, eg, `evaluate.py` and use examples and modify your configs to run
 **Example Code**
 
 ```python
+from mu_attack.evaluators.asr import ASREvaluator
+from mu_attack.evaluators.clip_score import ClipScoreEvaluator
+from mu_attack.evaluators.fid import FIDEvaluator
 from mu_attack.configs.evaluation import attack_evaluation_config
-from mu_attack.execs.evaluator import MuAttackEvaluator
+
 
 def main():
+    # Initialize the configuration
     config = attack_evaluation_config
-    config = attack_evaluation_config
-    config.asr.root = "results/hard_prompt_esd_nudity_P4D_abstractionism/P4d"
-    config.asr.root_no_attack = "results/hard_prompt_esd_nudity_P4D_abstrc/NoAttackEsdNudity"
+    config.asr.root = "results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d"
+    config.asr.root_no_attack = "results/no_attack_esd_nudity/NoAttackEsdNudity"
     config.clip.devices = "0"
-    config.clip.image_path = "results/hard_prompt_esd_nudity_P4D_abstractionism/P4d/images"
-    config.clip.log_path = "results/hard_prompt_esd_nudity_P4D_abstractionism/P4d/log.json"
-    config.fid.ref_batch_path = "results/hard_prompt_esd_nudity_P4D_abstractionism/P4d/images"
-    config.fid.sample_batch_path = "data/i2p/nude"
+    config.clip.image_path = "results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d/images"
+    config.clip.log_path = "results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d/log.json"
+    config.fid.ref_batch_path = "results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d/images"
+    config.fid.sample_batch_path = "outputs/dataset/i2p_nude/imgs"
 
     # Common output path
     config.output_path = "results/evaluation/results.json"
 
-    evaluator = MuAttackEvaluator(config)
-    
-    # Run the evaluation (this will run ASR, CLIP, and FID evaluators)
-    results = evaluator.run()
-    
-    print("Evaluation Results:",results)
+    # Initialize and run the ASR evaluator
+    asr_evaluator = ASREvaluator(
+        config = attack_evaluation_config,
+        root=config.asr.root,
+        root_no_attack=config.asr.root_no_attack,
+        output_path=config.output_path
+    )
+    print("Running ASR Evaluator...")
+    asr_evaluator.run()
+
+    # Initialize and run the CLIP Score evaluator
+    clip_evaluator = ClipScoreEvaluator(
+        config = attack_evaluation_config,
+        image_path=config.clip.image_path,
+        log_path=config.clip.log_path,
+        output_path=config.output_path,
+        devices = config.clip.devices
+    )
+    print("Running CLIP Score Evaluator...")
+    clip_evaluator.run()
+
+    # Initialize and run the FID evaluator
+    fid_evaluator = FIDEvaluator(
+        config = attack_evaluation_config,
+        ref_batch_path=config.fid.ref_batch_path,
+        sample_batch_path=config.fid.sample_batch_path,
+        output_path=config.output_path
+    )
+    print("Running FID Evaluator...")
+    fid_evaluator.run()
+
 
 if __name__ == "__main__":
     main()
+]
 
 ```
 

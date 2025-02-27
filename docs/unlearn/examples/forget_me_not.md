@@ -11,9 +11,9 @@ from mu.algorithms.forget_me_not.configs import (
 
 algorithm = ForgetMeNotAlgorithm(
     forget_me_not_train_ti_mu,
-    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50",
+    ckpt_path="models/diffuser/style50",
     raw_dataset_dir=(
-        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+        "data/quick-canvas-dataset/sample"
     ), 
     steps=10
 )
@@ -31,9 +31,9 @@ from mu.algorithms.forget_me_not.configs import (
 
 algorithm = ForgetMeNotAlgorithm(
     forget_me_not_train_attn_mu,
-    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50",
+    ckpt_path="models/diffuser/style50",
     raw_dataset_dir=(
-        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+        "data/quick-canvas-dataset/sample"
     ),
     steps=10,
     ti_weights_path="outputs/forget_me_not/finetuned_models/Abstractionism/step_inv_10.safetensors"

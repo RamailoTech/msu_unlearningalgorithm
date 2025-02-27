@@ -5,13 +5,14 @@ This section provides instructions for running the **evaluation framework** for 
 
 #### **Running the Evaluation Framework**
 
-You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/erase_diff/scripts/` directory.
+You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/erase_diff/scripts/` directory. Work within the same environment used to perform unlearning for evaluation as well.
+
 
 ### **Basic Command to Run Evaluation:**
 
-```bash
-conda activate <env_name>
-```
+**Before running evaluation, download the classifier ckpt from here:**
+
+https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61 
 
 
 Add the following code to `evaluate.py`.
@@ -25,9 +26,9 @@ from mu.algorithms.erase_diff.configs import (
 
 evaluator = EraseDiffEvaluator(
     erase_diff_evaluation_config,
-    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/erase_diff/erase_diff_Abstractionism_model.pth",
-    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
-    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+    ckpt_path="outputs/erase_diff/erase_diff_Abstractionism_model.pth",
+    classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
+    reference_dir= "msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
 )
 evaluator.run()
 ```
@@ -110,7 +111,7 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 
 - reference_dir : Directory containing original images for comparison during evaluation.  
    - *Type:* `str`  
-   - *Example:* `"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
+   - *Example:* `"msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
 
 
 ---

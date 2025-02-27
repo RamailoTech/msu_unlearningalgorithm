@@ -5,7 +5,7 @@ This section provides instructions for running the **evaluation framework** for 
 
 #### **Image Generator**
 
-Before proceeding with evaluation, you must generate images using the output from mu_defense.
+Before proceeding with evaluation, you must generate images using the output from mu_defense. Work within the same enviornment used for defense to perform evalaution.
 
 To generate images add the following code snippet in `image_generator.py` and modify your configs to run the file.  
 

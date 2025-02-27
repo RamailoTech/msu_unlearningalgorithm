@@ -5,13 +5,14 @@ This section provides instructions for running the **evaluation framework** for 
 
 #### **Running the Evaluation Framework**
 
-You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/semipermeable_membrane/scripts/` directory.
+You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/semipermeable_membrane/scripts/` directory. Work within the same environment used to perform unlearning for evaluation as well.
+
 
 ### **Basic Command to Run Evaluation:**
 
-```bash
-conda activate <env_name>
-```
+**Before running evaluation, download the classifier ckpt from here:**
+
+https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61 
 
 Add the following code to `evaluate.py`
 
@@ -23,11 +24,10 @@ from mu.algorithms.semipermeable_membrane.configs import (
 
 evaluator = SemipermeableMembraneEvaluator(
     semipermeable_membrane_eval_config,
-    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors",
-    spm_path = ["/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"],
-    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
-    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/",
-    model_config = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/mu_semipermeable_membrane_spm/configs"
+    ckpt_path="outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors",
+    spm_path = ["outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"],
+    classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
+    reference_dir= "data/quick-canvas-dataset/sample/"
 )
 evaluator.run()
 ```
@@ -117,7 +117,7 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 ### **Dataset and Classification Parameters:**
 - reference_dir : Path to the reference dataset used for evaluation and comparison.  
    - *Type:* `str`  
-   - *Example:* `"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`  
+   - *Example:* `"msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`  
 
 - classification_model : Specifies the classification model used for the evaluation.  
    - *Type:* `str`  

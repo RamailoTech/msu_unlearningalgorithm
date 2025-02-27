@@ -4,10 +4,8 @@
 This repository is for mu_defense that implements adversarial unlearning by integrating a soft prompt attack into the training loop. In this process, a random prompt is selected and its embedding is adversarially perturbed—either at the word or conditional embedding level—to steer the model into unlearning unwanted associations while preserving overall performance.
 
 
-### Installation
-```
-pip install unlearn_diff
-```
+## Installation
+
 
 ### Prerequisities
 Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
@@ -17,18 +15,60 @@ Ensure `conda` is installed on your system. You can install Miniconda or Anacond
 
 After installing `conda`, ensure it is available in your PATH by running. You may require to restart the terminal session:
 
-### Create Environment 
+**Step-by-Step Setup:**
+
+Step 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:
 
 ```bash
-create_env <algorithm_name>
-
+conda create -n myenv python=3.8.5
 ```
 
-**Example**
+Step 2. Activate the Environment Activate the environment to work within it:
+
 ```bash
-create_env mu_defense
-
+conda activate myenv
 ```
+
+Step 3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:
+
+```bash
+conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
+```
+
+Step 4. Install our unlearn_diff Package using pip:
+
+```bash
+pip install unlearn_diff
+```
+
+Step 5. Install Additional Git Dependencies:
+
+ After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:
+
+```bash
+pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
+```
+
+```bash
+pip install git+https://github.com/openai/CLIP.git@main#egg=clip
+```
+
+```bash
+pip install git+https://github.com/crowsonkb/k-diffusion.git
+```
+
+```bash
+pip install git+https://github.com/cocodataset/panopticapi.git
+```
+
+```bash
+pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
+```
+
+```bash
+pip install git+https://github.com/boomb0om/text2image-benchmark
+```
+
 
 ### Example usage to Run Defense for compvis 
 
@@ -69,7 +109,7 @@ def mu_defense():
 
     mu_defense = AdvUnlearnAlgorithm(
         config=adv_unlearn_config,
-        compvis_ckpt_path = "/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/erase_diff/erase_diff_Abstractionism_model.pth",
+        compvis_ckpt_path = "outputs/erase_diff/erase_diff_Abstractionism_model.pth",
         attack_step = 2,
         backend = "compvis",
         attack_method = "fast_at",
@@ -123,7 +163,7 @@ def mu_defense():
 
     mu_defense = AdvUnlearnAlgorithm(
         config=adv_unlearn_config,
-        diffusers_model_name_or_path = "/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/forget_me_not/finetuned_models/Abstractionism",
+        diffusers_model_name_or_path = "outputs/forget_me_not/finetuned_models/Abstractionism",
         attack_step = 2,
         backend = "diffusers",
         attack_method = "fast_at",

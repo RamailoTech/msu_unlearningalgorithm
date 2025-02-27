@@ -33,9 +33,9 @@ from mu.algorithms.selective_amnesia.configs import (
 
 algorithm = SelectiveAmnesiaAlgorithm(
     selective_amnesia_config_quick_canvas,
-    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
+    ckpt_path="models/compvis/style50/compvis.ckpt",
     raw_dataset_dir=(
-        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+        "data/quick-canvas-dataset/sample"
     ),
 )
 algorithm.run()
@@ -51,9 +51,9 @@ from mu.algorithms.selective_amnesia.configs import (
 
 
 myconfig = SelectiveAmnesiaConfig()
-myconfig.ckpt_path = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
+myconfig.ckpt_path = "models/compvis/style50/compvis.ckpt"
 myconfig.raw_dataset_dir = (
-    "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+    "data/quick-canvas-dataset/sample"
 )
 
 algorithm = SelectiveAmnesiaAlgorithm(myconfig)
