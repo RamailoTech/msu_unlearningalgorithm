@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="img/favicon.ico" />
-    <title>Usuage - Unlearn Diff</title>
+    <title>Usage - Unlearn Diff</title>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Usuage";
+        var mkdocs_page_name = "Usage";
         var mkdocs_page_input_path = "README.md";
         var mkdocs_page_url = null;
       </script>
@@ -41,39 +41,23 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Home</span></p>
               <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Usuage</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Usage</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#features">Features</a>
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#supported-algorithms">Supported Algorithms</a>
+    <li class="toctree-l3"><a class="reference internal" href="#prerequisities">Prerequisities</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#project-architecture">Project Architecture</a>
+    <li class="toctree-l2"><a class="reference internal" href="#downloading-data-and-models">Downloading data and models.</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#datasets">Datasets</a>
+    <li class="toctree-l2"><a class="reference internal" href="#run-train">Run Train</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#prerequisities">Prerequisities</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optionalcreate-environment-for-algorithm">Optional(Create environment for algorithm):</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#downloading-data-and-models">Downloading data and models.</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#run-train">Run Train</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#example-usage-running-machine-unlearning-with-the-esd-algorithm">Example Usage: Running Machine Unlearning with the ESD Algorithm:</a>
-    </li>
-        </ul>
+    <li class="toctree-l2"><a class="reference internal" href="#example-usage-running-machine-unlearning-with-the-esd-algorithm">Example Usage: Running Machine Unlearning with the ESD Algorithm:</a>
     </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="project_architecture/">Architecture</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Unlearn Algorithms</span></p>
@@ -230,74 +214,82 @@
               </ul>
               <p class="caption"><span class="caption-text">Unlearn Mu Defense</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="mu_defense/adv_unlearn/">Usage</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="mu_defense/config/">Config</a>
+                  <li class="toctree-l1"><a class="reference internal" >Adv Unlearn</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="mu_defense/adv_unlearn/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mu_defense/config/">Config</a>
+                </li>
+    </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Evaluation</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" >Concept Ablation</a>
+                  <li class="toctree-l1"><a class="reference internal" >MU</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" href="evaluation/concept_ablation/">Evaluation</a>
+                <li class="toctree-l2"><a class="reference internal" >Concept Ablation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/concept_ablation/">Evaluation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/erase_diff/">Evaluation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >ESD</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/esd/">Evaluation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/forget_me_not/">Evaluation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Saliency Unlearning</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/saliency/">Evaluation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/scissorhands/">Evaluation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Selective Amnesia</a>
+    <ul>
+                <li class="toctree-l3"><a class="" href="evaluation/selective_amnesia.md">Usage</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Semi Permeable Membrane</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/semipermeable_membrane/">Evaluation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Unified Concept Editing</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/uce/">Evaluation</a>
+                </li>
+    </ul>
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" >Erase Diff</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="evaluation/erase_diff/">Evaluation</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >ESD</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="evaluation/esd/">Evaluation</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Forget Me Not</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="evaluation/forget_me_not/">Evaluation</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Saliency Unlearning</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="evaluation/saliency/">Evaluation</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Scissor Hands</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="evaluation/scissorhands/">Evaluation</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Selective Amnesia</a>
-    <ul>
-                <li class="toctree-l2"><a class="" href="evaluation/selective_amnesia.md">Usage</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Semi Permeable Membrane</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="evaluation/semipermeable_membrane/">Evaluation</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Unified Concept Editing</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="evaluation/uce/">Evaluation</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >mu_attack</a>
+                  <li class="toctree-l1"><a class="reference internal" >MU_Attack</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="mu_attack/mu_attack_evaluation/">Usage</a>
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" >mu_defense</a>
+                  <li class="toctree-l1"><a class="reference internal" >MU_Defense</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="mu_defense/evaluation/">Usage</a>
                 </li>
@@ -306,7 +298,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Contributing</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="unlearn/algorithms/contributing/">docs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="unlearn/algorithms/contributing/">Contributing</a>
                   </li>
               </ul>
       </div>
@@ -324,7 +316,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Home</li>
-      <li class="breadcrumb-item active">Usuage</li>
+      <li class="breadcrumb-item active">Usage</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -333,122 +325,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="unlearn-diff">Unlearn Diff</h1>
-<p>Unlearn Diff is an open-source Python package designed to streamline the development of unlearning algorithms and establish a standardized evaluation pipeline for diffusion models. It provides researchers and practitioners with tools to implement, evaluate, and extend unlearning algorithms effectively.</p>
-<h3 id="documentation"><a href="https://ramailotech.github.io/msu_unlearningalgorithm/"><strong>Documentation</strong></a></h3>
-<p>You can find the full documentation for this project at the url given below.
-https://ramailotech.github.io/msu_unlearningalgorithm/</p>
-<h2 id="features">Features</h2>
-<ul>
-<li>
-<p><strong>Comprehensive Algorithm Support</strong>: Includes commonly used concept erasing and machine unlearning algorithms tailored for diffusion models. Each algorithm is encapsulated and standardized in terms of input-output formats.</p>
-</li>
-<li>
-<p><strong>Automated Evaluation</strong>: Supports automatic evaluation on datasets like UnlearnCanvas or IP2P. Performs standard and adversarial evaluations, outputting metrics as detailed in UnlearnCanvas and UnlearnDiffAtk.</p>
-</li>
-<li>
-<p><strong>Extensibility</strong>: Designed for easy integration of new unlearning algorithms, attack methods, defense mechanisms, and datasets with minimal modifications.</p>
-</li>
-</ul>
-<h3 id="supported-algorithms">Supported Algorithms</h3>
-<p>The initial version includes established methods benchmarked in UnlearnCanvas and defensive unlearning techniques:</p>
-<ul>
-<li><strong>CA</strong> (Concept Ablation)</li>
-<li><strong>ED</strong> (Erase Diff)</li>
-<li><strong>ESD</strong> (Efficient Substitution Distillation)</li>
-<li><strong>FMN</strong> (Forget Me Not)</li>
-<li><strong>SU</strong> (Saliency Unlearning)</li>
-<li><strong>SH</strong> (ScissorHands)</li>
-<li><strong>SA</strong> (Selective Amnesia)</li>
-<li><strong>SPM</strong> (Semi Permeable Membrane)</li>
-<li><strong>UCE</strong> (Unified Concept Editing)
-For detailed information on each algorithm, please refer to the respective <code>README.md</code> files located inside <code>mu/algorithms</code>.</li>
-</ul>
-<h2 id="project-architecture">Project Architecture</h2>
-<p>The project is organized to facilitate scalability and maintainability.</p>
-<ul>
-<li><strong><code>data/</code></strong>: Stores data-related files.</li>
-<li>
-<p><strong><code>i2p-dataset/</code></strong>: contains i2p-dataset</p>
-<ul>
-<li><strong><code>sample/</code></strong>: Sample dataset</li>
-<li><strong><code>full/</code></strong>: Full dataset</li>
-</ul>
-</li>
-<li>
-<p><strong><code>quick-canvas-dataset/</code></strong>: contains quick canvas dataset</p>
-<ul>
-<li><strong><code>sample/</code></strong>: Sample dataset</li>
-<li><strong><code>full/</code></strong>: Full dataset</li>
-</ul>
-</li>
-<li>
-<p><strong><code>docs/</code></strong>: Documentation, including API references and user guides.</p>
-</li>
-<li>
-<p><strong><code>outputs/</code></strong>: Outputs of the trained algorithms.</p>
-</li>
-<li>
-<p><strong><code>examples/</code></strong>: Sample code and notebooks demonstrating usage.</p>
-</li>
-<li>
-<p><strong><code>logs/</code></strong>: Log files for debugging and auditing.</p>
-</li>
-<li>
-<p><strong><code>models/</code></strong>: Repository of trained models and checkpoints.</p>
-</li>
-<li>
-<p><strong><code>mu/</code></strong>: Core source code.</p>
-</li>
-<li><strong><code>algorithms/</code></strong>: Implementation of various algorithms. Each algorithm has its own subdirectory containing code and a <code>README.md</code> with detailed documentation.<ul>
-<li><strong><code>esd/</code></strong>: ESD algorithm components.</li>
-<li><code>README.md</code>: Documentation specific to the ESD algorithm.</li>
-<li><code>algorithm.py</code>: Core implementation of ESD.</li>
-<li><code>configs/</code>: Configuration files for training and generation tasks.</li>
-<li><code>constants/const.py</code>: Constant values used across the ESD algorithm.</li>
-<li><code>environment.yaml</code>: Environment setup for ESD.</li>
-<li><code>model.py</code>: Model architectures specific to ESD.</li>
-<li><code>sampler.py</code>: Sampling methods used during training or inference.</li>
-<li><code>scripts/train.py</code>: Training script for ESD.</li>
-<li><code>trainer.py</code>: Training routines and optimization strategies.</li>
-<li><code>utils.py</code>: Utility functions and helpers.</li>
-<li><strong><code>ca/</code></strong>: Components for the CA algorithm.</li>
-<li><code>README.md</code>: Documentation specific to the CA algorithm.</li>
-<li><em>...and so on for other algorithms</em></li>
-</ul>
-</li>
-<li><strong><code>core/</code></strong>: Foundational classes and utilities.<ul>
-<li><code>base_algorithm.py</code>: Abstract base class for algorithm implementations.</li>
-<li><code>base_data_handler.py</code>: Base class for data handling.</li>
-<li><code>base_model.py</code>: Base class for model definitions.</li>
-<li><code>base_sampler.py</code>: Base class for sampling methods.</li>
-<li><code>base_trainer.py</code>: Base class for training routines.</li>
-</ul>
-</li>
-<li><strong><code>datasets/</code></strong>: Dataset management and utilities.<ul>
-<li><code>__init__.py</code>: Initializes the dataset package.</li>
-<li><code>dataset.py</code>: Dataset classes and methods.</li>
-<li><code>helpers/</code>: Helper functions for data processing.</li>
-<li><code>unlearning_canvas_dataset.py</code>: Specific dataset class for unlearning tasks.</li>
-</ul>
-</li>
-<li>
-<p><strong><code>helpers/</code></strong>: Utility functions and helpers.</p>
-<ul>
-<li><code>helper.py</code>: General-purpose helper functions.</li>
-<li><code>logger.py</code>: Logging utilities to standardize logging practices.</li>
-<li><code>path_setup.py</code>: Path configurations and environment setup.</li>
-</ul>
-</li>
-<li>
-<p><strong><code>tests/</code></strong>: Test suites for ensuring code reliability.</p>
-</li>
-<li><strong><code>stable_diffusion/</code></strong>: Components for stable diffusion.</li>
-<li><strong><code>lora_diffusion/</code></strong>: Components for the LoRA Diffusion.</li>
-</ul>
-<h2 id="datasets">Datasets</h2>
-<p>We use the Quick Canvas benchmark dataset, available <a href="https://huggingface.co/datasets/nebulaanish/quick-canvas-benchmark">here</a>. Currently, the algorithms are trained using 5 images belonging to the themes of <strong>Abstractionism</strong> and <strong>Architectures</strong>.</p>
-<h2 id="usage">Usage</h2>
+                <h2 id="usage">Usage</h2>
 <p>This section contains the usage guide for the package.</p>
 <h3 id="installation">Installation</h3>
 <h4 id="prerequisities">Prerequisities</h4>
@@ -486,12 +363,6 @@ For detailed information on each algorithm, please refer to the respective <code
 </code></pre>
 <pre><code class="language-bash">pip install git+https://github.com/boomb0om/text2image-benchmark
 </code></pre>
-<h4 id="optionalcreate-environment-for-algorithm">Optional(Create environment for algorithm):</h4>
-<p>If you want to create algorithm specific environment then use command given below:</p>
-<p>Example:</p>
-<pre><code class="language-bash">create_env erase_diff
-</code></pre>
-<p>The <algorithm_name> has to be one of the folders in the <code>mu/algorithms</code> folder.</p>
 <h3 id="downloading-data-and-models">Downloading data and models.</h3>
 <p>After you install the package, you can use the following commands to download.</p>
 <ol>
@@ -529,7 +400,7 @@ For detailed information on each algorithm, please refer to the respective <code
 
     algorithm = ESDAlgorithm(
         esd_train_mu,
-        ckpt_path=&quot;/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt&quot;,
+        ckpt_path=&quot;models/compvis/style50/compvis.ckpt&quot;,
         raw_dataset_dir=&quot;data/quick-canvas-dataset/sample&quot;,
         use_sample = True, #uses sample dataset
         template_name = &quot;Abstractionism&quot;,
@@ -553,7 +424,7 @@ For detailed information on each algorithm, please refer to the respective <code
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="unlearn/algorithms/concept_ablation/" class="btn btn-neutral float-right" title="Usage">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="project_architecture/" class="btn btn-neutral float-right" title="Architecture">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -577,7 +448,7 @@ For detailed information on each algorithm, please refer to the respective <code
     
     
     
-      <span><a href="unlearn/algorithms/concept_ablation/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="project_architecture/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
