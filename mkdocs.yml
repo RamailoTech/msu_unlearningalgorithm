@@ -100,8 +100,6 @@ nav:
         - Usage: evaluation/saliency.md
       - Scissor Hands: 
         - Usage: evaluation/scissorhands.md
-      - Selective Amnesia: 
-        - Usage: evaluation/selective_amnesia.md
       - Semi Permeable Membrane: 
         - Usage: evaluation/semipermeable_membrane.md
       - Unified Concept Editing: 
