@@ -39,10 +39,13 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Home</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../..">Usuage</a>
+                  </li>
+              </ul>
               <p class="caption"><span class="caption-text">Unlearn Algorithms</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../../..">Home</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" >Concept Ablation</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../concept_ablation/">Usage</a>
@@ -122,10 +125,10 @@
     <li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#prerequisities">Prerequisities</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#optionalcreate-environment-for-specific-algorithm">Optional(Create environment for specific algorithm):</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#create-environment">Create environment:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#activate-environment">Activate environment:</a>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#downloading-data-and-models">Downloading data and models.</a>
     </li>
@@ -354,14 +357,37 @@
 <p>After installing <code>conda</code>, ensure it is available in your PATH by running. You may require to restart the terminal session:</p>
 <pre><code class="language-bash">conda --version
 </code></pre>
-<h3 id="create-environment">Create environment:</h3>
-<pre><code>create_env &lt;algorithm_name&gt;
+<p><strong>Step-by-Step Setup:</strong></p>
+<p>Step 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:</p>
+<pre><code class="language-bash">conda create -n myenv python=3.8.5
 </code></pre>
-<p>eg: <code>create_env selective_amnesia</code></p>
-<h3 id="activate-environment">Activate environment:</h3>
-<pre><code>conda activate &lt;environment_name&gt;
+<p>Step 2. Activate the Environment Activate the environment to work within it:</p>
+<pre><code class="language-bash">conda activate myenv
 </code></pre>
-<p>eg: <code>conda activate selective_amnesia</code></p>
+<p>Step 3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:</p>
+<pre><code class="language-bash">conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
+</code></pre>
+<p>Step 4. Install our unlearn_diff Package using pip:</p>
+<pre><code class="language-bash">pip install unlearn_diff
+</code></pre>
+<p>Step 5. Install Additional Git Dependencies:</p>
+<p>After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:</p>
+<pre><code class="language-bash">pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
+</code></pre>
+<pre><code class="language-bash">pip install git+https://github.com/openai/CLIP.git@main#egg=clip
+</code></pre>
+<pre><code class="language-bash">pip install git+https://github.com/crowsonkb/k-diffusion.git
+</code></pre>
+<pre><code class="language-bash">pip install git+https://github.com/cocodataset/panopticapi.git
+</code></pre>
+<pre><code class="language-bash">pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
+</code></pre>
+<pre><code class="language-bash">pip install git+https://github.com/boomb0om/text2image-benchmark
+</code></pre>
+<h4 id="optionalcreate-environment-for-specific-algorithm">Optional(Create environment for specific algorithm):</h4>
+<p>If you want to create algorithm specific environment then use command given below:</p>
+<pre><code class="language-bash">create_env selective_amnesia
+</code></pre>
 <p>The <algorithm_name> has to be one of the folders in the <code>mu/algorithms</code> folder.</p>
 <h3 id="downloading-data-and-models">Downloading data and models.</h3>
 <p>After you install the package, you can use the following commands to download.</p>

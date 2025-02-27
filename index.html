@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="img/favicon.ico" />
-    <title>Home - Unlearn Diff</title>
+    <title>Usuage - Unlearn Diff</title>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Home";
+        var mkdocs_page_name = "Usuage";
         var mkdocs_page_input_path = "README.md";
         var mkdocs_page_url = null;
       </script>
@@ -39,9 +39,9 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Unlearn Algorithms</span></p>
+              <p class="caption"><span class="caption-text">Home</span></p>
               <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Usuage</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a>
     </li>
@@ -69,10 +69,15 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#run-train">Run Train</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#example-usage-running-machine-unlearning-with-the-esd-algorithm">Example Usage: Running Machine Unlearning with the ESD Algorithm:</a>
+    </li>
         </ul>
     </li>
     </ul>
                   </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Unlearn Algorithms</span></p>
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" >Concept Ablation</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="unlearn/algorithms/concept_ablation/">Usage</a>
@@ -318,8 +323,8 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Unlearn Algorithms</li>
-      <li class="breadcrumb-item active">Home</li>
+          <li class="breadcrumb-item">Home</li>
+      <li class="breadcrumb-item active">Usuage</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -483,6 +488,7 @@ For detailed information on each algorithm, please refer to the respective <code
 </code></pre>
 <h4 id="optionalcreate-environment-for-algorithm">Optional(Create environment for algorithm):</h4>
 <p>If you want to create algorithm specific environment then use command given below:</p>
+<p>Example:</p>
 <pre><code class="language-bash">create_env erase_diff
 </code></pre>
 <p>The <algorithm_name> has to be one of the folders in the <code>mu/algorithms</code> folder.</p>
@@ -516,7 +522,25 @@ For detailed information on each algorithm, please refer to the respective <code
 </ol>
 <h3 id="run-train">Run Train <br></h3>
 <p>Each algorithm has their own script to run the algorithm, Some also have different process all together. Follow usage section in readme for the algorithm you want to run with the help of the github repository. You will need to run the code snippet provided in usage section with necessary configuration passed. </p>
+<h3 id="example-usage-running-machine-unlearning-with-the-esd-algorithm">Example Usage: Running Machine Unlearning with the ESD Algorithm:</h3>
+<p>After successfully installing the package, you can run machine unlearning using the ESDAlgorithm. Below is a refined example that demonstrates how to import the necessary modules, configure the algorithm, and execute the unlearning process:</p>
+<pre><code class="language-python">    from mu.algorithms.esd.algorithm import ESDAlgorithm
+    from mu.algorithms.esd.configs import esd_train_mu
+
+    algorithm = ESDAlgorithm(
+        esd_train_mu,
+        ckpt_path=&quot;/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt&quot;,
+        raw_dataset_dir=&quot;data/quick-canvas-dataset/sample&quot;,
+        use_sample = True, #uses sample dataset
+        template_name = &quot;Abstractionism&quot;,
+        dataset_type = &quot;unlearncanvas&quot;
+    )
+    algorithm.run()
+</code></pre>
+<p>For detailed information on the ESD algorithm and its configuration, please refer to the detailed documentation <a href="https://ramailotech.github.io/msu_unlearningalgorithm/unlearn/algorithms/esd/">here</a>.</p>
+<p>Refer <a href="https://ramailotech.github.io/msu_unlearningalgorithm/unlearn/examples/esd/#">here</a> for instructions on overriding default configurations and creating your own configuration class. You can also review detailed configuration descriptions <a href="https://ramailotech.github.io/msu_unlearningalgorithm/unlearn/configs/esd/">here</a></p>
 <p><strong>Link to our example usage notebooks</strong></p>
+<p>Additionally, we have provided comprehensive notebooks that cover the complete workflow—from unlearning to attack and defense—along with their evaluation. Please refer to the notebooks below for full example usage.</p>
 <ol>
 <li><strong>Erase-diff (compvis model)</strong></li>
 </ol>
