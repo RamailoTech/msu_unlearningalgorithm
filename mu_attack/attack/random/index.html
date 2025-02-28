@@ -349,8 +349,10 @@
 <pre><code class="language-bash">pip install git+https://github.com/boomb0om/text2image-benchmark
 </code></pre>
 <h3 id="generate-dataset">Generate Dataset</h3>
-<pre><code class="language-bash">python -m scripts.generate_dataset --prompts_path data/prompts/prompts.csv --concept i2p_nude --save_path outputs/dataset
+<p>Before running attacks you need to generate dataset. Run the following command into the terminal.</p>
+<pre><code class="language-bash">generate_attack_dataset --prompts_path data/prompts/nudity_sample.csv --concept i2p_nude --save_path outputs/dataset --num_samples 1
 </code></pre>
+<p>Note: If you want to generate image using full prompt then use <code>data/prompts/nudity.csv</code> as prompts_path.</p>
 <h3 id="run-attack">Run Attack</h3>
 <ol>
 <li><strong>Random Attack - compvis</strong></li>
