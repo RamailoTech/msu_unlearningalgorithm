@@ -30,7 +30,7 @@ class ESDAlgorithm(BaseAlgorithm):
         self.trainer = None
         self.sampler = None
         self.device = torch.device(self.config.get("devices", ["cuda:0"])[0])
-        self.device_orig = torch.device(self.config.get("devices", ["cuda:0"])[1])
+        self.device_orig = torch.device(self.config.get("devices", ["cuda:0","cuda:0"])[1])
         self.logger = logging.getLogger(__name__)
         self._setup_components()
 
