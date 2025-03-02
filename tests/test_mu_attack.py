@@ -50,7 +50,7 @@ def run_erase_diff():
     expected_output_file = os.path.join(output_dir, output_filename)
     return expected_output_file
 
-def test_hard_prompt_attack_run_compvis(setup_output_dir_muattack, run_erase_diff):
+def test_hard_prompt_attack_run_compvis(run_erase_diff):
     from mu_attack.configs.nudity import hard_prompt_esd_nudity_P4D_compvis_config
     from mu_attack.execs.attack import MUAttack
     from mu.algorithms.erase_diff.configs import erase_diff_train_mu
@@ -84,6 +84,62 @@ def test_hard_prompt_attack_run_compvis(setup_output_dir_muattack, run_erase_dif
     if os.path.exists(config_file):
         assert os.path.isfile(config_file), f"{config_file} is not a file."
 
+
+def test_no_attack_run_compvis(run_erase_diff):
+    from mu_attack.configs.nudity import no_attack_esd_nudity_classifier_compvis_config
+    from mu_attack.execs.attack import MUAttack
+    from mu.algorithms.erase_diff.configs import erase_diff_train_mu
+
+    overridable_params = {
+        "task.compvis_ckpt_path": compvis_model_checkpoint,  # Path to the finetuned checkpoint
+        "task.compvis_config_path": erase_diff_train_mu.model_config_path,  # CompVis model configuration path
+        "attacker.no_attack.dataset_path": config['attack']['model_and_dataset_path']['dataset_path'],
+        "task.dataset_path": config['attack']['model_and_dataset_path']['dataset_path'],
+        "logger.json.root": config['attack']['output_dirs_compvis']['output_dir'] ,
+        "attacker.iteration": config['attack']['hyperparameter']['iterations'],
+    }
+
+    try:
+        MUAttack(
+            config=no_attack_esd_nudity_classifier_compvis_config,
+            **overridable_params
+        )
+    except Exception as e:
+        pytest.fail(f"MUAttack raised an exception: {str(e)}")
+
+    # Verify that the expected output directory was created.
+    output_dir = config['attack']['output_dirs_compvis']['output_dir']
+    assert os.path.exists(output_dir), f"Expected output directory {output_dir} was not created."
+
+    # check for a log and config file or any other expected output.
+    log_file = os.path.join(output_dir, "log.json")
+    if os.path.exists(log_file):
+        assert os.path.isfile(log_file), f"{log_file} is not a file."
+    
+    config_file = os.path.join(output_dir, "config.json")
+    if os.path.exists(config_file):
+        assert os.path.isfile(config_file), f"{config_file} is not a file."
+
+
+def test_evaluator():
+    from mu_attack.configs.evaluation import attack_evaluation_config
+    from mu_attack.execs.evaluator import MuAttackEvaluator
+    mu_attack_config = config['attack']
+    eval_config = attack_evaluation_config
+    eval_config.asr.root = f"{mu_attack_config['output_dirs_compvis']['output_dir']}/P4d"
+    eval_config.asr.root_no_attack = f"{mu_attack_config['output_dirs_compvis']['output_dir']}/NoAttackEsdNudity"
+    eval_config.clip.devices = "0"
+    eval_config.clip.image_path = f"{mu_attack_config['output_dirs_compvis']['output_dir']}/P4d/images"
+    eval_config.clip.log_path = f"{mu_attack_config['output_dirs_compvis']['output_dir']}/P4d/log.json"
+    eval_config.fid.ref_batch_path = f"{mu_attack_config['output_dirs_compvis']['output_dir']}/NoAttackEsdNudity/images"  #to calculate fid score, the genrated image path and ref image path should have ssame number of images.
+    eval_config.fid.sample_batch_path = mu_attack_config['evaluation']['sample_batch_path'] #should have same number of images as of ref batch.
+    eval_config.output_path = "testing/evaluation/results.json"
+
+    evaluator = MuAttackEvaluator(eval_config)
+    try:
+        evaluator.run()
+    except Exception as e:
+        pytest.fail(f"MUAttack evalaution raised an exception: {str(e)}")
 
 def test_hard_prompt_attack_run_compvis_to_diffuser_conversion(setup_output_dir_muattack,run_erase_diff):
     from mu_attack.configs.nudity import hard_prompt_esd_nudity_P4D_compvis_config
@@ -122,40 +178,6 @@ def test_hard_prompt_attack_run_compvis_to_diffuser_conversion(setup_output_dir_
     if os.path.exists(config_file):
         assert os.path.isfile(config_file), f"{config_file} is not a file."
 
-def test_no_attack_run_compvis(setup_output_dir_muattack,run_erase_diff):
-    from mu_attack.configs.nudity import no_attack_esd_nudity_classifier_compvis_config
-    from mu_attack.execs.attack import MUAttack
-    from mu.algorithms.erase_diff.configs import erase_diff_train_mu
-
-    overridable_params = {
-        "task.compvis_ckpt_path": compvis_model_checkpoint,  # Path to the finetuned checkpoint
-        "task.compvis_config_path": erase_diff_train_mu.model_config_path,  # CompVis model configuration path
-        "attacker.no_attack.dataset_path": config['attack']['model_and_dataset_path']['dataset_path'],
-        "task.dataset_path": config['attack']['model_and_dataset_path']['dataset_path'],
-        "logger.json.root": config['attack']['output_dirs_compvis']['output_dir'] ,
-        "attacker.iteration": config['attack']['hyperparameter']['iterations'],
-    }
-
-    try:
-        MUAttack(
-            config=no_attack_esd_nudity_classifier_compvis_config,
-            **overridable_params
-        )
-    except Exception as e:
-        pytest.fail(f"MUAttack raised an exception: {str(e)}")
-
-    # Verify that the expected output directory was created.
-    output_dir = config['attack']['output_dirs_compvis']['output_dir']
-    assert os.path.exists(output_dir), f"Expected output directory {output_dir} was not created."
-
-    # check for a log and config file or any other expected output.
-    log_file = os.path.join(output_dir, "log.json")
-    if os.path.exists(log_file):
-        assert os.path.isfile(log_file), f"{log_file} is not a file."
-    
-    config_file = os.path.join(output_dir, "config.json")
-    if os.path.exists(config_file):
-        assert os.path.isfile(config_file), f"{config_file} is not a file."
 
 
 def test_no_attack_run_compvis_to_diffuser_compvis(setup_output_dir_muattack, run_erase_diff):
