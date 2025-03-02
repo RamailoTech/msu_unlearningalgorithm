@@ -3,8 +3,10 @@ docs_dir: docs
 site_dir: docs_build  
 
 nav:
+  - Home:
+    - Usage: README.md
+    - Architecture: project_architecture.md
   - Unlearn Algorithms:
-    - Home: README.md
     - Concept Ablation: 
       - Usage: unlearn/algorithms/concept_ablation.md
       - Examples: unlearn/examples/concept_ablation.md
@@ -80,34 +82,34 @@ nav:
       - Config: mu_attack/configs/text_grad.md
 
   - Unlearn Mu Defense:
-    - Usage: mu_defense/adv_unlearn.md
-    - Config: mu_defense/config.md
+    - Adv Unlearn:
+      - Usage: mu_defense/adv_unlearn.md
+      - Config: mu_defense/config.md
   
   - Evaluation :
-    - Concept Ablation:
-      - Usage: evaluation/concept_ablation.md
-    - Erase Diff: 
-      - Usage: evaluation/erase_diff.md
-    - ESD: 
-      - Usage: evaluation/esd.md
-    - Forget Me Not: 
-      - Usage: evaluation/forget_me_not.md
-    - Saliency Unlearning: 
-      - Usage: evaluation/saliency.md
-    - Scissor Hands: 
-      - Usage: evaluation/scissorhands.md
-    - Selective Amnesia: 
-      - Usage: evaluation/selective_amnesia.md
-    - Semi Permeable Membrane: 
-      - Usage: evaluation/semipermeable_membrane.md
-    - Unified Concept Editing: 
-      - Usage: evaluation/uce.md
-    - mu_attack: 
+    - MU:
+      - Concept Ablation:
+        - Usage: evaluation/concept_ablation.md
+      - Erase Diff: 
+        - Usage: evaluation/erase_diff.md
+      - ESD: 
+        - Usage: evaluation/esd.md
+      - Forget Me Not: 
+        - Usage: evaluation/forget_me_not.md
+      - Saliency Unlearning: 
+        - Usage: evaluation/saliency.md
+      - Scissor Hands: 
+        - Usage: evaluation/scissorhands.md
+      - Semi Permeable Membrane: 
+        - Usage: evaluation/semipermeable_membrane.md
+      - Unified Concept Editing: 
+        - Usage: evaluation/uce.md
+    - MU_Attack:
       - Usage: mu_attack/mu_attack_evaluation.md
-    - mu_defense:
+    - MU_Defense:
       - Usage: mu_defense/evaluation.md
 
   - Contributing: 
-    - docs: unlearn/algorithms/contributing.md
+    - Contributing: unlearn/algorithms/contributing.md
 theme:
   name: readthedocs  

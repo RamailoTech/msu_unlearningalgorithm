@@ -5,15 +5,15 @@ This section provides instructions for running the **evaluation framework** for 
 
 #### **Running the Evaluation Framework**
 
-You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/unified_concept_editing/scripts/` directory.
+You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/unified_concept_editing/scripts/` directory. Work within the same environment used to perform unlearning for evaluation as well.
 
-### **Basic Command to Run Evaluation:**
 
-```bash
-conda activate <env_name>
-```
+**Before running evaluation, download the classifier ckpt from here:**
 
-Add the following code to `evaluate.py`
+https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61 
+
+
+Then, Add the following code to `evaluate.py`
 
 ```python
 from mu.algorithms.unified_concept_editing import UnifiedConceptEditingEvaluator
@@ -23,38 +23,20 @@ from mu.algorithms.unified_concept_editing.configs import (
 
 evaluator = UnifiedConceptEditingEvaluator(
     uce_evaluation_config,
-    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/uce/finetuned_models/uce_Abstractionism_model",
-    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
-    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/",
-    pipeline_path = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
+    ckpt_path="outputs/uce/finetuned_models/uce_Abstractionism_model",
+    classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
+    reference_dir= "data/quick-canvas-dataset/sample/",
+    pipeline_path = "models/diffuser/style50"
 )
 evaluator.run()
 
 ```
 
-```bash
-python evaluate.py
-```
-
 **Running in Offline Mode:**
 
 ```bash
-WANDB_MODE=offline python -m mu.algorithms.unified_concept_editing.scripts.evaluate \
---config_path mu/algorithms/unified_concept_editing/configs/evaluation_config.yaml
+WANDB_MODE=offline python evaluate.py
 ```
-
-
-**Example with CLI Overrides:**
-
-```bash
-python -m mu.algorithms.unified_concept_editing.scripts.evaluate \
-    --config_path mu/algorithms/unified_concept_editing/configs/evaluation_config.yaml \
-    --devices "0" \
-    --seed 123 \
-    --cfg_text 8.5 \
-    --batch_size 16
-```
-
 
 #### **Description of parameters in evaluation_config.yaml**
 
@@ -129,7 +111,7 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 
 - reference_dir : Directory containing original images for comparison during evaluation.  
    - *Type:* `str`  
-   - *Example:* `"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
+   - *Example:* `"msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
 
 ---
 

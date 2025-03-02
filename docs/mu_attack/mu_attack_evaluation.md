@@ -6,7 +6,67 @@ In this section, we assess the performance and robustness of the results generat
 
 You can either use default environment or mu_attack specific environment.
 
-**Example**
+
+**Use Default**
+
+**Step-by-Step Setup:**
+
+Step 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:
+
+```bash
+conda create -n myenv python=3.8.5
+```
+
+Step 2. Activate the Environment Activate the environment to work within it:
+
+```bash
+conda activate myenv
+```
+
+Step 3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:
+
+```bash
+conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
+```
+
+Step 4. Install our unlearn_diff Package using pip:
+
+```bash
+pip install unlearn_diff
+```
+
+Step 5. Install Additional Git Dependencies:
+
+ After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:
+
+```bash
+pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
+```
+
+```bash
+pip install git+https://github.com/openai/CLIP.git@main#egg=clip
+```
+
+```bash
+pip install git+https://github.com/crowsonkb/k-diffusion.git
+```
+
+```bash
+pip install git+https://github.com/cocodataset/panopticapi.git
+```
+
+```bash
+pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
+```
+
+```bash
+pip install git+https://github.com/boomb0om/text2image-benchmark
+```
+
+
+The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
+
+**Use mu_attack env (Optional)**
 ```bash
 create_env mu_attack
 

@@ -100,9 +100,18 @@ This section contains the usage guide for the package.
 
 ### Installation
 
+#### Prerequisities
+Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
+
+- **Miniconda** (recommended): [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
+- **Anaconda**: [https://www.anaconda.com/products/distribution](https://www.anaconda.com/products/distribution)
+
+After installing `conda`, ensure it is available in your PATH by running. You may require to restart the terminal session:
+
 Before installing the unlearn_diff package, follow these steps to set up your environment correctly. These instructions ensure compatibility with the required dependencies, including Python, PyTorch, and ONNX Runtime.
 
-Step-by-Step Setup:
+
+**Step-by-Step Setup:**
 
 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:
 
@@ -128,34 +137,46 @@ conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==
 pip install unlearn_diff
 ```
 
+5. Install Additional Git Dependencies:
 
-### Prerequisities
-Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
+ After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:
 
-- **Miniconda** (recommended): [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
-- **Anaconda**: [https://www.anaconda.com/products/distribution](https://www.anaconda.com/products/distribution)
-
-After installing `conda`, ensure it is available in your PATH by running. You may require to restart the terminal session:
+ ```bash
+pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
+```
 
 ```bash
-conda --version
+pip install git+https://github.com/openai/CLIP.git@main#egg=clip
 ```
-### Create environment (Default):
+
+```bash
+pip install git+https://github.com/crowsonkb/k-diffusion.git
 ```
-create_env
+
+```bash
+pip install git+https://github.com/cocodataset/panopticapi.git
 ```
+
+```bash
+pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
+```
+
+```bash
+pip install git+https://github.com/boomb0om/text2image-benchmark
+```
+
+
 #### Optional(Create environment for algorithm):
-```
+
+If you want to create algorithm specific environment then use command given below:
+
+```bash
 create_env erase_diff
 ```
 
-### Activate environment:
-```
-conda activate <environment_name>
-```
-eg: ```conda activate UnlearnDiff```
-
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
+
+
 
 ### Downloading data and models.
 After you install the package, you can use the following commands to download.
@@ -192,21 +213,16 @@ After you install the package, you can use the following commands to download.
 
 
 ### Run Train <br>
-Each algorithm has their own script to run the algorithm, Some also have different process all together. Follow usage section in readme for the algorithm you want to run with the help of the github repository. You will need to create a `train_config.yaml` anywhere in your machine, and pass it's path as `--config_path` parameter.
 
-Here is an example for Erase_diff algorithm.
-  ```
-  WANDB_MODE=offline python -m mu.algorithms.erase_diff.scripts.train \
---config_path <path_to_config_in_your_machine>
-  ```
+Each algorithm has their own script to run the algorithm, Some also have different process all together. Follow usage section in readme for the algorithm you want to run with the help of the github repository. You will need to run the code snippet provided in usage section with necessary configuration passed. 
 
-The default algorithm specific `train_config.yaml` makes use of the `model_config.yaml` with default settings. You can also create your own `model_config.yaml` and update it's path in the `train_config.yaml` file to tweak the original model parameters. The details about each parameter in config files are written in the readme for each of the algorithm. 
 
-**NOTE**
-Make sure to update these parameters in `train_config.yaml`. Otherwise, the train script will not run properly. Also, update other parameters as per your usage.
-```yaml
-model_config_path: "configs/erase_diff/model_config.yaml"  # path to model_config.yaml. 
-ckpt_path: "models/compvis/style50/compvis.ckpt"  # Checkpoint path for compvis or diffuser model
-raw_dataset_dir: "data/i2p-dataset/sample" # path where your dataset was downloaded
-processed_dataset_dir: "mu/algorithms/erase_diff/data"  # path to directory, where you want the trained model data to be stored
-```
+**Link to our example usage notebooks**
+
+1. **Erase-diff (compvis model)**
+
+https://github.com/RamailoTech/msu_unlearningalgorithm/blob/main/notebooks/run_erase_diff.ipynb
+
+2. **forget-me-not (Diffuser model)**
+
+https://github.com/RamailoTech/msu_unlearningalgorithm/blob/main/notebooks/run_forget_me_not.ipynb

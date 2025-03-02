@@ -22,9 +22,9 @@ from mu.algorithms.scissorhands.configs import (
 
 algorithm = ScissorHandsAlgorithm(
     scissorhands_train_mu,
-    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
+    ckpt_path="models/compvis/style50/compvis.ckpt",
     raw_dataset_dir=(
-        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+        "data/quick-canvas-dataset/sample"
     ),
     output_dir="/opt/dlami/nvme/outputs",
 )
@@ -39,9 +39,9 @@ from mu.algorithms.scissorhands.configs import (
 )
 
 myconfig = ScissorHandsConfig()
-myconfig.ckpt_path = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
+myconfig.ckpt_path = "models/compvis/style50/compvis.ckpt"
 myconfig.raw_dataset_dir = (
-    "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+    "data/quick-canvas-dataset/sample"
 )
 
 algorithm = ScissorHandsAlgorithm(myconfig)

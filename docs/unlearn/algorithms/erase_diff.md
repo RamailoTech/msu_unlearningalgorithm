@@ -3,10 +3,8 @@
 This repository provides an implementation of the erase diff algorithm for machine unlearning in Stable Diffusion models. The erasediff algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.
 
 ### Installation
-```
-pip install unlearn_diff
-```
-### Prerequisities
+
+#### Prerequisities
 Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
 
 - **Miniconda** (recommended): [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
@@ -17,19 +15,61 @@ After installing `conda`, ensure it is available in your PATH by running. You ma
 ```bash
 conda --version
 ```
-### Create environment:
-```
-create_env <algorithm_name>
-```
-eg: ```create_env erase_diff```
 
-### Activate environment:
-```
-conda activate <environment_name>
-```
-eg: ```conda activate erase_diff```
+**Step-by-Step Setup:**
 
-The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
+Step 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:
+
+```bash
+conda create -n myenv python=3.8.5
+```
+
+Step 2. Activate the Environment Activate the environment to work within it:
+
+```bash
+conda activate myenv
+```
+
+Step 3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:
+
+```bash
+conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
+```
+
+Step 4. Install our unlearn_diff Package using pip:
+
+```bash
+pip install unlearn_diff
+```
+
+Step 5. Install Additional Git Dependencies:
+
+ After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:
+
+```bash
+pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
+```
+
+```bash
+pip install git+https://github.com/openai/CLIP.git@main#egg=clip
+```
+
+```bash
+pip install git+https://github.com/crowsonkb/k-diffusion.git
+```
+
+```bash
+pip install git+https://github.com/cocodataset/panopticapi.git
+```
+
+```bash
+pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
+```
+
+```bash
+pip install git+https://github.com/boomb0om/text2image-benchmark
+```
+
 
 ### Downloading data and models.
 After you install the package, you can use the following commands to download.
@@ -86,9 +126,9 @@ from mu.algorithms.erase_diff.configs import (
 
 algorithm = EraseDiffAlgorithm(
     erase_diff_train_mu,
-    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
+    ckpt_path="UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
     raw_dataset_dir=(
-        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+        "data/quick-canvas-dataset/sample"
     ),
     template_name = "Abstractionism", #concept to erase
     dataset_type = "unlearncanvas" ,
@@ -113,7 +153,7 @@ from mu.algorithms.erase_diff.configs import (
 
 algorithm = EraseDiffAlgorithm(
     erase_diff_train_i2p,
-    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
+    ckpt_path="UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
     raw_dataset_dir = "data/i2p-dataset/sample",
     template_name = "self-harm", #concept to erase
     dataset_type = "i2p" ,

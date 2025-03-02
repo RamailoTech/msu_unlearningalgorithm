@@ -25,9 +25,9 @@ from mu.algorithms.unified_concept_editing.configs import (
 
 algorithm = UnifiedConceptEditingAlgorithm(
     unified_concept_editing_train_mu,
-    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50/",
+    ckpt_path="models/diffuser/style50/",
     raw_dataset_dir=(
-        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+        "data/quick-canvas-dataset/sample"
     ),
     output_dir="/opt/dlami/nvme/outputs",
 )
@@ -43,9 +43,9 @@ from mu.algorithms.unified_concept_editing.configs import (
 )
 
 myconfig = UnifiedConceptEditingConfig()
-myconfig.ckpt_path = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
+myconfig.ckpt_path = "models/compvis/style50/compvis.ckpt"
 myconfig.raw_dataset_dir = (
-    "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+    "data/quick-canvas-dataset/sample"
 )
 
 algorithm = UnifiedConceptEditingAlgorithm(myconfig)
