@@ -36,6 +36,7 @@ class SaliencyUnlearningSampler(BaseSampler):
         )
         self.model = None
         self.sampler = None
+        self.use_sample = config.get("use_sample")
         self.theme_available = uc_sample_theme_available_eval if self.use_sample else uc_theme_available
         self.class_available = uc_sample_class_available_eval if self.use_sample else uc_class_available
         self.logger = logging.getLogger(__name__)
