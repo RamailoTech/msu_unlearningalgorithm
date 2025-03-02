@@ -41,8 +41,8 @@ class SemipermeableMembraneEvaluationConfig(BaseConfig):
         """
         Perform basic validation on the config parameters.
         """
-        if not os.path.exists(self.model_config_path):
-            raise FileNotFoundError(f"Model config directory {self.model_config_path} does not exist.")
+        # if not os.path.exists(self.model_config_path):
+        #     raise FileNotFoundError(f"Model config directory {self.model_config_path} does not exist.")
         if not os.path.exists(self.ckpt_path):
             raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
         if not os.path.exists(self.reference_dir):
