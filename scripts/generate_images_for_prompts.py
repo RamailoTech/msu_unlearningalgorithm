@@ -61,7 +61,7 @@ def generate_images(model_path, csv_path):
 
     print("Image generation completed.")
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description="Generate images using Stable Diffusion.")
     parser.add_argument("--model_path", required=True, help="Path to the model.")
     parser.add_argument("--csv_path", required=True, help="Path to the CSV file with prompts.")
