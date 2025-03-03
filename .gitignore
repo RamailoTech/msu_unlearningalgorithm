@@ -15,8 +15,8 @@ cache
 outputs/*
 !outputs/.gitkeep
 
-models/*
-!models/.gitkeep
+# models/*
+# !models/.gitkeep
 
 !mu/algorithms/erase_diff/.gitignore
 
