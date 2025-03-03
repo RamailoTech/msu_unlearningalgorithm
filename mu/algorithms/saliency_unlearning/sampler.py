@@ -1,5 +1,6 @@
 # mu/algorithms/saliency_unlearning/sampler.py
 
+import sys
 import os
 import logging
 import numpy as np
@@ -11,6 +12,10 @@ from pytorch_lightning import seed_everything
 
 from mu.core.base_sampler import BaseSampler
 from mu.datasets.constants import *
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
+
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 # from stable_diffusion.constants.const import theme_available, class_available
 from mu.helpers import load_config

@@ -1,5 +1,6 @@
 #mu/algorithms/selective_amnesia/data_handler.py
 
+import sys
 import os 
 import logging
 
@@ -8,6 +9,9 @@ from typing import Any
 from torch.utils.data import DataLoader
 from functools import partial
 import pytorch_lightning as pl
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.ldm.util import instantiate_from_config
 from stable_diffusion.ldm.data.base import Txt2ImgIterableBaseDataset

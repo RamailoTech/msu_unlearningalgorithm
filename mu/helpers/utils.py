@@ -1,9 +1,15 @@
+import sys
 from typing import List, Any
 import argparse
 from omegaconf import OmegaConf
 import torch
 from pytorch_lightning.utilities.distributed import rank_zero_only
 from pathlib import Path
+
+from models import stable_diffusion  
+sys.modules['stable_diffusion'] = stable_diffusion
+
+
 from stable_diffusion.ldm.util import instantiate_from_config
 
 

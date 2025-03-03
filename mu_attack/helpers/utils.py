@@ -1,5 +1,6 @@
 # mu_attack/helpers/utils.py
 
+import sys
 import os
 import pandas as pd
 import random
@@ -25,6 +26,9 @@ from diffusers import (
 
 
 current_dir = Path(__file__).parent.parent.parent
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
 
 from mu.helpers.utils import load_model_from_config
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler

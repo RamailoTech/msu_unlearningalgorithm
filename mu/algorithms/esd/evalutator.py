@@ -1,6 +1,7 @@
 
 #mu/algorithms/esd/evaluator.py
 
+import sys
 import os
 import logging
 import timm
@@ -12,6 +13,9 @@ from PIL import Image
 import torch
 from torchvision import transforms
 from torch.nn import functional as F
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.constants.const import theme_available, class_available
 from mu.datasets.constants import *

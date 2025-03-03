@@ -1,4 +1,5 @@
 import glob
+import sys
 import os
 import logging
 
@@ -13,6 +14,9 @@ from omegaconf import OmegaConf
 import torch.multiprocessing as mp
 from pytorch_lightning import seed_everything
 from torchvision.utils import make_grid
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 from stable_diffusion.ldm.util import instantiate_from_config

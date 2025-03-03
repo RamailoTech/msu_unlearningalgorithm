@@ -1,5 +1,6 @@
 # mu/algorithms/selective_amnesia/trainer.py
 
+import sys
 import os
 import signal
 import pudb
@@ -16,6 +17,9 @@ from packaging import version
 import pytorch_lightning as pl
 from omegaconf import OmegaConf
 from pytorch_lightning.trainer import Trainer
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.ldm.util import instantiate_from_config
 from mu.algorithms.selective_amnesia.utils import convert_paths

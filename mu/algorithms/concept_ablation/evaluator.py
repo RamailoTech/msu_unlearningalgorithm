@@ -1,5 +1,6 @@
 #mu/algorithms/concept_ablation/evaluator.py
 
+import sys
 import os
 import logging
 import timm
@@ -16,8 +17,13 @@ from mu.algorithms.concept_ablation import ConceptAblationSampler
 from mu.datasets.constants import *
 from mu.algorithms.concept_ablation.configs import ConceptAblationEvaluationConfig
 from evaluation.core import BaseEvaluator
-from stable_diffusion.constants.const import theme_available, class_available
 from evaluation.evaluators import load_style_generated_images,load_style_ref_images,calculate_fid,tensor_to_float
+
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
+
+from stable_diffusion.constants.const import theme_available, class_available
 
 
 class ConceptAblationEvaluator(BaseEvaluator):

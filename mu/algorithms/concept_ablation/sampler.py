@@ -1,5 +1,6 @@
 #mu/algorithms/concept_ablation/sampler.py
 
+import sys
 import os
 import logging
 
@@ -8,6 +9,9 @@ from PIL import Image
 import torch
 from torch import autocast
 from pytorch_lightning import seed_everything
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 

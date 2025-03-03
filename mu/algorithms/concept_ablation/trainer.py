@@ -1,5 +1,6 @@
 # mu/algorithms/concept_ablation/trainer.py
 
+import sys
 import os
 import argparse
 import logging
@@ -19,6 +20,9 @@ import pytorch_lightning as pl
 from omegaconf import OmegaConf
 from pytorch_lightning.callbacks import LearningRateMonitor
 from pytorch_lightning.trainer import Trainer
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.ldm.util import instantiate_from_config
 from mu.algorithms.concept_ablation.data_handler import ConceptAblationDataHandler

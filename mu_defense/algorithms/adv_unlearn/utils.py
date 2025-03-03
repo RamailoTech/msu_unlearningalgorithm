@@ -1,6 +1,7 @@
 
 # mu_defense/algorithms/adv_unlearn/utils.py
 
+import sys
 import os
 import random
 import pandas as pd
@@ -26,6 +27,10 @@ from diffusers import (
 )
 
 from mu.helpers import load_model_from_config
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
+
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 
 current_dir = Path(__file__).parent.parent.parent.parent

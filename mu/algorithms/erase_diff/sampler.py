@@ -1,5 +1,6 @@
 # mu/algorithms/erase_diff/sampler.py
 
+import sys
 import os
 import logging
 
@@ -14,6 +15,10 @@ from mu.datasets.constants import *
 from mu.core import BaseSampler
 from mu.helpers import load_config
 from mu.helpers.utils import load_ckpt_from_config
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
+
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
 
 class EraseDiffSampler(BaseSampler):

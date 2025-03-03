@@ -1,14 +1,17 @@
 #mu/algorithms/esd/sampler.py
 
+import sys
 import os
 import logging
-from typing import Optional
 import numpy as np
 
 import torch
 from PIL import Image
 from torch import autocast
 from pytorch_lightning import seed_everything
+
+from models import stable_diffusion  
+sys.modules['stable_diffusion'] = stable_diffusion
 
 from mu.datasets.constants import *
 from mu.core import BaseSampler

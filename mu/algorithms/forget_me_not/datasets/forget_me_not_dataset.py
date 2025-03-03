@@ -1,9 +1,13 @@
 # forget_me_not/datasets/forget_me_not_dataset.py
 
+import sys
 import torch 
 from PIL import Image
 from pathlib import Path
 from torchvision import transforms
+
+from models import lora_diffusion
+sys.modules['lora_diffusion'] = lora_diffusion
 
 from lora_diffusion.patch_lora import safe_open, parse_safeloras_embeds, apply_learned_embed_in_clip
 

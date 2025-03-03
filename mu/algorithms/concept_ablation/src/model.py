@@ -98,6 +98,9 @@ from torch import einsum
 from torch.optim.lr_scheduler import LambdaLR
 from torchvision.utils import make_grid
 
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
+
 from stable_diffusion.ldm.models.autoencoder import AutoencoderKL, IdentityFirstStage
 from stable_diffusion.ldm.models.diffusion.ddpm_ca import LatentDiffusion as LatentDiffusion
 from stable_diffusion.ldm.modules.attention import BasicTransformerBlock as BasicTransformerBlock

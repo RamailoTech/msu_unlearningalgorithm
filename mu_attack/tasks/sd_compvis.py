@@ -1,5 +1,6 @@
 # mu_attack/tasks/sd_compvis.py
 
+import sys
 import torch
 import torch.nn.functional as F
 from tqdm.auto import tqdm
@@ -14,6 +15,9 @@ from mu_attack.tasks.utils.text_encoder import CustomTextEncoder
 from mu_attack.tasks.utils.metrics.style_eval import init_classifier
 from mu_attack.tasks.utils.metrics.object_eval import imagenet_ResNet50
 from mu_attack.tasks.utils.metrics.harm_eval import q16_binary_classifier
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.ldm.util import instantiate_from_config
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler

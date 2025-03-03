@@ -1,9 +1,13 @@
 # mu/algorithms/selective_amnesia/utils.py
 
+import sys
 import torch
 
 import numpy as np
 from pathlib import Path
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.ldm.data.base import Txt2ImgIterableBaseDataset
 

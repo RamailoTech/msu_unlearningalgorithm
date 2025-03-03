@@ -1,7 +1,11 @@
 # mu/algorithms/concept_ablation/model.py
 
+import sys
 import torch
 import logging 
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.ldm.util import instantiate_from_config
 

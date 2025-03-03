@@ -1,4 +1,6 @@
 #mu/algorithms/erase_diff/evaluator.py
+
+import sys
 import os
 import logging
 import timm
@@ -15,6 +17,10 @@ from mu.datasets.constants import *
 from evaluation.core import BaseEvaluator
 from mu.algorithms.erase_diff import EraseDiffSampler
 from mu.algorithms.erase_diff.configs import ErasediffEvaluationConfig
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
+
 from stable_diffusion.constants.const import theme_available, class_available
 from evaluation.evaluators.mu_fid import load_style_generated_images,load_style_ref_images,calculate_fid, tensor_to_float
 

@@ -1,5 +1,5 @@
 #mu/algorithms/concept_ablation/data_handler.py
-import os
+import sys
 import logging
 
 import numpy as np
@@ -9,6 +9,9 @@ from pathlib import Path
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 import torch.multiprocessing as mp
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.ldm.util import instantiate_from_config
 from stable_diffusion.ldm.data.base import Txt2ImgIterableBaseDataset

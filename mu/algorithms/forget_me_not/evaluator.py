@@ -1,5 +1,6 @@
 # mu/algorithms/forget_me_not/evaluator.py
 
+import sys
 import os
 import logging
 import torch
@@ -10,6 +11,9 @@ from tqdm import tqdm
 from PIL import Image
 from torchvision import transforms
 from torch.nn import functional as F
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.constants.const import theme_available, class_available
 from evaluation.core import BaseEvaluator

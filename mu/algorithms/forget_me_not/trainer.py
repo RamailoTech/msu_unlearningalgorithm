@@ -1,10 +1,14 @@
 # mu/algorithms/forget_me_not/trainer.py
 
 import os
+import sys
 import math
 import logging
 import torch
 import itertools
+
+from models import lora_diffusion
+sys.modules['lora_diffusion'] = lora_diffusion
 
 from typing import Dict
 from tqdm import tqdm

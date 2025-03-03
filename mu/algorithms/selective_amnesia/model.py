@@ -1,10 +1,14 @@
 # mu/algorithms/selective_amnesia/model.py
 
+import sys
 import torch
 import logging 
 
 from pathlib import Path
 from typing import Any
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.ldm.util import instantiate_from_config
 from mu.core import BaseModel
