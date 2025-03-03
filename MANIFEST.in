@@ -7,3 +7,4 @@ recursive-include lora_diffusion *
 recursive-include docs *
 recursive-include data *.csv
 recursive-include files best.onnx
+recursive-include models *.yaml
