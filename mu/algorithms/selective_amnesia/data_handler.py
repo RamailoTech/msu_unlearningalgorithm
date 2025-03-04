@@ -1,6 +1,7 @@
 #mu/algorithms/selective_amnesia/data_handler.py
 
 import sys
+import glob
 import os 
 import logging
 
@@ -87,10 +88,33 @@ class SelectiveAmnesiaDataHandler(pl.LightningDataModule):
             if not os.path.exists(prompts_file):
                 raise FileNotFoundError(f"Prompts file not found: {prompts_file}")
 
+            data = pd.read_csv(prompts_file)
+            categories = data['categories'].unique()
+
+            assert template_name in categories, f"Invalid template name: {template_name}"
+            config.data.params.train.params.forget_prompt = f"An image in {template_name} style"
+            config.data.params.validation.params.captions = [
+                f"A {class_} image in {template_name} style"
+                for class_ in categories
+            ]
+
+        elif dataset_type == 'generic': 
+
+            prompts_folder = os.path.join(raw_dataset_dir, 'prompts')
+            prompts_file = glob.glob(os.path.join(prompts_folder, '*.csv'))[0]
+
+            if not os.path.exists(prompts_file):
+                raise FileNotFoundError(f"Prompts file not found: {prompts_file}")
+
             # Read the CSV file
             data = pd.read_csv(prompts_file)
-
-            categories = data['categories'].unique()
+            unique_categories = set()
+            for cats in data['categories']:
+                # Ensure cats is a string and split by comma.
+                if isinstance(cats, str):
+                    for cat in cats.split(','):
+                        unique_categories.add(cat.strip())
+            categories = sorted(list(unique_categories))
 
             assert template_name in categories, f"Invalid template name: {template_name}"
             config.data.params.train.params.forget_prompt = f"An image in {template_name} style"
@@ -101,7 +125,8 @@ class SelectiveAmnesiaDataHandler(pl.LightningDataModule):
         n_samples = 10 if use_sample else 1000
         model_config_path = config.model_config_path
         ckpt_path = config.ckpt_path
-        SelectiveAmnesiaDataHandler.generate_dataset(outdir=f"{processed_dataset_dir}/{template_name}",prompt=config.data.params.train.forget_prompt,n_samples=n_samples,model_config_path=model_config_path, ckpt_path=ckpt_path)
+
+        SelectiveAmnesiaDataHandler.generate_dataset(outdir=f"{processed_dataset_dir}/{template_name}",prompt=config.data.params.train.params.forget_prompt,n_samples=n_samples,model_config_path=model_config_path, ckpt_path=ckpt_path)
 
         os.makedirs(f"{processed_dataset_dir}/replay_dataset", exist_ok=True)
         SelectiveAmnesiaDataHandler.generate_dataset(outdir=f"{processed_dataset_dir}/replay_dataset",from_file= config.replay_prompt_path,model_config_path=model_config_path, ckpt_path=ckpt_path)

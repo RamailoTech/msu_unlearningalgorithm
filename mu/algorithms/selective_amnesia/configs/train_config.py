@@ -136,9 +136,9 @@ class SelectiveAmnesiaConfig(BaseConfig):
             )
 
         # Validate dataset type
-        if self.dataset_type not in ["unlearncanvas", "i2p"]:
+        if self.dataset_type not in ["unlearncanvas", "i2p","generic"]:
             raise ValueError(
-                f"Invalid dataset type {self.dataset_type}. Choose from ['unlearncanvas', 'i2p']"
+                f"Invalid dataset type {self.dataset_type}. Choose from ['unlearncanvas', 'i2p','generic]"
             )
 
         # Validate batch sizes

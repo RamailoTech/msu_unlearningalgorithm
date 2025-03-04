@@ -18,7 +18,8 @@ class UnifiedConceptEditingDataHandler(BaseDataHandler):
         dataset_type: str,
         template: str,
         template_name: str,
-        use_sample: bool = False
+        use_sample: bool = False,
+        categories: List[str] = None
     ):
         """
         Initialize the UnifiedConceptEditingDataHandler.
@@ -45,6 +46,10 @@ class UnifiedConceptEditingDataHandler(BaseDataHandler):
 
         elif self.dataset_type == 'i2p':
             self.concepts_available = i2p_sample_categories if self.use_sample else i2p_categories
+
+        elif self.dataset_type == 'generic':
+            self.concepts_available = categories
+
 
     def generate_dataset(
         self,

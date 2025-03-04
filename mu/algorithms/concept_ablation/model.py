@@ -56,7 +56,7 @@ class ConceptAblationModel(BaseModel):
         freeze_model = train_config.get('freeze_model')
         loss_type_reverse = train_config.get('loss_type_reverse')
 
-        if dataset_type in ["unlearncanvas", "i2p"]:
+        if dataset_type in ["unlearncanvas", "i2p", "generic"]:
             config.model.params.cond_stage_trainable = False
             config.model.params.freeze_model = "crossattn-kv"
 

@@ -6,6 +6,7 @@ import logging
 
 from typing import Dict
 from pathlib import Path
+import pandas as pd
 
 from mu.core import BaseAlgorithm
 from mu.algorithms.unified_concept_editing.model import UnifiedConceptEditingModel
@@ -50,12 +51,26 @@ class UnifiedConceptEditingAlgorithm(BaseAlgorithm):
         """
         self.logger.info("Setting up components...")
 
+        prompts_file = self.config.get('prompt_path')
+
+        data = pd.read_csv(prompts_file)
+
+        # Build a unique set of categories by splitting comma-separated entries.
+        unique_categories = set()
+        for cats in data['categories']:
+            # Ensure cats is a string and split by comma.
+            if isinstance(cats, str):
+                for cat in cats.split(','):
+                    unique_categories.add(cat.strip())
+        self.categories = sorted(list(unique_categories))
+
         # Initialize Data Handler
         self.data_handler = UnifiedConceptEditingDataHandler(
             dataset_type=self.config.get("dataset_type", "unlearncanvas"),
             template=self.config.get("template"),
             template_name=self.config.get("template_name"),
             use_sample=self.config.get("use_sample", False),
+            categories = self.categories
         )
 
         # Initialize Model

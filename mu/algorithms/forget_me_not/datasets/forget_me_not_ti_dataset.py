@@ -26,6 +26,10 @@ I2P_TEMPLATE = [
     "an image of {}"
 ]
 
+GENERIC_TEMPLATE = [
+    "an image of {}"
+]
+
 class ForgetMeNotTIDataset(BaseDataset):
     """
     Dataset for the Forget Me Not algorithm.
@@ -89,6 +93,8 @@ class ForgetMeNotTIDataset(BaseDataset):
                 self.templates = STYLE_TEMPLATE
         if dataset_type == "i2p":
             self.templates = I2P_TEMPLATE
+        if dataset_type == "generic":
+            self.templates = GENERIC_TEMPLATE
 
         self._length = self.num_instance_images
 

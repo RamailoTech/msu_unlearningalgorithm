@@ -1,6 +1,7 @@
 # mu/algorithms/forget_me_not/data_handler.py
 
 import os
+import glob
 import logging
 import torch
 
@@ -43,6 +44,8 @@ class ForgetMeNotDataHandler(BaseDataHandler):
             self._generate_dataset_uc()
         elif self.dataset_type == 'i2p':
             self._generate_dataset_i2p()
+        elif self.dataset_type == 'generic':
+            self._generate_dataset_generic()
         else:
             raise ValueError(f"Unsupported dataset type: {self.dataset_type}")
         
@@ -213,6 +216,111 @@ class ForgetMeNotDataHandler(BaseDataHandler):
 
         self.logger.info("Dataset generation (I2P) completed.")
 
+
+    def _generate_dataset_generic(self):
+        """
+        Generate dataset for the generic dataset type by organizing images and prompts
+        into folders based on unique categories. Comma-separated category values in the CSV
+        are split into individual categories. Image filenames are generated using an incremental
+        counter (0,1,2,...) for each category.
+        """
+        self.logger.info("Starting dataset generation (Generic)...")
+
+        # Define paths for raw images and the prompts CSV file.
+        images_dir = os.path.join(self.raw_dataset_dir, 'images')
+        prompts_folder = os.path.join(self.raw_dataset_dir, 'prompts')
+        prompts_file = glob.glob(os.path.join(prompts_folder, '*.csv'))[0]
+        # prompts_file = os.path.join(self.raw_dataset_dir, 'prompts', 'generic.csv')  
+
+        if not os.path.exists(prompts_file):
+            self.logger.error(f"Prompts file not found: {prompts_file}")
+            raise FileNotFoundError(f"Prompts file not found: {prompts_file}")
+
+        data = pd.read_csv(prompts_file)
+
+        # Build a unique set of categories by splitting comma-separated entries.
+        unique_categories = set()
+        for cats in data['categories']:
+            # Ensure cats is a string and split by comma.
+            if isinstance(cats, str):
+                for cat in cats.split(','):
+                    unique_categories.add(cat.strip())
+        self.categories = sorted(list(unique_categories))
+
+        # Initialize a counter and storage for prompts and image paths for each category.
+        counters = {category: 0 for category in self.categories}
+        dataset_data = {category: {"prompts": [], "paths": []} for category in self.categories}
+
+        # Process each row in the CSV.
+        for _, row in data.iterrows():
+            prompt = row['prompt']
+            # Split the categories in this row.
+            row_categories = []
+            if isinstance(row['categories'], str):
+                row_categories = [cat.strip() for cat in row['categories'].split(',')]
+            else:
+                self.logger.warning("Skipping row with non-string categories.")
+                continue
+
+            for category in row_categories:
+                # Generate filename using the current counter.
+                filename = f"{counters[category]}.jpg"
+                counters[category] += 1
+                # Construct the expected image path.
+                image_path = os.path.join(images_dir, category, filename)
+
+                if os.path.exists(image_path):
+                    dataset_data[category]["prompts"].append(prompt)
+                    dataset_data[category]["paths"].append(image_path)
+                else:
+                    self.logger.warning(f"Image not found: {image_path}")
+
+        # Write out the prompts and image paths for each category.
+        for category in self.categories:
+            category_dir = os.path.join(self.processed_dataset_dir, category)
+            os.makedirs(category_dir, exist_ok=True)
+            prompts_txt_path = os.path.join(category_dir, 'prompts.txt')
+            images_txt_path = os.path.join(category_dir, 'images.txt')
+
+            with open(prompts_txt_path, 'w') as f:
+                f.write('\n'.join(dataset_data[category]["prompts"]))
+            with open(images_txt_path, 'w') as f:
+                f.write('\n'.join(dataset_data[category]["paths"]))
+
+            self.logger.info(f"Generated dataset for category '{category}' with {len(dataset_data[category]['paths'])} samples.")
+
+        # Generate Seed Images dataset: Aggregate seed images from across rows.
+        seed_category = "Seed_Images"
+        seed_dir = os.path.join(self.processed_dataset_dir, seed_category)
+        os.makedirs(seed_dir, exist_ok=True)
+        seed_prompt_list = []
+        seed_path_list = []
+        seed_counter = 0
+
+        # Iterate over all rows for seed images.
+        for _, row in data.iterrows():
+            prompt = row['prompt']
+            # Filename for seed images is generated incrementally.
+            filename = f"{seed_counter}.jpg"
+            seed_counter += 1
+            # Seed images are expected to be stored in images/Seed_Images/
+            image_path = os.path.join(images_dir, seed_category, filename)
+
+            if os.path.exists(image_path):
+                seed_prompt_list.append(prompt)
+                seed_path_list.append(image_path)
+            else:
+                self.logger.warning(f"Image not found: {image_path}")
+
+        # Save the seed prompts and image paths.
+        seed_prompts_txt_path = os.path.join(seed_dir, 'prompts.txt')
+        seed_images_txt_path = os.path.join(seed_dir, 'images.txt')
+        with open(seed_prompts_txt_path, 'w') as f:
+            f.write('\n'.join(seed_prompt_list))
+        with open(seed_images_txt_path, 'w') as f:
+            f.write('\n'.join(seed_path_list))
+
+        self.logger.info("Dataset generation (Generic) completed.")
 
     def _text2img_dataloader(self,train_dataset, train_batch_size, tokenizer):
         def collate_fn(examples):

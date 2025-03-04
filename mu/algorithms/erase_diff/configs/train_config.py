@@ -60,7 +60,7 @@ class EraseDiffConfig(BaseConfig):
             raise ValueError("Image size should be positive.")
         if self.train_method not in TRAIN_METHODS:
             raise ValueError(f"Invalid train method. Choose from {TRAIN_METHODS}")
-        if self.dataset_type not in ["unlearncanvas", "i2p"]:
+        if self.dataset_type not in ["unlearncanvas", "i2p","generic"]:
             raise ValueError(
                 "Invalid dataset type. Choose from ['unlearncanvas', 'i2p']"
             )

@@ -209,3 +209,4 @@ forget_me_not_train_ti_i2p.raw_dataset_dir = "data/i2p-dataset/sample"
 forget_me_not_train_attn_i2p = ForgetMeNotAttnConfig()
 forget_me_not_train_attn_i2p.dataset_type = "i2p"
 forget_me_not_train_attn_i2p.raw_dataset_dir = "data/i2p-dataset/sample"
+
