@@ -19,10 +19,10 @@ class BaseEvaluator(ABC):
         ]
         self.config["devices"] = devices
     
-    @abstractmethod
-    def load_model(self, *args, **kwargs):
-        """Load the model for evaluation."""
-        pass
+    # @abstractmethod
+    # def load_model(self, *args, **kwargs):
+    #     """Load the model for evaluation."""
+    #     pass
 
     @abstractmethod
     def calculate_clip_score(self, *args, **kwargs):

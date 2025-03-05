@@ -3,7 +3,8 @@
 from mu_attack.core import BaseEvaluator
 from evaluation.evaluators.asr import ASREvaluator
 from evaluation.evaluators.clip_score import ClipScoreEvaluator
-from evaluation.evaluators.mu_attack_fid import FIDEvaluator
+# from evaluation.evaluators.mu_attack_fid import FIDEvaluator
+from evaluation.evaluators.fid import calculate_fid_score
 
 class MuAttackEvaluator(BaseEvaluator):
     def _parse_config(self, **kwargs):
@@ -34,26 +35,23 @@ class MuAttackEvaluator(BaseEvaluator):
 
         # Run CLIP Score Evaluator
         clip_evaluator = ClipScoreEvaluator(
-            config=self.config,
-            image_path=self.config.clip.image_path,
-            log_path=self.config.clip.log_path,
-            output_path=self.config.output_path,
-            devices=self.config.clip.devices
+            gen_image_path=self.config.clip.gen_image_path,
+            prompt_file_path=self.config.clip.prompt_file_path,
+            devices=self.config.clip.devices,
+            classification_model_path = self.config.clip.classification_model_path
         )
         print("Running CLIP Score Evaluator...")
         clip_evaluator.run()
         results['CLIP'] = clip_evaluator.result
 
         # Run FID Evaluator
-        fid_evaluator = FIDEvaluator(
-            config=self.config,
-            ref_batch_path=self.config.fid.ref_batch_path,
-            sample_batch_path=self.config.fid.sample_batch_path,
-            output_path=self.config.output_path
-        )
         print("Running FID Evaluator...")
-        fid_evaluator.run()
-        results['FID'] = fid_evaluator.result
+
+        fid_score, _ = calculate_fid_score(
+            self.config.fid.ref_batch_path,
+            self.config.fid.sample_batch_path
+        )
+        results['FID'] = fid_score
 
         self.results = results
         return results

@@ -5,14 +5,11 @@ import pandas as pd
 import json
 import logging
 
-import torch
-from transformers import CLIPProcessor, CLIPModel
-from PIL import Image
-from torchvision import models, transforms
-from T2IBenchmark import calculate_fid
-
 from mu_defense.algorithms.adv_unlearn.configs import MUDefenseEvaluationConfig
+
+from evaluation.evaluators.clip_score import ClipScoreEvaluator
 from evaluation.core import DefenseBaseEvaluator
+from evaluation.evaluators.fid import calculate_fid_score
 
 
 class MUDefenseEvaluator(DefenseBaseEvaluator):
@@ -27,7 +24,7 @@ class MUDefenseEvaluator(DefenseBaseEvaluator):
         self.job = self.config.get("job") 
         self.gen_imgs_path = self.config.get("gen_imgs_path")
         self.coco_imgs_path = self.config.get("coco_imgs_path")
-        self.prompt_path = self.config.get("prompt_path")
+        self.prompt_path = self.config.get("prompt_file_path")
         self.classify_prompt_path = self.config.get("classify_prompt_path")
         self.classification_model_path = self.config.get("classification_model_path")
         self.devices = self.config.get("devices")
@@ -37,60 +34,29 @@ class MUDefenseEvaluator(DefenseBaseEvaluator):
         self.logger = logging.getLogger(__name__)
 
         self._parse_config()
-        self.load_model()
+        # self.load_model()
         config.validate_config()
         self.results = {}
 
-    
-    def load_model(self):
-        """Load models needed for evaluation."""
-        if self.job == 'clip':
-            self.clip_model = CLIPModel.from_pretrained(self.classification_model_path).to(self.devices[0])
-            self.clip_processor = CLIPProcessor.from_pretrained(self.classification_model_path)
-        else:
-            self.clip_model = None
-            self.clip_processor = None
+
     
     def calculate_clip_score(self):
         """Calculate the mean CLIP score over generated images using prompts."""
-        df = pd.read_csv(self.prompt_path)
-        clip_scores = []
-        
-        for count, (_, row) in enumerate(df.iterrows(), start=1):
-            case_num = row['case_number']
-            # Construct the image path; assumes images are named like '{case_number}_0.png'
-            img_path = os.path.join(self.gen_imgs_path, f'{case_num}_0.png')
-            try:
-                image = Image.open(img_path)
-            except Exception as e:
-                self.logger.error(f"Error loading image {img_path}: {e}")
-                continue
-            text = row['prompt']
-            
-            # Prepare inputs for CLIP
-            inputs = self.clip_processor(text=[text], images=image, return_tensors="pt", padding=True)
-            inputs = {k: v.to(self.devices[0]) for k, v in inputs.items()}
-            
-            outputs = self.clip_model(**inputs)
-            logits_per_image = outputs.logits_per_image
-            clip_scores.append(logits_per_image.item())
-            
-            if count % 100 == 0:
-                self.logger.info(f"Processed {count} images")
-        
-        if clip_scores:
-            average_clip_score = sum(clip_scores) / len(clip_scores)
-        else:
-            average_clip_score = 0.0
-        
-        result_str = f"{average_clip_score}"
-        self.results['clip score'] = result_str
-        return result_str
+
+        clip_evaluator = ClipScoreEvaluator(
+            gen_image_path = self.gen_imgs_path,
+            prompt_file_path = self.prompt_path,
+            devices = self.devices,
+            classification_model_path = self.classification_model_path
+        )
+        res = clip_evaluator.compute_clip_score()
+        return res
+
     
     def calculate_fid_score(self):
         """Calculate the Fréchet Inception Distance (FID) score."""
 
-        fid, _ = calculate_fid(self.gen_imgs_path, self.coco_imgs_path)
+        fid, _ = calculate_fid_score(self.gen_imgs_path, self.coco_imgs_path)
         result_str = f"{fid}"
         self.results['fid'] = result_str
         return result_str
