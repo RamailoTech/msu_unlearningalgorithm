@@ -29,6 +29,9 @@ class ForgetMeNotEvaluationConfig(BaseConfig):
         self.eval_output_dir = "outputs/eval_results/mu_results/forget_me_not/"  # directory to save evaluation results
         self.reference_dir = "data/quick-canvas-dataset/sample/"  # path to the original dataset
         self.multiprocessing = False  # whether to use multiprocessing
+        self.dataset_type = "unlearncanvas"
+        self.use_sample = True
+
 
         # Override defaults with any provided kwargs
         for key, value in kwargs.items():
@@ -48,6 +51,8 @@ class ForgetMeNotEvaluationConfig(BaseConfig):
             os.makedirs(self.eval_output_dir)
         if not os.path.exists(self.sampler_output_dir):
             os.makedirs(self.sampler_output_dir)
+        if self.dataset_type not in ["unlearncanvas", "i2p", "generic"]:
+            raise ValueError(f"Unknown dataset type: {self.dataset_type}")
 
         if any(cfg <= 0 for cfg in self.cfg_text_list):
             raise ValueError("Classifier-free guidance scale (cfg_text) values should be positive.")

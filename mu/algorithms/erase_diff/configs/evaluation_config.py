@@ -52,6 +52,8 @@ class ErasediffEvaluationConfig(BaseConfig):
             os.makedirs(self.eval_output_dir)
         if not os.path.exists(self.sampler_output_dir):
             os.makedirs(self.sampler_output_dir)
+        if self.dataset_type not in ["unlearncanvas", "i2p", "generic"]:
+            raise ValueError(f"Unknown dataset type: {self.dataset_type}")
 
         if self.cfg_text <= 0:
             raise ValueError("Classifier-free guidance scale (cfg_text) should be positive.")

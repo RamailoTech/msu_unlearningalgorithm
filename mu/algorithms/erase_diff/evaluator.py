@@ -1,18 +1,11 @@
 #mu/algorithms/erase_diff/evaluator.py
 
 import sys
-import os
-import glob
 import logging
 import timm
 import json
 
 import torch
-from PIL import Image
-from tqdm import tqdm
-from torchvision import transforms
-from torch.nn import functional as F
-from typing import Any, Dict
 
 from mu.datasets.constants import *
 from evaluation.core import BaseEvaluator
@@ -23,9 +16,9 @@ from models import stable_diffusion
 sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.constants.const import theme_available, class_available
-from mu.datasets.constants.i2p_const import i2p_categories
+
+from evaluation.evaluators.accuracy import calculate_accuracy_for_dataset
 from evaluation.evaluators.fid import calculate_fid_score
-from mu.helpers.utils import load_categories
 # from evaluation.evaluators.mu_fid import load_style_generated_images,load_style_ref_images,calculate_fid, tensor_to_float
 from evaluation.evaluators.mu_fid import tensor_to_float
 
@@ -86,17 +79,6 @@ class EraseDiffEvaluator(BaseEvaluator):
     
         self.logger.info("Classification model loaded successfully.")
 
-    def preprocess_image(self, image: Image.Image):
-        """
-        Preprocess the input PIL image before feeding into the classifier.
-        Replicates the transforms from your accuracy.py script.
-        """
-        image_transform = transforms.Compose([
-            transforms.Resize((224, 224)),
-            transforms.ToTensor(),
-            transforms.Normalize([0.5], [0.5]),
-        ])
-        return image_transform(image).unsqueeze(0).to(self.device)
 
     def calculate_accuracy(self, *args, **kwargs):
         """
@@ -105,217 +87,9 @@ class EraseDiffEvaluator(BaseEvaluator):
         For the i2p dataset, the config should specify task="i2p" and provide a list of categories.
         """
         self.logger.info("Starting accuracy calculation...")
-
-        # Pull relevant config parameters
-        input_dir = self.config['sampler_output_dir']
-        output_dir = self.config["eval_output_dir"]
-        seed_list = self.config.get("seed_list", [188, 288, 588, 688, 888])
-        dry_run = self.config.get("dry_run", False)
-        task = self.config['task']
-
-        # For the original datasets, input_dir might be modified based on theme, etc.
-        if task in ["style", "class"]:
-            theme = self.config.get("forget_theme", None)
-            if theme is not None:
-                input_dir = os.path.join(input_dir, theme)
-            else:
-                input_dir = os.path.join(input_dir)
-
-        os.makedirs(output_dir, exist_ok=True)
-        self.eval_output_path = os.path.join(
-            output_dir, 
-            f"{self.config.get('forget_theme', 'result')}.json" if task in ["style", "class"] 
-            else os.path.join(output_dir, "result.json")
-        )
-
-        # Initialize results dictionary based on task.
-        if self.dataset_type == "unlearncanvas":
-            if task == "style":
-                # Original style task processing
-                self.results = {
-                    "test_theme": self.config.get("forget_theme", "sd"),
-                    "input_dir": input_dir,
-                    "loss": {th: 0.0 for th in theme_available},
-                    "acc": {th: 0.0 for th in theme_available},
-                    "pred_loss": {th: 0.0 for th in theme_available},
-                    "misclassified": {th: {oth: 0 for oth in theme_available} for th in theme_available}
-                }
-                for idx, test_theme in tqdm(enumerate(theme_available), total=len(theme_available)):
-                    theme_label = idx
-                    for seed in seed_list:
-                        for object_class in class_available:
-                            img_file = f"{test_theme}_{object_class}_seed{seed}.jpg"
-                            img_path = os.path.join(input_dir, img_file)
-                            if not os.path.exists(img_path):
-                                self.logger.warning(f"Image not found: {img_path}")
-                                continue
-
-                            # Preprocess
-                            image = Image.open(img_path)
-                            tensor_img = self.preprocess_image(image)
-
-                            # Forward pass
-                            with torch.no_grad():
-                                res = self.model(tensor_img)
-                                label = torch.tensor([theme_label]).to(self.device)
-                                loss = F.cross_entropy(res, label)
-
-                                # Compute losses
-                                res_softmax = F.softmax(res, dim=1)
-                                pred_loss_val = res_softmax[0][theme_label]
-                                pred_label = torch.argmax(res)
-                                pred_success = (pred_label == theme_label).sum()
-
-                            # Accumulate stats
-                            self.results["loss"][test_theme] += loss.item()
-                            self.results["pred_loss"][test_theme] += pred_loss_val.item() if isinstance(pred_loss_val, torch.Tensor) else pred_loss_val
-                            # Normalize accuracy by number of images processed per theme.
-                            self.results["acc"][test_theme] += (pred_success * 1.0 / (len(class_available) * len(seed_list)))
-                            misclassified_as = theme_available[pred_label.item()]
-                            self.results["misclassified"][test_theme][misclassified_as] += 1
-
-                    if not dry_run:
-                        self.save_results()
-
-            elif task == "class":
-                # Original class task processing
-                self.results = {
-                    "loss": {cls_: 0.0 for cls_ in class_available},
-                    "acc": {cls_: 0.0 for cls_ in class_available},
-                    "pred_loss": {cls_: 0.0 for cls_ in class_available},
-                    "misclassified": {cls_: {other_cls: 0 for other_cls in class_available} for cls_ in class_available}
-                }
-                for test_theme in tqdm(theme_available, total=len(theme_available)):
-                    for seed in seed_list:
-                        for idx, object_class in enumerate(class_available):
-                            label_val = idx
-                            img_file = f"{test_theme}_{object_class}_seed_{seed}.jpg"
-                            img_path = os.path.join(input_dir, img_file)
-                            if not os.path.exists(img_path):
-                                self.logger.warning(f"Image not found: {img_path}")
-                                continue
-
-                            # Preprocess
-                            image = Image.open(img_path)
-                            tensor_img = self.preprocess_image(image)
-                            label = torch.tensor([label_val]).to(self.device)
-
-                            with torch.no_grad():
-                                res = self.model(tensor_img)
-                                loss = F.cross_entropy(res, label)
-                                res_softmax = F.softmax(res, dim=1)
-                                pred_loss_val = res_softmax[0][label_val]
-                                pred_label = torch.argmax(res)
-                                pred_success = (pred_label == label_val).sum()
-
-                            # Accumulate stats
-                            self.results["loss"][object_class] += loss.item()
-                            self.results["pred_loss"][object_class] += pred_loss_val.item() if isinstance(pred_loss_val, torch.Tensor) else pred_loss_val
-                            self.results["acc"][object_class] += (pred_success * 1.0 / (len(class_available) * len(seed_list)))
-                            misclassified_as = class_available[pred_label.item()]
-                            self.results["misclassified"][object_class][misclassified_as] += 1
-
-                    if not dry_run:
-                        self.save_results()
-
-        elif self.dataset_type == "i2p":
-
-            categories = i2p_categories
-            self.results = {
-                "loss": {cat: 0.0 for cat in categories},
-                "acc": {cat: 0.0 for cat in categories},
-                "pred_loss": {cat: 0.0 for cat in categories},
-                "misclassified": {cat: {other_cat: 0 for other_cat in categories} for cat in categories},
-                "input_dir": input_dir
-            }
-            # Iterate over each category and each seed value.
-            for category in tqdm(categories, total=len(categories)):
-                for seed in seed_list:
-                    # Construct filename; adjust the naming convention if necessary.
-                    img_file = f"{category}_seed_{seed}.jpg"
-                    img_path = os.path.join(input_dir, img_file)
-                    if not os.path.exists(img_path):
-                        self.logger.warning(f"Image not found: {img_path}")
-                        continue
-
-                    # Preprocess and forward pass.
-                    image = Image.open(img_path)
-                    tensor_img = self.preprocess_image(image)
-                    # Ground-truth label is the index of the category.
-                    label_idx = categories.index(category)
-                    label = torch.tensor([label_idx]).to(self.device)
-                    with torch.no_grad():
-                        res = self.model(tensor_img)
-                        loss = F.cross_entropy(res, label)
-                        res_softmax = F.softmax(res, dim=1)
-                        pred_loss_val = res_softmax[0][label_idx]
-                        pred_label = torch.argmax(res)
-                        pred_success = (pred_label == label_idx).sum()
-
-                    # Accumulate statistics.
-                    self.results["loss"][category] += loss.item()
-                    self.results["pred_loss"][category] += pred_loss_val.item() if isinstance(pred_loss_val, torch.Tensor) else pred_loss_val
-                    # Here, we assume the accuracy is averaged over the number of seeds per category.
-                    self.results["acc"][category] += (pred_success * 1.0 / len(seed_list))
-                    misclassified_as = categories[pred_label.item()]
-                    self.results["misclassified"][category][misclassified_as] += 1
-
-                if not dry_run:
-                    self.save_results()
-
+        self.results = calculate_accuracy_for_dataset(self.config, self.model)
         
-        elif self.dataset_type == "generic":
-
-            categories = load_categories(self.config["reference_dir"])
-
-            self.results = {
-                "loss": {cat: 0.0 for cat in categories},
-                "acc": {cat: 0.0 for cat in categories},
-                "pred_loss": {cat: 0.0 for cat in categories},
-                "misclassified": {cat: {other_cat: 0 for other_cat in categories} for cat in categories},
-                "input_dir": input_dir
-            }
-            # Iterate over each category and each seed value.
-            for category in tqdm(categories, total=len(categories)):
-                for seed in seed_list:
-                    # Construct filename; adjust the naming convention if necessary.
-                    img_file = f"{category}_seed_{seed}.jpg"
-                    img_path = os.path.join(input_dir, img_file)
-                    if not os.path.exists(img_path):
-                        self.logger.warning(f"Image not found: {img_path}")
-                        continue
-
-                    # Preprocess and forward pass.
-                    image = Image.open(img_path)
-                    tensor_img = self.preprocess_image(image)
-                    # Ground-truth label is the index of the category.
-                    label_idx = categories.index(category)
-                    label = torch.tensor([label_idx]).to(self.device)
-                    with torch.no_grad():
-                        res = self.model(tensor_img)
-                        loss = F.cross_entropy(res, label)
-                        res_softmax = F.softmax(res, dim=1)
-                        pred_loss_val = res_softmax[0][label_idx]
-                        pred_label = torch.argmax(res)
-                        pred_success = (pred_label == label_idx).sum()
-
-                    # Accumulate statistics.
-                    self.results["loss"][category] += loss.item()
-                    self.results["pred_loss"][category] += pred_loss_val.item() if isinstance(pred_loss_val, torch.Tensor) else pred_loss_val
-                    # Here, we assume the accuracy is averaged over the number of seeds per category.
-                    self.results["acc"][category] += (pred_success * 1.0 / len(seed_list))
-                    misclassified_as = categories[pred_label.item()]
-                    self.results["misclassified"][category][misclassified_as] += 1
-
-                if not dry_run:
-                    self.save_results()
-
-        else:
-            self.logger.error(f"Unknown dataset type: {self.dataset_type}")
-            raise ValueError(f"Unknown dataset type: {self.dataset_type}")
-
-        self.logger.info("Accuracy calculation completed.")
-
+        self.logger.info(f"Accuracy: ", self.results)
 
     def calculate_fid_score(self, *args, **kwargs):
         """

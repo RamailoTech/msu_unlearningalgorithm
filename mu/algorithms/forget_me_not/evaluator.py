@@ -18,6 +18,8 @@ sys.modules['stable_diffusion'] = stable_diffusion
 from stable_diffusion.constants.const import theme_available, class_available
 from evaluation.core import BaseEvaluator
 from mu.datasets.constants import *
+from evaluation.evaluators.accuracy import calculate_accuracy_for_dataset
+from evaluation.evaluators.fid import calculate_fid_score
 from evaluation.evaluators import load_style_generated_images,load_style_ref_images,calculate_fid,tensor_to_float
 from mu.algorithms.forget_me_not.configs import ForgetMeNotEvaluationConfig
 from mu.algorithms.forget_me_not import ForgetMeNotSampler
@@ -45,6 +47,7 @@ class ForgetMeNotEvaluator(BaseEvaluator):
         self.config = config.to_dict()
         self.device = self.config['devices'][0]
         self.use_sample = self.config.get('use_sample')
+        self.dataset_type = self.config.get('dataset_type')
         self.sampler = ForgetMeNotSampler(self.config)
         self.model = None
         self.eval_output_path = None
@@ -77,145 +80,17 @@ class ForgetMeNotEvaluator(BaseEvaluator):
     
         self.logger.info("Classification model loaded successfully.")
 
-    def preprocess_image(self, image: Image.Image):
-        """
-        Preprocess the input PIL image before feeding into the classifier.
-        Replicates the transforms from your accuracy.py script.
-        """
-        image_transform = transforms.Compose([
-            transforms.Resize((224, 224)),
-            transforms.ToTensor(),
-            transforms.Normalize([0.5], [0.5]),
-        ])
-        return image_transform(image).unsqueeze(0).to(self.device)
 
     def calculate_accuracy(self, *args, **kwargs):
         """
         Calculate accuracy of the classification model on generated images.
-        Mirrors the logic from your accuracy.py but integrated into a single method.
+        This method now supports both the original datasets and the i2p dataset.
+        For the i2p dataset, the config should specify task="i2p" and provide a list of categories.
         """
         self.logger.info("Starting accuracy calculation...")
-
-        # Pull relevant config
-        theme = self.config.get("forget_theme", None)
-        input_dir = self.config['sampler_output_dir']
-        output_dir = self.config["eval_output_dir"]
-        seed_list = self.config.get("seed_list", [188, 288, 588, 688, 888])
-        dry_run = self.config.get("dry_run", False)
-        task = self.config['task']  
-
-        if theme is not None:
-            input_dir = os.path.join(input_dir, theme)
-        else:
-            input_dir = os.path.join(input_dir)
+        self.results = calculate_accuracy_for_dataset(self.config, self.model)
         
-        os.makedirs(output_dir, exist_ok=True)
-        self.eval_output_path = (os.path.join(output_dir, f"{theme}.json") 
-                       if theme is not None 
-                       else os.path.join(output_dir, "result.json"))
-
-        # Initialize results dictionary
-        self.results = {
-            "test_theme": theme if theme is not None else "sd",
-            "input_dir": input_dir,
-        }
-
-        if task == "style":
-            self.results["loss"] = {th: 0.0 for th in theme_available}
-            self.results["acc"] = {th: 0.0 for th in theme_available}
-            self.results["pred_loss"] = {th: 0.0 for th in theme_available}
-            self.results["misclassified"] = {
-                th: {oth: 0 for oth in theme_available} 
-                for th in theme_available
-            }
-        else:  # task == "class"
-            self.results["loss"] = {cls_: 0.0 for cls_ in class_available}
-            self.results["acc"] = {cls_: 0.0 for cls_ in class_available}
-            self.results["pred_loss"] = {cls_: 0.0 for cls_ in class_available}
-            self.results["misclassified"] = {
-                cls_: {other_cls: 0 for other_cls in class_available} 
-                for cls_ in class_available
-            }
-
-        # Evaluate
-        if task == "style":
-            for idx, test_theme in tqdm(enumerate(theme_available), total=len(theme_available)):
-                theme_label = idx
-                for seed in seed_list:
-                    for object_class in class_available:
-                        img_file = f"{test_theme}_{object_class}_seed{seed}.jpg"
-                        img_path = os.path.join(input_dir, img_file)
-                        if not os.path.exists(img_path):
-                            self.logger.warning(f"Image not found: {img_path}")
-                            continue
-
-                        # Preprocess
-                        image = Image.open(img_path)
-                        tensor_img = self.preprocess_image(image)
-
-                        # Forward pass
-                        with torch.no_grad():
-                            res = self.model(tensor_img)
-                            label = torch.tensor([theme_label]).to(self.device)
-                            loss = F.cross_entropy(res, label)
-
-                            # Compute losses
-                            res_softmax = F.softmax(res, dim=1)
-                            pred_loss_val = res_softmax[0][theme_label]
-                            pred_label = torch.argmax(res)
-                            pred_success = (pred_label == theme_label).sum()
-
-                        # Accumulate stats
-                        self.results["loss"][test_theme] += loss.item()
-                        self.results["pred_loss"][test_theme] += pred_loss_val
-                        self.results["acc"][test_theme] += (pred_success * 1.0 / (len(class_available) * len(self.config['seed_list'])))
-
-                        misclassified_as = theme_available[pred_label.item()]
-                        self.results["misclassified"][test_theme][misclassified_as] += 1
-
-                if not dry_run:
-                    self.save_results()
-
-        else: # task == "class"
-            for test_theme in tqdm(theme_available, total=len(theme_available)):
-                for seed in seed_list:
-                    for idx, object_class in enumerate(class_available):
-                        label_val = idx
-                        img_file = f"{test_theme}_{object_class}_seed_{seed}.jpg"
-                        img_path = os.path.join(input_dir, img_file)
-                        if not os.path.exists(img_path):
-                            self.logger.warning(f"Image not found: {img_path}")
-                            continue
-
-                        # Preprocess
-                        image = Image.open(img_path)
-                        tensor_img = self.preprocess_image(image)
-                        label = torch.tensor([label_val]).to(self.device)
-
-                        with torch.no_grad():
-                            res = self.model(tensor_img)
-                            label = torch.tensor([label_val]).to(self.device)
-                            loss = F.cross_entropy(res, label)
-
-                            # Compute losses
-                            res_softmax = F.softmax(res, dim=1)
-                            pred_loss_val = res_softmax[0][label_val]
-                            pred_label = torch.argmax(res)
-                            pred_success = (pred_label == label_val).sum()
-
-                        # Accumulate stats
-                        self.results["loss"][object_class] += loss.item()
-                        self.results["pred_loss"][object_class] += pred_loss_val
-                        self.results["acc"][object_class] += (pred_success * 1.0 / (len(class_available) * len(self.config['seed_list'])))
-
-                        misclassified_as = class_available[pred_label.item()]
-                        self.results["misclassified"][object_class][misclassified_as] += 1
-
-
-                if not dry_run:
-                    self.save_results()
-
-        self.logger.info("Accuracy calculation completed.")
+        self.logger.info(f"Accuracy: ", self.results)
 
     def calculate_fid_score(self, *args, **kwargs):
         """
@@ -223,36 +98,16 @@ class ForgetMeNotEvaluator(BaseEvaluator):
         generated by EraseDiffSampler vs. some reference images. 
         """
         self.logger.info("Starting FID calculation...")
-        self.theme_available = uc_sample_theme_available_eval if self.use_sample else uc_theme_available
-        self.class_available = uc_sample_class_available_eval if self.use_sample else uc_class_available
+        # self.theme_available = uc_sample_theme_available_eval if self.use_sample else uc_theme_available
+        # self.class_available = uc_sample_class_available_eval if self.use_sample else uc_class_available
         generated_path = self.config["sampler_output_dir"]  
-        reference_path = self.config["reference_dir"]       
-        forget_theme = self.config.get("forget_theme", None) 
-        use_multiprocessing = self.config.get("multiprocessing", False)
-        batch_size = self.config.get("batch_size", 64)
+        
+        if self.dataset_type in ("i2p", "generic"):
+            reference_path = f"{self.config['reference_dir']}/images"
+        elif self.dataset_type == "unlearncanvas":
+            reference_path = self.config['reference_dir']
 
-        images_generated = load_style_generated_images(
-            path=generated_path, 
-            theme_available=self.theme_available,
-            class_available=self.class_available,
-            exclude=forget_theme, 
-            seed=self.config.get("seed_list", [188, 288, 588, 688, 888])
-        )
-        images_reference = load_style_ref_images(
-            path=reference_path, 
-            theme_available=self.theme_available,
-            class_available=self.class_available,
-            use_sample = self.use_sample,
-            exclude=forget_theme
-        )
-
-        fid_value = calculate_fid(
-            images1=images_reference, 
-            images2=images_generated, 
-            use_multiprocessing=use_multiprocessing, 
-            batch_size=batch_size
-        )
-        self.logger.info(f"Calculated FID: {fid_value}")
+        fid_value, _ = calculate_fid_score(generated_path, reference_path)  
         self.results["FID"] = fid_value
 
 

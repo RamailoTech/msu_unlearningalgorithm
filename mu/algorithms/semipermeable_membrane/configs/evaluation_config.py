@@ -32,6 +32,9 @@ class SemipermeableMembraneEvaluationConfig(BaseConfig):
         self.reference_dir = "data/quick-canvas-dataset/sample/"  # path to the original dataset
         self.forget_theme = "Bricks"  # theme to forget
         self.multiprocessing = False  # whether to use multiprocessing
+        self.dataset_type = "unlearncanvas"
+        self.use_sample = True
+
 
         # Override defaults with any provided kwargs
         for key, value in kwargs.items():
@@ -41,8 +44,6 @@ class SemipermeableMembraneEvaluationConfig(BaseConfig):
         """
         Perform basic validation on the config parameters.
         """
-        # if not os.path.exists(self.model_config_path):
-        #     raise FileNotFoundError(f"Model config directory {self.model_config_path} does not exist.")
         if not os.path.exists(self.ckpt_path):
             raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
         if not os.path.exists(self.reference_dir):
@@ -51,6 +52,8 @@ class SemipermeableMembraneEvaluationConfig(BaseConfig):
             os.makedirs(self.eval_output_dir)
         if not os.path.exists(self.sampler_output_dir):
             os.makedirs(self.sampler_output_dir)
+        if self.dataset_type not in ["unlearncanvas", "i2p", "generic"]:
+            raise ValueError(f"Unknown dataset type: {self.dataset_type}")
 
         if any(multiplier <= 0 for multiplier in self.spm_multiplier):
             raise ValueError("SPM multiplier values should be positive.")
