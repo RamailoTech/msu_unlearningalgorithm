@@ -24,10 +24,10 @@ class BaseEvaluator(ABC):
         """Load the model for evaluation."""
         pass
 
-    @abstractmethod
-    def preprocess_image(self, *args, **kwargs):
-        """Preprocess images before evaluation."""
-        pass
+    # @abstractmethod
+    # def preprocess_image(self, *args, **kwargs):
+    #     """Preprocess images before evaluation."""
+    #     pass
 
     @abstractmethod
     def calculate_accuracy(self, *args, **kwargs):
