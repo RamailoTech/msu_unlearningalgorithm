@@ -1,6 +1,7 @@
 # mu/algorithms/saliency_unlearning/data_handler.py
 
 import os
+import random
 import glob
 import logging
 
@@ -332,28 +333,14 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
 
             self.logger.info(f"Generated dataset for category '{category}' with {len(dataset_data[category]['paths'])} samples.")
 
-        # Generate Seed Images dataset: Aggregate seed images from across rows.
         seed_category = "Seed_Images"
         seed_dir = os.path.join(self.processed_dataset_dir, seed_category)
         os.makedirs(seed_dir, exist_ok=True)
-        seed_prompt_list = []
-        seed_path_list = []
-        seed_counter = 0
-
-        # Iterate over all rows for seed images.
-        for _, row in data.iterrows():
-            prompt = row['prompt']
-            # Filename for seed images is generated incrementally.
-            filename = f"{seed_counter}.jpg"
-            seed_counter += 1
-            # Seed images are expected to be stored in images/Seed_Images/
-            image_path = os.path.join(images_dir, seed_category, filename)
-
-            if os.path.exists(image_path):
-                seed_prompt_list.append(prompt)
-                seed_path_list.append(image_path)
-            else:
-                self.logger.warning(f"Image not found: {image_path}")
+        
+        # Select a random category from the available categories.
+        random_category = random.choice(self.categories)
+        seed_prompt_list = dataset_data[random_category]["prompts"]
+        seed_path_list = dataset_data[random_category]["paths"]
 
         # Save the seed prompts and image paths.
         seed_prompts_txt_path = os.path.join(seed_dir, 'prompts.txt')
@@ -363,7 +350,10 @@ class SaliencyUnlearnDataHandler(BaseDataHandler):
         with open(seed_images_txt_path, 'w') as f:
             f.write('\n'.join(seed_path_list))
 
+        self.logger.info(f"Seed images generated using category '{random_category}' with {len(seed_path_list)} samples.")
         self.logger.info("Dataset generation (Generic) completed.")
+
+
 
 
     def load_data(self, data_path: str) -> Any:

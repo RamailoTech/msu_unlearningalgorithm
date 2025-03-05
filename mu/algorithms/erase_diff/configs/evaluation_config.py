@@ -30,6 +30,7 @@ class ErasediffEvaluationConfig(BaseConfig):
         self.reference_dir = "data/quick-canvas-dataset/sample/"  # path to the original dataset
         self.multiprocessing = False  # whether to use multiprocessing
         self.use_sample = True #use sample dataset
+        self.dataset_type = "unlearncanvas"
 
         # Override defaults with any provided kwargs
         for key, value in kwargs.items():
