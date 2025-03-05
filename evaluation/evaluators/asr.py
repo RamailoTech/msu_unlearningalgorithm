@@ -12,34 +12,17 @@ from mu_attack.configs.evaluation import AttackEvaluatorConfig
 from evaluation.core import AttackBaseEvaluator
 
 
-class ASREvaluator(AttackBaseEvaluator):
+# class ASREvaluator(AttackBaseEvaluator):
+class ASREvaluator():
+
     """
     Evaluator for ASR.
     This evaluator computes the ASR (Attack Success Rate) of a set of experiments.
     """
-    def __init__(self, config: AttackEvaluatorConfig, **kwargs):
-        super().__init__(config, **kwargs)
-        
-        
-        for key, value in kwargs.items():
-            if not hasattr(config, key):
-                setattr(config, key, value)
-                continue
-            config_attr = getattr(config, key)
-            if isinstance(config_attr, BaseConfig) and isinstance(value, dict):
-                for sub_key, sub_val in value.items():
-                    setattr(config_attr, sub_key, sub_val)
-            elif isinstance(config_attr, dict) and isinstance(value, dict):
-                config_attr.update(value)
-            else:
-                setattr(config, key, value)
-
-        self.config = config.to_dict()
-        self.output_path = self.config.get('output_path')
-        config.validate_config()
-        self.config = self.config.get("asr", {})
-        self.root = self.config['root']
-        self.root_no_attack = self.config['root_no_attack']
+    def __init__(self,root,root_not_attack , **kwargs):
+        # self.config = self.config.get("asr", {})
+        self.root = root
+        self.root_no_attack = root_not_attack
         self.exps = []
         self.no_attack_exps = []
         self.results = {}  
@@ -93,17 +76,19 @@ class ASREvaluator(AttackBaseEvaluator):
             "pre_ASR": pre_asr
         }
 
-    def save_results(self, *args, **kwargs):
-        """
-        Save the CLIP score results to a JSON file.
-        """
-        output_dir = os.path.dirname(self.output_path)
-        if output_dir:  # Handle cases where self.output_path is just a file name
-            os.makedirs(output_dir, exist_ok=True)
+        return self.results
+
+    # def save_results(self, *args, **kwargs):
+    #     """
+    #     Save the CLIP score results to a JSON file.
+    #     """
+    #     output_dir = os.path.dirname(self.output_path)
+    #     if output_dir:  # Handle cases where self.output_path is just a file name
+    #         os.makedirs(output_dir, exist_ok=True)
             
-        with open(self.output_path, 'w') as json_file:
-            json.dump(self.results, json_file, indent=4)
-        self.logger.info(f'Results saved to {self.output_path}')
+    #     with open(self.output_path, 'w') as json_file:
+    #         json.dump(self.results, json_file, indent=4)
+    #     self.logger.info(f'Results saved to {self.output_path}')
 
     def run(self,*args, **kwargs):
         """
@@ -117,6 +102,6 @@ class ASREvaluator(AttackBaseEvaluator):
         self.compute_score()
 
         # Save results
-        self.save_results()
+        # self.save_results()
 
 
