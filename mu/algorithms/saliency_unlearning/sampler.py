@@ -23,7 +23,14 @@ from mu.helpers.utils import load_ckpt_from_config
 
 
 class SaliencyUnlearningSampler(BaseSampler):
-    """Saliency Unlearning Image Generator class extending a hypothetical BaseImageGenerator."""
+    """Saliency Unlearning Image Generator class extending a hypothetical BaseImageGenerator.
+    
+    Fan, C., Liu, J., Zhang, Y., Wong, E., Wei, D., & Liu, S. (2023).
+
+    SalUn: Empowering Machine Unlearning via Gradient-based Weight Saliency in Both Image Classification and Generation
+
+    https://arxiv.org/abs/2310.12508
+    """
 
     def __init__(self, config: dict, **kwargs):
         """

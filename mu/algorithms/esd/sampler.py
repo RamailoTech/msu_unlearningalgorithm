@@ -23,7 +23,15 @@ from mu.helpers.utils import load_ckpt_from_config
 
 
 class ESDSampler(BaseSampler):
-    """Sampler for the ESD algorithm."""
+    """
+    Sampler for the ESD algorithm.
+    
+    Gandikota, R., Materzyńska, J., Fiotto-Kaufman, J., & Bau, D. (2023).
+
+    Erasing Concepts from Diffusion Models
+
+    Presented at the 2023 IEEE International Conference on Computer Vision
+    """
 
     def __init__(self, model: ESDModel, config: dict, device):
         self.model, self.model_orig = model.models
@@ -67,7 +75,16 @@ class ESDSampler(BaseSampler):
 
 
 class ESDEvaluatorSampler(BaseSampler):
-    """ESD Image Generator class extending a hypothetical BaseImageGenerator."""
+    """
+    ESD Image Generator class extending a hypothetical BaseImageGenerator.
+    
+    @inproceedings{gandikota2023erasing,
+    title={Erasing Concepts from Diffusion Models},
+    author={Rohit Gandikota and Joanna Materzy\'nska and Jaden Fiotto-Kaufman and David Bau},
+    booktitle={Proceedings of the 2023 IEEE International Conference on Computer Vision},
+    year={2023}
+    }
+    """
 
     def __init__(self, config: dict, **kwargs):
         """

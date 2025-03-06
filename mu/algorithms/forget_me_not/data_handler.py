@@ -19,6 +19,12 @@ class ForgetMeNotDataHandler(BaseDataHandler):
     """
     Data Handler for the Forget Me Not algorithm.
     Extends the BaseDataHandler to manage data loading, preprocessing, and data loader creation.
+
+    Zhang, E., Wang, K., Xu, X., Wang, Z., & Shi, H. (2023).
+
+    Forget-Me-Not: Learning to Forget in Text-to-Image Diffusion Models
+
+    https://arxiv.org/abs/2211.08332
     """
 
     def __init__(self, config: Dict, tokenizer):

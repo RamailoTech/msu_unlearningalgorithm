@@ -21,6 +21,12 @@ class ForgetMeNotDataset(BaseDataset):
     """
     Dataset for the Forget Me Not algorithm.
     Pre-processes images and tokenizes prompts for fine-tuning the model.
+    
+    Zhang, E., Wang, K., Xu, X., Wang, Z., & Shi, H. (2023).
+
+    Forget-Me-Not: Learning to Forget in Text-to-Image Diffusion Models
+
+    https://arxiv.org/abs/2211.08332
     """
 
     def __init__(

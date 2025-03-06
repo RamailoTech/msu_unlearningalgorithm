@@ -18,6 +18,12 @@ class EraseDiffDataHandler(BaseDataHandler):
     """
     Concrete data handler for the EraseDiff algorithm.
     Manages forget and remain datasets through EraseDiffDataset.
+
+    Wu, J., Le, T., Hayat, M., & Harandi, M. (2024).
+
+    EraseDiff: Erasing Data Influence in Diffusion Models
+
+    https://arxiv.org/abs/2401.05779
     """
     
     def __init__(

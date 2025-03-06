@@ -14,6 +14,13 @@ class ForgetMeNotEvaluator(BaseEvaluator):
     """
     Example evaluator that calculates classification accuracy on generated images.
     Inherits from the abstract BaseEvaluator.
+
+
+    Zhang, E., Wang, K., Xu, X., Wang, Z., & Shi, H. (2023).
+
+    Forget-Me-Not: Learning to Forget in Text-to-Image Diffusion Models
+
+    https://arxiv.org/abs/2211.08332
     """
 
     def __init__(self,config: ForgetMeNotEvaluationConfig, **kwargs):

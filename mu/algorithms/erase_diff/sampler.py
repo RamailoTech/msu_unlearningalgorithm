@@ -25,7 +25,15 @@ from mu.datasets.constants.i2p_const import i2p_categories
 
 
 class EraseDiffSampler(BaseSampler):
-    """EraseDiff Image Generator class extending a hypothetical BaseImageGenerator."""
+    """
+    EraseDiff Image Generator class extending a hypothetical BaseImageGenerator.
+    
+    Wu, J., Le, T., Hayat, M., & Harandi, M. (2024).
+
+    EraseDiff: Erasing Data Influence in Diffusion Models
+
+    https://arxiv.org/abs/2401.05779
+    """
 
     def __init__(self, config: dict, **kwargs):
         """

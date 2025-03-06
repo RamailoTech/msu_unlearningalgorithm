@@ -17,6 +17,12 @@ from mu.algorithms.erase_diff.configs import EraseDiffConfig
 class EraseDiffAlgorithm(BaseAlgorithm):
     """
     EraseDiffAlgorithm orchestrates the training process for the EraseDiff method.
+
+    Wu, J., Le, T., Hayat, M., & Harandi, M. (2024).
+
+    EraseDiff: Erasing Data Influence in Diffusion Models
+
+    https://arxiv.org/abs/2401.05779
     """
 
     def __init__(self, config: EraseDiffConfig, **kwargs):

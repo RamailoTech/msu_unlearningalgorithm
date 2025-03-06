@@ -12,6 +12,12 @@ class SaliencyUnlearnModel(BaseModel):
     """
     SaliencyUnlearnModel handles loading, saving, and interacting with the Stable Diffusion model.
     Incorporates mask application for saliency-based unlearning.
+
+    Fan, C., Liu, J., Zhang, Y., Wong, E., Wei, D., & Liu, S. (2023).
+
+    SalUn: Empowering Machine Unlearning via Gradient-based Weight Saliency in Both Image Classification and Generation
+
+    https://arxiv.org/abs/2310.12508
     """
 
     def __init__(self, model_config_path: str, ckpt_path: str, mask: Dict[str, torch.Tensor], device: str):

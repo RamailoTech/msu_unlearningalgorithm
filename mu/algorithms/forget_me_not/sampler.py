@@ -12,7 +12,15 @@ from mu.core.base_sampler import BaseSampler
 from mu.datasets.constants import *
 
 class ForgetMeNotSampler(BaseSampler):
-    """ForgetMeNot Image Generator class extending a hypothetical BaseImageGenerator."""
+    """ForgetMeNot Image Generator class extending a hypothetical BaseImageGenerator.
+    
+
+    Zhang, E., Wang, K., Xu, X., Wang, Z., & Shi, H. (2023).
+
+    Forget-Me-Not: Learning to Forget in Text-to-Image Diffusion Models
+
+    https://arxiv.org/abs/2211.08332
+    """
 
     def __init__(self, config: dict, **kwargs):
         """

@@ -13,6 +13,12 @@ class ScissorHandsDataset(BaseDataset):
     Dataset class for the ScissorHands algorithm.
     Extends BaseDataset to handle specific requirements.
     Manages both 'forget' and 'remain' datasets.
+
+    Wu, J., & Harandi, M. (2024).
+
+    Scissorhands: Scrub Data Influence via Connection Sensitivity in Networks
+
+    https://arxiv.org/abs/2401.06187
     """
 
     def __init__(

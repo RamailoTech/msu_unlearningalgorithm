@@ -18,6 +18,12 @@ class ConceptAblationModel(BaseModel):
     """
     ConceptAblationModel handles loading, saving, and interacting with the Stable Diffusion model
     in the context of concept ablation.
+
+    Kumari, N., Zhang, B., Wang, S.-Y., Shechtman, E., Zhang, R., & Zhu, J.-Y. (2023).
+
+    Ablating Concepts in Text-to-Image Diffusion Models
+
+    Presented at the 2023 IEEE International Conference on Computer Vision
     """
 
     def __init__(self, train_config, model_config_path: str, ckpt_path: str, device: str, *args, **kwargs):

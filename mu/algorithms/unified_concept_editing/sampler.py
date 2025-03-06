@@ -13,7 +13,14 @@ from mu.core.base_sampler import BaseSampler
 from mu.datasets.constants import *
 
 class UnifiedConceptEditingSampler(BaseSampler):
-    """Unified Concept editing Image Generator class extending a hypothetical BaseImageGenerator."""
+    """Unified Concept editing Image Generator class extending a hypothetical BaseImageGenerator.
+    
+    Gandikota, R., Orgad, H., Belinkov, Y., Materzyńska, J., & Bau, D. (2023).
+
+    Unified Concept Editing in Diffusion Models
+
+    https://arxiv.org/abs/2308.14761
+    """
 
     def __init__(self, config: dict, **kwargs):
         """

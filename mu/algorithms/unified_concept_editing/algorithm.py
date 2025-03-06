@@ -20,6 +20,12 @@ from mu.algorithms.unified_concept_editing.configs import UnifiedConceptEditingC
 class UnifiedConceptEditingAlgorithm(BaseAlgorithm):
     """
     UnifiedConceptEditingAlgorithm orchestrates the training process for the Unified Concept Editing method.
+
+    Gandikota, R., Orgad, H., Belinkov, Y., Materzyńska, J., & Bau, D. (2023).
+
+    Unified Concept Editing in Diffusion Models
+
+    https://arxiv.org/abs/2308.14761
     """
 
     def __init__(self, config: UnifiedConceptEditingConfig, **kwargs):

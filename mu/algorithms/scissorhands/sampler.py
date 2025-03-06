@@ -23,7 +23,15 @@ from mu.helpers.utils import load_ckpt_from_config
 
 
 class ScissorHandsSampler(BaseSampler):
-    """ScissorHands Image Generator class extending a hypothetical BaseImageGenerator."""
+    """ScissorHands Image Generator class extending a hypothetical BaseImageGenerator.
+    
+
+    Wu, J., & Harandi, M. (2024).
+
+    Scissorhands: Scrub Data Influence via Connection Sensitivity in Networks
+
+    https://arxiv.org/abs/2401.06187
+    """
 
     def __init__(self, config: dict, **kwargs):
         """

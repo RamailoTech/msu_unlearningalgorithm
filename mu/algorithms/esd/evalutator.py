@@ -22,6 +22,12 @@ class ESDEvaluator(BaseEvaluator):
     """
     Example evaluator that calculates classification accuracy on generated images.
     Inherits from the abstract BaseEvaluator.
+
+    Gandikota, R., Materzyńska, J., Fiotto-Kaufman, J., & Bau, D. (2023).
+
+    Erasing Concepts from Diffusion Models
+
+    Presented at the 2023 IEEE International Conference on Computer Vision
     """
 
     def __init__(self,config: ESDEvaluationConfig, **kwargs):

@@ -14,6 +14,13 @@ class SaliencyUnlearnDataset(BaseDataset):
     Dataset class for the SaliencyUnlearn algorithm.
     Extends UnlearnCanvasDataset to handle specific requirements.
     Manages both 'forget' and 'remain' datasets, with support for masks.
+
+
+    Fan, C., Liu, J., Zhang, Y., Wong, E., Wei, D., & Liu, S. (2023).
+
+    SalUn: Empowering Machine Unlearning via Gradient-based Weight Saliency in Both Image Classification and Generation
+
+    https://arxiv.org/abs/2310.12508
     """
 
     def __init__(

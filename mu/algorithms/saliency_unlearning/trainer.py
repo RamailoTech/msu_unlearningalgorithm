@@ -19,6 +19,13 @@ class SaliencyUnlearnTrainer(BaseTrainer):
     """
     Trainer for the SaliencyUnlearn algorithm.
     Handles the training loop, loss computation (including mask application), and optimization.
+
+
+    Fan, C., Liu, J., Zhang, Y., Wong, E., Wei, D., & Liu, S. (2023).
+
+    SalUn: Empowering Machine Unlearning via Gradient-based Weight Saliency in Both Image Classification and Generation
+
+    https://arxiv.org/abs/2310.12508
     """
 
     def __init__(self, model: SaliencyUnlearnModel, config: dict, device: str, data_handler, **kwargs):

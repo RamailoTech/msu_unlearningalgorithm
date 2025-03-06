@@ -33,7 +33,14 @@ MATCHING_METRICS = Literal[
 
 
 class SemipermeableMembraneSampler(BaseSampler):
-    """Semipermeable membrane Image Generator class extending a hypothetical BaseImageGenerator."""
+    """Semipermeable membrane Image Generator class extending a hypothetical BaseImageGenerator.
+    
+    Lyu, M., Yang, Y., Hong, H., Chen, H., Jin, X., He, Y., Xue, H., Han, J., & Ding, G. (2023).
+
+    One-dimensional Adapter to Rule Them All: Concepts, Diffusion Models and Erasing Applications
+
+    https://arxiv.org/abs/2312.16145
+    """
 
     def __init__(self, config: dict, **kwargs):
         """

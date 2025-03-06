@@ -13,6 +13,12 @@ class ScissorHandsEvaluator(BaseEvaluator):
     """
     Example evaluator that calculates classification accuracy on generated images.
     Inherits from the abstract BaseEvaluator.
+
+    Wu, J., & Harandi, M. (2024).
+
+    Scissorhands: Scrub Data Influence via Connection Sensitivity in Networks
+
+    https://arxiv.org/abs/2401.06187
     """
 
     def __init__(self,config: ScissorhandsEvaluationConfig, **kwargs):

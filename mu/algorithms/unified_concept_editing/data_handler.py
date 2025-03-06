@@ -11,6 +11,12 @@ class UnifiedConceptEditingDataHandler(BaseDataHandler):
     """
     DataHandler for Unified Concept Editing.
     Extends the core DataHandler to generate specific prompts based on themes and classes.
+
+    Gandikota, R., Orgad, H., Belinkov, Y., Materzyńska, J., & Bau, D. (2023).
+
+    Unified Concept Editing in Diffusion Models
+
+    https://arxiv.org/abs/2308.14761
     """
 
     def __init__(

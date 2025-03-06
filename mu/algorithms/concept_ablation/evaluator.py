@@ -16,6 +16,13 @@ class ConceptAblationEvaluator(BaseEvaluator):
     """
     Example evaluator that calculates classification accuracy on generated images.
     Inherits from the abstract BaseEvaluator.
+
+
+    Kumari, N., Zhang, B., Wang, S.-Y., Shechtman, E., Zhang, R., & Zhu, J.-Y. (2023).
+
+    Ablating Concepts in Text-to-Image Diffusion Models
+
+    Presented at the 2023 IEEE International Conference on Computer Vision
     """
 
     def __init__(self,config: ConceptAblationEvaluationConfig, **kwargs):

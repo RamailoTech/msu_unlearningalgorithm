@@ -11,6 +11,12 @@ class UnifiedConceptEditingEvaluator(BaseEvaluator):
     """
     Example evaluator that calculates classification accuracy on generated images.
     Inherits from the abstract BaseEvaluator.
+
+    Gandikota, R., Orgad, H., Belinkov, Y., Materzyńska, J., & Bau, D. (2023).
+
+    Unified Concept Editing in Diffusion Models
+
+    https://arxiv.org/abs/2308.14761
     """
 
     def __init__(self,config:UceEvaluationConfig, **kwargs):

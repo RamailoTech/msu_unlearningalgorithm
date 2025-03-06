@@ -24,6 +24,12 @@ from mu.datasets.constants import *
 class SelectiveAmnesiaDataHandler(pl.LightningDataModule):
     """
     Concrete data handler for the Selective Amnesia algorithm.
+
+    Heng, A., & Soh, H. (2023).
+
+    Selective Amnesia: A Continual Learning Approach to Forgetting in Deep Generative Models
+
+    https://arxiv.org/abs/2305.10120
     """
     def __init__(self, train_batch_size, val_batch_size, raw_dataset_dir, processed_dataset_dir,template,template_name, dataset_type,use_sample = False, train=None, validation=None, test=None, predict=None,
                  wrap=False, num_workers=None, shuffle_test_loader=False, use_worker_init_fn=False,

@@ -17,6 +17,12 @@ from mu.algorithms.scissorhands.configs import ScissorHandsConfig
 class ScissorHandsAlgorithm(BaseAlgorithm):
     """
     ScissorhandsAlgorithm orchestrates the training process for the Scissorhands method.
+
+    Wu, J., & Harandi, M. (2024).
+
+    Scissorhands: Scrub Data Influence via Connection Sensitivity in Networks
+
+    https://arxiv.org/abs/2401.06187
     """
 
     def __init__(self, config: ScissorHandsConfig, **kwargs):

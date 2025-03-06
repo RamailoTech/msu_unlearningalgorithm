@@ -1,4 +1,4 @@
-# mu_defense/algorithms/adv_unlearn/generate_example_image.py
+# mu_defense/algorithms/adv_unlearn/image_generator.py
 
 import os
 import pandas as pd

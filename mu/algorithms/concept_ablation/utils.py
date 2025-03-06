@@ -26,7 +26,14 @@ from stable_diffusion.ldm.data.base import Txt2ImgIterableBaseDataset
 
 def worker_init_fn(_):
     '''
-    Initialize the worker seed for pytorch dataloader.'''
+    Initialize the worker seed for pytorch dataloader.
+    
+    Kumari, N., Zhang, B., Wang, S.-Y., Shechtman, E., Zhang, R., & Zhu, J.-Y. (2023).
+
+    Ablating Concepts in Text-to-Image Diffusion Models
+
+    Presented at the 2023 IEEE International Conference on Computer Vision
+    '''
     worker_info = torch.utils.data.get_worker_info()
 
     dataset = worker_info.dataset

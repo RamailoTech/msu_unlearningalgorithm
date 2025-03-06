@@ -14,6 +14,12 @@ class ScissorHandsTrainer(BaseTrainer):
     """
     Trainer for the ScissorHands algorithm.
     Handles the training loop, loss computation, and optimization.
+
+    Wu, J., & Harandi, M. (2024).
+
+    Scissorhands: Scrub Data Influence via Connection Sensitivity in Networks
+
+    https://arxiv.org/abs/2401.06187
     """
 
     def __init__(self, model: ScissorHandsModel, config: dict, device: str,  data_handler: ScissorHandsDataHandler, **kwargs):

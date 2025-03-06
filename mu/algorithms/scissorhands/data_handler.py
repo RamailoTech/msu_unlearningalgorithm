@@ -18,6 +18,12 @@ class ScissorHandsDataHandler(BaseDataHandler):
     """
     Concrete data handler for the ScissorHands algorithm.
     Manages forget and remain datasets through ScissorHandsDataset.
+
+    Wu, J., & Harandi, M. (2024).
+
+    Scissorhands: Scrub Data Influence via Connection Sensitivity in Networks
+
+    https://arxiv.org/abs/2401.06187
     """
     
     def __init__(

@@ -34,6 +34,13 @@ class ForgetMeNotTrainer(BaseTrainer):
     """
     Trainer for the Forget Me Not algorithm.
     Handles both the Textual Inversion (TI) step and the attention-based step.
+
+
+    Zhang, E., Wang, K., Xu, X., Wang, Z., & Shi, H. (2023).
+
+    Forget-Me-Not: Learning to Forget in Text-to-Image Diffusion Models
+
+    https://arxiv.org/abs/2211.08332
     """
 
     def __init__(self, config: Dict, data_handler, model, device):

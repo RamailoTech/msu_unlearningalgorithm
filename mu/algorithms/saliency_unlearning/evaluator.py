@@ -23,6 +23,12 @@ class SaliencyUnlearningEvaluator(BaseEvaluator):
     """
     Example evaluator that calculates classification accuracy on generated images.
     Inherits from the abstract BaseEvaluator.
+
+    Fan, C., Liu, J., Zhang, Y., Wong, E., Wei, D., & Liu, S. (2023).
+
+    SalUn: Empowering Machine Unlearning via Gradient-based Weight Saliency in Both Image Classification and Generation
+
+    https://arxiv.org/abs/2310.12508
     """
 
     def __init__(self,config:SaliencyUnlearningEvaluationConfig, **kwargs):
@@ -31,6 +37,7 @@ class SaliencyUnlearningEvaluator(BaseEvaluator):
             sampler (Any): An instance of a BaseSampler-derived class (e.g., SaliencyUnlearningSampler).
             config (Dict[str, Any]): A dict of hyperparameters / evaluation settings.
             **kwargs: Additional overrides for config.
+
         """
         super().__init__(config, **kwargs)
         self.config = config.__dict__

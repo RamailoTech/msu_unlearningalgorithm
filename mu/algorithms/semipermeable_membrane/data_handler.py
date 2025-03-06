@@ -11,6 +11,12 @@ class SemipermeableMembraneDataHandler(BaseDataHandler):
     """
     DataHandler for the Semipermeable Membrane algorithm.
     Extends the core DataHandler to generate specific prompts based on themes and classes.
+
+    Lyu, M., Yang, Y., Hong, H., Chen, H., Jin, X., He, Y., Xue, H., Han, J., & Ding, G. (2023).
+
+    One-dimensional Adapter to Rule Them All: Concepts, Diffusion Models and Erasing Applications
+
+    https://arxiv.org/abs/2312.16145
     """
 
     def __init__(

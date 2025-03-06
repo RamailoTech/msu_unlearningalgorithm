@@ -12,6 +12,13 @@ class EraseDiffDataset(BaseDataset):
     Dataset class for the EraseDiff algorithm.
     Extends BaseDataset to handle specific requirements.
     Manages both 'forget' and 'remain' datasets.
+
+    @article{wu2024erasediff,
+    title={EraseDiff: Erasing Data Influence in Diffusion Models},
+    author={Wu, Jing and Le, Trung and Hayat, Munawar and Harandi, Mehrtash},
+    journal={arXiv preprint arXiv:2401.05779},
+    year={2024}
+    }
     """
 
     def __init__(

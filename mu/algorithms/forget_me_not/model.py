@@ -16,6 +16,13 @@ class ForgetMeNotModel(BaseModel):
     Model class for the Forget Me Not algorithm.
     Loads and prepares all necessary components from the Stable Diffusion model,
     applies TI weights if provided, and prepares the pipeline for attention training.
+
+
+    Zhang, E., Wang, K., Xu, X., Wang, Z., & Shi, H. (2023).
+
+    Forget-Me-Not: Learning to Forget in Text-to-Image Diffusion Models
+
+    https://arxiv.org/abs/2211.08332
     """
 
     def __init__(self, config: dict):

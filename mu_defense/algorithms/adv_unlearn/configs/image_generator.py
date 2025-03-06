@@ -1,4 +1,4 @@
-# mu_defense/algorithms/adv_unlearn/configs/example_img_generator_config.py
+# mu_defense/algorithms/adv_unlearn/configs/image_generator.py
 
 import os
 

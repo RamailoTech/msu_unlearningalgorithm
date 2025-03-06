@@ -14,6 +14,12 @@ from mu.core import BaseModel
 class UnifiedConceptEditingModel(BaseModel):
     """
     UnifiedConceptEditingModel handles loading, saving, and interacting with the Stable Diffusion model using diffusers.
+
+    Gandikota, R., Orgad, H., Belinkov, Y., Materzyńska, J., & Bau, D. (2023).
+
+    Unified Concept Editing in Diffusion Models
+
+    https://arxiv.org/abs/2308.14761
     """
 
     def __init__(self, ckpt_path: str, device: str):

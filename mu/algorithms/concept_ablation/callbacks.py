@@ -16,6 +16,14 @@ from pytorch_lightning.utilities import rank_zero_info,rank_zero_only
 
 
 class SetupCallback(Callback):
+
+    """
+    Kumari, N., Zhang, B., Wang, S.-Y., Shechtman, E., Zhang, R., & Zhu, J.-Y. (2023).
+
+    Ablating Concepts in Text-to-Image Diffusion Models
+
+    Presented at the 2023 IEEE International Conference on Computer Vision
+    """
     def __init__(self, resume, now, logdir, ckptdir, cfgdir, config, lightning_config):
         super().__init__()
         self.resume = resume
