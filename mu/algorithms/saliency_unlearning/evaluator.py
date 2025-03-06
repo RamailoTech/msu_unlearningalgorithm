@@ -51,31 +51,6 @@ class SaliencyUnlearningEvaluator(BaseEvaluator):
         self.saliency_unlearning_sampler = SaliencyUnlearningSampler(self.config)
 
 
-    def load_model(self, *args, **kwargs):
-        """
-        Load the classification model for evaluation, using 'timm' 
-        or any approach you prefer. 
-        We assume your config has 'ckpt_path' and 'task' keys, etc.
-        """
-        self.logger.info("Loading classification model...")
-        classification_model = self.config.get("classification_model")
-        model = timm.create_model(
-            classification_model, 
-            pretrained=True
-        ).to(self.device)
-        task = self.config['task'] # "style" or "class"
-        num_classes = len(theme_available) if task == "style" else len(class_available)
-        # num_classes = 2 
-        model.head = torch.nn.Linear(1024, num_classes).to(self.device)
-
-        # Load checkpoint
-        ckpt_path = self.config["classifier_ckpt_path"]
-        self.logger.info(f"Loading classification checkpoint from: {ckpt_path}")
-        model.load_state_dict(torch.load(ckpt_path, map_location=self.device)["model_state_dict"])
-        model.eval()
-        self.logger.info("Classification model loaded successfully.")
-        return model
-
     def generate_images(self, *args, **kwargs):
 
         self.sampler()

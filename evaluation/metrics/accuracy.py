@@ -1,3 +1,5 @@
+# evaluation/metrics/accuracy.py
+
 import os
 import sys
 from tqdm import tqdm
@@ -9,17 +11,20 @@ from models import stable_diffusion
 sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.constants.const import theme_available, class_available
+
 from mu.datasets.constants import i2p_categories
-from evaluation.helpers.utils import preprocess_image, load_categories
+from evaluation.helpers.utils import preprocess_image, load_categories, load_model
 
 
-def accuracy_score(gen_image_dir,
-                   device, 
+
+def accuracy_score(gen_image_dir, 
                     dataset_type,
-                    model,
+                    classifier_ckpt_path,
                     forget_theme,
+                    device = "0",
+                    classification_model = "vit_large_patch16_224",
                     task = "class",
-                    reference_dir=None, 
+                    reference_dir=None,  #if using generic dataset then provide prompt path to extract categories
                     seed_list=[188, 288, 588, 688, 888]):
     """
     Calculate accuracy (and related metrics) for generated images for different dataset types.
@@ -35,11 +40,13 @@ def accuracy_score(gen_image_dir,
     Returns:
         tuple: (results (dict), eval_output_path (str))
     """
-    
-    input_dir = gen_image_dir 
+    #TODO assert datatype as it works for unlearn only for now.
+
     device = [
             f"cuda:{int(d.strip())}" for d in device.split(",")
         ][0]
+    model = load_model(classifier_ckpt_path, device,classification_model,task)
+    input_dir = gen_image_dir 
 
     # For the original datasets, modify input_dir based on theme if applicable.
     if task in ["style", "class"]:

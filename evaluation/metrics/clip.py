@@ -1,6 +1,6 @@
 
 
-# mu_attack/evaluators/clip_score.py
+# evaluation/metrics/clip.py
 
 from typing import Any, Dict
 import logging

@@ -33,10 +33,7 @@ class ImageGenerator(BaseImageGenerator):
     
     def __init__(self, config: ImageGeneratorConfig, **kwargs):
         super().__init__(config, **kwargs)
-        # Extract configuration parameters
-        # self.config = config.__dict__
-        # for key, value in kwargs.items():
-        #     setattr(config, key, value)
+
         self.model_name = self.config.get("model_name")
         self.target_ckpt = self.config.get("target_ckpt")  # may be None
         self.save_path = self.config["save_path"]
@@ -50,7 +47,7 @@ class ImageGenerator(BaseImageGenerator):
         self.origin_or_target = self.config.get("origin_or_target", "target")
 
         # Parse device(s)
-        self.device = [f"cuda:{int(d.strip())}" for d in self.config.get("device", "0").split(",")]
+        self.device = [f"cuda:{int(d.strip())}" for d in self.config.get("devices", "0").split(",")]
 
         # Determine default model directory based on model_name (used when no target checkpoint is provided)
         if self.model_name == 'SD-v1-4':

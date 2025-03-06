@@ -1,5 +1,8 @@
 
 import os
+import timm
+import torch
+import sys
 import glob
 
 import json
@@ -9,6 +12,11 @@ import pandas as pd
 from torchvision import transforms
 from PIL import Image
 from evaluation.helpers.parser import get_parser
+
+from models import stable_diffusion
+sys.modules['stable_diffusion'] = stable_diffusion
+
+from stable_diffusion.constants.const import theme_available, class_available
 
 def preprocess_image(device, image: Image.Image):
     """
@@ -144,3 +152,26 @@ def load_and_prepare_images(image_path,target_size=(224, 224)):
                 print(f"Error loading image {filename}: {e}")
 
         return np.array(image_arrays)
+
+def load_model(classifier_ckpt_path, device ,classification_model = "vit_large_patch16_224",task="class"):
+    """
+    Load the classification model for evaluation, using 'timm' 
+    or any approach you prefer. 
+    We assume your config has 'ckpt_path' and 'task' keys, etc.
+    """
+    print("Loading classification model...")
+    model = timm.create_model(
+        classification_model, 
+        pretrained=True
+    ).to(device)
+    task = task # "style" or "class"
+    num_classes = len(theme_available) if task == "style" else len(class_available)
+    model.head = torch.nn.Linear(1024, num_classes).to(device)
+
+    # Load checkpoint
+    ckpt_path = classifier_ckpt_path
+    print(f"Loading classification checkpoint from: {ckpt_path}")
+    model.load_state_dict(torch.load(ckpt_path, map_location=device)["model_state_dict"])
+    model.eval()
+    print("Classification model loaded successfully.")
+    return model

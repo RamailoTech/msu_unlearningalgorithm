@@ -56,8 +56,7 @@ class ForgetMeNotSampler(BaseSampler):
         return images, [False]
 
     def sample(self) -> None:
-        steps = self.config["ddim_steps"]
-        theme = self.config["forget_theme"]         
+        steps = self.config["ddim_steps"]   
         cfg_text_list = self.config["cfg_text_list"]    
         seed = self.config["seed"]
         H = self.config["image_height"]

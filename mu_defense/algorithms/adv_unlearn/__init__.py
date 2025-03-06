@@ -4,7 +4,7 @@ from .dataset_handler import AdvUnlearnDatasetHandler
 from .compvis_trainer import AdvUnlearnCompvisTrainer
 from .diffuser_trainer import AdvUnlearnDiffuserTrainer
 from .evaluator import MUDefenseEvaluator
-from.generate_example_image import ImageGenerator
+from.image_generator import ImageGenerator
 # from .algorithm import AdvUnlearnAlgorithm
 # from .trainer import AdvUnlearnTrainer
 

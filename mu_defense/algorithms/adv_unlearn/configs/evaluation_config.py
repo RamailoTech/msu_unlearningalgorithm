@@ -8,9 +8,8 @@ class MUDefenseEvaluationConfig(BaseConfig):
     def __init__(self):
         self.model_name = "SD-v1-4"
         self.target_ckpt = ""
-        self.save_path = ""
+        self.save_path = "output/images"
         self.prompts_path = "data/prompts/visualization_example.csv"
-        self.device = "0"
         self.guidance_scale = 7.5
         self.image_size = 512
         self.ddim_steps = 100

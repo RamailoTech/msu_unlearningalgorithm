@@ -20,18 +20,12 @@ class SemipermeableMembraneEvaluationConfig(BaseConfig):
         self.base_model = "CompVis/stable-diffusion-v1-4"  # base model for the algorithm
         self.spm_path = ["outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"]  # path to semipermeable membrane model
         self.ckpt_path = "outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"  # path to finetuned model checkpoint
-        self.model_ckpt_path = "CompVis/stable-diffusion-v1-4"  # path to the base model checkpoint
-        self.theme = "Bricks"  # theme for evaluation
+        # self.model_ckpt_path = "CompVis/stable-diffusion-v1-4"  # path to the base model checkpoint
         self.seed = 188  # random seed
         self.devices = "0"  # GPU device ID
-        self.task = "class"  # task type
         self.sampler_output_dir = "outputs/eval_results/mu_results/semipermeable_membrane/"  # directory to save sampler outputs
-        self.seed_list = [188]  # list of seeds for evaluation
-        self.classification_model = "vit_large_patch16_224"  # classification model for evaluation
-        self.eval_output_dir = "outputs/eval_results/mu_results/semipermeable_membrane/"  # directory to save evaluation results
-        self.reference_dir = "data/quick-canvas-dataset/sample/"  # path to the original dataset
         self.forget_theme = "Bricks"  # theme to forget
-        self.multiprocessing = False  # whether to use multiprocessing
+        # self.multiprocessing = False  # whether to use multiprocessing
         self.dataset_type = "unlearncanvas"
         self.use_sample = True
 
@@ -46,10 +40,7 @@ class SemipermeableMembraneEvaluationConfig(BaseConfig):
         """
         if not os.path.exists(self.ckpt_path):
             raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
-        if not os.path.exists(self.reference_dir):
-            raise FileNotFoundError(f"Reference directory {self.reference_dir} does not exist.")
-        if not os.path.exists(self.eval_output_dir):
-            os.makedirs(self.eval_output_dir)
+
         if not os.path.exists(self.sampler_output_dir):
             os.makedirs(self.sampler_output_dir)
         if self.dataset_type not in ["unlearncanvas", "i2p", "generic"]:
