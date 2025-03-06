@@ -12,7 +12,8 @@ __all__ = ["AdvUnlearnModel",
            "AdvUnlearnDatasetHandler",
              "AdvUnlearnCompvisTrainer",
              "AdvUnlearnDiffuserTrainer",
-             "MUDefenseEvaluator"
+             "MUDefenseEvaluator",
+             "ImageGenerator"
             #  "AdvUnlearnAlgorithm",
             #  "AdvUnlearnTrainer"
 ]

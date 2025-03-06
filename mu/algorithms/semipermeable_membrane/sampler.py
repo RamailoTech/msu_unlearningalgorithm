@@ -289,6 +289,7 @@ class SemipermeableMembraneSampler(BaseSampler):
                     self.save_image(image, output_path)
 
         self.logger.info("Image generation completed.")
+        return output_dir
 
     def save_image(self, image: Image.Image, file_path: str) -> None:
         """

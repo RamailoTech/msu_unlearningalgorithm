@@ -126,6 +126,7 @@ class ScissorHandsSampler(BaseSampler):
                             self.logger.info(f"Image saved: {outpath}")
 
         self.logger.info("Image generation completed successfully.")
+        return output_dir
 
     def save_image(self, image: Image.Image, file_path: str) -> None:
         """

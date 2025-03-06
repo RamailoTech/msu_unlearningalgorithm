@@ -21,7 +21,7 @@ from models import stable_diffusion
 sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.ldm.models.diffusion.ddim import DDIMSampler
-from mu.datasets.constants.i2p_const import i2p_categories, i2p_sample_categories
+from mu.datasets.constants.i2p_const import i2p_categories
 
 
 class EraseDiffSampler(BaseSampler):
@@ -192,6 +192,7 @@ class EraseDiffSampler(BaseSampler):
                                 self.logger.info(f"Image saved: {outpath}")
 
         self.logger.info("Image generation completed successfully.")
+        return output_dir
 
     def save_image(self, image: Image.Image, file_path: str) -> None:
         """

@@ -46,8 +46,8 @@ class ErasediffEvaluationConfig(BaseConfig):
             raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
         if not os.path.exists(self.classifier_ckpt_path):
             raise FileNotFoundError(f"Classifier checkpoint file {self.classifier_ckpt_path} does not exist.")
-        if not os.path.exists(self.reference_dir):
-            raise FileNotFoundError(f"Reference directory {self.reference_dir} does not exist.")
+        # if not os.path.exists(self.reference_dir):
+        #     raise FileNotFoundError(f"Reference directory {self.reference_dir} does not exist.")
         if not os.path.exists(self.eval_output_dir):
             os.makedirs(self.eval_output_dir)
         if not os.path.exists(self.sampler_output_dir):

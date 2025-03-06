@@ -4,30 +4,23 @@ from tqdm import tqdm
 import torch
 import torch.nn.functional as F
 from PIL import Image
-from torchvision import transforms
 
 from models import stable_diffusion
 sys.modules['stable_diffusion'] = stable_diffusion
 
 from stable_diffusion.constants.const import theme_available, class_available
 from mu.datasets.constants import i2p_categories
-from mu.helpers.utils import load_categories  
+from evaluation.helpers.utils import preprocess_image, load_categories
 
 
-
-def preprocess_image(device, image: Image.Image):
-    """
-    Preprocess the input PIL image before feeding into the classifier.
-    Replicates the transforms from your accuracy.py script.
-    """
-    image_transform = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-        transforms.Normalize([0.5], [0.5]),
-    ])
-    return image_transform(image).unsqueeze(0).to(device)
-
-def calculate_accuracy_for_dataset(config, model):
+def accuracy_score(gen_image_dir,
+                   device, 
+                    dataset_type,
+                    model,
+                    forget_theme,
+                    task = "class",
+                    reference_dir=None, 
+                    seed_list=[188, 288, 588, 688, 888]):
     """
     Calculate accuracy (and related metrics) for generated images for different dataset types.
     
@@ -37,35 +30,29 @@ def calculate_accuracy_for_dataset(config, model):
         model (torch.nn.Module): The classification model.
         preprocess_image (func): A function to preprocess PIL images.
         device (str): The device to use (e.g. "cuda" or "cpu").
+        reference_dir (str): path to generic dataset for prompt_csv path
     
     Returns:
         tuple: (results (dict), eval_output_path (str))
     """
-    dataset_type = config['dataset_type']
-    device = config['devices'][0]
-    input_dir = config['sampler_output_dir']
-    output_dir = config["eval_output_dir"]
-    seed_list = config.get("seed_list", [188, 288, 588, 688, 888])
-    dry_run = config.get("dry_run", False)
-    task = config['task']
+    
+    input_dir = gen_image_dir 
+    device = [
+            f"cuda:{int(d.strip())}" for d in device.split(",")
+        ][0]
 
     # For the original datasets, modify input_dir based on theme if applicable.
     if task in ["style", "class"]:
-        theme = config.get("forget_theme", None)
+        theme = forget_theme
         if theme is not None:
             input_dir = os.path.join(input_dir, theme)
-    
-    os.makedirs(output_dir, exist_ok=True)
-    eval_output_path = os.path.join(
-        output_dir, 
-        f"{config.get('forget_theme', 'result')}.json" if task in ["style", "class"] else "result.json"
-    )
+
 
     results = {}
     if dataset_type == "unlearncanvas":
         if task == "style":
             results = {
-                "test_theme": config.get("forget_theme", "sd"),
+                "test_theme": forget_theme,
                 "input_dir": input_dir,
                 "loss": {th: 0.0 for th in theme_available},
                 "acc": {th: 0.0 for th in theme_available},
@@ -160,7 +147,7 @@ def calculate_accuracy_for_dataset(config, model):
                 results["misclassified"][category][misclassified_as] += 1
 
     elif dataset_type == "generic":
-        categories = load_categories(config["reference_dir"])
+        categories = load_categories(reference_dir)
         results = {
             "loss": {cat: 0.0 for cat in categories},
             "acc": {cat: 0.0 for cat in categories},
@@ -195,3 +182,4 @@ def calculate_accuracy_for_dataset(config, model):
         raise ValueError(f"Unknown dataset type: {dataset_type}")
 
     return results
+

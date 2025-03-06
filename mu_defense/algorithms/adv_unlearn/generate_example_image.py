@@ -34,9 +34,9 @@ class ImageGenerator(BaseImageGenerator):
     def __init__(self, config: ImageGeneratorConfig, **kwargs):
         super().__init__(config, **kwargs)
         # Extract configuration parameters
-        self.config = config.__dict__
-        for key, value in kwargs.items():
-            setattr(config, key, value)
+        # self.config = config.__dict__
+        # for key, value in kwargs.items():
+        #     setattr(config, key, value)
         self.model_name = self.config.get("model_name")
         self.target_ckpt = self.config.get("target_ckpt")  # may be None
         self.save_path = self.config["save_path"]
@@ -220,3 +220,5 @@ class ImageGenerator(BaseImageGenerator):
             # Save images
             for num, im in enumerate(pil_images):
                 im.save(os.path.join(folder_path, f"{case_number}_{num}.png"))
+
+            return folder_path
