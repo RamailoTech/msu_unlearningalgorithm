@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Config - Unlearn Diff</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Config";
+        var mkdocs_page_input_path = "evaluation/configs/uce.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> Unlearn Diff
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../usage/installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../usage/unlearn_algorithm_usage/">How to use existing unlearning algorithms</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../usage/how_to_evaluate/">How to evaluate</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Unlearn Algorithms</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" >Concept Ablation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/concept_ablation/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/concept_ablation/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/concept_ablation/">Configs</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Erase Diff</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/erase_diff/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/erase_diff/">Configs</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >ESD</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/esd/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/esd/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/esd/">Configs</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Forget Me Not</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/forget_me_not/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/forget_me_not/">Configs</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Saliency Unlearning</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/saliency/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/saliency/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/saliency/">Configs</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Scissor Hands</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/scissorhands/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/scissorhands/">Configs</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Selective Amnesia</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/selective_amnesia/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/selective_amnesia/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/selective_amnesia/">Configs</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Semi Permeable Membrane</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/semipermeable_membrane/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/semipermeable_membrane/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/semipermeable_membrane/">Configs</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Unified Concept Editing</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/algorithms/uce/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/examples/uce/">Examples</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/configs/uce/">Configs</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Adv Unlearn</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/mu_defense/adv_unlearn/">Usage</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../unlearn/mu_defense/config/">Config</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Evaluation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" >Non-Attack evalaution</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" >No attack</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/no_attack/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/configs/no_attack/">Config</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Robustness Eval UnlearnDiffAtk</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/hard_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/configs/hard_prompt/">Config</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Random</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/random/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/configs/random/">Config</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Seed Search</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/seed_search/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/configs/seed_search/">Config</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Text Grad</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/text_grad/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/configs/text_grad/">Config</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Utility Eval</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" >Concept Ablation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../concept_ablation/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../concept_ablation/">Config</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../erase_diff/">Config</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >ESD</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../esd/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../esd/">Config</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../forget_me_not/">Config</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Saliency Unlearning</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../saliency/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../saliency/">Config</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../scissorhands/">Config</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Semi Permeable Membrane</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../semipermeable_membrane/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../semipermeable_membrane/">Config</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" >Unified Concept Editing</a>
+    <ul class="current">
+                <li class="toctree-l3"><a class="reference internal" href="../../uce/">Usage</a>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">Config</a>
+    <ul class="current">
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >MU_Defense</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../adv_unlearn_evaluation/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../adv_unlearn_evaluation/">Config</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../contributing/">How to contribute</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">Unlearn Diff</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Evaluation</li>
+          <li class="breadcrumb-item">Utility Eval</li>
+          <li class="breadcrumb-item">Unified Concept Editing</li>
+      <li class="breadcrumb-item active">Config</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h4 id="description-of-parameters-in-evaluation_configyaml"><strong>Description of parameters in evaluation_config.yaml</strong></h4>
+<p>The <code>evaluation_config.yaml</code> file contains the necessary parameters for running the unified_concept_editing evaluation framework. Below is a detailed description of each parameter along with examples.</p>
+<hr />
+<h3 id="model-configuration"><strong>Model Configuration:</strong></h3>
+<ul>
+<li>ckpt_path : Path to the finetuned Stable Diffusion checkpoint file to be evaluated.  </li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"outputs/unified_concept_editing/finetuned_models/unified_concept_editing_Abstractionism_model.pth"</code></p>
+</li>
+<li>
+<p>classification_model : Specifies the classification model used for evaluating the generated outputs.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li><em>Example:</em> <code>"vit_large_patch16_224"</code></li>
+</ul>
+<hr />
+<h3 id="training-and-sampling-parameters"><strong>Training and Sampling Parameters:</strong></h3>
+<ul>
+<li>theme : Specifies the theme or concept being evaluated for removal from the model's outputs.  </li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"Bricks"</code></p>
+</li>
+<li>
+<p>devices : CUDA device IDs to be used for the evaluation process.  </p>
+</li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"0"</code>  </p>
+</li>
+<li>
+<p>cfg_text : Classifier-free guidance scale value for image generation. Higher values increase the strength of the conditioning prompt.  </p>
+</li>
+<li><em>Type:</em> <code>float</code>  </li>
+<li>
+<p><em>Example:</em> <code>9.0</code>  </p>
+</li>
+<li>
+<p>seed : Random seed for reproducibility of results.  </p>
+</li>
+<li><em>Type:</em> <code>int</code>  </li>
+<li>
+<p><em>Example:</em> <code>188</code></p>
+</li>
+<li>
+<p>ddim_steps : Number of steps for the DDIM (Denoising Diffusion Implicit Models) sampling process.  </p>
+</li>
+<li><em>Type:</em> <code>int</code>  </li>
+<li>
+<p><em>Example:</em> <code>100</code></p>
+</li>
+<li>
+<p>ddim_eta : DDIM eta value for controlling the amount of randomness during sampling. Set to <code>0</code> for deterministic sampling.  </p>
+</li>
+<li><em>Type:</em> <code>float</code>  </li>
+<li>
+<p><em>Example:</em> <code>0.0</code></p>
+</li>
+<li>
+<p>image_height : Height of the generated images in pixels.  </p>
+</li>
+<li><em>Type:</em> <code>int</code>  </li>
+<li>
+<p><em>Example:</em> <code>512</code></p>
+</li>
+<li>
+<p>image_width : Width of the generated images in pixels.  </p>
+</li>
+<li><em>Type:</em> <code>int</code>  </li>
+<li><em>Example:</em> <code>512</code></li>
+</ul>
+<hr />
+<h3 id="output-and-logging-parameters"><strong>Output and Logging Parameters:</strong></h3>
+<ul>
+<li>sampler_output_dir : Directory where generated images will be saved during evaluation.  </li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li><em>Example:</em> <code>"outputs/eval_results/mu_results/unified_concept_editing/"</code></li>
+</ul>
+<hr />
+<h3 id="optimization-parameters"><strong>Optimization Parameters:</strong></h3>
+<ul>
+<li>forget_theme : Concept or style intended for removal in the evaluation process.  </li>
+<li><em>Type:</em> <code>str</code>  </li>
+<li>
+<p><em>Example:</em> <code>"Bricks"</code></p>
+</li>
+<li>
+<p>seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  </p>
+</li>
+<li><em>Type:</em> <code>list</code>  </li>
+<li>
+<p><em>Example:</em> <code>["188"]</code></p>
+</li>
+<li>
+<p>use_sample: If you want to just run on sample dataset then set it as True. By default it is True.</p>
+</li>
+<li><em>Type:</em> <code>bool</code>  </li>
+<li><em>Example:</em> <code>True</code></li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../uce/" class="btn btn-neutral float-left" title="Usage"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../adv_unlearn_evaluation/" class="btn btn-neutral float-right" title="Usage">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../../uce/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../adv_unlearn_evaluation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

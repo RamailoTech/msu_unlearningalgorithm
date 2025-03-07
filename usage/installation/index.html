@@ -43,16 +43,6 @@
               <ul class="current">
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Installation</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#features">Features</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#supported-algorithms">Supported Algorithms</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#datasets">Datasets</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a>
@@ -229,11 +219,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../evaluation/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/configs/concept_ablation/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../evaluation/erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/configs/erase_diff/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -241,11 +235,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../evaluation/esd/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/configs/esd/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../evaluation/forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/configs/forget_me_not/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -253,11 +251,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../evaluation/saliency/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/configs/saliency/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../evaluation/scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/configs/scissorhands/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -265,11 +267,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../evaluation/semipermeable_membrane/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/configs/semipermeable_membrane/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Unified Concept Editing</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../evaluation/uce/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/configs/uce/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -277,9 +283,16 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../evaluation/adv_unlearn_evaluation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/configs/adv_unlearn_evaluation/">Config</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../evaluation/contributing/">How to contribute</a>
                   </li>
               </ul>
       </div>
@@ -308,37 +321,6 @@
               
                 <h1 id="unlearn-diff">Unlearn Diff</h1>
 <p>Unlearn Diff is an open-source Python package designed to streamline the development of unlearning algorithms and establish a standardized evaluation pipeline for diffusion models. It provides researchers and practitioners with tools to implement, evaluate, and extend unlearning algorithms effectively.</p>
-<h3 id="documentation"><a href="https://ramailotech.github.io/msu_unlearningalgorithm/"><strong>Documentation</strong></a></h3>
-<p>You can find the full documentation for this project at the url given below.
-https://ramailotech.github.io/msu_unlearningalgorithm/</p>
-<h2 id="features">Features</h2>
-<ul>
-<li>
-<p><strong>Comprehensive Algorithm Support</strong>: Includes commonly used concept erasing and machine unlearning algorithms tailored for diffusion models. Each algorithm is encapsulated and standardized in terms of input-output formats.</p>
-</li>
-<li>
-<p><strong>Automated Evaluation</strong>: Supports automatic evaluation on datasets like UnlearnCanvas or IP2P. Performs standard and adversarial evaluations, outputting metrics as detailed in UnlearnCanvas and UnlearnDiffAtk.</p>
-</li>
-<li>
-<p><strong>Extensibility</strong>: Designed for easy integration of new unlearning algorithms, attack methods, defense mechanisms, and datasets with minimal modifications.</p>
-</li>
-</ul>
-<h3 id="supported-algorithms">Supported Algorithms</h3>
-<p>The initial version includes established methods benchmarked in UnlearnCanvas and defensive unlearning techniques:</p>
-<ul>
-<li><strong>CA</strong> (Concept Ablation)</li>
-<li><strong>ED</strong> (Erase Diff)</li>
-<li><strong>ESD</strong> (Efficient Substitution Distillation)</li>
-<li><strong>FMN</strong> (Forget Me Not)</li>
-<li><strong>SU</strong> (Saliency Unlearning)</li>
-<li><strong>SH</strong> (ScissorHands)</li>
-<li><strong>SA</strong> (Selective Amnesia)</li>
-<li><strong>SPM</strong> (Semi Permeable Membrane)</li>
-<li><strong>UCE</strong> (Unified Concept Editing)
-For detailed information on each algorithm, please refer to the respective <code>README.md</code> files located inside <code>mu/algorithms</code>.</li>
-</ul>
-<h2 id="datasets">Datasets</h2>
-<p>We use the Quick Canvas benchmark dataset, available <a href="https://huggingface.co/datasets/nebulaanish/quick-canvas-benchmark">here</a>. Currently, the algorithms are trained using 5 images belonging to the themes of <strong>Abstractionism</strong> and <strong>Architectures</strong>.</p>
 <h2 id="usage">Usage</h2>
 <p>This section contains the usage guide for the package.</p>
 <h3 id="installation">Installation</h3>
@@ -420,9 +402,9 @@ pip install git+https://github.com/openai/CLIP.git@main#egg=clip
 </li>
 <li>
 <p><strong>Download best.onnx model</strong></p>
+<p><code>download_best_onnx</code></p>
 </li>
 </ol>
-<p><code>download_best_onnx</code></p>
               
             </div>
           </div><footer>

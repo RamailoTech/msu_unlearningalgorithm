@@ -205,11 +205,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/concept_ablation/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/erase_diff/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -217,11 +221,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../esd/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/esd/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/forget_me_not/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -229,17 +237,23 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../saliency/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/saliency/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../scissorhands/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/scissorhands/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Semi Permeable Membrane</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../semipermeable_membrane/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/semipermeable_membrane/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -249,15 +263,24 @@
     <ul class="current">
     </ul>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/uce/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >MU_Defense</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../adv_unlearn_evaluation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/adv_unlearn_evaluation/">Config</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">How to contribute</a>
                   </li>
               </ul>
       </div>
@@ -328,112 +351,12 @@ print(fid)
 <p><strong>Running in Offline Mode:</strong></p>
 <pre><code class="language-bash">WANDB_MODE=offline python evaluate.py
 </code></pre>
-<h4 id="description-of-parameters-in-evaluation_configyaml"><strong>Description of parameters in evaluation_config.yaml</strong></h4>
-<p>The <code>evaluation_config.yaml</code> file contains the necessary parameters for running the unified_concept_editing evaluation framework. Below is a detailed description of each parameter along with examples.</p>
-<hr />
-<h3 id="model-configuration"><strong>Model Configuration:</strong></h3>
-<ul>
-<li>ckpt_path : Path to the finetuned Stable Diffusion checkpoint file to be evaluated.  </li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"outputs/unified_concept_editing/finetuned_models/unified_concept_editing_Abstractionism_model.pth"</code></p>
-</li>
-<li>
-<p>classification_model : Specifies the classification model used for evaluating the generated outputs.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li><em>Example:</em> <code>"vit_large_patch16_224"</code></li>
-</ul>
-<hr />
-<h3 id="training-and-sampling-parameters"><strong>Training and Sampling Parameters:</strong></h3>
-<ul>
-<li>theme : Specifies the theme or concept being evaluated for removal from the model's outputs.  </li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"Bricks"</code></p>
-</li>
-<li>
-<p>devices : CUDA device IDs to be used for the evaluation process.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"0"</code>  </p>
-</li>
-<li>
-<p>cfg_text : Classifier-free guidance scale value for image generation. Higher values increase the strength of the conditioning prompt.  </p>
-</li>
-<li><em>Type:</em> <code>float</code>  </li>
-<li>
-<p><em>Example:</em> <code>9.0</code>  </p>
-</li>
-<li>
-<p>seed : Random seed for reproducibility of results.  </p>
-</li>
-<li><em>Type:</em> <code>int</code>  </li>
-<li>
-<p><em>Example:</em> <code>188</code></p>
-</li>
-<li>
-<p>ddim_steps : Number of steps for the DDIM (Denoising Diffusion Implicit Models) sampling process.  </p>
-</li>
-<li><em>Type:</em> <code>int</code>  </li>
-<li>
-<p><em>Example:</em> <code>100</code></p>
-</li>
-<li>
-<p>ddim_eta : DDIM eta value for controlling the amount of randomness during sampling. Set to <code>0</code> for deterministic sampling.  </p>
-</li>
-<li><em>Type:</em> <code>float</code>  </li>
-<li>
-<p><em>Example:</em> <code>0.0</code></p>
-</li>
-<li>
-<p>image_height : Height of the generated images in pixels.  </p>
-</li>
-<li><em>Type:</em> <code>int</code>  </li>
-<li>
-<p><em>Example:</em> <code>512</code></p>
-</li>
-<li>
-<p>image_width : Width of the generated images in pixels.  </p>
-</li>
-<li><em>Type:</em> <code>int</code>  </li>
-<li><em>Example:</em> <code>512</code></li>
-</ul>
-<hr />
-<h3 id="output-and-logging-parameters"><strong>Output and Logging Parameters:</strong></h3>
-<ul>
-<li>sampler_output_dir : Directory where generated images will be saved during evaluation.  </li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li><em>Example:</em> <code>"outputs/eval_results/mu_results/unified_concept_editing/"</code></li>
-</ul>
-<hr />
-<h3 id="optimization-parameters"><strong>Optimization Parameters:</strong></h3>
-<ul>
-<li>forget_theme : Concept or style intended for removal in the evaluation process.  </li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"Bricks"</code></p>
-</li>
-<li>
-<p>seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  </p>
-</li>
-<li><em>Type:</em> <code>list</code>  </li>
-<li>
-<p><em>Example:</em> <code>["188"]</code></p>
-</li>
-<li>
-<p>use_sample: If you want to just run on sample dataset then set it as True. By default it is True.</p>
-</li>
-<li><em>Type:</em> <code>bool</code>  </li>
-<li><em>Example:</em> <code>True</code></li>
-</ul>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../semipermeable_membrane/" class="btn btn-neutral float-left" title="Usage"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../adv_unlearn_evaluation/" class="btn btn-neutral float-right" title="Usage">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../configs/semipermeable_membrane/" class="btn btn-neutral float-left" title="Config"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../configs/uce/" class="btn btn-neutral float-right" title="Config">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -456,10 +379,10 @@ print(fid)
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../semipermeable_membrane/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../configs/semipermeable_membrane/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../adv_unlearn_evaluation/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../configs/uce/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

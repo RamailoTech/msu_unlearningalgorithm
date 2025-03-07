@@ -74,21 +74,11 @@
     <ul class="current">
                 <li class="toctree-l2 current"><a class="reference internal current" href="#">Usage</a>
     <ul class="current">
-    <li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#prerequisities">Prerequisities</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#downloading-data-and-models">Downloading data and models.</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#run-train-using-quick-canvas-dataset">Run Train using quick canvas dataset</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#run-train-using-i2p-dataset">Run Train using i2p dataset</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#directory-structure">Directory Structure</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#description-of-arguments-being-used-in-train_config-class">Description of arguments being used in train_config class</a>
-    </li>
-        </ul>
     </li>
     </ul>
                 </li>
@@ -223,11 +213,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/concept_ablation/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/erase_diff/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -235,11 +229,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/esd/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/esd/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/forget_me_not/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -247,11 +245,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/saliency/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/saliency/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/scissorhands/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -259,11 +261,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/semipermeable_membrane/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/semipermeable_membrane/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Unified Concept Editing</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/uce/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/uce/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -271,9 +277,16 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/adv_unlearn_evaluation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/adv_unlearn_evaluation/">Config</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../evaluation/contributing/">How to contribute</a>
                   </li>
               </ul>
       </div>
@@ -303,83 +316,6 @@
               
                 <h1 id="esd-algorithm-for-machine-unlearning">ESD Algorithm for Machine Unlearning</h1>
 <p>This repository provides an implementation of the ESD algorithm for machine unlearning in Stable Diffusion models. The ESD algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.</p>
-<h3 id="installation">Installation</h3>
-<h3 id="prerequisities">Prerequisities</h3>
-<p>Ensure <code>conda</code> is installed on your system. You can install Miniconda or Anaconda:</p>
-<ul>
-<li><strong>Miniconda</strong> (recommended): <a href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a></li>
-<li><strong>Anaconda</strong>: <a href="https://www.anaconda.com/products/distribution">https://www.anaconda.com/products/distribution</a></li>
-</ul>
-<p>After installing <code>conda</code>, ensure it is available in your PATH by running. You may require to restart the terminal session:</p>
-<pre><code class="language-bash">conda --version
-</code></pre>
-<p><strong>Step-by-Step Setup:</strong></p>
-<p>Step 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:</p>
-<pre><code class="language-bash">conda create -n myenv python=3.8.5
-</code></pre>
-<p>Step 2. Activate the Environment Activate the environment to work within it:</p>
-<pre><code class="language-bash">conda activate myenv
-</code></pre>
-<p>Step 3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:</p>
-<pre><code class="language-bash">conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
-</code></pre>
-<p>Step 4. Install our unlearn_diff Package using pip:</p>
-<pre><code class="language-bash">pip install unlearn_diff
-</code></pre>
-<p>Step 5. Install Additional Git Dependencies:</p>
-<p>After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:</p>
-<pre><code class="language-bash">pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/openai/CLIP.git@main#egg=clip
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/crowsonkb/k-diffusion.git
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/cocodataset/panopticapi.git
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/boomb0om/text2image-benchmark
-</code></pre>
-<h3 id="downloading-data-and-models">Downloading data and models.</h3>
-<p>After you install the package, you can use the following commands to download.</p>
-<ol>
-<li><strong>Dataset</strong>:</li>
-<li><strong>i2p</strong>:<ul>
-<li><strong>Sample</strong>:
- <code>download_data sample i2p</code></li>
-<li><strong>Full</strong>:
- <code>download_data full i2p</code></li>
-</ul>
-</li>
-<li>
-<p><strong>quick_canvas</strong>:</p>
-<ul>
-<li><strong>Sample</strong>:
- <code>download_data sample quick_canvas</code></li>
-<li><strong>Full</strong>:
- <code>download_data full quick_canvas</code></li>
-</ul>
-</li>
-<li>
-<p><strong>Model</strong>:</p>
-</li>
-<li><strong>compvis</strong>:
-    <code>download_model compvis</code></li>
-<li>
-<p><strong>diffuser</strong>:
-    <code>download_model diffuser</code></p>
-</li>
-<li>
-<p><strong>Download best.onnx model</strong></p>
-<p><code>download_best_onnx</code>
-<strong>Verify the Downloaded Files</strong></p>
-</li>
-</ol>
-<p>After downloading, verify that the datasets have been correctly extracted:</p>
-<pre><code class="language-bash">ls -lh ./data/i2p-dataset/sample/
-ls -lh ./data/quick-canvas-dataset/sample/
-</code></pre>
-<hr />
 <h2 id="run-train-using-quick-canvas-dataset">Run Train using quick canvas dataset</h2>
 <p>Create a file, eg, <code>my_trainer.py</code> and use examples and modify your configs to run the file.  </p>
 <p><strong>Example Code</strong></p>
@@ -422,7 +358,7 @@ algorithm = ESDAlgorithm(
 )
 algorithm.run()
 </code></pre>
-<p><strong>Run on your won dataset</strong></p>
+<p><strong>Run on your own dataset</strong></p>
 <p><strong>Step-1: Generate your own dataset</strong></p>
 <pre><code class="language-bash">generate_images_for_prompts --model_path models/diffuser/style50 --csv_path data/prompts/generic_data.csv
 </code></pre>
@@ -476,144 +412,6 @@ algorithm.run()
 <li><code>utils.py</code>: Utility functions used in the project.</li>
 </ul>
 <hr />
-<h3 id="description-of-arguments-being-used-in-train_config-class">Description of arguments being used in train_config class</h3>
-<p>These are the configuration used for training a Stable Diffusion model using the ESD (Erase Stable Diffusion) method. It defines various parameters related to training, model setup, dataset handling, and output configuration. Below is a detailed description of each section and parameter:</p>
-<p><strong>Training Parameters</strong></p>
-<p>These parameters control the fine-tuning process, including the method of training, guidance scales, learning rate, and iteration settings.</p>
-<ul>
-<li>
-<p>train_method: Specifies the method of training to decide which parts of the model to update.</p>
-<ul>
-<li>Type: str</li>
-<li>Choices: noxattn, selfattn, xattn, full, notime, xlayer, selflayer</li>
-<li>Example: xattn</li>
-</ul>
-</li>
-<li>
-<p>start_guidance: Guidance scale for generating initial images during training. Affects the diversity of the training set.</p>
-<ul>
-<li>Type: float</li>
-<li>Example: 0.1</li>
-</ul>
-</li>
-<li>
-<p>negative_guidance: Guidance scale for erasing the target concept during training.</p>
-<ul>
-<li>Type: float</li>
-<li>Example: 0.0</li>
-</ul>
-</li>
-<li>
-<p>iterations: Number of training iterations (similar to epochs).</p>
-<ul>
-<li>Type: int</li>
-<li>Example: 1</li>
-</ul>
-</li>
-<li>
-<p>lr: Learning rate used by the optimizer for fine-tuning.</p>
-<ul>
-<li>Type: float</li>
-<li>Example: 5e-5</li>
-</ul>
-</li>
-<li>
-<p>image_size: Size of images used during training and sampling (in pixels).</p>
-<ul>
-<li>Type: int</li>
-<li>Example: 512</li>
-</ul>
-</li>
-<li>
-<p>ddim_steps: Number of diffusion steps used in the DDIM sampling process.</p>
-<ul>
-<li>Type: int</li>
-<li>Example: 50</li>
-</ul>
-</li>
-</ul>
-<p><strong>Model Configuration</strong></p>
-<p>These parameters specify the Stable Diffusion model checkpoint and configuration file.</p>
-<ul>
-<li>
-<p>model_config_path: Path to the YAML file defining the model architecture and parameters.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: mu/algorithms/esd/configs/model_config.yaml</li>
-</ul>
-</li>
-<li>
-<p>ckpt_path: Path to the finetuned Stable Diffusion model checkpoint.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: '../models/compvis/style50/compvis.ckpt'</li>
-</ul>
-</li>
-</ul>
-<p><strong>Dataset Configuration</strong></p>
-<p>These parameters define the dataset type and template for training, specifying whether to focus on objects, styles, or inappropriate content.</p>
-<ul>
-<li>
-<p>dataset_type: Type of dataset used for training. Use <code>generic</code> as type if you want to use your own dataset.</p>
-<ul>
-<li>Type: str</li>
-<li>Choices: unlearncanvas, i2p, generic</li>
-<li>Example: unlearncanvas</li>
-</ul>
-</li>
-<li>
-<p>template: Type of concept or style to erase during training.</p>
-<ul>
-<li>Type: str</li>
-<li>Choices: object, style, i2p</li>
-<li>Example: style</li>
-</ul>
-</li>
-<li>
-<p>template_name: Specific name of the object or style to erase (e.g., "Abstractionism").</p>
-<ul>
-<li>Type: str</li>
-<li>Example Choices: Abstractionism, self-harm</li>
-<li>Example: Abstractionism</li>
-</ul>
-</li>
-</ul>
-<p><strong>Output Configuration</strong></p>
-<p>These parameters control where the outputs of the training process, such as fine-tuned models, are stored.</p>
-<ul>
-<li>
-<p>output_dir: Directory where the fine-tuned model and training results will be saved.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: outputs/esd/finetuned_models</li>
-</ul>
-</li>
-<li>
-<p>separator: Separator character used to handle multiple prompts during training. If set to null, no special handling occurs.</p>
-<ul>
-<li>Type: str or null</li>
-<li>Example: null</li>
-</ul>
-</li>
-</ul>
-<p><strong>Device Configuration</strong></p>
-<p>These parameters define the compute resources for training.</p>
-<ul>
-<li>
-<p>devices: Specifies the CUDA devices used for training. Provide a comma-separated list of device IDs.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: 0,1</li>
-</ul>
-</li>
-<li>
-<p>use_sample: Boolean flag indicating whether to use a sample dataset for testing or debugging.</p>
-<ul>
-<li>Type: bool</li>
-<li>Example: True</li>
-</ul>
-</li>
-</ul>
               
             </div>
           </div><footer>

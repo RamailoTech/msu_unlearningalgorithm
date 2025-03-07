@@ -94,23 +94,11 @@
     <ul class="current">
                 <li class="toctree-l2 current"><a class="reference internal current" href="#">Usage</a>
     <ul class="current">
-    <li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#prerequisities">Prerequisities</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#downloading-data-and-models">Downloading data and models.</a>
-    </li>
-        </ul>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#run-train">Run Train</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#directory-structure">Directory Structure</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#description-of-configs-used-to-generate-mask">Description of configs used to generate mask:</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#description-of-arguments-used-to-train-saliency-unlearning">Description of Arguments used to train saliency unlearning.</a>
     </li>
         </ul>
     </li>
@@ -227,11 +215,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/concept_ablation/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/erase_diff/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -239,11 +231,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/esd/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/esd/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/forget_me_not/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -251,11 +247,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/saliency/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/saliency/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/scissorhands/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -263,11 +263,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/semipermeable_membrane/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/semipermeable_membrane/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Unified Concept Editing</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/uce/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/uce/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -275,9 +279,16 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/adv_unlearn_evaluation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/adv_unlearn_evaluation/">Config</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../evaluation/contributing/">How to contribute</a>
                   </li>
               </ul>
       </div>
@@ -307,83 +318,6 @@
               
                 <h1 id="saliency-unlearning-algorithm-for-machine-unlearning">Saliency Unlearning Algorithm for Machine Unlearning</h1>
 <p>This repository provides an implementation of the Saliency Unlearning algorithm for machine unlearning in Stable Diffusion models. The Saliency Unlearning algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.</p>
-<h2 id="installation">Installation</h2>
-<h3 id="prerequisities">Prerequisities</h3>
-<p>Ensure <code>conda</code> is installed on your system. You can install Miniconda or Anaconda:</p>
-<ul>
-<li><strong>Miniconda</strong> (recommended): <a href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a></li>
-<li><strong>Anaconda</strong>: <a href="https://www.anaconda.com/products/distribution">https://www.anaconda.com/products/distribution</a></li>
-</ul>
-<p>After installing <code>conda</code>, ensure it is available in your PATH by running. You may require to restart the terminal session:</p>
-<pre><code class="language-bash">conda --version
-</code></pre>
-<p><strong>Step-by-Step Setup:</strong></p>
-<p>Step 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:</p>
-<pre><code class="language-bash">conda create -n myenv python=3.8.5
-</code></pre>
-<p>Step 2. Activate the Environment Activate the environment to work within it:</p>
-<pre><code class="language-bash">conda activate myenv
-</code></pre>
-<p>Step 3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:</p>
-<pre><code class="language-bash">conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
-</code></pre>
-<p>Step 4. Install our unlearn_diff Package using pip:</p>
-<pre><code class="language-bash">pip install unlearn_diff
-</code></pre>
-<p>Step 5. Install Additional Git Dependencies:</p>
-<p>After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:</p>
-<pre><code class="language-bash">pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/openai/CLIP.git@main#egg=clip
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/crowsonkb/k-diffusion.git
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/cocodataset/panopticapi.git
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/boomb0om/text2image-benchmark
-</code></pre>
-<h3 id="downloading-data-and-models">Downloading data and models.</h3>
-<p>After you install the package, you can use the following commands to download.</p>
-<ol>
-<li><strong>Dataset</strong>:</li>
-<li><strong>i2p</strong>:<ul>
-<li><strong>Sample</strong>:
- <code>download_data sample i2p</code></li>
-<li><strong>Full</strong>:
- <code>download_data full i2p</code></li>
-</ul>
-</li>
-<li>
-<p><strong>quick_canvas</strong>:</p>
-<ul>
-<li><strong>Sample</strong>:
- <code>download_data sample quick_canvas</code></li>
-<li><strong>Full</strong>:
- <code>download_data full quick_canvas</code></li>
-</ul>
-</li>
-<li>
-<p><strong>Model</strong>:</p>
-</li>
-<li><strong>compvis</strong>:
-    <code>download_model compvis</code></li>
-<li>
-<p><strong>diffuser</strong>:
-    <code>download_model diffuser</code></p>
-</li>
-<li>
-<p>Download best.onnx model</p>
-<p><code>download_best_onnx</code></p>
-</li>
-</ol>
-<p><strong>Verify the Downloaded Files</strong></p>
-<p>After downloading, verify that the datasets have been correctly extracted:</p>
-<pre><code class="language-bash">ls -lh ./data/i2p-dataset/sample/
-ls -lh ./data/quick-canvas-dataset/sample/
-</code></pre>
-<hr />
 <h2 id="usage">Usage</h2>
 <p>Before training saliency unlearning algorithm you need to generate mask. Use the following code snippet to generate mask.</p>
 <p><strong>Step 1: Generate mask</strong></p>
@@ -463,7 +397,7 @@ algorithm = SaliencyUnlearningAlgorithm(
 )
 algorithm.run()
 </code></pre>
-<p><strong>Run on your won dataset</strong></p>
+<p><strong>Run on your own dataset</strong></p>
 <p><strong>Step-1: Generate your own dataset</strong></p>
 <pre><code class="language-bash">generate_images_for_prompts --model_path models/diffuser/style50 --csv_path data/prompts/generic_data.csv
 </code></pre>
@@ -546,230 +480,6 @@ algorithm.run()
 </li>
 </ol>
 <p><br></p>
-<h3 id="description-of-configs-used-to-generate-mask">Description of configs used to generate mask:</h3>
-<p><strong>Model Configuration</strong></p>
-<p>These parameters specify settings for the Stable Diffusion model and guidance configurations.</p>
-<ul>
-<li>
-<p>c_guidance: Guidance scale used during loss computation in the model. Higher values may emphasize certain features in mask generation.</p>
-<ul>
-<li>Type: float</li>
-<li>Example: 7.5</li>
-</ul>
-</li>
-<li>
-<p>batch_size: Number of images processed in a single batch.</p>
-<ul>
-<li>Type: int</li>
-<li>Example: 4</li>
-</ul>
-</li>
-<li>
-<p>ckpt_path: Path to the model checkpoint file for Stable Diffusion.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: /path/to/compvis.ckpt</li>
-</ul>
-</li>
-<li>
-<p>model_config_path: Path to the model configuration YAML file for Stable Diffusion.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: /path/to/model_config.yaml</li>
-</ul>
-</li>
-<li>
-<p>num_timesteps: Number of timesteps used in the diffusion process.</p>
-<ul>
-<li>Type: int</li>
-<li>Example: 1000</li>
-</ul>
-</li>
-<li>
-<p>image_size: Size of the input images used for training and mask generation (in pixels).</p>
-<ul>
-<li>Type: int</li>
-<li>Example: 512</li>
-</ul>
-</li>
-</ul>
-<p><strong>Dataset Configuration</strong></p>
-<p>These parameters define the dataset paths and settings for mask generation.</p>
-<ul>
-<li>
-<p>raw_dataset_dir: Path to the directory containing the original dataset, organized by themes and classes.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: /path/to/raw/dataset</li>
-</ul>
-</li>
-<li>
-<p>processed_dataset_dir: Path to the directory where processed datasets will be saved after mask generation.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: /path/to/processed/dataset</li>
-</ul>
-</li>
-<li>
-<p>dataset_type: Type of dataset being used.</p>
-<ul>
-<li>Choices: unlearncanvas, i2p</li>
-<li>Type: str</li>
-<li>Example: i2p</li>
-</ul>
-</li>
-<li>
-<p>template: Type of template for mask generation.</p>
-<ul>
-<li>Choices: object, style, i2p</li>
-<li>Type: str</li>
-<li>Example: style</li>
-</ul>
-</li>
-<li>
-<p>template_name: Specific template name for the mask generation process.</p>
-<ul>
-<li>Example Choices: self-harm, Abstractionism</li>
-<li>Type: str</li>
-<li>Example: Abstractionism</li>
-</ul>
-</li>
-<li>
-<p>threshold: Threshold value for mask generation to filter salient regions.</p>
-<ul>
-<li>Type: float</li>
-<li>Example: 0.5</li>
-</ul>
-</li>
-</ul>
-<p><strong>Output Configuration</strong></p>
-<p>These parameters specify the directory where the results are saved.</p>
-<ul>
-<li>
-<p>output_dir: Directory where the generated masks will be saved.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: outputs/saliency_unlearning/masks</li>
-</ul>
-</li>
-</ul>
-<p><strong>Training Configuration</strong></p>
-<p>These parameters control the training process for mask generation.</p>
-<ul>
-<li>
-<p>lr: Learning rate used for training the masking algorithm.</p>
-<ul>
-<li>Type: float</li>
-<li>Example: 0.00001</li>
-</ul>
-</li>
-<li>
-<p>devices: CUDA devices used for training, specified as a comma-separated list.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: 0</li>
-</ul>
-</li>
-<li>
-<p>use_sample: Flag indicating whether to use a sample dataset for training and mask generation.</p>
-<ul>
-<li>Type: bool</li>
-<li>Example: True</li>
-</ul>
-</li>
-</ul>
-<h3 id="description-of-arguments-used-to-train-saliency-unlearning">Description of Arguments used to train saliency unlearning.</h3>
-<p>The following configs are used to fine-tune the Stable Diffusion model to perform saliency-based unlearning. This script relies on a configuration class <code>SaliencyUnlearningConfig</code>  and supports additional runtime arguments for further customization. Below is a detailed description of each argument:</p>
-<p><strong>General Arguments</strong></p>
-<ul>
-<li>
-<p>alpha: Guidance scale used to balance the loss components during training.</p>
-<ul>
-<li>Type: float</li>
-<li>Example: 0.1</li>
-</ul>
-</li>
-<li>
-<p>epochs: Number of epochs to train the model.</p>
-<ul>
-<li>Type: int</li>
-<li>Example: 5</li>
-</ul>
-</li>
-<li>
-<p>train_method: Specifies the training method or strategy to be used.</p>
-<ul>
-<li>Choices: noxattn, selfattn, xattn, full, notime, xlayer, selflayer</li>
-<li>Type: str</li>
-<li>Example: noxattn</li>
-</ul>
-</li>
-<li>
-<p>model_config_path: Path to the model configuration YAML file for Stable Diffusion.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: 'mu/algorithms/saliency_unlearning/configs/model_config.yaml'</li>
-</ul>
-</li>
-</ul>
-<p><strong>Dataset Arguments</strong></p>
-<ul>
-<li>
-<p>raw_dataset_dir: Path to the directory containing the raw dataset, organized by themes and classes.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: 'path/raw_dataset/'</li>
-</ul>
-</li>
-<li>
-<p>processed_dataset_dir: Path to the directory where the processed dataset will be saved.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: 'path/processed_dataset_dir'</li>
-</ul>
-</li>
-<li>
-<p>dataset_type: Specifies the type of dataset to use for training. Use <code>generic</code> as type if you want to use your own dataset.</p>
-<ul>
-<li>Choices: unlearncanvas, i2p, generic</li>
-<li>Type: str</li>
-<li>Example: i2p</li>
-</ul>
-</li>
-<li>
-<p>template: Specifies the template type for training.</p>
-<ul>
-<li>Choices: object, style, i2p</li>
-<li>Type: str</li>
-<li>Example: style</li>
-</ul>
-</li>
-<li>
-<p>template_name: Name of the specific template used for training.</p>
-<ul>
-<li>Example Choices: self-harm, Abstractionism</li>
-<li>Type: str</li>
-<li>Example: Abstractionism</li>
-</ul>
-</li>
-</ul>
-<p><strong>Output Arguments</strong></p>
-<ul>
-<li>
-<p>output_dir: Directory where the fine-tuned model and training outputs will be saved.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: 'output/folder_name'</li>
-</ul>
-</li>
-<li>
-<p>mask_path: Path to the saliency mask file used during training.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: </li>
-</ul>
-</li>
-</ul>
               
             </div>
           </div><footer>

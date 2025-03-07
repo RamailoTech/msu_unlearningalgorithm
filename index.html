@@ -205,11 +205,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="evaluation/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/configs/concept_ablation/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="evaluation/erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/configs/erase_diff/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -217,11 +221,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="evaluation/esd/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/configs/esd/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="evaluation/forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/configs/forget_me_not/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -229,11 +237,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="evaluation/saliency/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/configs/saliency/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="evaluation/scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/configs/scissorhands/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -241,11 +253,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="evaluation/semipermeable_membrane/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/configs/semipermeable_membrane/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Unified Concept Editing</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="evaluation/uce/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/configs/uce/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -253,9 +269,16 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="evaluation/adv_unlearn_evaluation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="evaluation/configs/adv_unlearn_evaluation/">Config</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="evaluation/contributing/">How to contribute</a>
                   </li>
               </ul>
       </div>
@@ -588,7 +611,7 @@ algorithm = EraseDiffAlgorithm(
 )
 algorithm.run()
 </code></pre>
-<p><strong>Run on your won dataset</strong></p>
+<p><strong>Run on your own dataset</strong></p>
 <p><strong>Step-1: Generate your own dataset</strong></p>
 <pre><code class="language-bash">generate_images_for_prompts --model_path models/diffuser/style50 --csv_path data/prompts/generic_data.csv
 </code></pre>
@@ -706,5 +729,5 @@ print(fid)
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-03-07 11:38:36.713727+00:00
+Build Date UTC : 2025-03-07 14:43:18.626821+00:00
 -->

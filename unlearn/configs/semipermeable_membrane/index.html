@@ -207,11 +207,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/concept_ablation/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/erase_diff/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -219,11 +223,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/esd/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/esd/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/forget_me_not/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -231,11 +239,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/saliency/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/saliency/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/scissorhands/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -243,11 +255,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/semipermeable_membrane/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/semipermeable_membrane/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Unified Concept Editing</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/uce/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/uce/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -255,9 +271,16 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/adv_unlearn_evaluation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/adv_unlearn_evaluation/">Config</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../evaluation/contributing/">How to contribute</a>
                   </li>
               </ul>
       </div>
@@ -440,56 +463,166 @@ class SemipermeableMembraneConfig(BaseConfig):
 
 
 </code></pre>
-<h3 id="evaluation-config">Evaluation config</h3>
-<pre><code class="language-python"># mu/algorithms/semipermeable_membrane/configs/evaluation_config.py
-
-import os
-
-from pathlib import Path
-
-from mu.core.base_config import BaseConfig
-
-current_dir = Path(__file__).parent
-
-
-class SemipermeableMembraneEvaluationConfig(BaseConfig):
-
-    def __init__(self, **kwargs):
-        self.precision = &quot;fp32&quot;  # precision for computation
-        self.spm_multiplier = [1.0]  # list of semipermeable membrane multipliers
-        self.v2 = False  # whether to use version 2 of the model
-        self.matching_metric = &quot;clipcos_tokenuni&quot;  # matching metric for evaluation
-        self.model_config_path = current_dir.parent / &quot;config&quot;  # path to model config
-        self.base_model = &quot;CompVis/stable-diffusion-v1-4&quot;  # base model for the algorithm
-        self.spm_path = [&quot;outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors&quot;]  # path to semipermeable membrane model
-        self.seed = 188  # random seed
-        self.devices = &quot;0&quot;  # GPU device ID
-        self.sampler_output_dir = &quot;outputs/eval_results/mu_results/semipermeable_membrane/&quot;  # directory to save sampler outputs
-        self.forget_theme = &quot;Bricks&quot;  # theme to forget
-        self.dataset_type = &quot;unlearncanvas&quot;
-        self.use_sample = True
-
-
-        # Override defaults with any provided kwargs
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-    def validate_config(self):
-        &quot;&quot;&quot;
-        Perform basic validation on the config parameters.
-        &quot;&quot;&quot;
-        if not os.path.exists(self.sampler_output_dir):
-            os.makedirs(self.sampler_output_dir)
-        if self.dataset_type not in [&quot;unlearncanvas&quot;, &quot;i2p&quot;, &quot;generic&quot;]:
-            raise ValueError(f&quot;Unknown dataset type: {self.dataset_type}&quot;)
-
-        if any(multiplier &lt;= 0 for multiplier in self.spm_multiplier):
-            raise ValueError(&quot;SPM multiplier values should be positive.&quot;)
-
-
-# Example usage
-semipermeable_membrane_eval_config = SemipermeableMembraneEvaluationConfig()
-</code></pre>
+<h3 id="description-of-arguments-in-train_configyaml">Description of Arguments in train_config.yaml</h3>
+<p><strong>pretrained_model</strong></p>
+<ul>
+<li>
+<p>ckpt_path: File path to the pretrained model's checkpoint file.</p>
+</li>
+<li>
+<p>v2: Boolean indicating whether the pretrained model is version 2 or not.</p>
+</li>
+<li>
+<p>v_pred: Boolean to enable/disable "v-prediction" mode for diffusion models.</p>
+</li>
+<li>
+<p>clip_skip: Number of CLIP layers to skip during inference.</p>
+</li>
+</ul>
+<p><strong>network</strong></p>
+<ul>
+<li>
+<p>rank: Rank of the low-rank adaptation network.</p>
+</li>
+<li>
+<p>alpha: Scaling factor for the network during training.</p>
+</li>
+</ul>
+<p><strong>train</strong></p>
+<ul>
+<li>
+<p>precision: Numerical precision to use during training (e.g., float32 or float16).</p>
+</li>
+<li>
+<p>noise_scheduler: Type of noise scheduler to use in the training loop (e.g., ddim).</p>
+</li>
+<li>
+<p>iterations: Number of training iterations.</p>
+</li>
+<li>
+<p>batch_size: Batch size for training.</p>
+</li>
+<li>
+<p>lr: Learning rate for the training optimizer.</p>
+</li>
+<li>
+<p>unet_lr: Learning rate for the U-Net model.</p>
+</li>
+<li>
+<p>text_encoder_lr: Learning rate for the text encoder.</p>
+</li>
+<li>
+<p>optimizer_type: Optimizer to use for training (e.g., AdamW8bit).</p>
+</li>
+<li>
+<p>lr_scheduler: Learning rate scheduler to apply during training.</p>
+</li>
+<li>
+<p>lr_warmup_steps: Number of steps for linear warmup of the learning rate.</p>
+</li>
+<li>
+<p>lr_scheduler_num_cycles: Number of cycles for a cosine-with-restarts scheduler.</p>
+</li>
+<li>
+<p>max_denoising_steps: Maximum denoising steps to use during training.</p>
+</li>
+</ul>
+<p><strong>save</strong></p>
+<ul>
+<li>
+<p>per_steps: Frequency of saving the model (in steps).</p>
+</li>
+<li>
+<p>precision: Numerical precision for saved model weights</p>
+</li>
+</ul>
+<p><strong>other</strong></p>
+<ul>
+<li>
+<p>use_xformers: Boolean to enable xformers memory-efficient attention.</p>
+</li>
+<li>
+<p>wandb_project and wandb_run</p>
+</li>
+<li>
+<p>Configuration for tracking the training progress using Weights &amp; Biases.</p>
+</li>
+<li>
+<p>wandb_project: Project name in W&amp;B.</p>
+</li>
+<li>
+<p>wandb_run: Specific run name in the W&amp;B dashboard.</p>
+</li>
+</ul>
+<p><strong>use_sample</strong></p>
+<ul>
+<li>Boolean to indicate whether to use the sample dataset for training.</li>
+</ul>
+<p><strong>template</strong></p>
+<ul>
+<li>Specifies the template type, choices are:<ul>
+<li>object: Focus on specific objects.</li>
+<li>style: Focus on artistic styles.</li>
+<li>i2p: Intermediate style processing.</li>
+</ul>
+</li>
+</ul>
+<p><strong>template_name</strong></p>
+<ul>
+<li>Name of the template, choices are:<ul>
+<li>self-harm</li>
+<li>Abstractionism</li>
+</ul>
+</li>
+</ul>
+<p><strong>prompt</strong></p>
+<ul>
+<li>
+<p>target: Target template or concept to guide training (references template_name).</p>
+</li>
+<li>
+<p>positive: Positive prompt based on the template.</p>
+</li>
+<li>
+<p>unconditional: Unconditional prompt text.</p>
+</li>
+<li>
+<p>neutral: Neutral prompt text.</p>
+</li>
+<li>
+<p>action: Specifies the action applied to the prompt (e.g., erase_with_la).</p>
+</li>
+<li>
+<p>guidance_scale: Guidance scale for classifier-free guidance.</p>
+</li>
+<li>
+<p>resolution: Image resolution for training.</p>
+</li>
+<li>
+<p>batch_size: Batch size for generating prompts.</p>
+</li>
+<li>
+<p>dynamic_resolution: Boolean to allow dynamic resolution.</p>
+</li>
+<li>
+<p>la_strength: Strength of local adaptation.</p>
+</li>
+<li>
+<p>sampling_batch_size: Batch size for sampling images.</p>
+</li>
+</ul>
+<p><strong>devices</strong></p>
+<ul>
+<li>CUDA devices to use for training (specified as a comma-separated list, e.g., "0,1").</li>
+</ul>
+<p><strong>output_dir</strong></p>
+<ul>
+<li>Directory to save the fine-tuned model and other outputs.</li>
+</ul>
+<p><strong>verbose</strong></p>
+<ul>
+<li>Boolean flag for verbose logging during training.</li>
+</ul>
               
             </div>
           </div><footer>

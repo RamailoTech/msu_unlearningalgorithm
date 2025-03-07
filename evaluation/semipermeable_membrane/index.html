@@ -205,11 +205,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/concept_ablation/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/erase_diff/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -217,11 +221,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../esd/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/esd/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/forget_me_not/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -229,11 +237,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../saliency/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/saliency/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/scissorhands/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -243,11 +255,15 @@
     <ul class="current">
     </ul>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/semipermeable_membrane/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Unified Concept Editing</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../uce/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/uce/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -255,9 +271,16 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../adv_unlearn_evaluation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/adv_unlearn_evaluation/">Config</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">How to contribute</a>
                   </li>
               </ul>
       </div>
@@ -327,129 +350,12 @@ print(fid)
 <p><strong>Run the script</strong></p>
 <pre><code class="language-bash">python evaluate.py
 </code></pre>
-<h4 id="description-of-parameters-in-evaluation_configyaml"><strong>Description of parameters in evaluation_config.yaml</strong></h4>
-<p>The <code>evaluation_config.yaml</code> file contains the necessary parameters for running the Semipermeable membrane evaluation framework. Below is a detailed description of each parameter along with examples.</p>
-<hr />
-<h3 id="model-configuration-parameters"><strong>Model Configuration Parameters:</strong></h3>
-<ul>
-<li>spm_path: paths to finetuned model checkpoint.</li>
-<li><em>Type:</em> <code>list</code></li>
-<li>
-<p><em>Example:</em> <code>outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors</code></p>
-</li>
-<li>
-<p>precision : Specifies the numerical precision for model computation.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li><em>Options:</em> <code>"fp32"</code>, <code>"fp16"</code>, <code>"bf16"</code>  </li>
-<li>
-<p><em>Example:</em> <code>"fp32"</code>  </p>
-</li>
-<li>
-<p>spm_multiplier:  Specifies the multiplier for Semipermeable Membrane (SPM) model.  </p>
-</li>
-<li><em>Type:</em> <code>float</code>  </li>
-<li>
-<p><em>Example:</em> <code>1.0</code>  </p>
-</li>
-<li>
-<p>v2 : Specifies whether to use version 2.x of the model.  </p>
-</li>
-<li><em>Type:</em> <code>bool</code>  </li>
-<li>
-<p><em>Example:</em> <code>false</code>  </p>
-</li>
-<li>
-<p>matching_metric : Metric used for evaluating the similarity between generated prompts and erased concepts.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li><em>Options:</em> <code>"clipcos"</code>, <code>"clipcos_tokenuni"</code>, <code>"tokenuni"</code>  </li>
-<li>
-<p><em>Example:</em> <code>"clipcos_tokenuni"</code>  </p>
-</li>
-<li>
-<p>model_config : Path to the model configuration YAML file.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"mu/algorithms/semipermeable_membrane/config"</code>  </p>
-</li>
-<li>
-<p>model_ckpt_path: Path to pretrained Stable Diffusion model.</p>
-</li>
-<li><em>Type</em>: <code>str</code></li>
-<li><em>Example</em>: <code>models/diffuser/style50</code></li>
-</ul>
-<hr />
-<h3 id="sampling-parameters"><strong>Sampling Parameters:</strong></h3>
-<ul>
-<li>seed : Random seed for reproducibility of the evaluation process.  </li>
-<li><em>Type:</em> <code>int</code>  </li>
-<li>
-<p><em>Example:</em> <code>188</code>  </p>
-</li>
-<li>
-<p>devices : Specifies the CUDA devices for running the model.  </p>
-</li>
-<li><em>Type:</em> <code>str</code> (Comma-separated for multiple devices)  </li>
-<li>
-<p><em>Example:</em> <code>"0"</code>  </p>
-</li>
-<li>
-<p>task : Specifies the task type for the evaluation process.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li><em>Options:</em> <code>"class"</code>, <code>"style"</code>  </li>
-<li><em>Example:</em> <code>"class"</code>  </li>
-</ul>
-<hr />
-<h3 id="output-parameters"><strong>Output Parameters:</strong></h3>
-<ul>
-<li>sampler_output_dir : Directory where generated images will be saved during the sampling process.  </li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li><em>Example:</em> <code>"outputs/eval_results/mu_results/semipermeable_membrane/"</code>  </li>
-</ul>
-<hr />
-<h3 id="dataset-and-classification-parameters"><strong>Dataset and Classification Parameters:</strong></h3>
-<ul>
-<li>reference_dir : Path to the reference dataset used for evaluation and comparison.  </li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"</code>  </p>
-</li>
-<li>
-<p>classification_model : Specifies the classification model used for the evaluation.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li>
-<p><em>Example:</em> <code>"vit_large_patch16_224"</code>  </p>
-</li>
-<li>
-<p>forget_theme : Specifies the theme to be forgotten during the unlearning process.  </p>
-</li>
-<li><em>Type:</em> <code>str</code>  </li>
-<li><em>Example:</em> <code>"Bricks"</code>  </li>
-</ul>
-<hr />
-<h3 id="performance-parameters"><strong>Performance Parameters:</strong></h3>
-<ul>
-<li>seed_list :  List of random seeds for multiple evaluation trials.  </li>
-<li><em>Type:</em> <code>list</code>  </li>
-<li>
-<p><em>Example:</em> <code>["188"]</code>  </p>
-</li>
-<li>
-<p>use_sample: If you want to just run on sample dataset then set it as True. By default it is True.</p>
-</li>
-<li><em>Type:</em> <code>bool</code>  </li>
-<li><em>Example:</em> <code>True</code></li>
-</ul>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../scissorhands/" class="btn btn-neutral float-left" title="Usage"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../uce/" class="btn btn-neutral float-right" title="Usage">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../configs/scissorhands/" class="btn btn-neutral float-left" title="Config"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../configs/semipermeable_membrane/" class="btn btn-neutral float-right" title="Config">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -472,10 +378,10 @@ print(fid)
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../scissorhands/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../configs/scissorhands/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../uce/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../configs/semipermeable_membrane/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

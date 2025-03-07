@@ -207,11 +207,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/concept_ablation/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/erase_diff/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -219,11 +223,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/esd/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/esd/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/forget_me_not/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -231,11 +239,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/saliency/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/saliency/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/scissorhands/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -243,11 +255,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/semipermeable_membrane/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/semipermeable_membrane/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Unified Concept Editing</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/uce/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/uce/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -255,9 +271,16 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/adv_unlearn_evaluation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/adv_unlearn_evaluation/">Config</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../evaluation/contributing/">How to contribute</a>
                   </li>
               </ul>
       </div>
@@ -400,61 +423,147 @@ model:
       target: stable_diffusion.ldm.modules.encoders.modules.FrozenCLIPEmbedder
 
 </code></pre>
-<h3 id="evaluation-config">Evaluation Config</h3>
-<pre><code class="language-python"># mu/algorithms/scissorhands/configs/evaluation_config.py
-
-import os
-
-from pathlib import Path
-
-from mu.core.base_config import BaseConfig
-
-current_dir = Path(__file__).parent
-
-
-class ScissorhandsEvaluationConfig(BaseConfig):
-
-    def __init__(self, **kwargs):
-        self.model_config_path = current_dir/&quot;model_config.yaml&quot;  # path to model config
-        self.ckpt_path = &quot;outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth&quot;  # path to finetuned model checkpoint
-        self.cfg_text = 9.0  # classifier-free guidance scale
-        self.seed = 188  # random seed
-        self.devices = &quot;0&quot;  # GPU device ID
-        self.ddim_steps = 100  # number of DDIM steps
-        self.image_height = 512  # height of the image
-        self.image_width = 512  # width of the image
-        self.ddim_eta = 0.0  # DDIM eta parameter
-        self.sampler_output_dir = &quot;outputs/eval_results/mu_results/erase_diff/&quot;  # directory to save sampler outputs
-        self.dataset_type = &quot;unlearncanvas&quot;
-        self.use_sample = True
-
-        # Override defaults with any provided kwargs
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-    def validate_config(self):
-        &quot;&quot;&quot;
-        Perform basic validation on the config parameters.
-        &quot;&quot;&quot;
-        if not os.path.exists(self.model_config_path):
-            raise FileNotFoundError(f&quot;Model config file {self.model_config_path} does not exist.&quot;)
-        if not os.path.exists(self.ckpt_path):
-            raise FileNotFoundError(f&quot;Checkpoint file {self.ckpt_path} does not exist.&quot;)
-        if not os.path.exists(self.sampler_output_dir):
-            os.makedirs(self.sampler_output_dir)
-        if self.dataset_type not in [&quot;unlearncanvas&quot;, &quot;i2p&quot;, &quot;generic&quot;]:
-            raise ValueError(f&quot;Unknown dataset type: {self.dataset_type}&quot;)
-
-        if self.cfg_text &lt;= 0:
-            raise ValueError(&quot;Classifier-free guidance scale (cfg_text) should be positive.&quot;)
-        if self.ddim_steps &lt;= 0:
-            raise ValueError(&quot;DDIM steps should be a positive integer.&quot;)
-        if self.image_height &lt;= 0 or self.image_width &lt;= 0:
-            raise ValueError(&quot;Image height and width should be positive.&quot;)
-
-# Example usage
-scissorhands_evaluation_config = ScissorhandsEvaluationConfig()
-</code></pre>
+<h3 id="description-of-arguments-in-train_configyaml">Description of Arguments in train_config.yaml</h3>
+<p><strong>Training Parameters</strong></p>
+<ul>
+<li>
+<p>train_method: Specifies the method of training for concept erasure.</p>
+<ul>
+<li>Choices: ["noxattn", "selfattn", "xattn", "full", "notime", "xlayer", "selflayer"]</li>
+<li>Example: "xattn"</li>
+</ul>
+</li>
+<li>
+<p>alpha: Guidance strength for the starting image during training.</p>
+<ul>
+<li>Type: float</li>
+<li>Example: 0.1</li>
+</ul>
+</li>
+<li>
+<p>epochs: Number of epochs to train the model.</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 1</li>
+</ul>
+</li>
+</ul>
+<p><strong>Model Configuration</strong></p>
+<ul>
+<li>
+<p>model_config_path: File path to the Stable Diffusion model configuration YAML file.</p>
+<ul>
+<li>type: str</li>
+<li>Example: "/path/to/model_config.yaml"</li>
+</ul>
+</li>
+<li>
+<p>ckpt_path: File path to the checkpoint of the Stable Diffusion model.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: "/path/to/model_checkpoint.ckpt"</li>
+</ul>
+</li>
+</ul>
+<p><strong>Dataset Directories</strong></p>
+<ul>
+<li>
+<p>raw_dataset_dir: Directory containing the raw dataset categorized by themes or classes.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: "/path/to/raw_dataset"</li>
+</ul>
+</li>
+<li>
+<p>processed_dataset_dir: Directory to save the processed dataset.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: "/path/to/processed_dataset"</li>
+</ul>
+</li>
+<li>
+<p>dataset_type: Specifies the dataset type for the training process. Use <code>generic</code> as type if you want to use your own dataset.</p>
+<ul>
+<li>Choices: ["unlearncanvas", "i2p", "generic"]</li>
+<li>Example: "unlearncanvas"</li>
+</ul>
+</li>
+<li>
+<p>template: Type of template to use during training.</p>
+<ul>
+<li>Choices: ["object", "style", "i2p"]</li>
+<li>Example: "style"</li>
+</ul>
+</li>
+<li>
+<p>template_name: Name of the specific concept or style to be erased.</p>
+<ul>
+<li>Choices: ["self-harm", "Abstractionism"]</li>
+<li>Example: "Abstractionism"</li>
+</ul>
+</li>
+</ul>
+<p><strong>Output Configurations</strong></p>
+<ul>
+<li>
+<p>output_dir: Directory where the fine-tuned models and results will be saved.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: "outputs/erase_diff/finetuned_models"</li>
+</ul>
+</li>
+</ul>
+<p><strong>Sampling and Image Configurations</strong></p>
+<ul>
+<li>
+<p>sparsity: Threshold for mask.</p>
+<ul>
+<li>Type: float</li>
+<li>Example: 0.99</li>
+</ul>
+</li>
+<li>
+<p>project: </p>
+<ul>
+<li>Type: bool</li>
+<li>Example: false</li>
+</ul>
+</li>
+<li>
+<p>memory_num: </p>
+<ul>
+<li>Type: Int</li>
+<li>Example: 1</li>
+</ul>
+</li>
+<li>
+<p>prune_num: </p>
+<ul>
+<li>Type: Int</li>
+<li>Example: 1</li>
+</ul>
+</li>
+</ul>
+<p><strong>Device Configuration</strong></p>
+<ul>
+<li>
+<p>devices: Specifies the CUDA devices to be used for training (comma-separated).</p>
+<ul>
+<li>Type: str (Comma separated)</li>
+<li>Example: "0, 1"</li>
+</ul>
+</li>
+</ul>
+<p><strong>Additional Flags</strong></p>
+<ul>
+<li>
+<p>use_sample: Flag to indicate whether a sample dataset should be used for training.</p>
+<ul>
+<li>Type: bool</li>
+<li>Example: True</li>
+</ul>
+</li>
+</ul>
               
             </div>
           </div><footer>

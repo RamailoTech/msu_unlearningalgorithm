@@ -95,14 +95,6 @@
     <li class="toctree-l3"><a class="reference internal" href="#run-train">Run Train</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#directory-structure">Directory Structure</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#description-of-arguments-in-train_ti_configyaml">Description of Arguments in train_ti_config.yaml</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#description-of-arguments-in-train_attn_configyaml">Description of Arguments in train_attn_config.yaml</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#key-parameters">Key Parameters</a>
-    </li>
-        </ul>
     </li>
     </ul>
                 </li>
@@ -227,11 +219,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/concept_ablation/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/erase_diff/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -239,11 +235,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/esd/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/esd/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/forget_me_not/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -251,11 +251,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/saliency/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/saliency/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/scissorhands/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -263,11 +267,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/semipermeable_membrane/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/semipermeable_membrane/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Unified Concept Editing</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/uce/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/uce/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -275,9 +283,16 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/adv_unlearn_evaluation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/adv_unlearn_evaluation/">Config</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../evaluation/contributing/">How to contribute</a>
                   </li>
               </ul>
       </div>
@@ -484,7 +499,7 @@ algorithm = ForgetMeNotAlgorithm(
 )
 algorithm.run(train_type=&quot;train_attn&quot;)
 </code></pre>
-<p><strong>Run on your won dataset</strong></p>
+<p><strong>Run on your own dataset</strong></p>
 <p><strong>Step-1: Generate your own dataset</strong></p>
 <pre><code class="language-bash">generate_images_for_prompts --model_path models/diffuser/style50 --csv_path data/prompts/generic_data.csv
 </code></pre>
@@ -570,108 +585,6 @@ algorithm.run(train_type=&quot;train_attn&quot;)
 <p><strong>Perform Unlearning</strong>: The second stage uses the outputs from the first stage to perform unlearning. Refer to the script <a href="mu/algorithms/forget_me_not/scripts/train_attn.py"><code>train_attn.py</code></a> for details and implementation. It uses <code>train_attn_config.yaml</code> as config file.</p>
 </li>
 </ol>
-<h3 id="description-of-arguments-in-train_ti_configyaml">Description of Arguments in train_ti_config.yaml</h3>
-<p><strong>Pretrained Model</strong></p>
-<ul>
-<li><strong>ckpt_path</strong>: File path to the pretrained model's checkpoint file.</li>
-</ul>
-<p><strong>Dataset</strong></p>
-<ul>
-<li><strong>raw_dataset_dir</strong>: Directory containing the original dataset organized by themes and classes.</li>
-<li><strong>processed_dataset_dir</strong>: Directory where the processed datasets will be saved.</li>
-<li><strong>dataset_type</strong>: Type of dataset to use (e.g., <code>unlearncanvas</code>). Use <code>generic</code> as type if you want to use your own dataset. Valid choices are <code>unlearncanvas</code>, <code>i2p</code> and <code>generic</code>.</li>
-<li><strong>template</strong>: Type of template to use (e.g., <code>style</code>).</li>
-<li><strong>template_name</strong>: Name of the template, defining the style or theme (e.g., <code>Abstractionism</code>).</li>
-<li><strong>use_sample</strong>: Boolean indicating whether to use the sample dataset for training.</li>
-</ul>
-<p><strong>Training Configuration</strong></p>
-<ul>
-<li><strong>initializer_tokens</strong>: Tokens used to initialize the training process, referencing the template name.</li>
-<li><strong>steps</strong>: Number of training steps.</li>
-<li><strong>lr</strong>: Learning rate for the training optimizer.</li>
-<li><strong>weight_decay_ti</strong>: Weight decay for Text Inversion training.</li>
-<li><strong>seed</strong>: Random seed for reproducibility.</li>
-<li><strong>placeholder_tokens</strong>: Tokens used as placeholders during training.</li>
-<li><strong>placeholder_token_at_data</strong>: Placeholders used in the dataset for Text Inversion training.</li>
-<li><strong>gradient_checkpointing</strong>: Boolean to enable or disable gradient checkpointing.</li>
-<li><strong>scale_lr</strong>: Boolean indicating whether to scale the learning rate based on batch size.</li>
-<li><strong>gradient_accumulation_steps</strong>: Number of steps to accumulate gradients before updating weights.</li>
-<li><strong>train_batch_size</strong>: Batch size for training.</li>
-<li><strong>lr_warmup_steps</strong>: Number of steps for linear warmup of the learning rate.</li>
-</ul>
-<p><strong>Output Configuration</strong></p>
-<ul>
-<li><strong>output_dir</strong>: Directory path to save training results, including models and logs.</li>
-</ul>
-<p><strong>Device Configuration</strong></p>
-<ul>
-<li><strong>devices</strong>: CUDA devices to train on (comma-separated).</li>
-</ul>
-<h3 id="description-of-arguments-in-train_attn_configyaml">Description of Arguments in train_attn_config.yaml</h3>
-<h3 id="key-parameters">Key Parameters</h3>
-<p><strong>Pretrained Model</strong></p>
-<ul>
-<li><strong>ckpt_path</strong>: File path to the pretrained model's checkpoint file.</li>
-</ul>
-<p><strong>Dataset</strong></p>
-<ul>
-<li><strong>raw_dataset_dir</strong>: Directory containing the original dataset organized by themes and classes.</li>
-<li><strong>processed_dataset_dir</strong>: Directory where the processed datasets will be saved.</li>
-<li><strong>dataset_type</strong>: Type of dataset to use (e.g., <code>unlearncanvas</code>).</li>
-<li><strong>template</strong>: Type of template to use (e.g., <code>style</code>).</li>
-<li><strong>template_name</strong>: Name of the template, defining the style or theme (e.g., <code>Abstractionism</code>).</li>
-<li><strong>use_sample</strong>: Boolean indicating whether to use the sample dataset for training.</li>
-</ul>
-<p><strong>Text Inversion</strong></p>
-<ul>
-<li><strong>use_ti</strong>: Boolean indicating whether to use Text Inversion weights.</li>
-<li><strong>ti_weights_path</strong>: File path to the Text Inversion model weights.</li>
-</ul>
-<p><strong>Tokens</strong></p>
-<ul>
-<li><strong>initializer_tokens</strong>: Tokens used to initialize the training process, referencing the template name.</li>
-<li><strong>placeholder_tokens</strong>: Tokens used as placeholders during training.</li>
-</ul>
-<p><strong>Training Configuration</strong></p>
-<ul>
-<li><strong>mixed_precision</strong>: Precision type to use during training (e.g., <code>fp16</code> or <code>fp32</code>).</li>
-<li><strong>gradient_accumulation_steps</strong>: Number of steps to accumulate gradients before updating weights.</li>
-<li><strong>train_text_encoder</strong>: Boolean to enable or disable training of the text encoder.</li>
-<li><strong>enable_xformers_memory_efficient_attention</strong>: Boolean to enable memory-efficient attention mechanisms.</li>
-<li><strong>gradient_checkpointing</strong>: Boolean to enable or disable gradient checkpointing.</li>
-<li><strong>allow_tf32</strong>: Boolean to allow TensorFloat-32 computation for faster training.</li>
-<li><strong>scale_lr</strong>: Boolean indicating whether to scale the learning rate based on batch size.</li>
-<li><strong>train_batch_size</strong>: Batch size for training.</li>
-<li><strong>use_8bit_adam</strong>: Boolean to enable or disable 8-bit Adam optimizer.</li>
-<li><strong>adam_beta1</strong>: Beta1 parameter for the Adam optimizer.</li>
-<li><strong>adam_beta2</strong>: Beta2 parameter for the Adam optimizer.</li>
-<li><strong>adam_weight_decay</strong>: Weight decay for the Adam optimizer.</li>
-<li><strong>adam_epsilon</strong>: Epsilon value for the Adam optimizer.</li>
-<li><strong>size</strong>: Image resolution size for training.</li>
-<li><strong>with_prior_preservation</strong>: Boolean indicating whether to use prior preservation during training.</li>
-<li><strong>num_train_epochs</strong>: Number of training epochs.</li>
-<li><strong>lr_warmup_steps</strong>: Number of steps for linear warmup of the learning rate.</li>
-<li><strong>lr_num_cycles</strong>: Number of cycles for learning rate scheduling.</li>
-<li><strong>lr_power</strong>: Exponent to control the shape of the learning rate curve.</li>
-<li><strong>max-steps</strong>: Maximum number of training steps.</li>
-<li><strong>no_real_image</strong>: Boolean to skip using real images in training.</li>
-<li><strong>max_grad_norm</strong>: Maximum norm for gradient clipping.</li>
-<li><strong>checkpointing_steps</strong>: Number of steps between model checkpoints.</li>
-<li><strong>set_grads_to_none</strong>: Boolean to set gradients to None instead of zeroing them out.</li>
-<li><strong>lr</strong>: Learning rate for the training optimizer.</li>
-</ul>
-<p><strong>Output Configuration</strong></p>
-<ul>
-<li><strong>output_dir</strong>: Directory path to save training results, including models and logs.</li>
-</ul>
-<p><strong>Device Configuration</strong></p>
-<ul>
-<li><strong>devices</strong>: CUDA devices to train on (comma-separated).</li>
-</ul>
-<p><strong>Miscellaneous</strong></p>
-<ul>
-<li><strong>only-xa</strong>: Boolean to enable additional configurations specific to the XA pipeline.</li>
-</ul>
               
             </div>
           </div><footer>

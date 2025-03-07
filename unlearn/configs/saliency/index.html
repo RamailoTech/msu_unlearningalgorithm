@@ -207,11 +207,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/concept_ablation/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/erase_diff/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -219,11 +223,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/esd/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/esd/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/forget_me_not/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -231,11 +239,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/saliency/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/saliency/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/scissorhands/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -243,11 +255,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/semipermeable_membrane/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/semipermeable_membrane/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Unified Concept Editing</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/uce/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/uce/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -255,9 +271,16 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/adv_unlearn_evaluation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/adv_unlearn_evaluation/">Config</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../evaluation/contributing/">How to contribute</a>
                   </li>
               </ul>
       </div>
@@ -385,62 +408,230 @@ lr: 0.00001
 devices: &quot;0&quot;  # CUDA devices to train on (comma-separated)
 use_sample: true
 </code></pre>
-<h3 id="evaluation-config">Evaluation config</h3>
-<pre><code class="language-python"># mu/algorithms/saliency_unlearning/configs/evaluation_config.py
-
-import os
-
-from pathlib import Path
-
-from mu.core.base_config import BaseConfig
-
-current_dir = Path(__file__).parent
-
-
-class SaliencyUnlearningEvaluationConfig(BaseConfig):
-
-    def __init__(self, **kwargs):
-        self.model_config_path = current_dir/&quot;model_config.yaml&quot;  # path to model config
-        self.ckpt_path = &quot;outputs/saliency_unlearning/finetuned_models/saliency_unlearning_Abstractionism_model.pth&quot;  # path to finetuned model checkpoint
-        self.cfg_text = 9.0  # classifier-free guidance scale
-        self.devices = &quot;0&quot;  # GPU device ID
-        self.seed = 188  # random seed
-        self.ddim_steps = 100  # number of DDIM steps
-        self.image_height = 512  # height of the image
-        self.image_width = 512  # width of the image
-        self.ddim_eta = 0.0  # DDIM eta parameter
-        self.sampler_output_dir = &quot;outputs/eval_results/mu_results/saliency_unlearning/&quot;  # directory to save sampler outputs
-        self.multiprocessing = False  # whether to use multiprocessing
-        self.dataset_type = &quot;unlearncanvas&quot;
-        self.use_sample = True
-
-        # Override defaults with any provided kwargs
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-    def validate_config(self):
-        &quot;&quot;&quot;
-        Perform basic validation on the config parameters.
-        &quot;&quot;&quot;
-        if not os.path.exists(self.model_config_path):
-            raise FileNotFoundError(f&quot;Model config file {self.model_config_path} does not exist.&quot;)
-        if not os.path.exists(self.ckpt_path):
-            raise FileNotFoundError(f&quot;Checkpoint file {self.ckpt_path} does not exist.&quot;)
-        if not os.path.exists(self.sampler_output_dir):
-            os.makedirs(self.sampler_output_dir)
-        if self.dataset_type not in [&quot;unlearncanvas&quot;, &quot;i2p&quot;, &quot;generic&quot;]:
-            raise ValueError(f&quot;Unknown dataset type: {self.dataset_type}&quot;)
-
-        if self.cfg_text &lt;= 0:
-            raise ValueError(&quot;Classifier-free guidance scale (cfg_text) should be positive.&quot;)
-        if self.ddim_steps &lt;= 0:
-            raise ValueError(&quot;DDIM steps should be a positive integer.&quot;)
-        if self.image_height &lt;= 0 or self.image_width &lt;= 0:
-            raise ValueError(&quot;Image height and width should be positive.&quot;)
-
-
-saliency_unlearning_evaluation_config = SaliencyUnlearningEvaluationConfig()
-</code></pre>
+<h3 id="description-of-configs-used-to-generate-mask">Description of configs used to generate mask:</h3>
+<p><strong>Model Configuration</strong></p>
+<p>These parameters specify settings for the Stable Diffusion model and guidance configurations.</p>
+<ul>
+<li>
+<p>c_guidance: Guidance scale used during loss computation in the model. Higher values may emphasize certain features in mask generation.</p>
+<ul>
+<li>Type: float</li>
+<li>Example: 7.5</li>
+</ul>
+</li>
+<li>
+<p>batch_size: Number of images processed in a single batch.</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 4</li>
+</ul>
+</li>
+<li>
+<p>ckpt_path: Path to the model checkpoint file for Stable Diffusion.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: /path/to/compvis.ckpt</li>
+</ul>
+</li>
+<li>
+<p>model_config_path: Path to the model configuration YAML file for Stable Diffusion.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: /path/to/model_config.yaml</li>
+</ul>
+</li>
+<li>
+<p>num_timesteps: Number of timesteps used in the diffusion process.</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 1000</li>
+</ul>
+</li>
+<li>
+<p>image_size: Size of the input images used for training and mask generation (in pixels).</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 512</li>
+</ul>
+</li>
+</ul>
+<p><strong>Dataset Configuration</strong></p>
+<p>These parameters define the dataset paths and settings for mask generation.</p>
+<ul>
+<li>
+<p>raw_dataset_dir: Path to the directory containing the original dataset, organized by themes and classes.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: /path/to/raw/dataset</li>
+</ul>
+</li>
+<li>
+<p>processed_dataset_dir: Path to the directory where processed datasets will be saved after mask generation.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: /path/to/processed/dataset</li>
+</ul>
+</li>
+<li>
+<p>dataset_type: Type of dataset being used.</p>
+<ul>
+<li>Choices: unlearncanvas, i2p</li>
+<li>Type: str</li>
+<li>Example: i2p</li>
+</ul>
+</li>
+<li>
+<p>template: Type of template for mask generation.</p>
+<ul>
+<li>Choices: object, style, i2p</li>
+<li>Type: str</li>
+<li>Example: style</li>
+</ul>
+</li>
+<li>
+<p>template_name: Specific template name for the mask generation process.</p>
+<ul>
+<li>Example Choices: self-harm, Abstractionism</li>
+<li>Type: str</li>
+<li>Example: Abstractionism</li>
+</ul>
+</li>
+<li>
+<p>threshold: Threshold value for mask generation to filter salient regions.</p>
+<ul>
+<li>Type: float</li>
+<li>Example: 0.5</li>
+</ul>
+</li>
+</ul>
+<p><strong>Output Configuration</strong></p>
+<p>These parameters specify the directory where the results are saved.</p>
+<ul>
+<li>
+<p>output_dir: Directory where the generated masks will be saved.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: outputs/saliency_unlearning/masks</li>
+</ul>
+</li>
+</ul>
+<p><strong>Training Configuration</strong></p>
+<p>These parameters control the training process for mask generation.</p>
+<ul>
+<li>
+<p>lr: Learning rate used for training the masking algorithm.</p>
+<ul>
+<li>Type: float</li>
+<li>Example: 0.00001</li>
+</ul>
+</li>
+<li>
+<p>devices: CUDA devices used for training, specified as a comma-separated list.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: 0</li>
+</ul>
+</li>
+<li>
+<p>use_sample: Flag indicating whether to use a sample dataset for training and mask generation.</p>
+<ul>
+<li>Type: bool</li>
+<li>Example: True</li>
+</ul>
+</li>
+</ul>
+<h3 id="description-of-arguments-used-to-train-saliency-unlearning">Description of Arguments used to train saliency unlearning.</h3>
+<p>The following configs are used to fine-tune the Stable Diffusion model to perform saliency-based unlearning. This script relies on a configuration class <code>SaliencyUnlearningConfig</code>  and supports additional runtime arguments for further customization. Below is a detailed description of each argument:</p>
+<p><strong>General Arguments</strong></p>
+<ul>
+<li>
+<p>alpha: Guidance scale used to balance the loss components during training.</p>
+<ul>
+<li>Type: float</li>
+<li>Example: 0.1</li>
+</ul>
+</li>
+<li>
+<p>epochs: Number of epochs to train the model.</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 5</li>
+</ul>
+</li>
+<li>
+<p>train_method: Specifies the training method or strategy to be used.</p>
+<ul>
+<li>Choices: noxattn, selfattn, xattn, full, notime, xlayer, selflayer</li>
+<li>Type: str</li>
+<li>Example: noxattn</li>
+</ul>
+</li>
+<li>
+<p>model_config_path: Path to the model configuration YAML file for Stable Diffusion.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: 'mu/algorithms/saliency_unlearning/configs/model_config.yaml'</li>
+</ul>
+</li>
+</ul>
+<p><strong>Dataset Arguments</strong></p>
+<ul>
+<li>
+<p>raw_dataset_dir: Path to the directory containing the raw dataset, organized by themes and classes.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: 'path/raw_dataset/'</li>
+</ul>
+</li>
+<li>
+<p>processed_dataset_dir: Path to the directory where the processed dataset will be saved.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: 'path/processed_dataset_dir'</li>
+</ul>
+</li>
+<li>
+<p>dataset_type: Specifies the type of dataset to use for training. Use <code>generic</code> as type if you want to use your own dataset.</p>
+<ul>
+<li>Choices: unlearncanvas, i2p, generic</li>
+<li>Type: str</li>
+<li>Example: i2p</li>
+</ul>
+</li>
+<li>
+<p>template: Specifies the template type for training.</p>
+<ul>
+<li>Choices: object, style, i2p</li>
+<li>Type: str</li>
+<li>Example: style</li>
+</ul>
+</li>
+<li>
+<p>template_name: Name of the specific template used for training.</p>
+<ul>
+<li>Example Choices: self-harm, Abstractionism</li>
+<li>Type: str</li>
+<li>Example: Abstractionism</li>
+</ul>
+</li>
+</ul>
+<p><strong>Output Arguments</strong></p>
+<ul>
+<li>
+<p>output_dir: Directory where the fine-tuned model and training outputs will be saved.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: 'output/folder_name'</li>
+</ul>
+</li>
+<li>
+<p>mask_path: Path to the saliency mask file used during training.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: </li>
+</ul>
+</li>
+</ul>
               
             </div>
           </div><footer>

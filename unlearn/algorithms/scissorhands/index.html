@@ -104,21 +104,11 @@
     <ul class="current">
                 <li class="toctree-l2 current"><a class="reference internal current" href="#">Usage</a>
     <ul class="current">
-    <li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#prerequisities">Prerequisities</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#downloading-data-and-models">Downloading data and models.</a>
-    </li>
-        </ul>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#run-train">Run Train</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#directory-structure">Directory Structure</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#description-of-arguments-in-train_configyaml">Description of Arguments in train_config.yaml</a>
     </li>
         </ul>
     </li>
@@ -225,11 +215,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/concept_ablation/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/erase_diff/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -237,11 +231,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/esd/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/esd/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/forget_me_not/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -249,11 +247,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/saliency/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/saliency/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/scissorhands/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -261,11 +263,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/semipermeable_membrane/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/semipermeable_membrane/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Unified Concept Editing</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/uce/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/uce/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -273,9 +279,16 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/adv_unlearn_evaluation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/adv_unlearn_evaluation/">Config</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../evaluation/contributing/">How to contribute</a>
                   </li>
               </ul>
       </div>
@@ -305,83 +318,6 @@
               
                 <h1 id="scissorhands-algorithm-for-machine-unlearning">ScissorHands Algorithm for Machine Unlearning</h1>
 <p>This repository provides an implementation of the scissor hands algorithm for machine unlearning in Stable Diffusion models. The scissor hands algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.</p>
-<h2 id="installation">Installation</h2>
-<h3 id="prerequisities">Prerequisities</h3>
-<p>Ensure <code>conda</code> is installed on your system. You can install Miniconda or Anaconda:</p>
-<ul>
-<li><strong>Miniconda</strong> (recommended): <a href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a></li>
-<li><strong>Anaconda</strong>: <a href="https://www.anaconda.com/products/distribution">https://www.anaconda.com/products/distribution</a></li>
-</ul>
-<p>After installing <code>conda</code>, ensure it is available in your PATH by running. You may require to restart the terminal session:</p>
-<pre><code class="language-bash">conda --version
-</code></pre>
-<p><strong>Step-by-Step Setup:</strong></p>
-<p>Step 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:</p>
-<pre><code class="language-bash">conda create -n myenv python=3.8.5
-</code></pre>
-<p>Step 2. Activate the Environment Activate the environment to work within it:</p>
-<pre><code class="language-bash">conda activate myenv
-</code></pre>
-<p>Step 3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:</p>
-<pre><code class="language-bash">conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
-</code></pre>
-<p>Step 4. Install our unlearn_diff Package using pip:</p>
-<pre><code class="language-bash">pip install unlearn_diff
-</code></pre>
-<p>Step 5. Install Additional Git Dependencies:</p>
-<p>After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:</p>
-<pre><code class="language-bash">pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/openai/CLIP.git@main#egg=clip
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/crowsonkb/k-diffusion.git
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/cocodataset/panopticapi.git
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/boomb0om/text2image-benchmark
-</code></pre>
-<h3 id="downloading-data-and-models">Downloading data and models.</h3>
-<p>After you install the package, you can use the following commands to download.</p>
-<ol>
-<li><strong>Dataset</strong>:</li>
-<li><strong>i2p</strong>:<ul>
-<li><strong>Sample</strong>:
- <code>download_data sample i2p</code></li>
-<li><strong>Full</strong>:
- <code>download_data full i2p</code></li>
-</ul>
-</li>
-<li>
-<p><strong>quick_canvas</strong>:</p>
-<ul>
-<li><strong>Sample</strong>:
- <code>download_data sample quick_canvas</code></li>
-<li><strong>Full</strong>:
- <code>download_data full quick_canvas</code></li>
-</ul>
-</li>
-<li>
-<p><strong>Model</strong>:</p>
-</li>
-<li><strong>compvis</strong>:
-    <code>download_model compvis</code></li>
-<li>
-<p><strong>diffuser</strong>:
-    <code>download_model diffuser</code></p>
-</li>
-<li>
-<p>Download best.onnx model</p>
-<p><code>download_best_onnx</code></p>
-</li>
-</ol>
-<p><strong>Verify the Downloaded Files</strong></p>
-<p>After downloading, verify that the datasets have been correctly extracted:</p>
-<pre><code class="language-bash">ls -lh ./data/i2p-dataset/sample/
-ls -lh ./data/quick-canvas-dataset/sample/
-</code></pre>
-<hr />
 <h2 id="usage">Usage</h2>
 <p>To train the ScissorHands algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the <code>train.py</code> script located in the <code>scripts</code> directory.</p>
 <h2 id="run-train">Run Train</h2>
@@ -478,147 +414,6 @@ algorithm.run()
 <li><code>data_handler.py</code> : Implementation of DataHandler class</li>
 </ul>
 <hr />
-<h3 id="description-of-arguments-in-train_configyaml">Description of Arguments in train_config.yaml</h3>
-<p><strong>Training Parameters</strong></p>
-<ul>
-<li>
-<p>train_method: Specifies the method of training for concept erasure.</p>
-<ul>
-<li>Choices: ["noxattn", "selfattn", "xattn", "full", "notime", "xlayer", "selflayer"]</li>
-<li>Example: "xattn"</li>
-</ul>
-</li>
-<li>
-<p>alpha: Guidance strength for the starting image during training.</p>
-<ul>
-<li>Type: float</li>
-<li>Example: 0.1</li>
-</ul>
-</li>
-<li>
-<p>epochs: Number of epochs to train the model.</p>
-<ul>
-<li>Type: int</li>
-<li>Example: 1</li>
-</ul>
-</li>
-</ul>
-<p><strong>Model Configuration</strong></p>
-<ul>
-<li>
-<p>model_config_path: File path to the Stable Diffusion model configuration YAML file.</p>
-<ul>
-<li>type: str</li>
-<li>Example: "/path/to/model_config.yaml"</li>
-</ul>
-</li>
-<li>
-<p>ckpt_path: File path to the checkpoint of the Stable Diffusion model.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: "/path/to/model_checkpoint.ckpt"</li>
-</ul>
-</li>
-</ul>
-<p><strong>Dataset Directories</strong></p>
-<ul>
-<li>
-<p>raw_dataset_dir: Directory containing the raw dataset categorized by themes or classes.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: "/path/to/raw_dataset"</li>
-</ul>
-</li>
-<li>
-<p>processed_dataset_dir: Directory to save the processed dataset.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: "/path/to/processed_dataset"</li>
-</ul>
-</li>
-<li>
-<p>dataset_type: Specifies the dataset type for the training process. Use <code>generic</code> as type if you want to use your own dataset.</p>
-<ul>
-<li>Choices: ["unlearncanvas", "i2p", "generic"]</li>
-<li>Example: "unlearncanvas"</li>
-</ul>
-</li>
-<li>
-<p>template: Type of template to use during training.</p>
-<ul>
-<li>Choices: ["object", "style", "i2p"]</li>
-<li>Example: "style"</li>
-</ul>
-</li>
-<li>
-<p>template_name: Name of the specific concept or style to be erased.</p>
-<ul>
-<li>Choices: ["self-harm", "Abstractionism"]</li>
-<li>Example: "Abstractionism"</li>
-</ul>
-</li>
-</ul>
-<p><strong>Output Configurations</strong></p>
-<ul>
-<li>
-<p>output_dir: Directory where the fine-tuned models and results will be saved.</p>
-<ul>
-<li>Type: str</li>
-<li>Example: "outputs/erase_diff/finetuned_models"</li>
-</ul>
-</li>
-</ul>
-<p><strong>Sampling and Image Configurations</strong></p>
-<ul>
-<li>
-<p>sparsity: Threshold for mask.</p>
-<ul>
-<li>Type: float</li>
-<li>Example: 0.99</li>
-</ul>
-</li>
-<li>
-<p>project: </p>
-<ul>
-<li>Type: bool</li>
-<li>Example: false</li>
-</ul>
-</li>
-<li>
-<p>memory_num: </p>
-<ul>
-<li>Type: Int</li>
-<li>Example: 1</li>
-</ul>
-</li>
-<li>
-<p>prune_num: </p>
-<ul>
-<li>Type: Int</li>
-<li>Example: 1</li>
-</ul>
-</li>
-</ul>
-<p><strong>Device Configuration</strong></p>
-<ul>
-<li>
-<p>devices: Specifies the CUDA devices to be used for training (comma-separated).</p>
-<ul>
-<li>Type: str (Comma separated)</li>
-<li>Example: "0, 1"</li>
-</ul>
-</li>
-</ul>
-<p><strong>Additional Flags</strong></p>
-<ul>
-<li>
-<p>use_sample: Flag to indicate whether a sample dataset should be used for training.</p>
-<ul>
-<li>Type: bool</li>
-<li>Example: True</li>
-</ul>
-</li>
-</ul>
               
             </div>
           </div><footer>

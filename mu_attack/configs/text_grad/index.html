@@ -194,6 +194,8 @@
                 <li class="toctree-l3"><a class="reference internal" href="../../attack/text_grad/">Usage</a>
                 </li>
                 <li class="toctree-l3 current"><a class="reference internal current" href="#">Config</a>
+    <ul class="current">
+    </ul>
                 </li>
     </ul>
                 </li>
@@ -205,11 +207,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/concept_ablation/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/erase_diff/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -217,11 +223,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/esd/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/esd/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/forget_me_not/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -229,11 +239,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/saliency/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/saliency/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/scissorhands/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -241,11 +255,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/semipermeable_membrane/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/semipermeable_membrane/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Unified Concept Editing</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/uce/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/uce/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -253,9 +271,16 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/adv_unlearn_evaluation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/adv_unlearn_evaluation/">Config</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../evaluation/contributing/">How to contribute</a>
                   </li>
               </ul>
       </div>
@@ -444,6 +469,204 @@ text_grad_esd_nudity_classifier_compvis_config = TextGradESDNudityClassifierComp
     }
 }
 </code></pre>
+<h3 id="description-of-fields-in-config-json-file">Description of fields in config json file</h3>
+<ol>
+<li>overall</li>
+</ol>
+<p>This section defines the high-level configuration for the attack.</p>
+<ul>
+<li>
+<p>task : The name of the task being performed.</p>
+<p>Type: str
+Example: classifer</p>
+</li>
+<li>
+<p>attacker: Specifies the attack type.</p>
+<p>Type: str
+Example: text_grad</p>
+</li>
+<li>
+<p>logger: Defines the logging mechanism.</p>
+<p>Type: str
+Example: JSON</p>
+</li>
+<li>
+<p>resume: Option to resume from previous checkpoint.</p>
+</li>
+<li>
+<p>task</p>
+</li>
+<li>
+<p>concept: The concept targeted by the attack.</p>
+<p>Type: str
+Example: nudity</p>
+</li>
+<li>
+<p>diffusers_model_name_or_path: Path to the pre-trained checkpoint of the diffuser model. (For diffuser)</p>
+<p>Type: str
+Example: "outputs/semipermeable_membrane/finetuned_models/"</p>
+</li>
+<li>
+<p>target_ckpt: Path to the target model checkpoint used in the attack.  (For diffuser)</p>
+<p>Type: str
+Example: "files/pretrained/SD-1-4/ESD_ckpt/Nudity-ESDx1-UNET-SD.pt"</p>
+</li>
+<li>
+<p>compvis_ckpt_path: Path to the pre-trained checkpoint of the CompVis model. (For compvis)</p>
+<p>Type: str
+Example: "outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth"</p>
+</li>
+<li>
+<p>compvis_config_path: Path to the configuration file for the CompVis model. (For compvis)</p>
+<p>Type: str
+Example: "configs/scissorhands/model_config.yaml"</p>
+</li>
+<li>
+<p>cache_path: Directory to cache intermediate results.</p>
+<p>Type: str
+Example: ".cache"</p>
+</li>
+<li>
+<p>dataset_path: Path to the dataset used for the attack.</p>
+<p>Type: str
+Example: "outputs/dataset/i2p_nude"</p>
+</li>
+<li>
+<p>criterion: The loss function or criterion used during the attack.</p>
+<p>Type: str
+Example: "l2"</p>
+</li>
+<li>
+<p>classifier_dir: Directory for the classifier, if applicable. null if not used.
+    Type: str
+    Example: "/path/classifier_dir"</p>
+</li>
+<li>
+<p>sampling_step_num: Number of sampling steps during the attack.</p>
+<p>Type: int
+Example: 1</p>
+</li>
+<li>
+<p>sld: Strength of latent disentanglement.</p>
+<p>Type: str
+Example: "weak" </p>
+</li>
+<li>
+<p>sld_concept: Concept tied to latent disentanglement.</p>
+<p>Type: str
+Example: "nudity"</p>
+</li>
+<li>
+<p>negative_prompt: The negative prompt used to steer the generation. </p>
+<p>Type: str
+Example: "sth"</p>
+</li>
+<li>
+<p>model_name: Name of the model. The model_name parameter determines which base Stable Diffusion model is used by the pipeline.</p>
+<p>Type: str
+Example: "SD-v1-4"
+Choices: "SD-v1-4", "SD-V2", "SD-V2-1"</p>
+</li>
+<li>
+<p>save_diffuser: A Boolean flag that determines whether the CompVis model should be converted into the Diffusers format before being used.</p>
+<p>Type: str
+Example: True</p>
+<p>Behavior:
+* If set to True, the pipeline will perform a conversion of the CompVis model into the Diffusers format and then load the converted checkpoint.</p>
+<ul>
+<li>If set to False, the conversion is skipped and the model remains in its original CompVis format for use and uses compvis based implementation.</li>
+</ul>
+</li>
+<li>
+<p>converted_model_folder_path: Folder path to save the converted compvis model to diffuser.</p>
+<p>Type: str
+Example: "outputs"</p>
+</li>
+<li>
+<p>backend: Specifies the backend model i.e "diffusers".</p>
+<p>Type: str
+Options: "diffusers" or "compvis"</p>
+</li>
+<li>
+<p>text_grad: Json that contains lr and weight_decay.</p>
+<p>Type: Json
+Example: 
+<code>json
+        "text_grad": {
+        "lr": 0.01,
+        "weight_decay": 0.1
+    }</code></p>
+</li>
+<li>
+<p>attacker</p>
+</li>
+<li>
+<p>insertion_location: The point of insertion for the prompt.</p>
+<p>Type: str
+Example: "prefix_k"</p>
+</li>
+<li>
+<p>k: The value of k for the prompt insertion point.</p>
+<p>Type: int
+Example: 5</p>
+</li>
+<li>
+<p>iteration: Number of iterations for the attack.</p>
+<p>Type: int
+Example: 1</p>
+</li>
+<li>
+<p>seed_iteration: Random seed for the iterative process.</p>
+<p>Type: int
+Example: 1</p>
+</li>
+<li>
+<p>attack_idx: Index of the attack for evaluation purposes.</p>
+<p>Type: int
+Example: 0</p>
+</li>
+<li>
+<p>eval_seed: Seed value used for evaluation.</p>
+<p>Type: int
+Example: 0</p>
+</li>
+<li>
+<p>universal: Whether the attack is universal (true or false).</p>
+<p>Type: bool
+Example: false</p>
+</li>
+<li>
+<p>sequential: Whether the attack is applied sequentially.</p>
+<p>Type: bool
+Example: true</p>
+</li>
+<li>
+<p>logger</p>
+</li>
+<li>
+<p>json: Logging configuration.</p>
+<ul>
+<li>
+<p>root: Path to the directory where logs will be saved.</p>
+<p>Type: str
+Example: "results/seed_search_esd_nudity_P4D"</p>
+</li>
+<li>
+<p>name: Name for the log file or experiment.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: "Seed Search Nudity"</li>
+</ul>
+</li>
+</ul>
+<p>Example usage:</p>
+<pre><code>"json": {
+        "root": "results/text_grad_esd_nudity_esd",
+        "name": "TextGradNudity"
+    }
+</code></pre>
+</li>
+</ul>
               
             </div>
           </div><footer>

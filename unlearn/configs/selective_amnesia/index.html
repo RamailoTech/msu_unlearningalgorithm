@@ -207,11 +207,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/concept_ablation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/concept_ablation/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/erase_diff/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/erase_diff/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -219,11 +223,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/esd/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/esd/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/forget_me_not/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/forget_me_not/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -231,11 +239,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/saliency/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/saliency/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/scissorhands/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/scissorhands/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -243,11 +255,15 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/semipermeable_membrane/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/semipermeable_membrane/">Config</a>
+                </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Unified Concept Editing</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/uce/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/uce/">Config</a>
                 </li>
     </ul>
                 </li>
@@ -255,9 +271,16 @@
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/adv_unlearn_evaluation/">Usage</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../evaluation/configs/adv_unlearn_evaluation/">Config</a>
+                </li>
     </ul>
                 </li>
     </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../evaluation/contributing/">How to contribute</a>
                   </li>
               </ul>
       </div>
@@ -536,6 +559,163 @@ lightning:
     max_epochs: 50 # modify epochs here!
     check_val_every_n_epoch: 10
 </code></pre>
+<h2 id="configuration-file-description">Configuration File description</h2>
+<h3 id="training-parameters">Training Parameters</h3>
+<ul>
+<li>
+<p><strong>seed:</strong> Random seed for reproducibility.</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 23</li>
+</ul>
+</li>
+<li>
+<p><strong>scale_lr:</strong> Whether to scale the base learning rate.</p>
+<ul>
+<li>Type: bool</li>
+<li>Example: True</li>
+</ul>
+</li>
+</ul>
+<h3 id="model-configuration">Model Configuration</h3>
+<ul>
+<li>
+<p><strong>model_config_path:</strong> Path to the Stable Diffusion model configuration YAML file.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: "/path/to/model_config.yaml"</li>
+</ul>
+</li>
+<li>
+<p><strong>ckpt_path:</strong> Path to the Stable Diffusion model checkpoint.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: "/path/to/compvis.ckpt"</li>
+</ul>
+</li>
+<li>
+<p><strong>full_fisher_dict_pkl_path:</strong> Path to the full fisher dict pkl file</p>
+<ul>
+<li>Type: str</li>
+<li>Example: "full_fisher_dict.pkl"</li>
+</ul>
+</li>
+</ul>
+<h3 id="dataset-directories">Dataset Directories</h3>
+<ul>
+<li>
+<p><strong>raw_dataset_dir:</strong> Directory containing the raw dataset categorized by themes or classes.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: "/path/to/raw_dataset"</li>
+</ul>
+</li>
+<li>
+<p><strong>processed_dataset_dir:</strong> Directory to save the processed dataset.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: "/path/to/processed_dataset"</li>
+</ul>
+</li>
+<li>
+<p><strong>dataset_type:</strong> Specifies the dataset type for training. Use <code>generic</code> as type if you want to use your own dataset.</p>
+<ul>
+<li>Choices: ["unlearncanvas", "i2p", "generic"]</li>
+<li>Example: "unlearncanvas"</li>
+</ul>
+</li>
+<li>
+<p><strong>template:</strong> Type of template to use during training.</p>
+<ul>
+<li>Choices: ["object", "style", "i2p"]</li>
+<li>Example: "style"</li>
+</ul>
+</li>
+<li>
+<p><strong>template_name:</strong> Name of the concept or style to erase.</p>
+<ul>
+<li>Choices: ["self-harm", "Abstractionism"]</li>
+<li>Example: "Abstractionism"</li>
+</ul>
+</li>
+</ul>
+<h3 id="output-configurations">Output Configurations</h3>
+<ul>
+<li><strong>output_dir:</strong> Directory to save fine-tuned models and results.<ul>
+<li>Type: str</li>
+<li>Example: "outputs/selective_amnesia/finetuned_models"</li>
+</ul>
+</li>
+</ul>
+<h3 id="device-configuration">Device Configuration</h3>
+<ul>
+<li><strong>devices:</strong> CUDA devices for training (comma-separated).<ul>
+<li>Type: str</li>
+<li>Example: "0"</li>
+</ul>
+</li>
+</ul>
+<h3 id="data-parameters">Data Parameters</h3>
+<ul>
+<li>
+<p><strong>train_batch_size:</strong> Batch size for training.</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 4</li>
+</ul>
+</li>
+<li>
+<p><strong>val_batch_size:</strong> Batch size for validation.</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 6</li>
+</ul>
+</li>
+<li>
+<p><strong>num_workers:</strong> Number of worker threads for data loading.</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 4</li>
+</ul>
+</li>
+<li>
+<p><strong>forget_prompt:</strong> Prompt to specify the style or concept to forget.</p>
+<ul>
+<li>Type: str</li>
+<li>Example: "An image in Artist_Sketch style"</li>
+</ul>
+</li>
+</ul>
+<h3 id="lightning-configuration">Lightning Configuration</h3>
+<ul>
+<li>
+<p><strong>max_epochs:</strong> Maximum number of epochs for training.</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 50</li>
+</ul>
+</li>
+<li>
+<p><strong>callbacks:</strong></p>
+<ul>
+<li>
+<p><strong>batch_frequency:</strong> Frequency for logging image batches.</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 1</li>
+</ul>
+</li>
+<li>
+<p><strong>max_images:</strong> Maximum number of images to log.</p>
+<ul>
+<li>Type: int</li>
+<li>Example: 999</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr />
               
             </div>
           </div><footer>
