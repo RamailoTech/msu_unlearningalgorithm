@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Usage - Unlearn Diff</title>
+    <title>Mu attack evaluation - Unlearn Diff</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Usage";
+        var mkdocs_page_name = "Mu attack evaluation";
         var mkdocs_page_input_path = "mu_attack/mu_attack_evaluation.md";
         var mkdocs_page_url = null;
       </script>
@@ -39,11 +39,13 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Home</span></p>
+              <p class="caption"><span class="caption-text">Usage</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../..">Usage</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../usage/installation/">Installation</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../project_architecture/">Architecture</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../usage/unlearn_algorithm_usage/">How to use existing unlearning algorithms</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../usage/how_to_evaluate/">How to evaluate</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Unlearn Algorithms</span></p>
@@ -56,8 +58,6 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../../unlearn/configs/concept_ablation/">Configs</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../../evaluation/concept_ablation/">Evaluation</a>
-                </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Erase Diff</a>
@@ -67,8 +67,6 @@
                 <li class="toctree-l2"><a class="reference internal" href="../../unlearn/examples/erase_diff/">Examples</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../../unlearn/configs/erase_diff/">Configs</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../../evaluation/erase_diff/">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -80,8 +78,6 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../../unlearn/configs/esd/">Configs</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../../evaluation/esd/">Evaluation</a>
-                </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Forget Me Not</a>
@@ -91,8 +87,6 @@
                 <li class="toctree-l2"><a class="reference internal" href="../../unlearn/examples/forget_me_not/">Examples</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../../unlearn/configs/forget_me_not/">Configs</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../../evaluation/forget_me_not/">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -104,8 +98,6 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../../unlearn/configs/saliency/">Configs</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../../evaluation/saliency/">Evaluation</a>
-                </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Scissor Hands</a>
@@ -115,8 +107,6 @@
                 <li class="toctree-l2"><a class="reference internal" href="../../unlearn/examples/scissorhands/">Examples</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../../unlearn/configs/scissorhands/">Configs</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../../evaluation/scissorhands/">Evaluation</a>
                 </li>
     </ul>
                   </li>
@@ -138,8 +128,6 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../../unlearn/configs/semipermeable_membrane/">Configs</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../../evaluation/semipermeable_membrane/">Evaluation</a>
-                </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Unified Concept Editing</a>
@@ -150,137 +138,124 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../../unlearn/configs/uce/">Configs</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../../evaluation/uce/">Evaluation</a>
-                </li>
     </ul>
                   </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Unlearn Mu Attack</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" >Hard Prompt</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../attack/hard_prompt/">Usage</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../configs/hard_prompt/">Config</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >No attack</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../attack/no_attack/">Usage</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../configs/no_attack/">Config</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Random</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../attack/random/">Usage</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../configs/random/">Config</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Seed Search</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../attack/seed_search/">Usage</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../configs/seed_search/">Config</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >Text Grad</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../attack/text_grad/">Usage</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../configs/text_grad/">Config</a>
-                </li>
-    </ul>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Unlearn Mu Defense</span></p>
-              <ul>
                   <li class="toctree-l1"><a class="reference internal" >Adv Unlearn</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../mu_defense/adv_unlearn/">Usage</a>
+                <li class="toctree-l2"><a class="" href="../../mu_defense/adv_unlearn.md">Usage</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../../mu_defense/config/">Config</a>
+                <li class="toctree-l2"><a class="" href="../../mu_defense/config.md">Config</a>
                 </li>
     </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Evaluation</span></p>
-              <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" >MU</a>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" >Non-Attack evalaution</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" >No attack</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../attack/no_attack/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/no_attack/">Config</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Robustness Eval UnlearnDiffAtk</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../attack/hard_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/hard_prompt/">Config</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Random</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../attack/random/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/random/">Config</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Seed Search</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../attack/seed_search/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/seed_search/">Config</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" >Text Grad</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../attack/text_grad/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../configs/text_grad/">Config</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Utility Eval</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" >Concept Ablation</a>
     <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/concept_ablation/">Evaluation</a>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/concept_ablation/">Usage</a>
                 </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Erase Diff</a>
     <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/erase_diff/">Evaluation</a>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/erase_diff/">Usage</a>
                 </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >ESD</a>
     <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/esd/">Evaluation</a>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/esd/">Usage</a>
                 </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Forget Me Not</a>
     <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/forget_me_not/">Evaluation</a>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/forget_me_not/">Usage</a>
                 </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Saliency Unlearning</a>
     <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/saliency/">Evaluation</a>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/saliency/">Usage</a>
                 </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Scissor Hands</a>
     <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/scissorhands/">Evaluation</a>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/scissorhands/">Usage</a>
                 </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Semi Permeable Membrane</a>
     <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/semipermeable_membrane/">Evaluation</a>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/semipermeable_membrane/">Usage</a>
                 </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" >Unified Concept Editing</a>
     <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/uce/">Evaluation</a>
+                <li class="toctree-l3"><a class="reference internal" href="../../evaluation/uce/">Usage</a>
                 </li>
     </ul>
                 </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" >MU_Attack</a>
-    <ul class="current">
-                <li class="toctree-l2 current"><a class="reference internal current" href="#">Usage</a>
-    <ul class="current">
-    </ul>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" >MU_Defense</a>
+                <li class="toctree-l2"><a class="reference internal" >MU_Defense</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../../mu_defense/evaluation/">Usage</a>
+                <li class="toctree-l3"><a class="" href="../../mu_defense/evaluation.md">Usage</a>
                 </li>
     </ul>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Contributing</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../unlearn/algorithms/contributing/">Contributing</a>
+                </li>
+    </ul>
                   </li>
               </ul>
       </div>
@@ -297,9 +272,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Evaluation</li>
-          <li class="breadcrumb-item">MU_Attack</li>
-      <li class="breadcrumb-item active">Usage</li>
+      <li class="breadcrumb-item active">Mu attack evaluation</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -340,54 +313,35 @@
 </code></pre>
 <pre><code class="language-bash">pip install git+https://github.com/boomb0om/text2image-benchmark
 </code></pre>
-<p>The <algorithm_name> has to be one of the folders in the <code>mu/algorithms</code> folder.</p>
-<p><strong>Use mu_attack env (Optional)</strong></p>
-<pre><code class="language-bash">create_env mu_attack
-
-</code></pre>
 <h4 id="running-the-evaluation-framework"><strong>Running the Evaluation Framework</strong></h4>
-<p>Create a file, eg, <code>evaluate.py</code> and use examples and modify your configs to run the file.  </p>
+<p>Create a file, eg, <code>evaluate.py</code> and use examples and modify your configs to run the evalautions.  </p>
 <p><strong>Example Code</strong></p>
-<pre><code class="language-python">from mu_attack.configs.evaluation import attack_evaluation_config
-from mu_attack.execs.evaluator import MuAttackEvaluator
+<pre><code class="language-python">from evaluation.metrics.asr import asr_score
+from evaluation.metrics.clip import clip_score
+from evaluation.metrics.fid import fid_score
 
-def main():
-    config = attack_evaluation_config
-    config = attack_evaluation_config
-    config.asr.root = &quot;results/hard_prompt_esd_nudity_P4D_abstractionism/P4d&quot;
-    config.asr.root_no_attack = &quot;results/hard_prompt_esd_nudity_P4D_abstrc/NoAttackEsdNudity&quot;
-    config.clip.devices = &quot;0&quot;
-    config.clip.image_path = &quot;results/hard_prompt_esd_nudity_P4D_abstractionism/P4d/images&quot;
-    config.clip.log_path = &quot;results/hard_prompt_esd_nudity_P4D_abstractionism/P4d/log.json&quot;
-    config.fid.ref_batch_path = &quot;results/hard_prompt_esd_nudity_P4D_abstractionism/P4d/images&quot;
-    config.fid.sample_batch_path = &quot;data/i2p/nude&quot;
 
-    # Common output path
-    config.output_path = &quot;results/evaluation/results.json&quot;
+root = &quot;/home/ubuntu/Projects/Palistha/testing/results/hard_prompt_esd_nudity_P4D_erase_diff/P4d&quot;
+root_no_attack =&quot;/home/ubuntu/Projects/Palistha/testing/results/no_attack_esd_nudity_P4D_abstrctionism/NoAttackEsdNudity&quot;
 
-    evaluator = MuAttackEvaluator(config)
+asr_val = asr_score(root, root_no_attack)
+print(asr_val)
 
-    # Run the evaluation (this will run ASR, CLIP, and FID evaluators)
-    results = evaluator.run()
+images = &quot;/home/ubuntu/Projects/Palistha/testing/results/hard_prompt_esd_nudity_P4D_erase_diff_compvis_to_diffuser/P4d/images&quot;
+prompt_path = &quot;/home/ubuntu/Projects/Palistha/testing/results/hard_prompt_esd_nudity_P4D_erase_diff_compvis_to_diffuser/P4d/log.json&quot;
+device = &quot;0&quot;
+clip_val = clip_score(images, prompt_path, device)
 
-    print(&quot;Evaluation Results:&quot;,results)
+print(clip_val)
 
-if __name__ == &quot;__main__&quot;:
-    main()
+gen_path = &quot;/home/ubuntu/Projects/Palistha/testing/results/hard_prompt_esd_nudity_P4D_erase_diff/P4d/images&quot;
+ref_path = &quot;data/i2p/nude&quot;
+fid_val = fid_score(gen_path,ref_path)
+print(fid_val)
 </code></pre>
 <p><strong>Running the Training Script in Offline Mode</strong></p>
 <pre><code class="language-bash">WANDB_MODE=offline python evaluate.py
 </code></pre>
-<p><strong>How It Works</strong> 
-* Default Values: The script first loads default values from the evluation config file as in configs section.</p>
-<ul>
-<li>
-<p>Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.</p>
-</li>
-<li>
-<p>Final Configuration: The script merges the configs and convert them into dictionary to proceed with the evaluation. </p>
-</li>
-</ul>
 <p><strong>Evaluation Metrics:</strong></p>
 <ul>
 <li>
@@ -435,10 +389,6 @@ if __name__ == &quot;__main__&quot;:
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../../evaluation/uce/" class="btn btn-neutral float-left" title="Evaluation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../../mu_defense/evaluation/" class="btn btn-neutral float-right" title="Usage">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -460,10 +410,6 @@ if __name__ == &quot;__main__&quot;:
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../../evaluation/uce/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../../mu_defense/evaluation/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
