@@ -664,6 +664,57 @@ algorithm.run()
 <li>Update instructions in your algorithm’s <code>Readme.md</code> on how to install and activate this environment.</li>
 <li>Ensure you run the pytests in the tests/ directory after adding a new algorithm to verify that the updated environment remains compatible with existing algorithms.</li>
 </ul>
+<h3 id="run-pytests">Run pytests</h3>
+<p>Before integrating new algorithms into the repository, please run the existing tests using the modified environment file to ensure that your changes do not break any functionality.</p>
+<p><strong>Steps to Run the Tests</strong></p>
+<ol>
+<li>
+<p>Prepare the Environment Configuration:
+    Make sure the environment is set up using the provided tests/test_config.yaml file. This file contains configuration settings for various components of the project, such as data directories, model paths, and algorithm-specific parameters. It includes:</p>
+<ul>
+<li>
+<p>common_config_unlearn_canvas_mu:
+    Contains settings for the UnlearnCanvas dataset, including paths for the data directory, CompVis and Diffuser model checkpoints, template information, and dataset type.</p>
+</li>
+<li>
+<p>common_config_i2p:
+    Provides configuration for the i2p dataset with similar settings as above.</p>
+</li>
+<li>
+<p>evaluator_config:
+    Specifies the classifier checkpoint path and sample usage flag for evaluation.</p>
+</li>
+<li>
+<p>Algorithm-Specific Configurations:
+    Settings for various algorithms like concept_ablation, forget_me_not, saliency_unlearning, semipermeable, unified_concept_editing, selective_amnesia, and attack/defense configurations.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Run the Tests:
+    Execute the following commands from the root of your repository:</p>
+</li>
+</ol>
+<pre><code class="language-bash">pytest tests/test_mu.py
+pytest tests/test_mu_attack.py
+pytest tests/test_mu_defense.py
+</code></pre>
+<p>These commands will run tests for:</p>
+<ul>
+<li>
+<p>tests/test_mu.py: Core machine unlearning functionalities including evaluation.</p>
+</li>
+<li>
+<p>tests/test_mu_attack.py: Attack-related functionalities including evaluation.</p>
+</li>
+<li>
+<p>tests/test_mu_defense.py: Defense-related functionalities including evaluation.</p>
+</li>
+<li>
+<p>Verify the Results:
+Ensure that all tests pass without errors. If any test fails, fix the issues before adding new algorithms to maintain compatibility with the existing codebase.</p>
+</li>
+</ul>
 <h3 id="documentation">Documentation</h3>
 <ul>
 <li>Each algorithm folder <strong>must</strong> contain a <code>Readme.md</code> that documents:</li>
