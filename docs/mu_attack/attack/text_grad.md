@@ -1,11 +1,3 @@
-
-## UnlearnDiffAttak
-
-This repository contains the implementation of UnlearnDiffAttack for text grad, a framework for evaluating the robustness of safety-driven unlearned Models using adversarial prompts.
-
-
-## Usage
-
 ### Generate Dataset
 
 Before running attacks you need to generate dataset. Run the following command into the terminal.
@@ -20,36 +12,7 @@ Note: If you want to generate image using full prompt then use `data/prompts/nud
 
 ### Run Attack 
 
-1. **Text Grad Attack - compvis**
-
-Use the following code if you wish to run the seed search attack using the CompVis model directly (without converting it into Diffusers format):
-
-```python
-from mu_attack.configs.nudity import text_grad_esd_nudity_classifier_compvis_config
-from mu_attack.execs.attack import MUAttack
-from mu.algorithms.scissorhands.configs import scissorhands_train_mu
-
-def run_attack_for_nudity():
-
-    overridable_params = {
-    "task.compvis_ckpt_path" :"/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
-    "task.compvis_config_path" : scissorhands_train_mu.model_config_path,
-    "task.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
-    "attacker.text_grad.lr": 0.02,
-    "logger.json.root" : "results/seed_search_esd_nudity_P4D_scissorhands"
-
-    }
-
-    MUAttack(
-        config=text_grad_esd_nudity_classifier_compvis_config,
-        **overridable_params
-    )
-
-if __name__ == "__main__":
-    run_attack_for_nudity()
-```
-
-2.  **Text Grad Attack – CompVis to Diffusers Conversion**
+**Text Grad Attack – CompVis to Diffusers Conversion**
 
 If you want to convert the CompVis model into the Diffusers format before running the attack, use the following code. Note: For the conversion to take place, set task.save_diffuser to True and to use the converted model task.sld should be set to None.
 
@@ -63,7 +26,7 @@ def run_attack_for_nudity():
     overridable_params = {
         "task.compvis_ckpt_path" :"/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
         "task.compvis_config_path" : scissorhands_train_mu.model_config_path,
-        "task.dataset_path" : "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
+        "task.dataset_path" : "outputs/dataset/i2p_nude",
         "attacker.text_grad.lr": 0.02,
         "logger.json.root" : "results/seed_search_esd_nudity_P4D_scissorhands",
         "task.save_diffuser": True, # This flag triggers conversion

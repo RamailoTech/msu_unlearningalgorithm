@@ -1,8 +1,4 @@
-### Evaluation:
-
-**Evaluate using unlearn canvas dataset:**
-
-**Note: Currently it supports evaluation for unlearn canvas dataset to calculate accuracy. I2p and generic dataset support needs to be added.**
+**Evaluation using existing Unlearn canvas dataset:**
 
 ```python
 from mu.algorithms.erase_diff import EraseDiffEvaluator

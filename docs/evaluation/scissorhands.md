@@ -10,9 +10,7 @@ You can run the evaluation framework using the `evaluate.py` script located in t
 
 ### **Basic Command to Run Evaluation:**
 
-**Before running evaluation, download the classifier ckpt from here:**
-
-https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61 
+**Before running evaluation, download the classifier ckpt from [here](https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61).**
 
 Add the following code to `evaluate.py`
 
@@ -37,7 +35,7 @@ accuracy = accuracy_score(gen_image_dir=generated_images_path,
                           classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
                           reference_dir=reference_image_dir,
                           forget_theme="Bricks",
-                          seed_list = ["188"] )
+                          )
 print(accuracy['acc'])
 print(accuracy['loss'])
 

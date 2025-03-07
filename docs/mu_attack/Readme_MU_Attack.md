@@ -417,16 +417,16 @@ from mu_attack.configs.evaluation import attack_evaluation_config
 def main():
     # Initialize the configuration
     config = attack_evaluation_config
-    config.asr.root = "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d"
-    config.asr.root_no_attack = "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/no_attack_esd_nudity/NoAttackEsdNudity"
+    config.asr.root = "results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d"
+    config.asr.root_no_attack = "results/no_attack_esd_nudity/NoAttackEsdNudity"
     config.clip.devices = "0"
-    config.clip.image_path = "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d/images"
-    config.clip.log_path = "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d/log.json"
-    config.fid.ref_batch_path = "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d/images"
+    config.clip.image_path = "results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d/images"
+    config.clip.log_path = "results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d/log.json"
+    config.fid.ref_batch_path = "results/hard_prompt_esd_nudity_P4D_concept_ablation/P4d/images"
     config.fid.sample_batch_path = "/home/ubuntu/Projects/balaram/unlearn_diff_attack/outputs/dataset/i2p_nude/imgs"
 
     # Common output path
-    config.output_path = "/home/ubuntu/Projects/Palistha/unlearn_diff_attack/results/evaluation/results.json"
+    config.output_path = "results/evaluation/results.json"
 
     # Initialize and run the ASR evaluator
     asr_evaluator = ASREvaluator(

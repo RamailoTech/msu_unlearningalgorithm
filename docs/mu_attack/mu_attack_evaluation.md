@@ -76,20 +76,20 @@ from evaluation.metrics.clip import clip_score
 from evaluation.metrics.fid import fid_score
 
 
-root = "/home/ubuntu/Projects/Palistha/testing/results/hard_prompt_esd_nudity_P4D_erase_diff/P4d"
-root_no_attack ="/home/ubuntu/Projects/Palistha/testing/results/no_attack_esd_nudity_P4D_abstrctionism/NoAttackEsdNudity"
+root = "results/hard_prompt_esd_nudity_P4D_erase_diff/P4d"
+root_no_attack ="results/no_attack_esd_nudity_P4D_abstrctionism/NoAttackEsdNudity"
 
 asr_val = asr_score(root, root_no_attack)
 print(asr_val)
 
-images = "/home/ubuntu/Projects/Palistha/testing/results/hard_prompt_esd_nudity_P4D_erase_diff_compvis_to_diffuser/P4d/images"
-prompt_path = "/home/ubuntu/Projects/Palistha/testing/results/hard_prompt_esd_nudity_P4D_erase_diff_compvis_to_diffuser/P4d/log.json"
+images = "results/hard_prompt_esd_nudity_P4D_erase_diff_compvis_to_diffuser/P4d/images"
+prompt_path = "results/hard_prompt_esd_nudity_P4D_erase_diff_compvis_to_diffuser/P4d/log.json"
 device = "0"
 clip_val = clip_score(images, prompt_path, device)
 
 print(clip_val)
 
-gen_path = "/home/ubuntu/Projects/Palistha/testing/results/hard_prompt_esd_nudity_P4D_erase_diff/P4d/images"
+gen_path = "results/hard_prompt_esd_nudity_P4D_erase_diff/P4d/images"
 ref_path = "data/i2p/nude"
 fid_val = fid_score(gen_path,ref_path)
 print(fid_val)

@@ -8,9 +8,8 @@ This section provides instructions for running the **evaluation framework** for 
 You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/unified_concept_editing/scripts/` directory. Work within the same environment used to perform unlearning for evaluation as well.
 
 
-**Before running evaluation, download the classifier ckpt from here:**
+**Before running evaluation, download the classifier ckpt from [here](https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61).**
 
-https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61 
 
 
 Then, Add the following code to `evaluate.py`
@@ -32,14 +31,14 @@ evaluator = UnifiedConceptEditingEvaluator(
 # model = evaluator.load_model()
 generated_images_path = evaluator.generate_images()
 
-reference_image_dir = "/home/ubuntu/Projects/Palistha/testing/data/quick-canvas-dataset/sample"
+reference_image_dir = "data/quick-canvas-dataset/sample"
 
 accuracy = accuracy_score(gen_image_dir=generated_images_path,
                           dataset_type = "unlearncanvas",
                           classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
                           reference_dir=reference_image_dir,
                           forget_theme="Bricks",
-                          seed_list = ["188"] )
+                          )
 print(accuracy['acc'])
 print(accuracy['loss'])
 

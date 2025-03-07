@@ -1,9 +1,3 @@
-# Unlearn Diff
-Unlearn Diff is an open-source Python package designed to streamline the development of unlearning algorithms and establish a standardized evaluation pipeline for diffusion models. It provides researchers and practitioners with tools to implement, evaluate, and extend unlearning algorithms effectively.
-
-## Usage
-This section contains the usage guide for the package.
-
 ### Installation 
 
 #### Prerequisities
@@ -19,35 +13,35 @@ Before installing the unlearn_diff package, follow these steps to set up your en
 
 **Step-by-Step Setup:**
 
-1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:
+Step 1: Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:
 
 ```bash
 conda create -n myenv python=3.8.5
 ```
 
-2. Activate the Environment Activate the environment to work within it:
+Step 2: Activate the Environment Activate the environment to work within it:
 
 ```bash
 conda activate myenv
 ```
 
-3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:
+Step 3: Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:
 
 ```bash
 conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
 ```
 
-4. Install our unlearn_diff Package using pip:
+Step 4: Install our unlearn_diff Package using pip:
 
 ```bash
 pip install unlearn_diff
 ```
 
-5. Install Additional Git Dependencies:
+Step 5: Install Additional Git Dependencies:
 
  After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:
 
- ```bash
+```bash
 pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
 ```
 

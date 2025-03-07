@@ -1,15 +1,6 @@
-# Semi Permeable Membrane Algorithm for Machine Unlearning
-
-This repository provides an implementation of the semipermeable membrane algorithm for machine unlearning in Stable Diffusion models. The semipermeable membrane algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.
-
-## Usage
-
-To train the Semi Permeable Membrane algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
-
 ## Run Train
 Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
-**Example Code**
 
 **Using quick canvas dataset**
 
@@ -73,14 +64,3 @@ WANDB_MODE=offline python my_trainer.py
 * Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
 
 * Final Configuration: The script merges the configs and convert them into dictionary to proceed with the training. 
-## Directory Structure
-
-- `algorithm.py`: Implementation of the Semi Permeable MembraneAlgorithm class.
-- `configs/`: Contains configuration files for training and generation.
-- `model.py`: Implementation of the Semi Permeable MembraneModel class.
-- `scripts/train.py`: Script to train the Semi Permeable Membrane algorithm.
-- `trainer.py`: Implementation of the Semi Permeable MembraneTrainer class.
-- `utils.py`: Utility functions used in the project.
-- `data_handler.py` : Implementation of DataHandler class
-
----

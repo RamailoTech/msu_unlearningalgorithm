@@ -1,10 +1,3 @@
-
-## UnlearnDiffAttak
-
-This repository contains the implementation of UnlearnDiffAttack for hard prompt attack, a framework for evaluating the robustness of safety-driven unlearned Models using adversarial prompts.
-
-## usage
-
 ### Generate Dataset
 
 Before running attacks you need to generate dataset. Run the following command into the terminal.
@@ -16,12 +9,11 @@ generate_attack_dataset --prompts_path data/prompts/nudity_sample.csv --concept 
 Note: If you want to generate image using full prompt then use `data/prompts/nudity.csv` as prompts_path.
 
 
-
 ### Run Attack 
 
-1. **Hard Prompt Attack - compvis**
+**Hard Prompt Attack – CompVis to Diffusers Conversion**
 
-Use the following code if you wish to run the hard prompt attack using the CompVis model directly (without converting it into Diffusers format):
+If you have compvis models, you will need to convert the compvis model to diffuser format. Note: For the conversion to take place, set task.`save_diffuser` to True and to use the converted model `task.sld` should be set to None.
 
 ```python
 from mu_attack.configs.nudity import hard_prompt_esd_nudity_P4D_compvis_config
@@ -34,33 +26,6 @@ def run_attack_for_nudity():
         "task.compvis_ckpt_path":"outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
         "task.compvis_config_path": scissorhands_train_mu.model_config_path,
         "task.dataset_path":"outputs/dataset/i2p_nude",
-        "logger.json.root":"results/hard_prompt_esd_nudity_P4D_scissorhands",
-    }
-
-    MUAttack(
-        config=hard_prompt_esd_nudity_P4D_compvis_config,
-        **overridable_params
-    )
-
-if __name__ == "__main__":
-    run_attack_for_nudity()
-```
-
-2.  **Hard Prompt Attack – CompVis to Diffusers Conversion**
-
-If you want to convert the CompVis model into the Diffusers format before running the attack, use the following code. Note: For the conversion to take place, set task.save_diffuser to True and to use the converted model task.sld should be set to None.
-
-```python
-from mu_attack.configs.nudity import hard_prompt_esd_nudity_P4D_compvis_config
-from mu_attack.execs.attack import MUAttack
-from mu.algorithms.scissorhands.configs import scissorhands_train_mu
-
-def run_attack_for_nudity():
-
-    overridable_params = {
-        "task.compvis_ckpt_path":"/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth",
-        "task.compvis_config_path": scissorhands_train_mu.model_config_path,
-        "task.dataset_path":"/home/ubuntu/Projects/Palistha/unlearn_diff_attack/outputs/dataset/i2p_nude",
         "logger.json.root":"results/hard_prompt_esd_nudity_P4D_scissorhands",
         "task.save_diffuser": True, # This flag triggers conversion
         "task.sld": None, # Set sld to None for conversion
@@ -103,12 +68,15 @@ overridable_params = {
     "task.dataset_path": "outputs/dataset/i2p_nude",  # Overrides dataset path
     "logger.json.root": "results/hard_prompt_esd_nudity_P4D_scissorhands",  # Overrides logging path
     "attacker.k" = 3,
+    "task.save_diffuser": True, # This flag triggers conversion
+    "task.sld": None, # Set sld to None for conversion
+    "task.model_name": "SD-v1-4"
 }
 
 ```
 
 
-2. **Hard Prompt Attack - diffuser**
+2. **Hard Prompt Attack - Using Diffuser model**
 
 ```python
 from mu_attack.configs.nudity import hard_prompt_esd_nudity_P4D_diffusers_config

@@ -7,9 +7,7 @@ This section provides instructions for running the **evaluation framework** for 
 Create a file, eg, `evaluate.py` and use examples and modify your configs to run the file. Work within the same environment used to perform unlearning for evaluation as well.
 
 
-**Before running evaluation, download the classifier ckpt from here:**
-
-https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61 
+**Before running evaluation, download the classifier ckpt from [here](https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61).**
 
 **Example Code**
 
@@ -34,7 +32,7 @@ accuracy = accuracy_score(gen_image_dir=generated_images_path,
                           classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
                           reference_dir=reference_image_dir,
                           forget_theme="Bricks",
-                          seed_list = ["188"] )
+                          )
 print(accuracy['acc'])
 print(accuracy['loss'])
 
