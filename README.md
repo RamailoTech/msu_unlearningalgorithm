@@ -50,7 +50,20 @@ The project is organized to facilitate scalability and maintainability.
 
 - **`logs/`**: Log files for debugging and auditing.
 
-- **`models/`**: Repository of trained models and checkpoints.
+- **`models/`**: Repository of lora_diffusion and stable_diffusion.
+
+- **`evaluation/`**: Contains metrics for evalaution.
+  - **`core/`**:Foundational classes.
+    - **`base_evaluator.py`**: Base class for evaluation.
+    - **`mu_defense_base_image_generator.py`**: Base class for image generation.
+  - **`helpers/`**: Utility functions and helpers.
+    - **`parser.py`**: Parse attack logs for evaluation.
+    - **`utils.py`**: Utility function.
+  - **`metrics/`**: Contains metrics for evalaution.
+    - **`accuracy.py`**
+    - **`asr.py`**
+    - **`clip.py`**
+    - **`fid.py`**
 
 - **`mu/`**: Core source code.
   - **`algorithms/`**: Implementation of various algorithms. Each algorithm has its own subdirectory containing code and a `README.md` with detailed documentation.
@@ -63,6 +76,7 @@ The project is organized to facilitate scalability and maintainability.
       - `model.py`: Model architectures specific to ESD.
       - `sampler.py`: Sampling methods used during training or inference.
       - `scripts/train.py`: Training script for ESD.
+      - `evaluator.py`: Script that generates necessary outputs for evaluation.
       - `trainer.py`: Training routines and optimization strategies.
       - `utils.py`: Utility functions and helpers.
     - **`ca/`**: Components for the CA algorithm.
@@ -85,13 +99,42 @@ The project is organized to facilitate scalability and maintainability.
     - `path_setup.py`: Path configurations and environment setup.
 
 - **`tests/`**: Test suites for ensuring code reliability.
-- **`stable_diffusion/`**: Components for stable diffusion.
-- **`lora_diffusion/`**: Components for the LoRA Diffusion.
+- **`mu_attack/`**: Implementation of attack algorithms.
+  - **`attackers/`**: Contains different types of attackers.
+  - **`configs/`**: Configurations file.
+    - **`illegal/`**: config for illegal task.
+    - **`nudity/`**: config for nudity task.
+    - **`object/`**: config for object task.
+    - **`style/`**: config for style task.
+    - **`violence/`**: config for violence task.
+  - **`core/`**: Foundational classes.
+  - **`datasets/`**: script to generate dataset.
+  - **`exces/`**: Script to run attack
+  - **`tasks/`**: Implementation of tasks
+  - **`helpers/`**: Utility functions
+
+- **`mu_defense/`**: Implementation of Advunlearn algorithms.
+  - **`algorithms/`**: Implementation of various defense algorithms. Each algorithm has its own subdirectory containing code and a `README.md` with detailed documentation.
+    - **`adv_unlearn/`**: Adversial Unlearn algorithm components.
+      - `README.md`: Documentation specific to the advunlearn algorithm.
+      - `algorithm.py`: Core implementation of advunlearn.
+      - `configs/`: Configuration files for training and generation tasks.
+      - `model.py`: Model architectures specific to advunlearn.
+      - `image_generator.py`: Image generator methods for generating sample images for evaluation.
+      - `evaluator.py`: Script that generates necessary outputs for evaluation.
+      - `dataset_handler.py`: Dataset handler for advunlearn algorithm. 
+      - `compvis_trainer.py`: training loop for CompVis models.
+      - `diffuser_trainer.py`: training loop for diffuser models.
+      - `trainer.py`: Trainer class orchestrates the adversarial unlearning training process.
+      - `utils.py`: Utility functions and helpers.
+- **`scripts.py`**: Commands to generate datasets and download models.
+- **`notebooks/`**: Contains example implementation.
+- **`tests/`**: Contains pytests.
+
 
 ## Datasets
 
 We use the Quick Canvas benchmark dataset, available [here](https://huggingface.co/datasets/nebulaanish/quick-canvas-benchmark). Currently, the algorithms are trained using 5 images belonging to the themes of **Abstractionism** and **Architectures**.
-
 
 
 
@@ -211,6 +254,11 @@ After you install the package, you can use the following commands to download.
     download_model diffuser
     ```
 
+3. **Download best.onnx model**
+
+  ```
+  download_best_onnx
+  ```
 
 ### Run Train <br>
 

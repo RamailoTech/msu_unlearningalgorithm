@@ -3,45 +3,41 @@ docs_dir: docs
 site_dir: docs_build  
 
 nav:
-  - Home:
-    - Usage: README.md
-    - Architecture: project_architecture.md
+  - Usage:
+    - Installation: usage/installation.md
+    - How to use existing unlearning algorithms: usage/unlearn_algorithm_usage.md
+    - How to evaluate: usage/how_to_evaluate.md
+    
   - Unlearn Algorithms:
     - Concept Ablation: 
       - Usage: unlearn/algorithms/concept_ablation.md
       - Examples: unlearn/examples/concept_ablation.md
       - Configs: unlearn/configs/concept_ablation.md
-      - Evaluation: evaluation/concept_ablation.md
 
     - Erase Diff: 
       - Usage: unlearn/algorithms/erase_diff.md 
       - Examples: unlearn/examples/erase_diff.md
       - Configs: unlearn/configs/erase_diff.md
-      - Evaluation: evaluation/erase_diff.md
 
     - ESD: 
       - Usage: unlearn/algorithms/esd.md
       - Examples: unlearn/examples/esd.md
       - Configs: unlearn/configs/esd.md
-      - Evaluation: evaluation/esd.md
       
     - Forget Me Not: 
       - Usage: unlearn/algorithms/forget_me_not.md
       - Examples: unlearn/examples/forget_me_not.md
       - Configs: unlearn/configs/forget_me_not.md
-      - Evaluation: evaluation/forget_me_not.md
 
     - Saliency Unlearning: 
       - Usage: unlearn/algorithms/saliency.md
       - Examples: unlearn/examples/saliency.md
       - Configs: unlearn/configs/saliency.md
-      - Evaluation: evaluation/saliency.md 
 
     - Scissor Hands: 
       - Usage: unlearn/algorithms/scissorhands.md
       - Examples: unlearn/examples/scissorhands.md
       - Configs: unlearn/configs/scissorhands.md
-      - Evaluation: evaluation/scissorhands.md
 
     - Selective Amnesia: 
       - Usage: unlearn/algorithms/selective_amnesia.md
@@ -52,42 +48,40 @@ nav:
       - Usage: unlearn/algorithms/semipermeable_membrane.md
       - Examples: unlearn/examples/semipermeable_membrane.md
       - Configs: unlearn/configs/semipermeable_membrane.md
-      - Evaluation: evaluation/semipermeable_membrane.md
 
     - Unified Concept Editing: 
       - Usage: unlearn/algorithms/uce.md
       - Examples: unlearn/examples/uce.md
       - Configs: unlearn/configs/uce.md
-      - Evaluation: evaluation/uce.md
 
-  - Unlearn Mu Attack: 
-    - Hard Prompt: 
-      - Usage: mu_attack/attack/hard_prompt.md
-      - Config: mu_attack/configs/hard_prompt.md
-
-    - No attack: 
-      - Usage: mu_attack/attack/no_attack.md
-      - Config: mu_attack/configs/no_attack.md
-
-    - Random:
-      - Usage: mu_attack/attack/random.md
-      - Config: mu_attack/configs/random.md
-
-    - Seed Search:
-      - Usage: mu_attack/attack/seed_search.md
-      - Config: mu_attack/configs/seed_search.md
-
-    - Text Grad:
-      - Usage: mu_attack/attack/text_grad.md
-      - Config: mu_attack/configs/text_grad.md
-
-  - Unlearn Mu Defense:
     - Adv Unlearn:
-      - Usage: mu_defense/adv_unlearn.md
-      - Config: mu_defense/config.md
+      - Usage: unlearn/mu_defense/adv_unlearn.md
+      - Config: unlearn/mu_defense/config.md
+
+  - Evaluation: 
+    - Non-Attack evalaution: 
+      - No attack: 
+        - Usage: mu_attack/attack/no_attack.md
+        - Config: mu_attack/configs/no_attack.md
+
+    - Robustness Eval UnlearnDiffAtk:
+      - Hard Prompt: 
+        - Usage: mu_attack/attack/hard_prompt.md
+        - Config: mu_attack/configs/hard_prompt.md
+
+      - Random:
+        - Usage: mu_attack/attack/random.md
+        - Config: mu_attack/configs/random.md
+
+      - Seed Search:
+        - Usage: mu_attack/attack/seed_search.md
+        - Config: mu_attack/configs/seed_search.md
+
+      - Text Grad:
+        - Usage: mu_attack/attack/text_grad.md
+        - Config: mu_attack/configs/text_grad.md
   
-  - Evaluation :
-    - MU:
+    - Utility Eval:
       - Concept Ablation:
         - Usage: evaluation/concept_ablation.md
       - Erase Diff: 
@@ -104,12 +98,8 @@ nav:
         - Usage: evaluation/semipermeable_membrane.md
       - Unified Concept Editing: 
         - Usage: evaluation/uce.md
-    - MU_Attack:
-      - Usage: mu_attack/mu_attack_evaluation.md
-    - MU_Defense:
-      - Usage: mu_defense/evaluation.md
+      - MU_Defense:
+        - Usage: evaluation/adv_unlearn_evaluation.md
 
-  - Contributing: 
-    - Contributing: unlearn/algorithms/contributing.md
 theme:
   name: readthedocs  
