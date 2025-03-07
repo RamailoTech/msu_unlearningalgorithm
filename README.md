@@ -34,10 +34,6 @@ For detailed information on each algorithm, please refer to the respective `READ
 The project is organized to facilitate scalability and maintainability.
 
 - **`data/`**: Stores data-related files.
-  - **`i2p-dataset/`**: contains i2p-dataset
-    - **`sample/`**: Sample dataset
-    - **`full/`**: Full dataset
-
   - **`quick-canvas-dataset/`**: contains quick canvas dataset
     - **`sample/`**: Sample dataset
     - **`full/`**: Full dataset
@@ -209,14 +205,6 @@ pip install git+https://github.com/boomb0om/text2image-benchmark
 ```
 
 
-#### Optional(Create environment for algorithm):
-
-If you want to create algorithm specific environment then use command given below:
-
-```bash
-create_env erase_diff
-```
-
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 
 
@@ -225,15 +213,6 @@ The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 After you install the package, you can use the following commands to download.
 
 1. **Dataset**:
-  - **i2p**:
-    - **Sample**:
-     ```
-     download_data sample i2p
-     ```
-    - **Full**:
-     ```
-     download_data full i2p
-     ```
   - **quick_canvas**:
     - **Sample**:
      ```
