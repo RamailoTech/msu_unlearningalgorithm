@@ -13,6 +13,12 @@ class UnifiedConceptEditingTrainer(BaseTrainer):
     """
     Trainer for the UnifiedConceptEditing algorithm.
     Handles the model editing process to unify or erase specific concepts within the model.
+
+    Gandikota, R., Orgad, H., Belinkov, Y., Materzyńska, J., & Bau, D. (2023).
+
+    Unified Concept Editing in Diffusion Models
+
+    https://arxiv.org/abs/2308.14761
     """
 
     def __init__(

@@ -33,7 +33,14 @@ MATCHING_METRICS = Literal[
 
 
 class SemipermeableMembraneSampler(BaseSampler):
-    """Semipermeable membrane Image Generator class extending a hypothetical BaseImageGenerator."""
+    """Semipermeable membrane Image Generator class extending a hypothetical BaseImageGenerator.
+    
+    Lyu, M., Yang, Y., Hong, H., Chen, H., Jin, X., He, Y., Xue, H., Han, J., & Ding, G. (2023).
+
+    One-dimensional Adapter to Rule Them All: Concepts, Diffusion Models and Erasing Applications
+
+    https://arxiv.org/abs/2312.16145
+    """
 
     def __init__(self, config: dict, **kwargs):
         """
@@ -218,10 +225,10 @@ class SemipermeableMembraneSampler(BaseSampler):
         seed = self.config["seed"]
         output_dir = f"{self.config['sampler_output_dir']}"
 
-        # make config directory
-        config = (
-            f"{self.config['model_config_path']}/{self.config['theme']}/config.yaml"
-        )
+        # # make config directory
+        # config = (
+        #     f"{self.config['model_config_path']}/{self.config['theme']}/config.yaml"
+        # )
 
         for test_theme in self.theme_available:
             theme_path = os.path.join(output_dir, test_theme)
@@ -289,6 +296,7 @@ class SemipermeableMembraneSampler(BaseSampler):
                     self.save_image(image, output_path)
 
         self.logger.info("Image generation completed.")
+        return output_dir
 
     def save_image(self, image: Image.Image, file_path: str) -> None:
         """

@@ -13,6 +13,12 @@ from mu.algorithms.semipermeable_membrane.src.models.model_util import load_mode
 class SemipermeableMembraneModel(BaseModel):
     """
     SemipermeableMembraneModel loads the Stable Diffusion model and integrates SPMNetwork for concept editing.
+
+    Lyu, M., Yang, Y., Hong, H., Chen, H., Jin, X., He, Y., Xue, H., Han, J., & Ding, G. (2023).
+
+    One-dimensional Adapter to Rule Them All: Concepts, Diffusion Models and Erasing Applications
+
+    https://arxiv.org/abs/2312.16145
     """
 
     def __init__(self, config: dict):

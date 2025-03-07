@@ -3,7 +3,15 @@
 from torch.utils.data import Dataset
 
 class WrappedDataset(Dataset):
-    """Wraps an arbitrary object with __len__ and __getitem__ into a pytorch dataset"""
+    """Wraps an arbitrary object with __len__ and __getitem__ into a pytorch dataset
+    
+    Kumari, N., Zhang, B., Wang, S.-Y., Shechtman, E., Zhang, R., & Zhu, J.-Y. (2023).
+
+    Ablating Concepts in Text-to-Image Diffusion Models
+
+    Presented at the 2023 IEEE International Conference on Computer Vision
+    
+    """
 
     def __init__(self, dataset):
         self.data = dataset

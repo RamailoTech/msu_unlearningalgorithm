@@ -15,6 +15,13 @@ def accumulate_gradients_for_mask(model, forget_loader, prompt, c_guidance, devi
     - Loops over the forget_loader for one epoch-like run.
     - Accumulates absolute gradients for each parameter.
     - After accumulation, generates a binary mask based on the threshold.
+
+
+    Fan, C., Liu, J., Zhang, Y., Wong, E., Wei, D., & Liu, S. (2023).
+
+    SalUn: Empowering Machine Unlearning via Gradient-based Weight Saliency in Both Image Classification and Generation
+
+    https://arxiv.org/abs/2310.12508
     """
 
     # Set model to train mode

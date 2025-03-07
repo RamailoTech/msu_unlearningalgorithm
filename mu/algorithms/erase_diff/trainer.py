@@ -18,6 +18,12 @@ class EraseDiffTrainer(BaseTrainer):
     """
     Trainer for the EraseDiff algorithm.
     Handles the training loop, loss computation, and optimization.
+
+    Wu, J., Le, T., Hayat, M., & Harandi, M. (2024).
+
+    EraseDiff: Erasing Data Influence in Diffusion Models
+
+    https://arxiv.org/abs/2401.05779
     """
 
     def __init__(

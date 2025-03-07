@@ -18,6 +18,12 @@ class ForgetMeNotAlgorithm(BaseAlgorithm):
     """
     Algorithm class orchestrating the Forget Me Not unlearning process.
     Handles both textual inversion (TI) and attention-based unlearning steps.
+
+    Zhang, E., Wang, K., Xu, X., Wang, Z., & Shi, H. (2023).
+
+    Forget-Me-Not: Learning to Forget in Text-to-Image Diffusion Models
+
+    https://arxiv.org/abs/2211.08332
     """
 
     def __init__(self, config: ForgetMeNotTiConfig, train_type="train_ti", **kwargs):

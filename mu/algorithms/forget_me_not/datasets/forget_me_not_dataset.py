@@ -21,6 +21,12 @@ class ForgetMeNotDataset(BaseDataset):
     """
     Dataset for the Forget Me Not algorithm.
     Pre-processes images and tokenizes prompts for fine-tuning the model.
+    
+    Zhang, E., Wang, K., Xu, X., Wang, Z., & Shi, H. (2023).
+
+    Forget-Me-Not: Learning to Forget in Text-to-Image Diffusion Models
+
+    https://arxiv.org/abs/2211.08332
     """
 
     def __init__(
@@ -82,6 +88,12 @@ class ForgetMeNotDataset(BaseDataset):
             else: 
                 concept = [template_name, template , -1 ]
 
+        if dataset_type == "generic":
+            if use_ti:
+                concept = [template_name, template , len(tok_dict.keys())]
+            else: 
+                concept = [template_name, template , -1 ]
+
         # print("---Adding Tokens---:", c, t)
         apply_learned_embed_in_clip(
             tok_dict,
@@ -119,6 +131,10 @@ class ForgetMeNotDataset(BaseDataset):
                 self.instance_images_path)
             
         elif t == "i2p":
+            self.instance_prompt += [(f"a {target_snippet} image", target_snippet)] * len(
+                self.instance_images_path)
+
+        elif t == "generic":
             self.instance_prompt += [(f"a {target_snippet} image", target_snippet)] * len(
                 self.instance_images_path)
         else:

@@ -1,10 +1,10 @@
 # mu/algorithms/erase_diff/erase_diff_dataset.py
 
 import os
-from typing import Any, Tuple, Dict
+from typing import Any, Tuple, Dict, List
 from torch.utils.data import DataLoader
 
-from mu.datasets import UnlearnCanvasDataset, I2PDataset, BaseDataset
+from mu.datasets import UnlearnCanvasDataset, I2PDataset, BaseDataset, GenericDataset
 from mu.datasets.utils import INTERPOLATIONS, get_transform
 
 class EraseDiffDataset(BaseDataset):
@@ -12,6 +12,13 @@ class EraseDiffDataset(BaseDataset):
     Dataset class for the EraseDiff algorithm.
     Extends BaseDataset to handle specific requirements.
     Manages both 'forget' and 'remain' datasets.
+
+    @article{wu2024erasediff,
+    title={EraseDiff: Erasing Data Influence in Diffusion Models},
+    author={Wu, Jing and Le, Trung and Hayat, Munawar and Harandi, Mehrtash},
+    journal={arXiv preprint arXiv:2401.05779},
+    year={2024}
+    }
     """
 
     def __init__(
@@ -26,7 +33,8 @@ class EraseDiffDataset(BaseDataset):
         batch_size: int = 4,
         num_workers: int = 4,
         pin_memory: bool = True,
-        dataset_type: str = 'unlearncanvas'
+        dataset_type: str = 'unlearncanvas',
+        categories: List[str] = None
     ):
         """
         Initialize the EraseDiffDataset.
@@ -80,6 +88,22 @@ class EraseDiffDataset(BaseDataset):
                 template=template,
                 template_name=template_name,
                 use_sample=use_sample,
+                transform=transform
+            )
+        elif dataset_type == 'generic':
+            # Initialize forget dataset
+            self.forget_dataset = GenericDataset(
+                data_dir=forget_data_dir,
+                template_name=template_name,
+                categories = categories,
+                transform=transform
+            )
+
+            # Initialize remain dataset
+            self.remain_dataset = GenericDataset(
+                data_dir=remain_data_dir,
+                template_name=template_name,
+                categories = categories,
                 transform=transform
             )
 

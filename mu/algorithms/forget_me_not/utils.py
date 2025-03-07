@@ -5,6 +5,14 @@ from typing import Any
 
 
 class AttnController:
+
+    """
+    Zhang, E., Wang, K., Xu, X., Wang, Z., & Shi, H. (2023).
+
+    Forget-Me-Not: Learning to Forget in Text-to-Image Diffusion Models
+
+    https://arxiv.org/abs/2211.08332
+    """
     def __init__(self) -> None:
         self.attn_probs = []
         self.logs = []

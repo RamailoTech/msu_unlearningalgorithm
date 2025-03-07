@@ -33,6 +33,12 @@ class ConceptAblationTrainer(BaseTrainer):
     """
     Trainer class for the Concept Ablation algorithm.
     Handles the training loop, loss computation, and optimization.
+
+    Kumari, N., Zhang, B., Wang, S.-Y., Shechtman, E., Zhang, R., & Zhu, J.-Y. (2023).
+
+    Ablating Concepts in Text-to-Image Diffusion Models
+
+    Presented at the 2023 IEEE International Conference on Computer Vision
     """
 
     def __init__(self, model, config: Dict, device: str, config_path: str, **kwargs):

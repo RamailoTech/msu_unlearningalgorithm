@@ -2,11 +2,13 @@
 
 from .base_dataset import BaseDataset
 from .i2p_dataset import I2PDataset
+from .generic_dataset import GenericDataset
 from .unlearn_canvas_dataset import UnlearnCanvasDataset
 
 
 __all__ = [
     "BaseDataset",
     "I2PDataset",
-    "UnlearnCanvasDataset"
+    "UnlearnCanvasDataset",
+    "GenericDataset"
     ]

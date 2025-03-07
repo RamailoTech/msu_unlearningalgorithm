@@ -13,7 +13,14 @@ from mu.core.base_sampler import BaseSampler
 from mu.datasets.constants import *
 
 class UnifiedConceptEditingSampler(BaseSampler):
-    """Unified Concept editing Image Generator class extending a hypothetical BaseImageGenerator."""
+    """Unified Concept editing Image Generator class extending a hypothetical BaseImageGenerator.
+    
+    Gandikota, R., Orgad, H., Belinkov, Y., Materzyńska, J., & Bau, D. (2023).
+
+    Unified Concept Editing in Diffusion Models
+
+    https://arxiv.org/abs/2308.14761
+    """
 
     def __init__(self, config: dict, **kwargs):
         """
@@ -45,22 +52,22 @@ class UnifiedConceptEditingSampler(BaseSampler):
         Load the model using `config` and initialize the sampler.
         """
         self.logger.info("Loading model...")
-        model_ckpt_path = self.config["ckpt_path"]
-        pipeline_path = self.config["pipeline_path"]
+        ckpt_path = self.config["ckpt_path"]
+        # pipeline_path = self.config["pipeline_path"]
         seed = self.config["seed"]
         torch.manual_seed(seed)
         torch.cuda.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
 
         # 1. Load the autoencoder model which will be used to decode the latents into image space.
-        self.vae = AutoencoderKL.from_pretrained(pipeline_path, subfolder="vae", cache_dir="./cache", torch_dtype=torch.float16)
+        self.vae = AutoencoderKL.from_pretrained(ckpt_path, subfolder="vae", cache_dir="./cache", torch_dtype=torch.float16)
 
         # 2. Load the tokenizer and text encoder to tokenize and encode the text.
-        self.tokenizer = CLIPTokenizer.from_pretrained(pipeline_path, subfolder="tokenizer", cache_dir="./cache", torch_dtype=torch.float16)
-        self.text_encoder = CLIPTextModel.from_pretrained(pipeline_path, subfolder="text_encoder", cache_dir="./cache", torch_dtype=torch.float16)
+        self.tokenizer = CLIPTokenizer.from_pretrained(ckpt_path, subfolder="tokenizer", cache_dir="./cache", torch_dtype=torch.float16)
+        self.text_encoder = CLIPTextModel.from_pretrained(ckpt_path, subfolder="text_encoder", cache_dir="./cache", torch_dtype=torch.float16)
 
         # 3. The UNet model for generating the latents.
-        self.unet = UNet2DConditionModel.from_pretrained(pipeline_path, subfolder="unet", cache_dir="./cache", torch_dtype=torch.float16)
+        self.unet = UNet2DConditionModel.from_pretrained(ckpt_path, subfolder="unet", cache_dir="./cache", torch_dtype=torch.float16)
         #NOTE removed this line
         # self.unet.load_state_dict(torch.load(model_ckpt_path, map_location=self.device))
         self.unet.to(torch.float16)
@@ -158,6 +165,7 @@ class UnifiedConceptEditingSampler(BaseSampler):
                 self.save_image(pil_images, output_path)
 
         self.logger.info("Image generation completed.")
+        return output_dir
 
     def save_image(self, image: Image.Image, file_path: str) -> None:
         """

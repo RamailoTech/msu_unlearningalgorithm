@@ -122,22 +122,24 @@ def test_no_attack_run_compvis(run_erase_diff):
 
 
 def test_evaluator():
-    from mu_attack.configs.evaluation import attack_evaluation_config
-    from mu_attack.execs.evaluator import MuAttackEvaluator
-    mu_attack_config = config['attack']
-    eval_config = attack_evaluation_config
-    eval_config.asr.root = f"{mu_attack_config['output_dirs_compvis']['output_dir']}/P4d"
-    eval_config.asr.root_no_attack = f"{mu_attack_config['output_dirs_compvis']['output_dir']}/NoAttackEsdNudity"
-    eval_config.clip.devices = "0"
-    eval_config.clip.image_path = f"{mu_attack_config['output_dirs_compvis']['output_dir']}/P4d/images"
-    eval_config.clip.log_path = f"{mu_attack_config['output_dirs_compvis']['output_dir']}/P4d/log.json"
-    eval_config.fid.ref_batch_path = f"{mu_attack_config['output_dirs_compvis']['output_dir']}/NoAttackEsdNudity/images"  #to calculate fid score, the genrated image path and ref image path should have ssame number of images.
-    eval_config.fid.sample_batch_path = mu_attack_config['evaluation']['sample_batch_path'] #should have same number of images as of ref batch.
-    eval_config.output_path = "testing/evaluation/results.json"
+    from evaluation.metrics.asr import asr_score
+    from evaluation.metrics.clip import clip_score
+    from evaluation.metrics.fid import fid_score
 
-    evaluator = MuAttackEvaluator(eval_config)
+    mu_attack_config = config['attack']
+    # eval_config = attack_evaluation_config
+    root = f"{mu_attack_config['output_dirs_compvis']['output_dir']}/P4d"
+    root_no_attack = f"{mu_attack_config['output_dirs_compvis']['output_dir']}/NoAttackEsdNudity"
+    devices = "0"
+    image_path = f"{mu_attack_config['output_dirs_compvis']['output_dir']}/P4d/images"
+    log_path = f"{mu_attack_config['output_dirs_compvis']['output_dir']}/P4d/log.json"
+    ref_batch_path = f"{mu_attack_config['output_dirs_compvis']['output_dir']}/NoAttackEsdNudity/images"  #to calculate fid score, the genrated image path and ref image path should have ssame number of images.
+    sample_batch_path = mu_attack_config['evaluation']['sample_batch_path'] #should have same number of images as of ref batch.
+
     try:
-        evaluator.run()
+        asr_val = asr_score(root, root_no_attack)
+        clip_val = clip_score(image_path, log_path, devices)
+        fid_val = fid_score(sample_batch_path,ref_batch_path)
     except Exception as e:
         pytest.fail(f"MUAttack evalaution raised an exception: {str(e)}")
 

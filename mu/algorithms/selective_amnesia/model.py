@@ -19,6 +19,12 @@ class SelectiveAmnesiaModel(BaseModel):
     """
     Model class for Selective Amnesia.
     Loads the Stable Diffusion model and applies EWC constraints using the precomputed FIM.
+
+    Heng, A., & Soh, H. (2023).
+
+    Selective Amnesia: A Continual Learning Approach to Forgetting in Deep Generative Models
+
+    https://arxiv.org/abs/2305.10120
     """
 
     def __init__(self, model_config_path: str, ckpt_path: str, device: str, opt_config, *args, **kwargs):

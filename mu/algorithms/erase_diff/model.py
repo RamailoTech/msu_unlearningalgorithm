@@ -12,6 +12,12 @@ from mu.helpers import load_model_from_config
 class EraseDiffModel(BaseModel):
     """
     EraseDiffModel handles loading, saving, and interacting with the Stable Diffusion model.
+
+    Wu, J., Le, T., Hayat, M., & Harandi, M. (2024).
+
+    EraseDiff: Erasing Data Influence in Diffusion Models
+
+    https://arxiv.org/abs/2401.05779
     """
 
     def __init__(self, model_config_path: str, ckpt_path: str, device: str):

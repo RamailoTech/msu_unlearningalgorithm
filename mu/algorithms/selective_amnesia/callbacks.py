@@ -20,6 +20,13 @@ from pytorch_lightning.utilities.distributed import (
 
 
 class SetupCallback(Callback):
+    """
+    Heng, A., & Soh, H. (2023).
+
+    Selective Amnesia: A Continual Learning Approach to Forgetting in Deep Generative Models
+
+    https://arxiv.org/abs/2305.10120
+    """
     def __init__(self, resume, now, logdir, ckptdir, cfgdir, config, lightning_config):
         super().__init__()
         self.resume = resume

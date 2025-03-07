@@ -17,6 +17,12 @@ class ConceptAblationAlgorithm(BaseAlgorithm):
     """
     ConceptAblationAlgorithm orchestrates the training process for the Concept Ablation method.
     It sets up the model, data handler, and trainer, and then runs the training loop.
+
+    Kumari, N., Zhang, B., Wang, S.-Y., Shechtman, E., Zhang, R., & Zhu, J.-Y. (2023).
+
+    Ablating Concepts in Text-to-Image Diffusion Models
+
+    Presented at the 2023 IEEE International Conference on Computer Vision
     """
 
     def __init__(self, config: ConceptAblationConfig, **kwargs):

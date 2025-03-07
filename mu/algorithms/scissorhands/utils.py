@@ -24,6 +24,13 @@ def project2cone2(gradient, memories, margin=0.5, eps=1e-3):
 
     Returns:
         torch.Tensor: Projected gradient.
+
+
+    Wu, J., & Harandi, M. (2024).
+
+    Scissorhands: Scrub Data Influence via Connection Sensitivity in Networks
+
+    https://arxiv.org/abs/2401.06187
     """
     memories_np = memories.cpu().t().contiguous().double().numpy()
     gradient_np = gradient.cpu().contiguous().view(-1).double().numpy()

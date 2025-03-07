@@ -1,10 +1,14 @@
 import sys
+import os
+import glob
 from typing import List, Any
 import argparse
 from omegaconf import OmegaConf
 import torch
+
 from pytorch_lightning.utilities.distributed import rank_zero_only
 from pathlib import Path
+import pandas as pd
 
 from models import stable_diffusion  
 sys.modules['stable_diffusion'] = stable_diffusion
@@ -179,5 +183,35 @@ def to_cuda(elements):
     return elements
 
 
+def load_categories(reference_dir: str) -> list:
+    """
+    Load unique categories from a CSV file in the 'prompts' folder under the given reference directory.
+    
+    Args:
+        reference_dir (str): The base directory where the 'prompts' folder is located.
+        
+    Returns:
+        List[str]: A sorted list of unique categories extracted from the CSV file.
+        
+    Raises:
+        FileNotFoundError: If no CSV file is found in the prompts folder or if the file doesn't exist.
+    """
+    prompts_folder = os.path.join(reference_dir, 'prompts')
+    prompts_files = glob.glob(os.path.join(prompts_folder, '*.csv'))
+    if not prompts_files:
+        raise FileNotFoundError(f"No CSV file found in the prompts folder: {prompts_folder}")
+    
+    prompts_file = prompts_files[0]
+    if not os.path.exists(prompts_file):
+        raise FileNotFoundError(f"Prompts file not found: {prompts_file}")
+
+    data = pd.read_csv(prompts_file)
+    unique_categories = set()
+    for cats in data['categories']:
+        if isinstance(cats, str):
+            for cat in cats.split(','):
+                unique_categories.add(cat.strip())
+    categories = sorted(list(unique_categories))
+    return categories
 
 

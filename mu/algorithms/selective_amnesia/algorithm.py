@@ -17,6 +17,12 @@ class SelectiveAmnesiaAlgorithm(BaseAlgorithm):
     """
     Orchestrates the Selective Amnesia training process.
     Sets up model, data handler, and trainer, then runs training.
+
+    Heng, A., & Soh, H. (2023).
+
+    Selective Amnesia: A Continual Learning Approach to Forgetting in Deep Generative Models
+
+    https://arxiv.org/abs/2305.10120
     """
 
     def __init__(self, config: SelectiveAmnesiaConfig, config_path: str = "", **kwargs):

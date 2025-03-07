@@ -10,6 +10,12 @@ from mu.helpers import load_model_from_config
 class ESDModel(BaseModel):
     """
     ESDModel handles loading, saving, and interacting with the Stable Diffusion model.
+
+    Gandikota, R., Materzyńska, J., Fiotto-Kaufman, J., & Bau, D. (2023).
+
+    Erasing Concepts from Diffusion Models
+
+    Presented at the 2023 IEEE International Conference on Computer Vision
     """
     def __init__(self, model_config_path: str, ckpt_path: str, device: str, device_orig: str):
         """

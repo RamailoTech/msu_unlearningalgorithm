@@ -13,6 +13,13 @@ from mu.helpers import load_model_from_config
 class ScissorHandsModel(BaseModel):
     """
     ScissorHandsModel handles loading, saving, and interacting with the Stable Diffusion model.
+
+
+    Wu, J., & Harandi, M. (2024).
+
+    Scissorhands: Scrub Data Influence via Connection Sensitivity in Networks
+
+    https://arxiv.org/abs/2401.06187
     """
 
     def __init__(self, model_config_path: str, ckpt_path: str, device: str):

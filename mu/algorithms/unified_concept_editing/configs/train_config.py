@@ -16,6 +16,8 @@ class UnifiedConceptEditingConfig(BaseConfig):
         # Model configuration
         self.ckpt_path = "models/diffuser/style50"  # Path to model checkpoint
 
+        self.prompt_path = "data/generic/prompts/generic.csv" #for generic dataset only
+
         # Output configuration
         self.output_dir = (
             "outputs/uce/finetuned_models"  # Directory to save finetuned models
@@ -72,9 +74,9 @@ class UnifiedConceptEditingConfig(BaseConfig):
             raise FileNotFoundError(f"Checkpoint path {self.ckpt_path} does not exist.")
 
         # Validate dataset type
-        if self.dataset_type not in ["unlearncanvas", "i2p"]:
+        if self.dataset_type not in ["unlearncanvas", "i2p","generic"]:
             raise ValueError(
-                f"Invalid dataset type {self.dataset_type}. Choose from ['unlearncanvas', 'i2p']"
+                f"Invalid dataset type {self.dataset_type}. Choose from ['unlearncanvas', 'i2p','generic]"
             )
 
         # Validate training settings

@@ -22,10 +22,15 @@ from mu.algorithms.concept_ablation.datasets.concept_ablation_dataset import Wra
 from mu.algorithms.concept_ablation.utils import distributed_sample_images
 
 class ConceptAblationDataHandler(pl.LightningDataModule):
-    '''
-        """
+    """
     Concrete data handler for the Concept Ablation algorithm.
-    """'''
+
+    Kumari, N., Zhang, B., Wang, S.-Y., Shechtman, E., Zhang, R., & Zhu, J.-Y. (2023).
+
+    Ablating Concepts in Text-to-Image Diffusion Models
+
+    Presented at the 2023 IEEE International Conference on Computer Vision
+    """
     def __init__(self, batch_size, train=None, train2=None, validation=None, test=None, predict=None,
                  wrap=False, num_workers=None, shuffle_test_loader=False, use_worker_init_fn=False,
                  shuffle_val_dataloader=False):

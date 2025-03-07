@@ -18,14 +18,14 @@ class ASRConfig(BaseConfig):
 
 class ClipConfig(BaseConfig):
     def __init__(self,
-                 image_path,
-                 log_path,
-                 model_name_or_path="openai/clip-vit-base-patch32",
+                 gen_image_path,
+                 prompt_file_path,
+                 classification_model_path="openai/clip-vit-base-patch32",
                  devices = "0"
                  ):
-        self.image_path = image_path
-        self.log_path = log_path
-        self.model_name_or_path = model_name_or_path
+        self.gen_image_path = gen_image_path
+        self.prompt_file_path = prompt_file_path
+        self.classification_model_path = classification_model_path
         self.devices = devices
 
 class FidConfig(BaseConfig):
@@ -41,9 +41,9 @@ class AttackEvaluatorConfig(BaseConfig):
     def __init__(self,
                  asr_root="results/random_esd_nudity/Hard Prompt",  # Default path for attack results
                  asr_root_no_attack="results/no_attack_esd_nudity/NoAttackEsdNudity",  # Default path for no attack results
-                 image_path="results/random_esd_nudity/Hard Prompt/images",  # Default path for images to calculate clip score
-                 log_path="results/random_esd_nudity/Hard Prompt/log.json",  # path for logs to extract prompts to calculate clip score.
-                 model_name_or_path="openai/clip-vit-base-patch32",  # Default model name
+                 gen_image_path="results/random_esd_nudity/Hard Prompt/images",  # Default path for images to calculate clip score
+                 prompt_file_path="results/random_esd_nudity/Hard Prompt/log.json",  # path for logs to extract prompts to calculate clip score.
+                 classification_model_path="openai/clip-vit-base-patch32",  # Default model name
                  devices="0",  # Default device
                  fid_ref_batch_path="results/hard_prompt_esd_nudity_P4D/P4d/images",  # Default path for reference batch
                  fid_sample_batch_path="outputs/dataset/i2p_nude/imgs",  # Default path for sample batch
@@ -57,9 +57,9 @@ class AttackEvaluatorConfig(BaseConfig):
 
         # Initialize ClipConfig with the provided or default paths and parameters
         self.clip = ClipConfig(
-            image_path=image_path,
-            log_path=log_path,
-            model_name_or_path=model_name_or_path,
+            gen_image_path=gen_image_path,
+            prompt_file_path=prompt_file_path,
+            classification_model_path=classification_model_path,
             devices=devices
         )
 
@@ -86,8 +86,8 @@ class AttackEvaluatorConfig(BaseConfig):
             raise FileNotFoundError(f"Result directory {self.asr.root} does not exist.")
         if not os.path.exists(self.asr.root_no_attack):
             raise FileNotFoundError(f"Result directory {self.asr.root_no_attack} does not exist.")
-        if not os.path.exists(self.clip.image_path):
-            raise FileNotFoundError(f"Result directory {self.clip.image_path} does not exist.")
+        if not os.path.exists(self.clip.gen_image_path):
+            raise FileNotFoundError(f"Result directory {self.clip.gen_image_path} does not exist.")
         if not os.path.exists(self.fid.ref_batch_path):
             raise FileNotFoundError(f"Result directory {self.fid.ref_batch_path} does not exist.")
         if not os.path.exists(self.fid.sample_batch_path):

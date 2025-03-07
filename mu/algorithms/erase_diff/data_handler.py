@@ -1,6 +1,8 @@
 # mu/algorithms/erase_diff/data_handler.py
 
 import os
+import random
+import glob
 import logging
 
 import pandas as pd
@@ -16,6 +18,12 @@ class EraseDiffDataHandler(BaseDataHandler):
     """
     Concrete data handler for the EraseDiff algorithm.
     Manages forget and remain datasets through EraseDiffDataset.
+
+    Wu, J., Le, T., Hayat, M., & Harandi, M. (2024).
+
+    EraseDiff: Erasing Data Influence in Diffusion Models
+
+    https://arxiv.org/abs/2401.05779
     """
     
     def __init__(
@@ -59,6 +67,7 @@ class EraseDiffDataHandler(BaseDataHandler):
         self.num_workers = num_workers
         self.pin_memory = pin_memory
         self.dataset_type = dataset_type
+        self.categories = None
 
         # Initialize logger
         self.logger = logging.getLogger(__name__)
@@ -77,6 +86,8 @@ class EraseDiffDataHandler(BaseDataHandler):
             self._generate_dataset_uc()
         elif self.dataset_type == 'i2p':
             self._generate_dataset_i2p()
+        elif self.dataset_type == 'generic':
+            self._generate_dataset_generic()
         else:
             raise ValueError(f"Unsupported dataset type: {self.dataset_type}")
         
@@ -247,6 +258,101 @@ class EraseDiffDataHandler(BaseDataHandler):
 
         self.logger.info("Dataset generation (I2P) completed.")
 
+    def _generate_dataset_generic(self):
+        """
+        Generate dataset for the generic dataset type by organizing images and prompts
+        into folders based on unique categories. Comma-separated category values in the CSV
+        are split into individual categories. Image filenames are generated using an incremental
+        counter (0,1,2,...) for each category.
+        """
+        self.logger.info("Starting dataset generation (Generic)...")
+
+        # Define paths for raw images and the prompts CSV file.
+        images_dir = os.path.join(self.raw_dataset_dir, 'images')
+        prompts_folder = os.path.join(self.raw_dataset_dir, 'prompts')
+        prompts_file = glob.glob(os.path.join(prompts_folder, '*.csv'))[0]
+        # prompts_file = os.path.join(self.raw_dataset_dir, 'prompts', 'generic.csv')  
+
+        if not os.path.exists(prompts_file):
+            self.logger.error(f"Prompts file not found: {prompts_file}")
+            raise FileNotFoundError(f"Prompts file not found: {prompts_file}")
+
+        data = pd.read_csv(prompts_file)
+
+        # Build a unique set of categories by splitting comma-separated entries.
+        unique_categories = set()
+        for cats in data['categories']:
+            # Ensure cats is a string and split by comma.
+            if isinstance(cats, str):
+                for cat in cats.split(','):
+                    unique_categories.add(cat.strip())
+        self.categories = sorted(list(unique_categories))
+
+        # Initialize a counter and storage for prompts and image paths for each category.
+        counters = {category: 0 for category in self.categories}
+        dataset_data = {category: {"prompts": [], "paths": []} for category in self.categories}
+
+        # Process each row in the CSV.
+        for _, row in data.iterrows():
+            prompt = row['prompt']
+            # Split the categories in this row.
+            row_categories = []
+            if isinstance(row['categories'], str):
+                row_categories = [cat.strip() for cat in row['categories'].split(',')]
+            else:
+                self.logger.warning("Skipping row with non-string categories.")
+                continue
+
+            for category in row_categories:
+                # Generate filename using the current counter.
+                filename = f"{counters[category]}.jpg"
+                counters[category] += 1
+                # Construct the expected image path.
+                image_path = os.path.join(images_dir, category, filename)
+
+                if os.path.exists(image_path):
+                    dataset_data[category]["prompts"].append(prompt)
+                    dataset_data[category]["paths"].append(image_path)
+                else:
+                    self.logger.warning(f"Image not found: {image_path}")
+
+        # Write out the prompts and image paths for each category.
+        for category in self.categories:
+            category_dir = os.path.join(self.processed_dataset_dir, category)
+            os.makedirs(category_dir, exist_ok=True)
+            prompts_txt_path = os.path.join(category_dir, 'prompts.txt')
+            images_txt_path = os.path.join(category_dir, 'images.txt')
+
+            with open(prompts_txt_path, 'w') as f:
+                f.write('\n'.join(dataset_data[category]["prompts"]))
+            with open(images_txt_path, 'w') as f:
+                f.write('\n'.join(dataset_data[category]["paths"]))
+
+            self.logger.info(f"Generated dataset for category '{category}' with {len(dataset_data[category]['paths'])} samples.")
+
+        seed_category = "Seed_Images"
+        seed_dir = os.path.join(self.processed_dataset_dir, seed_category)
+        os.makedirs(seed_dir, exist_ok=True)
+        
+        # Select a random category from the available categories.
+        random_category = random.choice(self.categories)
+        seed_prompt_list = dataset_data[random_category]["prompts"]
+        seed_path_list = dataset_data[random_category]["paths"]
+
+        # Save the seed prompts and image paths.
+        seed_prompts_txt_path = os.path.join(seed_dir, 'prompts.txt')
+        seed_images_txt_path = os.path.join(seed_dir, 'images.txt')
+        with open(seed_prompts_txt_path, 'w') as f:
+            f.write('\n'.join(seed_prompt_list))
+        with open(seed_images_txt_path, 'w') as f:
+            f.write('\n'.join(seed_path_list))
+
+        self.logger.info(f"Seed images generated using category '{random_category}' with {len(seed_path_list)} samples.")
+        self.logger.info("Dataset generation (Generic) completed.")
+
+
+
+
     def load_data(self, data_path: str) -> Any:
         """
         Load data from the specified path.
@@ -304,6 +410,9 @@ class EraseDiffDataHandler(BaseDataHandler):
         elif self.dataset_type == 'i2p':
             forget_data_dir = os.path.join(self.processed_dataset_dir, self.template_name)
             remain_data_dir = os.path.join(self.processed_dataset_dir, "Seed_Images")
+        elif self.dataset_type == 'generic':
+            forget_data_dir = os.path.join(self.processed_dataset_dir, self.template_name)
+            remain_data_dir = os.path.join(self.processed_dataset_dir, "Seed_Images")
         else:
             raise ValueError(f"Unsupported dataset type: {self.dataset_type}")
 
@@ -317,6 +426,7 @@ class EraseDiffDataHandler(BaseDataHandler):
             image_size=self.image_size,
             interpolation=self.interpolation,
             dataset_type=self.dataset_type,
+            categories = self.categories
         )
 
         # Retrieve DataLoaders

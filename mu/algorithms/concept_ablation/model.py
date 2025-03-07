@@ -18,6 +18,12 @@ class ConceptAblationModel(BaseModel):
     """
     ConceptAblationModel handles loading, saving, and interacting with the Stable Diffusion model
     in the context of concept ablation.
+
+    Kumari, N., Zhang, B., Wang, S.-Y., Shechtman, E., Zhang, R., & Zhu, J.-Y. (2023).
+
+    Ablating Concepts in Text-to-Image Diffusion Models
+
+    Presented at the 2023 IEEE International Conference on Computer Vision
     """
 
     def __init__(self, train_config, model_config_path: str, ckpt_path: str, device: str, *args, **kwargs):
@@ -56,7 +62,7 @@ class ConceptAblationModel(BaseModel):
         freeze_model = train_config.get('freeze_model')
         loss_type_reverse = train_config.get('loss_type_reverse')
 
-        if dataset_type in ["unlearncanvas", "i2p"]:
+        if dataset_type in ["unlearncanvas", "i2p", "generic"]:
             config.model.params.cond_stage_trainable = False
             config.model.params.freeze_model = "crossattn-kv"
 

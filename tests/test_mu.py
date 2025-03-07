@@ -123,6 +123,8 @@ def test_run_erase_diff(setup_output_dir_erase_diff):
     from mu.algorithms.erase_diff.algorithm import EraseDiffAlgorithm
     from mu.algorithms.erase_diff.configs import erase_diff_train_mu, erase_diff_evaluation_config
     from mu.algorithms.erase_diff import EraseDiffEvaluator
+    from evaluation.metrics.accuracy import accuracy_score
+    from evaluation.metrics.fid import fid_score
 
     algorithm = EraseDiffAlgorithm(
         erase_diff_train_mu,
@@ -157,13 +159,17 @@ def test_run_erase_diff(setup_output_dir_erase_diff):
     evaluator = EraseDiffEvaluator(
         erase_diff_evaluation_config,
         ckpt_path = erase_diff_ckpt_path,
-        classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
-        reference_dir = config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
-        use_sample = config['evaluator_config']['use_sample']
-
     )
     try:
-        evaluator.run()
+        generated_images_path = evaluator.generate_images()
+        accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                        classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+        fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
+                 )
     except Exception as e:
         pytest.fail(f"erase diff evaluator raised an exception: {str(e)}")
 
@@ -172,6 +178,8 @@ def test_run_esd(setup_output_dir_esd):
     from mu.algorithms.esd.algorithm import ESDAlgorithm
     from mu.algorithms.esd.configs import esd_train_mu, esd_evaluation_config
     from mu.algorithms.esd import ESDEvaluator
+    from evaluation.metrics.accuracy import accuracy_score
+    from evaluation.metrics.fid import fid_score
 
     algorithm = ESDAlgorithm(
         esd_train_mu,
@@ -207,13 +215,18 @@ def test_run_esd(setup_output_dir_esd):
     evaluator = ESDEvaluator(
         esd_evaluation_config,
         ckpt_path = esd_output_ckpt_path,
-        classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
-        reference_dir = config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
-        use_sample = config['evaluator_config']['use_sample']
 
     )
     try:
-        evaluator.run()
+        generated_images_path = evaluator.generate_images()
+        accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                        classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+        fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
+                 )
     except Exception as e:
         pytest.fail(f"esd evaluator raised an exception: {str(e)}")
 
@@ -223,8 +236,10 @@ def test_run_concept_ablation(setup_output_dir_concept_ablation):
     from mu.algorithms.concept_ablation.algorithm import ConceptAblationAlgorithm
     from mu.algorithms.concept_ablation import ConceptAblationEvaluator
     from mu.algorithms.concept_ablation.configs import concept_ablation_train_mu, concept_ablation_evaluation_config
+    from evaluation.metrics.accuracy import accuracy_score
+    from evaluation.metrics.fid import fid_score
 
-    concept_ablation_train_mu.lightning.trainer.max_steps = 5
+    concept_ablation_train_mu.lightning.trainer.max_steps = 1
 
     algorithm = ConceptAblationAlgorithm(
         concept_ablation_train_mu,
@@ -255,17 +270,23 @@ def test_run_concept_ablation(setup_output_dir_concept_ablation):
     assert concept_ablation_output_ckpt_path.endswith('.ckpt'), (
         "Output file does not have .ckpt extension"
     )
+    print("Checkpoint path:", concept_ablation_output_ckpt_path)
     # run the evaluator
     evaluator = ConceptAblationEvaluator(
         concept_ablation_evaluation_config,
-        ckpt_path = concept_ablation_output_ckpt_path,
-        classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
-        reference_dir = config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
-        use_sample = config['evaluator_config']['use_sample']
-
+        # ckpt_path = concept_ablation_output_ckpt_path,
+        ckpt_path ="outputs/concept_ablation/checkpoints/last.ckpt"
     )
     try:
-        evaluator.run()
+        generated_images_path = evaluator.generate_images()
+        accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                        classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+        fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
+                 )
     except Exception as e:
         pytest.fail(f"concept ablation evalautor raised an exception: {str(e)}")
 
@@ -274,6 +295,8 @@ def test_run_scissorhands(setup_output_dir_scissorhands):
     from mu.algorithms.scissorhands.algorithm import ScissorHandsAlgorithm
     from mu.algorithms.scissorhands.configs import scissorhands_train_mu, scissorhands_evaluation_config
     from mu.algorithms.scissorhands import ScissorHandsEvaluator
+    from evaluation.metrics.accuracy import accuracy_score
+    from evaluation.metrics.fid import fid_score
 
     algorithm = ScissorHandsAlgorithm(
         scissorhands_train_mu,
@@ -309,13 +332,17 @@ def test_run_scissorhands(setup_output_dir_scissorhands):
     evaluator = ScissorHandsEvaluator(
         scissorhands_evaluation_config,
         ckpt_path = scissorhands_output_ckpt_path,
-        classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
-        reference_dir = config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
-        use_sample = config['evaluator_config']['use_sample']
-
     )
     try:
-        evaluator.run()
+        generated_images_path = evaluator.generate_images()
+        accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                        classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+        fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
+                 )
     except Exception as e:
         pytest.fail(f"scissorhands evalautor raised an exception: {str(e)}")
 
@@ -324,6 +351,8 @@ def test_run_unified_concept_editing(setup_output_dir_unified_concept_editing):
     from mu.algorithms.unified_concept_editing.algorithm import UnifiedConceptEditingAlgorithm
     from mu.algorithms.unified_concept_editing import UnifiedConceptEditingEvaluator
     from mu.algorithms.unified_concept_editing.configs import unified_concept_editing_train_mu, uce_evaluation_config
+    from evaluation.metrics.accuracy import accuracy_score
+    from evaluation.metrics.fid import fid_score
 
     # Use the provided checkpoint path for unified concept editing
     algorithm = UnifiedConceptEditingAlgorithm(
@@ -371,14 +400,18 @@ def test_run_unified_concept_editing(setup_output_dir_unified_concept_editing):
     evaluator = UnifiedConceptEditingEvaluator(
         uce_evaluation_config,
         ckpt_path = uce_output_ckpt_path,
-        classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
-        reference_dir = config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
-        use_sample = config['evaluator_config']['use_sample'],
-        pipeline_path = common_config_unlearn_canvas['diffuser_model_dir']
 
     )
     try:
-        evaluator.run()
+        generated_images_path = evaluator.generate_images()
+        accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                        classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+        fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
+                 )
     except Exception as e:
         pytest.fail(f"Unified concept editing evalautor raised an exception: {str(e)}")
 
@@ -425,6 +458,8 @@ def test_run_mu_forget_me_not(setup_output_dir_forget_me_not_finetuned):
     from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
     from mu.algorithms.forget_me_not import ForgetMeNotEvaluator
     from mu.algorithms.forget_me_not.configs import forget_me_not_train_attn_mu, forget_me_not_evaluation_config
+    from evaluation.metrics.accuracy import accuracy_score
+    from evaluation.metrics.fid import fid_score
 
     steps = config['forget_me_not']['steps']
     ti_weights_path = os.path.join(config['forget_me_not']['ti_output_dir'], f"step_inv_{steps}.safetensors")
@@ -471,12 +506,17 @@ def test_run_mu_forget_me_not(setup_output_dir_forget_me_not_finetuned):
     evaluator = ForgetMeNotEvaluator(
         forget_me_not_evaluation_config,
         ckpt_path = forget_me_not_output_ckpt_path,
-        classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
-        reference_dir = config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
-        use_sample = config['evaluator_config']['use_sample']
     )
     try:
-        evaluator.run()
+        generated_images_path = evaluator.generate_images()
+        accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                        classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+        fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
+                 )
     except Exception as e:
         pytest.fail(f"Forget me not evalautor raised an exception: {str(e)}")
 
@@ -515,9 +555,11 @@ def test_run_saliency_unlearning(setup_output_dir_saliency_unlearning):
     from mu.algorithms.saliency_unlearning import SaliencyUnlearningEvaluator
     from mu.algorithms.saliency_unlearning.algorithm import SaliencyUnlearnAlgorithm
     from mu.algorithms.saliency_unlearning.configs import saliency_unlearning_train_mu, saliency_unlearning_evaluation_config
+    from evaluation.metrics.accuracy import accuracy_score
+    from evaluation.metrics.fid import fid_score
 
     mask_output_dir = config['saliency_unlearning']['mask_dir']
-    # mask_output_dir = "outputs/saliency_unlearning/masks/"
+    mask_output_dir = "outputs/saliency_unlearning/masks"
     threshold = config['saliency_unlearning']['threshold']
 
     algorithm = SaliencyUnlearnAlgorithm(
@@ -555,13 +597,18 @@ def test_run_saliency_unlearning(setup_output_dir_saliency_unlearning):
     evaluator = SaliencyUnlearningEvaluator(
         saliency_unlearning_evaluation_config,
         ckpt_path = saliency_unlearning_output_ckpt_path,
-        classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
-        reference_dir = config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
-        use_sample = config['evaluator_config']['use_sample']
 
     )
     try:
-        evaluator.run()
+        generated_images_path = evaluator.generate_images()
+        accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                        classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+        fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
+                 )
     except Exception as e:
         pytest.fail(f"saliency unlearning evalautor raised an exception: {str(e)}")
 
@@ -570,6 +617,8 @@ def test_run_semipermeable(setup_output_dir_semipermeable):
     from mu.algorithms.semipermeable_membrane.algorithm import SemipermeableMembraneAlgorithm
     from mu.algorithms.semipermeable_membrane import SemipermeableMembraneEvaluator
     from mu.algorithms.semipermeable_membrane.configs import semipermiable_membrane_train_mu, semipermeable_membrane_eval_config
+    from evaluation.metrics.accuracy import accuracy_score
+    from evaluation.metrics.fid import fid_score
 
     train_config = config['semipermeable']['train']
 
@@ -596,16 +645,19 @@ def test_run_semipermeable(setup_output_dir_semipermeable):
     ckpt_path = f"{semiperimable_output_ckpt_path}/semipermeable_membrane_{config['common_config_unlearn_canvas_mu']['template_name']}_last.safetensors"
     evaluator = SemipermeableMembraneEvaluator(
     semipermeable_membrane_eval_config,
-    ckpt_path = ckpt_path,
-    classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
-    reference_dir = config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
-    use_sample = config['evaluator_config']['use_sample'],
     spm_path = [ckpt_path],
-    model_config_path = config["semipermeable"]["evaluation"]["model_config_path"]
 
     )
     try:
-        evaluator.run()
+        generated_images_path = evaluator.generate_images()
+        accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                        classifier_ckpt_path = config['evaluator_config']['classifier_ckpt_path'],
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+        fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=config['common_config_unlearn_canvas_mu']['unlearn_canvas_data_dir'],
+                 )
     except Exception as e:
         pytest.fail(f"Semipermeable evalautor raised an exception: {str(e)}")
 

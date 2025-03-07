@@ -23,7 +23,15 @@ from mu.helpers.utils import load_ckpt_from_config
 
 
 class ConceptAblationSampler(BaseSampler):
-    """Concept Ablation Image Generator class extending a hypothetical BaseImageGenerator."""
+    """
+    Concept Ablation Image Generator class extending a hypothetical BaseImageGenerator.
+    
+    Kumari, N., Zhang, B., Wang, S.-Y., Shechtman, E., Zhang, R., & Zhu, J.-Y. (2023).
+
+    Ablating Concepts in Text-to-Image Diffusion Models
+
+    Presented at the 2023 IEEE International Conference on Computer Vision
+    """
 
     def __init__(self, config: dict, **kwargs):
         """
@@ -127,6 +135,7 @@ class ConceptAblationSampler(BaseSampler):
                             self.logger.info(f"Image saved: {outpath}")
 
         self.logger.info("Image generation completed successfully.")
+        return output_dir
 
     def save_image(self, image: Image.Image, file_path: str) -> None:
         """

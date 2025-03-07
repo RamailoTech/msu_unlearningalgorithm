@@ -31,6 +31,12 @@ class SelectiveAmnesiaTrainer(BaseTrainer):
     """
     Trainer for the Selective Amnesia algorithm.
     Incorporates EWC loss and other SA-specific training logic.
+
+    Heng, A., & Soh, H. (2023).
+
+    Selective Amnesia: A Continual Learning Approach to Forgetting in Deep Generative Models
+
+    https://arxiv.org/abs/2305.10120
     """
 
     def __init__(self, model, config: Dict, device: str, config_path: str, **kwargs):

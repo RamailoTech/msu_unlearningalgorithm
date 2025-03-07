@@ -13,7 +13,15 @@ from mu.algorithms.esd.model import ESDModel
 from mu.algorithms.esd.sampler import ESDSampler
 
 class ESDTrainer(BaseTrainer):
-    """Trainer for the ESD algorithm."""
+    """
+    Trainer for the ESD algorithm.
+    
+    Gandikota, R., Materzyńska, J., Fiotto-Kaufman, J., & Bau, D. (2023).
+
+    Erasing Concepts from Diffusion Models
+
+    Presented at the 2023 IEEE International Conference on Computer Vision
+    """
 
     def __init__(self, model: ESDModel, sampler: ESDSampler, config: dict, device, device_orig, **kwargs):
         super().__init__(model, config, **kwargs)
