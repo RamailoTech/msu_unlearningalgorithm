@@ -111,6 +111,6 @@ nav:
         - Config: evaluation/configs/adv_unlearn_evaluation.md
 
   - Contributing:
-    - How to contribute: evaluation/contributing.md
+    - How to contribute?: evaluation/contributing.md
 theme:
   name: readthedocs  

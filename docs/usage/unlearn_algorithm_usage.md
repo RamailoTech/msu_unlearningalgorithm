@@ -1,5 +1,3 @@
-### Run Train <br>
-
 **Example usage for erase_diff algorithm (CompVis model)**
 
 **Note: Currently we only have support for unlearn canvas dataset. I2p and generic dataset support needs to be added.**
@@ -60,7 +58,7 @@ You can choose from a set of predefined `template_name` options to erase specifi
  "Van_Gogh", "Vibrant_Flow", "Warm_Love", "Warm_Smear", "Watercolor", "Winter"
 ```
 
-For example if you want to train using `French` then you can pass `template_name = "French"`.
+For example if you want to train using `Abstractionism` then you can pass `template_name = "Abstractionism"`.
 
 Also you can choose type of `template` to use during training. The available choices are `style` and `class`.
 
