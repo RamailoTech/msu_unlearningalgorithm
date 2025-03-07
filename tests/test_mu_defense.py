@@ -46,9 +46,10 @@ def test_adv_unlearn_run_compvis(setup_output_dir_adv_unlearn,run_erase_diff):
     from mu_defense.algorithms.adv_unlearn.configs import adv_unlearn_config, mu_defense_evaluation_config
     from mu.algorithms.erase_diff.configs import erase_diff_train_mu
     from mu_defense.algorithms.adv_unlearn import MUDefenseEvaluator
-    from mu_defense.algorithms.adv_unlearn.configs import example_image_generator_config
-    from mu_defense.algorithms.adv_unlearn import ImageGenerator
+    from mu_defense.algorithms.adv_unlearn.configs import mu_defense_evaluation_config
     from mu.algorithms.erase_diff.configs import erase_diff_train_mu
+    from evaluation.metrics.clip import clip_score
+    from evaluation.metrics.fid import fid_score
         
     output_dir = config['erase_diff']['output_dir']
     template_name = common_config_unlearn_canvas["template_name"]
@@ -77,31 +78,25 @@ def test_adv_unlearn_run_compvis(setup_output_dir_adv_unlearn,run_erase_diff):
     assert pt_files, f"No .pt files were found in the output directory {output_dir}. Files present: {files}"
 
     output_ckpt_path = f"{adv_unlearn_config.output_dir}/models/Diffusers-UNet-noxattn-epoch_0.pt"
-    generate_image = ImageGenerator(
-        config = example_image_generator_config,
-        target_ckpt =output_ckpt_path,
+    prompts_path = config['mu_defense']['evaluation']['prompt_path']
+    evaluator = MUDefenseEvaluator(
+        config = mu_defense_evaluation_config,
+        target_ckpt = output_ckpt_path,
         model_config_path = erase_diff_train_mu.model_config_path,
-        save_path = "test_output/adv_unlearn/models",
-        prompts_path = "data/prompts/sample_prompt.csv",
+        save_path = "test_output/adv_unlearn/images",
+        prompts_path = prompts_path,
         num_samples = 1,
         folder_suffix = "imagenette",
         devices = "0",
-
-    )
-    try:
-        generate_image.generate_images()
-    except Exception as e:
-        pytest.fail(f"Image generation for mu_defense evalaution raised an exception: {str(e)}")
-
-    evaluator = MUDefenseEvaluator(
-        config = mu_defense_evaluation_config,
-        gen_imgs_path = config['mu_defense']['evaluation']['gen_imgs_path'],
-        coco_imgs_path = config['mu_defense']['evaluation']['coco_imgs_path'],
-        output_path = "test_output/adv_unlearn/evaluation/",
     )
 
+    
+    ref_image_path = config['mu_defense']['evaluation']['coco_imgs_path']
+    device = "0"
     try:
-        evaluator.run()
+        gen_image_path = evaluator.generate_images()
+        clip_val = clip_score(gen_image_path, prompts_path, device)   
+        fid_val, _  = fid_score(gen_image_path, ref_image_path)
     except Exception as e:
         pytest.fail(f"mu_defense evalaution raised an exception: {str(e)}")
 

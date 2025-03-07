@@ -137,6 +137,7 @@ setup(
             "create_env=scripts.commands:create_env_cli",
             "download_data=scripts.commands:download_data_cli",
             "download_model=scripts.commands:download_models_cli",
+            "download_best_onnx=scripts.download_best_onnx_model:main",
             "generate_attack_dataset=scripts.generate_dataset_cli:generate_dataset_cli",
             "generate_images_for_prompts=scripts.generate_images_for_prompts:main",
         ],
@@ -145,3 +146,4 @@ setup(
         "install": CustomInstallCommand,
     },
 )
+

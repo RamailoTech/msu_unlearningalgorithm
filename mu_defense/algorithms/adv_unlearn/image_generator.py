@@ -48,6 +48,7 @@ class ImageGenerator(BaseImageGenerator):
 
         # Parse device(s)
         self.device = [f"cuda:{int(d.strip())}" for d in self.config.get("devices", "0").split(",")]
+        # self.device = self.config.get("devices")
 
         # Determine default model directory based on model_name (used when no target checkpoint is provided)
         if self.model_name == 'SD-v1-4':

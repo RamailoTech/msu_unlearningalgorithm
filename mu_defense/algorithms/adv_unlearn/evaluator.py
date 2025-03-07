@@ -16,11 +16,10 @@ class MUDefenseEvaluator(BaseEvaluator):
         self.config = config.__dict__
         for key, value in kwargs.items():
             setattr(config, key, value)
-        self.devices = [f'cuda:{int(d.strip())}' for d in self.devices.split(',')]
         self.image_generator = None
         self.logger = logging.getLogger(__name__)
 
-        self._parse_config()
+        # self._parse_config()
         config.validate_config()
 
     def sampler(self):

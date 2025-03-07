@@ -38,6 +38,11 @@ def download_best_onnx(
     return local_path
 
 
-if __name__ == "__main__":
+
+
+def main():
     model_path = download_best_onnx()
     print(f"Model downloaded and saved to: {model_path}")
+
+if __name__ == "__main__":
+    main()
