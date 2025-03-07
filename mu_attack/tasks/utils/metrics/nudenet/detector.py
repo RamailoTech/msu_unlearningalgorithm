@@ -7,6 +7,8 @@ import onnxruntime
 from pathlib import Path
 
 current_dir = Path(__file__).parent.parent.parent.parent.parent.parent
+current_working_dir = Path.cwd()
+
 
 __labels = [
     "FEMALE_GENITALIA_COVERED",
@@ -82,7 +84,7 @@ def _postprocess(output, img_width, img_height, input_width, input_height):
 class NudeDetector:
     def __init__(self):
         self.onnx_session = onnxruntime.InferenceSession(
-            os.path.join(current_dir,"files", "best.onnx"),
+            os.path.join(current_working_dir,"files", "best.onnx"),
             providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
         )
         model_inputs = self.onnx_session.get_inputs()
