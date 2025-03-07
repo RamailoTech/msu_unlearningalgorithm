@@ -1,22 +1,22 @@
-common_config_unlearn_canvas_mu:
-  unlearn_canvas_data_dir: "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
-  compvis_model_dir: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
-  diffuser_model_dir: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
+common_config_unlearn_canvas_mu: # contains common model, data dir and common config for testing mu using unlearn canvas dataset
+  unlearn_canvas_data_dir: "data/quick-canvas-dataset/sample"
+  compvis_model_dir: "models/compvis/style50/compvis.ckpt"
+  diffuser_model_dir: "models/diffuser/style50"
   template_name: "Abstractionism"
   use_sample: True
   dataset_type: "unlearncanvas"
   template: "style"
 
-common_config_i2p:
-  i2p_data_dir: "/home/ubuntu/Projects/Palistha/testing/data/i2p-dataset/sample"
-  compvis_model_dir: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt"
-  diffuser_model_dir: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
+common_config_i2p: # contains common model, data dir and common config for testing mu using i2p dataset
+  i2p_data_dir: "data/i2p-dataset/sample"
+  compvis_model_dir: "models/compvis/style50/compvis.ckpt"
+  diffuser_model_dir: "models/diffuser/style50"
   template_name: "self-harm"
   use_sample: True
   dataset_type: "i2p"
   template: "style"
 
-evaluator_config:
+evaluator_config: # contains evaluation config for testing mu evalaution
   classifier_ckpt_path: "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth"
   use_sample: true
 
@@ -31,7 +31,8 @@ esd:
 
 concept_ablation:
   output_dir: "test_output/concept_ablation/finetuned_models"
-  prompts: "/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt"
+  ckpt_path: "outputs/concept_ablation/checkpoints/last.ckpt" #make sure this path exists for evalaution
+  prompts: "mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt"
 
 forget_me_not:
   steps: 10
@@ -48,23 +49,21 @@ semipermeable:
   output_dir: "test_output/semipermeable/finetuned_models"
   train:
     iterations: 2
-  evaluation:
-    model_config_path: "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/mu_semipermeable_membrane_spm/configs"
 
 unified_concept_editing:
   output_dir: "test_output/uce/finetuned_models"
 
 selective_amnesia:
   output_dir: "test_output/selective_amnesia/finetuned_models"
-  full_fisher_dict_pkl_path: "/home/ubuntu/Projects/balaram/msu_unlearningalgorithm/mu/algorithms/selective_amnesia/data/full_fisher_dict.pkl"
+  full_fisher_dict_pkl_path: "mu/algorithms/selective_amnesia/data/full_fisher_dict.pkl"
   replay_prompt_path: "mu/algorithms/selective_amnesia/data/fim_prompts_sample.txt"
 
 
-attack:
+attack: #config for performing attack
   model_and_dataset_path:
-    compvis_model_ckpt: "/home/ubuntu/Projects/Palistha/testing/outputs/erase_diff/finetuned_models/erase_diff_Abstractionism_model.pth"
-    diffusers_model_name_or_path: "/home/ubuntu/Projects/Palistha/testing/outputs/forget_me_not/finetuned_models/Abstractionism"
-    dataset_path: "/home/ubuntu/Projects/dipesh/testing/outputs/dataset/i2p_nude"
+    compvis_model_ckpt: "outputs/erase_diff/finetuned_models/erase_diff_Abstractionism_model.pth"
+    diffusers_model_name_or_path: "outputs/forget_me_not/finetuned_models/Abstractionism"
+    dataset_path: "outputs/dataset/i2p_nude"
   hyperparameter:
     iterations: 1
     model_name: "SD-v1-4"
@@ -73,12 +72,12 @@ attack:
   output_dir_diffuser:
     output_dir: "results/esd_nudity_P4D_erase_diff_diffuser"
   evaluation:
-    sample_batch_path: "/home/ubuntu/Projects/Palistha/msu_unlearningalgorithm/data/i2p/nude"
+    sample_batch_path: "data/i2p/nude"
 
 
 
-mu_defense:
-  compvis_ckpt_path: "/home/ubuntu/Projects/Palistha/testing/outputs/erase_diff/finetuned_models/erase_diff_Abstractionism_model.pth"
+mu_defense: #config for defense
+  compvis_ckpt_path: "outputs/erase_diff/finetuned_models/erase_diff_Abstractionism_model.pth"
   attack_step: 2
   attack_method: "fast_at"
   train_method: "noxattn"
@@ -89,6 +88,5 @@ mu_defense:
     prompt_path: "data/prompts/sample_prompt.csv"
     save_path: "test_output/adv_unlearn/models"
     prompts_path: "data/prompts/sample_prompt.csv"
-    gen_imgs_path: "test_output/adv_unlearn/models_visualizations_imagenette/SD-v1-4/"
-    coco_imgs_path: "coco_dataset/extracted_files/coco_sample"
+    coco_imgs_path: "coco_dataset/extracted_files/coco_sample" #reference image path
 

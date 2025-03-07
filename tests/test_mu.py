@@ -10,7 +10,7 @@ with open("tests/test_config.yaml", "r") as f:
 common_config_unlearn_canvas = config["common_config_unlearn_canvas_mu"]
 common_config_i2p = config["common_config_i2p"]
 
-# Fixture for erase_diff
+# Fixture for erase_diff, deletes output once execution completes.
 @pytest.fixture
 def setup_output_dir_erase_diff():
     output_dir = config['erase_diff']['output_dir']
@@ -234,10 +234,7 @@ def test_run_esd(setup_output_dir_esd):
 
 def test_run_concept_ablation(setup_output_dir_concept_ablation):
     from mu.algorithms.concept_ablation.algorithm import ConceptAblationAlgorithm
-    from mu.algorithms.concept_ablation import ConceptAblationEvaluator
-    from mu.algorithms.concept_ablation.configs import concept_ablation_train_mu, concept_ablation_evaluation_config
-    from evaluation.metrics.accuracy import accuracy_score
-    from evaluation.metrics.fid import fid_score
+    from mu.algorithms.concept_ablation.configs import concept_ablation_train_mu
 
     concept_ablation_train_mu.lightning.trainer.max_steps = 1
 
@@ -270,12 +267,16 @@ def test_run_concept_ablation(setup_output_dir_concept_ablation):
     assert concept_ablation_output_ckpt_path.endswith('.ckpt'), (
         "Output file does not have .ckpt extension"
     )
-    print("Checkpoint path:", concept_ablation_output_ckpt_path)
-    # run the evaluator
+
+def test_run_concept_ablation_evaluation():
+    from mu.algorithms.concept_ablation import ConceptAblationEvaluator
+    from mu.algorithms.concept_ablation.configs import concept_ablation_evaluation_config
+    from evaluation.metrics.accuracy import accuracy_score
+    from evaluation.metrics.fid import fid_score
+
     evaluator = ConceptAblationEvaluator(
         concept_ablation_evaluation_config,
-        # ckpt_path = concept_ablation_output_ckpt_path,
-        ckpt_path ="outputs/concept_ablation/checkpoints/last.ckpt"
+        ckpt_path = config["concept_ablation"]["ckpt_path"],
     )
     try:
         generated_images_path = evaluator.generate_images()
