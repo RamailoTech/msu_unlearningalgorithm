@@ -51,68 +51,94 @@ class UnifiedConceptEditingConfig(BaseConfig):
         self.base = "stable-diffusion-v1-4"  # Base version of Stable Diffusion
 ```
 
+### Description of Arguments in train_config.yaml
+**Training Parameters**
+
+* **train_method**: Specifies the method of training for concept erasure.
+    * Choices: ["full", "partial"]
+    * Example: "full"
+
+* **alpha**: Guidance strength for the starting image during training.
+    * Type: float
+    * Example: 0.1
+
+* **epochs**: Number of epochs to train the model.
+    * Type: int
+    * Example: 10
+
+* **lr**: Learning rate used for the optimizer during training.
+    * Type: float
+    * Example: 5e-5
 
 
-### Evaluation config
+**Model Configuration**
+* **ckpt_path**: File path to the checkpoint of the Stable Diffusion model.
+    * Type: str
+    * Example: "/path/to/model_checkpoint.ckpt"
 
-```python
-# mu/algorithms/unified_concept_editing/configs/evaluation_config.py
+* **config_path**: File path to the Stable Diffusion model configuration YAML file.
+    * Type: str
+    * Example: "/path/to/config.yaml"
 
-import os
+**Dataset Directories**
 
-from pathlib import Path
+* **dataset_type**: Specifies the dataset type for the training process. Use `generic` as type if you want to use your own dataset.
+    * Choices: ["unlearncanvas", "i2p", "generic"]
+    * Example: "unlearncanvas"
 
-from mu.core.base_config import BaseConfig
+* **template**: Type of template to use during training.
+    * Choices: ["object", "style", "i2p"]
+    * Example: "style"
 
-current_dir = Path(__file__).parent
+* **template_name**: Name of the specific concept or style to be erased.
+    * Choices: ["self-harm", "Abstractionism"]
+    * Example: "Abstractionism"
+
+**Output Configurations**
+
+* **output_dir**: Directory where the fine-tuned models and results will be saved.
+    * Type: str
+    * Example: "outputs/erase_diff/finetuned_models"
+
+**Sampling and Image Configurations**
+
+* **use_sample**: Flag to indicate whether a sample dataset should be used for training.
+    * Type: bool
+    * Example: True
+
+* **guided_concepts**: Concepts to guide the editing process.
+    * Type: str
+    * Example: "Nature, Abstract"
+
+* **technique**: Specifies the editing technique.
+    * Choices: ["replace", "tensor"]
+    * Example: "replace"
+
+* **preserve_scale**: Scale for preservation during the editing process.
+    * Type: float
+    * Example: 0.5
+
+* **preserve_number**: Number of items to preserve during editing.
+    * Type: int
+    * Example: 10
+
+* **erase_scale**: Scale for erasure during the editing process.
+    * Type: float
+    * Example: 0.8
+
+* **lamb**: Lambda parameter for controlling balance during editing.
+    * Type: float
+    * Example: 0.01
+
+* **add_prompts**: Flag to indicate whether additional prompts should be used.
+    * Type: bool
+    * Example: True
+
+**Device Configuration**
+
+* **devices**: Specifies the CUDA devices to be used for training (comma-separated).
+    * Type: str (Comma-separated)
+    * Example: "0,1"
 
 
-class UceEvaluationConfig(BaseConfig):
 
-    def __init__(self, **kwargs):
-        self.ckpt_path = "outputs/uce/finetuned_models/uce_Abstractionism_model"  # path to finetuned model checkpoint
-        # self.pipeline_path = "UnlearnCanvas/machine_unlearning/models/diffuser/style50"  # path to pretrained pipeline
-        self.cfg_text = 9.0  # classifier-free guidance scale
-        self.seed = 188  # random seed
-        self.task = "class"  # task type
-        self.devices = "0"  # GPU device ID
-        self.ddim_steps = 100  # number of DDIM steps
-        self.image_height = 512  # height of the image
-        self.image_width = 512  # width of the image
-        self.ddim_eta = 0.0  # DDIM eta parameter
-        self.sampler_output_dir = "outputs/eval_results/mu_results/uce"  # directory to save sampler outputs
-        self.seed_list = ["188"]  # list of seeds for evaluation
-        self.batch_size = 1  # batch size for evaluation
-        self.dataset_type = "unlearncanvas"
-        self.use_sample = True
-
-        # Override defaults with any provided kwargs
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-    def validate_config(self):
-        """
-        Perform basic validation on the config parameters.
-        """
-        if not os.path.exists(self.ckpt_path):
-            raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
-        if not os.path.exists(self.sampler_output_dir):
-            os.makedirs(self.sampler_output_dir)
-        if self.dataset_type not in ["unlearncanvas", "i2p", "generic"]:
-            raise ValueError(f"Unknown dataset type: {self.dataset_type}")
-
-        if self.cfg_text <= 0:
-            raise ValueError("Classifier-free guidance scale (cfg_text) should be positive.")
-        if self.ddim_steps <= 0:
-            raise ValueError("DDIM steps should be a positive integer.")
-        if self.image_height <= 0 or self.image_width <= 0:
-            raise ValueError("Image height and width should be positive.")
-        if self.batch_size <= 0:
-            raise ValueError("Batch size should be a positive integer.")
-        if self.task not in ["class", "other_task"]:  # Add other valid tasks if needed
-            raise ValueError("Invalid task type.")
-
-
-# Example usage
-uce_evaluation_config = UceEvaluationConfig()
-```

@@ -141,59 +141,112 @@ class ForgetMeNotAttnConfig(BaseConfig):
 ```
 
 
-### Evaluation config
+### Description of Arguments in train_ti_config.yaml
 
-```python
-# mu/algorithms/forget_me_not/configs/evaluation_config.py
+**Pretrained Model**
 
-import os
+- **ckpt_path**: File path to the pretrained model's checkpoint file.
 
-from pathlib import Path
+**Dataset**
 
-from mu.core.base_config import BaseConfig
+- **raw_dataset_dir**: Directory containing the original dataset organized by themes and classes.
+- **processed_dataset_dir**: Directory where the processed datasets will be saved.
+- **dataset_type**: Type of dataset to use (e.g., `unlearncanvas`). Use `generic` as type if you want to use your own dataset. Valid choices are `unlearncanvas`, `i2p` and `generic`.
+- **template**: Type of template to use (e.g., `style`).
+- **template_name**: Name of the template, defining the style or theme (e.g., `Abstractionism`).
+- **use_sample**: Boolean indicating whether to use the sample dataset for training.
 
-current_dir = Path(__file__).parent
+**Training Configuration**
 
+- **initializer_tokens**: Tokens used to initialize the training process, referencing the template name.
+- **steps**: Number of training steps.
+- **lr**: Learning rate for the training optimizer.
+- **weight_decay_ti**: Weight decay for Text Inversion training.
+- **seed**: Random seed for reproducibility.
+- **placeholder_tokens**: Tokens used as placeholders during training.
+- **placeholder_token_at_data**: Placeholders used in the dataset for Text Inversion training.
+- **gradient_checkpointing**: Boolean to enable or disable gradient checkpointing.
+- **scale_lr**: Boolean indicating whether to scale the learning rate based on batch size.
+- **gradient_accumulation_steps**: Number of steps to accumulate gradients before updating weights.
+- **train_batch_size**: Batch size for training.
+- **lr_warmup_steps**: Number of steps for linear warmup of the learning rate.
 
-class ForgetMeNotEvaluationConfig(BaseConfig):
+**Output Configuration**
 
-    def __init__(self, **kwargs):
-        self.ckpt_path = "outputs/forget_me_not/finetuned_models"  # path to finetuned model checkpoint directory
-        self.cfg_text_list = [9.0]  # list of classifier-free guidance scales
-        self.seed = 188  # random seed
-        self.ddim_steps = 100  # number of DDIM steps
-        self.image_height = 512  # height of the image
-        self.image_width = 512  # width of the image
-        self.ddim_eta = 0.0  # DDIM eta parameter
-        self.devices = "0"  # GPU device ID
-        self.sampler_output_dir = "outputs/eval_results/mu_results/forget_me_not/"  # directory to save sampler outputs
-        self.dataset_type = "unlearncanvas"
-        self.use_sample = True
+- **output_dir**: Directory path to save training results, including models and logs.
 
+**Device Configuration**
 
-        # Override defaults with any provided kwargs
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-    def validate_config(self):
-        """
-        Perform basic validation on the config parameters.
-        """
-        if not os.path.exists(self.ckpt_path):
-            raise FileNotFoundError(f"Checkpoint directory {self.ckpt_path} does not exist.")
-        if not os.path.exists(self.sampler_output_dir):
-            os.makedirs(self.sampler_output_dir)
-        if self.dataset_type not in ["unlearncanvas", "i2p", "generic"]:
-            raise ValueError(f"Unknown dataset type: {self.dataset_type}")
-
-        if any(cfg <= 0 for cfg in self.cfg_text_list):
-            raise ValueError("Classifier-free guidance scale (cfg_text) values should be positive.")
-        if self.ddim_steps <= 0:
-            raise ValueError("DDIM steps should be a positive integer.")
-        if self.image_height <= 0 or self.image_width <= 0:
-            raise ValueError("Image height and width should be positive.")
+- **devices**: CUDA devices to train on (comma-separated).
 
 
-# Example usage
-forget_me_not_evaluation_config = ForgetMeNotEvaluationConfig()
-```
+
+### Description of Arguments in train_attn_config.yaml
+
+### Key Parameters
+
+**Pretrained Model**
+
+- **ckpt_path**: File path to the pretrained model's checkpoint file.
+
+**Dataset**
+
+- **raw_dataset_dir**: Directory containing the original dataset organized by themes and classes.
+- **processed_dataset_dir**: Directory where the processed datasets will be saved.
+- **dataset_type**: Type of dataset to use (e.g., `unlearncanvas`).
+- **template**: Type of template to use (e.g., `style`).
+- **template_name**: Name of the template, defining the style or theme (e.g., `Abstractionism`).
+- **use_sample**: Boolean indicating whether to use the sample dataset for training.
+
+**Text Inversion**
+
+- **use_ti**: Boolean indicating whether to use Text Inversion weights.
+- **ti_weights_path**: File path to the Text Inversion model weights.
+
+**Tokens**
+
+- **initializer_tokens**: Tokens used to initialize the training process, referencing the template name.
+- **placeholder_tokens**: Tokens used as placeholders during training.
+
+**Training Configuration**
+
+- **mixed_precision**: Precision type to use during training (e.g., `fp16` or `fp32`).
+- **gradient_accumulation_steps**: Number of steps to accumulate gradients before updating weights.
+- **train_text_encoder**: Boolean to enable or disable training of the text encoder.
+- **enable_xformers_memory_efficient_attention**: Boolean to enable memory-efficient attention mechanisms.
+- **gradient_checkpointing**: Boolean to enable or disable gradient checkpointing.
+- **allow_tf32**: Boolean to allow TensorFloat-32 computation for faster training.
+- **scale_lr**: Boolean indicating whether to scale the learning rate based on batch size.
+- **train_batch_size**: Batch size for training.
+- **use_8bit_adam**: Boolean to enable or disable 8-bit Adam optimizer.
+- **adam_beta1**: Beta1 parameter for the Adam optimizer.
+- **adam_beta2**: Beta2 parameter for the Adam optimizer.
+- **adam_weight_decay**: Weight decay for the Adam optimizer.
+- **adam_epsilon**: Epsilon value for the Adam optimizer.
+- **size**: Image resolution size for training.
+- **with_prior_preservation**: Boolean indicating whether to use prior preservation during training.
+- **num_train_epochs**: Number of training epochs.
+- **lr_warmup_steps**: Number of steps for linear warmup of the learning rate.
+- **lr_num_cycles**: Number of cycles for learning rate scheduling.
+- **lr_power**: Exponent to control the shape of the learning rate curve.
+- **max-steps**: Maximum number of training steps.
+- **no_real_image**: Boolean to skip using real images in training.
+- **max_grad_norm**: Maximum norm for gradient clipping.
+- **checkpointing_steps**: Number of steps between model checkpoints.
+- **set_grads_to_none**: Boolean to set gradients to None instead of zeroing them out.
+- **lr**: Learning rate for the training optimizer.
+
+**Output Configuration**
+
+- **output_dir**: Directory path to save training results, including models and logs.
+
+**Device Configuration**
+
+- **devices**: CUDA devices to train on (comma-separated).
+
+**Miscellaneous**
+
+- **only-xa**: Boolean to enable additional configurations specific to the XA pipeline.
+
+
+

@@ -118,62 +118,116 @@ model:
       target: stable_diffusion.ldm.modules.encoders.modules.FrozenCLIPEmbedder
 ```
 
+### Description of arguments being used in train_config class
 
-### Evaluation config
+These are the configuration used for training a Stable Diffusion model using the ESD (Erase Stable Diffusion) method. It defines various parameters related to training, model setup, dataset handling, and output configuration. Below is a detailed description of each section and parameter:
 
-```python
-# mu/algorithms/esd/configs/evaluation_config.py
+**Training Parameters**
 
-import os
+These parameters control the fine-tuning process, including the method of training, guidance scales, learning rate, and iteration settings.
 
-from pathlib import Path
+* train_method: Specifies the method of training to decide which parts of the model to update.
 
-from mu.core.base_config import BaseConfig
+    * Type: str
+    * Choices: noxattn, selfattn, xattn, full, notime, xlayer, selflayer
+    * Example: xattn
 
-current_dir = Path(__file__).parent
+* start_guidance: Guidance scale for generating initial images during training. Affects the diversity of the training set.
 
+    * Type: float
+    * Example: 0.1
 
-class ESDEvaluationConfig(BaseConfig):
+* negative_guidance: Guidance scale for erasing the target concept during training.
 
-    def __init__(self, **kwargs):
-        self.model_config_path = current_dir/"model_config.yaml"  # path to model config
-        self.ckpt_path = "outputs/esd/finetuned_models/esd_Abstractionism_model.pth"  # path to finetuned model checkpoint
-        self.cfg_text = 9.0  # classifier-free guidance scale
-        self.devices = "0"  # GPU device ID
-        self.seed = 188  # random seed
-        self.ddim_steps = 100  # number of DDIM steps
-        self.image_height = 512  # height of the image
-        self.image_width = 512  # width of the image
-        self.ddim_eta = 0.0  # DDIM eta parameter
-        self.sampler_output_dir = "outputs/eval_results/mu_results/esd/"  # directory to save sampler outputs
-        self.dataset_type = "unlearncanvas"
-        self.use_sample = True
+    * Type: float
+    * Example: 0.0
 
-        # Override defaults with any provided kwargs
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+* iterations: Number of training iterations (similar to epochs).
 
-    def validate_config(self):
-        """
-        Perform basic validation on the config parameters.
-        """
-        if not os.path.exists(self.model_config_path):
-            raise FileNotFoundError(f"Model config file {self.model_config_path} does not exist.")
-        if not os.path.exists(self.ckpt_path):
-            raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
-        if not os.path.exists(self.sampler_output_dir):
-            os.makedirs(self.sampler_output_dir)
-        if self.dataset_type not in ["unlearncanvas", "i2p", "generic"]:
-            raise ValueError(f"Unknown dataset type: {self.dataset_type}")
+    * Type: int
+    * Example: 1
 
-        if self.cfg_text <= 0:
-            raise ValueError("Classifier-free guidance scale (cfg_text) should be positive.")
-        if self.ddim_steps <= 0:
-            raise ValueError("DDIM steps should be a positive integer.")
-        if self.image_height <= 0 or self.image_width <= 0:
-            raise ValueError("Image height and width should be positive.")
+* lr: Learning rate used by the optimizer for fine-tuning.
+
+    * Type: float
+    * Example: 5e-5
+
+* image_size: Size of images used during training and sampling (in pixels).
+
+    * Type: int
+    * Example: 512
+
+* ddim_steps: Number of diffusion steps used in the DDIM sampling process.
+
+    * Type: int
+    * Example: 50
 
 
-# Example usage
-esd_evaluation_config = ESDEvaluationConfig()
-```
+**Model Configuration**
+
+These parameters specify the Stable Diffusion model checkpoint and configuration file.
+
+* model_config_path: Path to the YAML file defining the model architecture and parameters.
+
+    * Type: str
+    * Example: mu/algorithms/esd/configs/model_config.yaml
+
+* ckpt_path: Path to the finetuned Stable Diffusion model checkpoint.
+
+    * Type: str
+    * Example: '../models/compvis/style50/compvis.ckpt'
+
+
+**Dataset Configuration**
+
+These parameters define the dataset type and template for training, specifying whether to focus on objects, styles, or inappropriate content.
+
+* dataset_type: Type of dataset used for training. Use `generic` as type if you want to use your own dataset.
+
+    * Type: str
+    * Choices: unlearncanvas, i2p, generic
+    * Example: unlearncanvas
+
+* template: Type of concept or style to erase during training.
+
+    * Type: str
+    * Choices: object, style, i2p
+    * Example: style
+
+* template_name: Specific name of the object or style to erase (e.g., "Abstractionism").
+
+    * Type: str
+    * Example Choices: Abstractionism, self-harm
+    * Example: Abstractionism
+
+
+**Output Configuration**
+
+These parameters control where the outputs of the training process, such as fine-tuned models, are stored.
+
+* output_dir: Directory where the fine-tuned model and training results will be saved.
+
+    * Type: str
+    * Example: outputs/esd/finetuned_models
+
+* separator: Separator character used to handle multiple prompts during training. If set to null, no special handling occurs.
+
+    * Type: str or null
+    * Example: null
+
+**Device Configuration**
+
+These parameters define the compute resources for training.
+
+* devices: Specifies the CUDA devices used for training. Provide a comma-separated list of device IDs.
+
+    * Type: str
+    * Example: 0,1
+
+* use_sample: Boolean flag indicating whether to use a sample dataset for testing or debugging.
+
+    * Type: bool
+    * Example: True
+
+
+

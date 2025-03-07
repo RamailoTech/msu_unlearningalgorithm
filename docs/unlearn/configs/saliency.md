@@ -105,62 +105,183 @@ devices: "0"  # CUDA devices to train on (comma-separated)
 use_sample: true
 ```
 
-
-### Evaluation config
-
-```python
-# mu/algorithms/saliency_unlearning/configs/evaluation_config.py
-
-import os
-
-from pathlib import Path
-
-from mu.core.base_config import BaseConfig
-
-current_dir = Path(__file__).parent
+### Description of configs used to generate mask:
 
 
-class SaliencyUnlearningEvaluationConfig(BaseConfig):
+**Model Configuration**
 
-    def __init__(self, **kwargs):
-        self.model_config_path = current_dir/"model_config.yaml"  # path to model config
-        self.ckpt_path = "outputs/saliency_unlearning/finetuned_models/saliency_unlearning_Abstractionism_model.pth"  # path to finetuned model checkpoint
-        self.cfg_text = 9.0  # classifier-free guidance scale
-        self.devices = "0"  # GPU device ID
-        self.seed = 188  # random seed
-        self.ddim_steps = 100  # number of DDIM steps
-        self.image_height = 512  # height of the image
-        self.image_width = 512  # width of the image
-        self.ddim_eta = 0.0  # DDIM eta parameter
-        self.sampler_output_dir = "outputs/eval_results/mu_results/saliency_unlearning/"  # directory to save sampler outputs
-        self.multiprocessing = False  # whether to use multiprocessing
-        self.dataset_type = "unlearncanvas"
-        self.use_sample = True
+These parameters specify settings for the Stable Diffusion model and guidance configurations.
 
-        # Override defaults with any provided kwargs
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+* c_guidance: Guidance scale used during loss computation in the model. Higher values may emphasize certain features in mask generation.
+    
+    * Type: float
+    * Example: 7.5
 
-    def validate_config(self):
-        """
-        Perform basic validation on the config parameters.
-        """
-        if not os.path.exists(self.model_config_path):
-            raise FileNotFoundError(f"Model config file {self.model_config_path} does not exist.")
-        if not os.path.exists(self.ckpt_path):
-            raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
-        if not os.path.exists(self.sampler_output_dir):
-            os.makedirs(self.sampler_output_dir)
-        if self.dataset_type not in ["unlearncanvas", "i2p", "generic"]:
-            raise ValueError(f"Unknown dataset type: {self.dataset_type}")
+* batch_size: Number of images processed in a single batch.
 
-        if self.cfg_text <= 0:
-            raise ValueError("Classifier-free guidance scale (cfg_text) should be positive.")
-        if self.ddim_steps <= 0:
-            raise ValueError("DDIM steps should be a positive integer.")
-        if self.image_height <= 0 or self.image_width <= 0:
-            raise ValueError("Image height and width should be positive.")
+    * Type: int
+    * Example: 4
+
+* ckpt_path: Path to the model checkpoint file for Stable Diffusion.
+
+    * Type: str
+    * Example: /path/to/compvis.ckpt
+
+* model_config_path: Path to the model configuration YAML file for Stable Diffusion.
+
+    * Type: str
+    * Example: /path/to/model_config.yaml
+
+* num_timesteps: Number of timesteps used in the diffusion process.
+
+    * Type: int
+    * Example: 1000
+
+* image_size: Size of the input images used for training and mask generation (in pixels).
+
+    * Type: int
+    * Example: 512
 
 
-saliency_unlearning_evaluation_config = SaliencyUnlearningEvaluationConfig()
-```
+**Dataset Configuration**
+
+These parameters define the dataset paths and settings for mask generation.
+
+* raw_dataset_dir: Path to the directory containing the original dataset, organized by themes and classes.
+
+    * Type: str
+    * Example: /path/to/raw/dataset
+
+* processed_dataset_dir: Path to the directory where processed datasets will be saved after mask generation.
+
+    * Type: str
+    * Example: /path/to/processed/dataset
+
+* dataset_type: Type of dataset being used.
+
+    * Choices: unlearncanvas, i2p
+    * Type: str
+    * Example: i2p
+
+* template: Type of template for mask generation.
+
+    * Choices: object, style, i2p
+    * Type: str
+    * Example: style
+
+* template_name: Specific template name for the mask generation process.
+
+    * Example Choices: self-harm, Abstractionism
+    * Type: str
+    * Example: Abstractionism
+
+* threshold: Threshold value for mask generation to filter salient regions.
+
+    * Type: float
+    * Example: 0.5
+
+**Output Configuration**
+
+These parameters specify the directory where the results are saved.
+
+* output_dir: Directory where the generated masks will be saved.
+
+    * Type: str
+    * Example: outputs/saliency_unlearning/masks
+
+
+**Training Configuration**
+
+These parameters control the training process for mask generation.
+
+* lr: Learning rate used for training the masking algorithm.
+
+    * Type: float
+    * Example: 0.00001
+
+* devices: CUDA devices used for training, specified as a comma-separated list.
+
+    * Type: str
+    * Example: 0
+
+* use_sample: Flag indicating whether to use a sample dataset for training and mask generation.
+
+    * Type: bool
+    * Example: True
+
+
+### Description of Arguments used to train saliency unlearning.
+
+The following configs are used to fine-tune the Stable Diffusion model to perform saliency-based unlearning. This script relies on a configuration class `SaliencyUnlearningConfig`  and supports additional runtime arguments for further customization. Below is a detailed description of each argument:
+
+**General Arguments**
+
+* alpha: Guidance scale used to balance the loss components during training.
+    
+    * Type: float
+    * Example: 0.1
+
+* epochs: Number of epochs to train the model.
+    
+    * Type: int
+    * Example: 5
+
+* train_method: Specifies the training method or strategy to be used.
+
+    * Choices: noxattn, selfattn, xattn, full, notime, xlayer, selflayer
+    * Type: str
+    * Example: noxattn
+
+* model_config_path: Path to the model configuration YAML file for Stable Diffusion.
+    
+    * Type: str
+    * Example: 'mu/algorithms/saliency_unlearning/configs/model_config.yaml'
+
+
+**Dataset Arguments**
+
+* raw_dataset_dir: Path to the directory containing the raw dataset, organized by themes and classes.
+
+    * Type: str
+    * Example: 'path/raw_dataset/'
+
+* processed_dataset_dir: Path to the directory where the processed dataset will be saved.
+
+    * Type: str
+    * Example: 'path/processed_dataset_dir'
+
+* dataset_type: Specifies the type of dataset to use for training. Use `generic` as type if you want to use your own dataset.
+
+    * Choices: unlearncanvas, i2p, generic
+    * Type: str
+    * Example: i2p
+
+* template: Specifies the template type for training.
+
+    * Choices: object, style, i2p
+    * Type: str
+    * Example: style
+
+* template_name: Name of the specific template used for training.
+
+    * Example Choices: self-harm, Abstractionism
+    * Type: str
+    * Example: Abstractionism
+
+
+**Output Arguments**
+
+* output_dir: Directory where the fine-tuned model and training outputs will be saved.
+
+    * Type: str
+    * Example: 'output/folder_name'
+
+* mask_path: Path to the saliency mask file used during training.
+
+    * Type: str
+    * Example: 
+
+
+
+
+

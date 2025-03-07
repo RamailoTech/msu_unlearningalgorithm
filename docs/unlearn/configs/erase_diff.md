@@ -107,62 +107,135 @@ model:
 
 ```
 
+### Description of Arguments in train_config.yaml
+
+**Training Parameters**
+
+* train_method: Specifies the method of training for concept erasure.
+
+    * Choices: ["noxattn", "selfattn", "xattn", "full", "notime", "xlayer", "selflayer"]
+    * Example: "xattn"
+
+* alpha: Guidance strength for the starting image during training.
+
+    * Type: float
+    * Example: 0.1
+
+* epochs: Number of epochs to train the model.
+
+    * Type: int
+    * Example: 1
+
+* K_steps: Number of K optimization steps during training.
+
+    * Type: int
+    * Example: 2
+
+* lr: Learning rate used for the optimizer during training.
+
+    * Type: float
+    * Example: 5e-5
+
+**Model Configuration**
+
+* model_config_path: File path to the Stable Diffusion model configuration YAML file.
+
+    * type: str
+    * Example: "/path/to/model_config.yaml"
+
+* ckpt_path: File path to the checkpoint of the Stable Diffusion model.
+
+    * Type: str
+    * Example: "/path/to/model_checkpoint.ckpt"
 
 
-### Evaluation config
+**Dataset Directories**
 
-```python
-# mu/algorithms/erase_diff/configs/evaluation_config.py
+* raw_dataset_dir: Directory containing the raw dataset categorized by themes or classes.
 
-import os
-from pathlib import Path
+    * Type: str
+    * Example: "/path/to/raw_dataset"
 
-from mu.core.base_config import BaseConfig
+* processed_dataset_dir: Directory to save the processed dataset.
 
-current_dir = Path(__file__).parent
+    * Type: str
+    * Example: "/path/to/processed_dataset"
 
+* dataset_type: Specifies the dataset type for the training process. Use `generic` as type if you want to use your own dataset.
 
-class ErasediffEvaluationConfig(BaseConfig):
+    * Choices: ["unlearncanvas", "i2p", "generic"]
+    * Example: "unlearncanvas"
 
-    def __init__(self, **kwargs):
-        self.model_config_path = current_dir / "model_config.yaml"  # path to model config
-        self.ckpt_path = "outputs/erase_diff/finetuned_models/erase_diff_Abstractionism_model.pth"  # path to finetuned model checkpoint
-        self.cfg_text = 9.0  # classifier-free guidance scale
-        self.devices = "0"  # GPU device ID
-        self.seed = 188  # random seed
-        self.ddim_steps = 100  # number of DDIM steps
-        self.image_height = 512  # height of the image
-        self.image_width = 512  # width of the image
-        self.ddim_eta = 0.0  # DDIM eta parameter
-        self.sampler_output_dir = "outputs/eval_results/mu_results/erase_diff/"  # directory to save sampler outputs
-        self.use_sample = True #use sample dataset
-        self.dataset_type = "unlearncanvas"
+* template: Type of template to use during training.
 
-        # Override defaults with any provided kwargs
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+    * Choices: ["object", "style", "i2p"]
+    * Example: "style"
 
-    def validate_config(self):
-        """
-        Perform basic validation on the config parameters.
-        """
-        if not os.path.exists(self.model_config_path):
-            raise FileNotFoundError(f"Model config file {self.model_config_path} does not exist.")
-        if not os.path.exists(self.ckpt_path):
-            raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
-        if not os.path.exists(self.sampler_output_dir):
-            os.makedirs(self.sampler_output_dir)
-        if self.dataset_type not in ["unlearncanvas", "i2p", "generic"]:
-            raise ValueError(f"Unknown dataset type: {self.dataset_type}")
+* template_name: Name of the specific concept or style to be erased.
 
-        if self.cfg_text <= 0:
-            raise ValueError("Classifier-free guidance scale (cfg_text) should be positive.")
-        if self.ddim_steps <= 0:
-            raise ValueError("DDIM steps should be a positive integer.")
-        if self.image_height <= 0 or self.image_width <= 0:
-            raise ValueError("Image height and width should be positive.")
+    * Choices: ["self-harm", "Abstractionism"]
+    * Example: "Abstractionism"
 
 
-erase_diff_evaluation_config = ErasediffEvaluationConfig()
+**Output Configurations**
 
-```
+* output_dir: Directory where the fine-tuned models and results will be saved.
+
+    * Type: str
+    * Example: "outputs/erase_diff/finetuned_models"
+
+* separator: String separator used to train multiple words separately, if applicable.
+
+    * Type: str or null
+    * Example: null
+
+**Sampling and Image Configurations**
+
+* image_size: Size of the training images (height and width in pixels).
+
+    * Type: int
+    * Example: 512
+
+* interpolation: Interpolation method used for image resizing.
+
+    * Choices: ["bilinear", "bicubic", "lanczos"]
+    * Example: "bicubic"
+
+* ddim_steps: Number of DDIM inference steps during training.
+
+    * Type: int
+    * Example: 50
+
+* ddim_eta: DDIM eta parameter for stochasticity during sampling.
+
+    * Type: float
+    * Example: 0.0
+
+**Device Configuration**
+
+* devices: Specifies the CUDA devices to be used for training (comma-separated).
+
+    * Type: str
+    * Example: "0"
+
+
+**Additional Flags**
+
+* use_sample: Flag to indicate whether a sample dataset should be used for training.
+
+    * Type: bool
+    * Example: True
+
+* num_workers: Number of worker threads for data loading.
+
+    * Type: int
+    * Example: 4
+
+* pin_memory: Flag to enable pinning memory during data loading for faster GPU transfers.
+
+    * Type: bool
+    * Example: true
+
+
+
+

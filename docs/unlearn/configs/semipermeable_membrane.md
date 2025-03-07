@@ -155,57 +155,122 @@ class SemipermeableMembraneConfig(BaseConfig):
 
 ```
 
+### Description of Arguments in train_config.yaml
+
+**pretrained_model**
+
+* ckpt_path: File path to the pretrained model's checkpoint file.
+
+* v2: Boolean indicating whether the pretrained model is version 2 or not.
+
+* v_pred: Boolean to enable/disable "v-prediction" mode for diffusion models.
+
+* clip_skip: Number of CLIP layers to skip during inference.
+
+**network**
+
+* rank: Rank of the low-rank adaptation network.
+
+* alpha: Scaling factor for the network during training.
 
 
-### Evaluation config
+**train**
 
-```python
-# mu/algorithms/semipermeable_membrane/configs/evaluation_config.py
+* precision: Numerical precision to use during training (e.g., float32 or float16).
 
-import os
+* noise_scheduler: Type of noise scheduler to use in the training loop (e.g., ddim).
 
-from pathlib import Path
+* iterations: Number of training iterations.
 
-from mu.core.base_config import BaseConfig
+* batch_size: Batch size for training.
 
-current_dir = Path(__file__).parent
+* lr: Learning rate for the training optimizer.
 
+* unet_lr: Learning rate for the U-Net model.
 
-class SemipermeableMembraneEvaluationConfig(BaseConfig):
+* text_encoder_lr: Learning rate for the text encoder.
 
-    def __init__(self, **kwargs):
-        self.precision = "fp32"  # precision for computation
-        self.spm_multiplier = [1.0]  # list of semipermeable membrane multipliers
-        self.v2 = False  # whether to use version 2 of the model
-        self.matching_metric = "clipcos_tokenuni"  # matching metric for evaluation
-        self.model_config_path = current_dir.parent / "config"  # path to model config
-        self.base_model = "CompVis/stable-diffusion-v1-4"  # base model for the algorithm
-        self.spm_path = ["outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"]  # path to semipermeable membrane model
-        self.seed = 188  # random seed
-        self.devices = "0"  # GPU device ID
-        self.sampler_output_dir = "outputs/eval_results/mu_results/semipermeable_membrane/"  # directory to save sampler outputs
-        self.forget_theme = "Bricks"  # theme to forget
-        self.dataset_type = "unlearncanvas"
-        self.use_sample = True
+* optimizer_type: Optimizer to use for training (e.g., AdamW8bit).
 
+* lr_scheduler: Learning rate scheduler to apply during training.
 
-        # Override defaults with any provided kwargs
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+* lr_warmup_steps: Number of steps for linear warmup of the learning rate.
 
-    def validate_config(self):
-        """
-        Perform basic validation on the config parameters.
-        """
-        if not os.path.exists(self.sampler_output_dir):
-            os.makedirs(self.sampler_output_dir)
-        if self.dataset_type not in ["unlearncanvas", "i2p", "generic"]:
-            raise ValueError(f"Unknown dataset type: {self.dataset_type}")
+* lr_scheduler_num_cycles: Number of cycles for a cosine-with-restarts scheduler.
 
-        if any(multiplier <= 0 for multiplier in self.spm_multiplier):
-            raise ValueError("SPM multiplier values should be positive.")
+* max_denoising_steps: Maximum denoising steps to use during training.
+
+**save**
+
+* per_steps: Frequency of saving the model (in steps).
+
+* precision: Numerical precision for saved model weights
 
 
-# Example usage
-semipermeable_membrane_eval_config = SemipermeableMembraneEvaluationConfig()
-```
+**other**
+
+* use_xformers: Boolean to enable xformers memory-efficient attention.
+
+* wandb_project and wandb_run
+
+* Configuration for tracking the training progress using Weights & Biases.
+
+* wandb_project: Project name in W&B.
+
+* wandb_run: Specific run name in the W&B dashboard.
+
+**use_sample**
+
+* Boolean to indicate whether to use the sample dataset for training.
+
+**template**
+
+* Specifies the template type, choices are:
+    * object: Focus on specific objects.
+    * style: Focus on artistic styles.
+    * i2p: Intermediate style processing.
+
+**template_name**
+
+* Name of the template, choices are:
+    * self-harm
+    * Abstractionism
+
+**prompt**
+
+* target: Target template or concept to guide training (references template_name).
+
+* positive: Positive prompt based on the template.
+
+* unconditional: Unconditional prompt text.
+
+* neutral: Neutral prompt text.
+
+* action: Specifies the action applied to the prompt (e.g., erase_with_la).
+
+* guidance_scale: Guidance scale for classifier-free guidance.
+
+* resolution: Image resolution for training.
+
+* batch_size: Batch size for generating prompts.
+
+* dynamic_resolution: Boolean to allow dynamic resolution.
+
+* la_strength: Strength of local adaptation.
+
+* sampling_batch_size: Batch size for sampling images.
+
+**devices**
+
+* CUDA devices to use for training (specified as a comma-separated list, e.g., "0,1").
+
+**output_dir**
+
+* Directory to save the fine-tuned model and other outputs.
+
+**verbose**
+
+* Boolean flag for verbose logging during training.
+
+
+

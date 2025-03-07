@@ -1,6 +1,6 @@
 ### Evaluation:
 
-#### 1. **Evaluate using unlearn canvas dataset:**
+**Evaluate using unlearn canvas dataset:**
 
 **Note: Currently it supports evaluation for unlearn canvas dataset to calculate accuracy. I2p and generic dataset support needs to be added.**
 

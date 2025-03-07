@@ -118,61 +118,107 @@ model:
 
 ```
 
+### Description of Arguments in train_config.yaml
 
-### Evaluation Config
+**Training Parameters**
 
-```python
-# mu/algorithms/scissorhands/configs/evaluation_config.py
+* train_method: Specifies the method of training for concept erasure.
 
-import os
+    * Choices: ["noxattn", "selfattn", "xattn", "full", "notime", "xlayer", "selflayer"]
+    * Example: "xattn"
 
-from pathlib import Path
+* alpha: Guidance strength for the starting image during training.
 
-from mu.core.base_config import BaseConfig
+    * Type: float
+    * Example: 0.1
 
-current_dir = Path(__file__).parent
+* epochs: Number of epochs to train the model.
+
+    * Type: int
+    * Example: 1
 
 
-class ScissorhandsEvaluationConfig(BaseConfig):
+**Model Configuration**
 
-    def __init__(self, **kwargs):
-        self.model_config_path = current_dir/"model_config.yaml"  # path to model config
-        self.ckpt_path = "outputs/scissorhands/finetuned_models/scissorhands_Abstractionism_model.pth"  # path to finetuned model checkpoint
-        self.cfg_text = 9.0  # classifier-free guidance scale
-        self.seed = 188  # random seed
-        self.devices = "0"  # GPU device ID
-        self.ddim_steps = 100  # number of DDIM steps
-        self.image_height = 512  # height of the image
-        self.image_width = 512  # width of the image
-        self.ddim_eta = 0.0  # DDIM eta parameter
-        self.sampler_output_dir = "outputs/eval_results/mu_results/erase_diff/"  # directory to save sampler outputs
-        self.dataset_type = "unlearncanvas"
-        self.use_sample = True
+* model_config_path: File path to the Stable Diffusion model configuration YAML file.
 
-        # Override defaults with any provided kwargs
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+    * type: str
+    * Example: "/path/to/model_config.yaml"
 
-    def validate_config(self):
-        """
-        Perform basic validation on the config parameters.
-        """
-        if not os.path.exists(self.model_config_path):
-            raise FileNotFoundError(f"Model config file {self.model_config_path} does not exist.")
-        if not os.path.exists(self.ckpt_path):
-            raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
-        if not os.path.exists(self.sampler_output_dir):
-            os.makedirs(self.sampler_output_dir)
-        if self.dataset_type not in ["unlearncanvas", "i2p", "generic"]:
-            raise ValueError(f"Unknown dataset type: {self.dataset_type}")
+* ckpt_path: File path to the checkpoint of the Stable Diffusion model.
 
-        if self.cfg_text <= 0:
-            raise ValueError("Classifier-free guidance scale (cfg_text) should be positive.")
-        if self.ddim_steps <= 0:
-            raise ValueError("DDIM steps should be a positive integer.")
-        if self.image_height <= 0 or self.image_width <= 0:
-            raise ValueError("Image height and width should be positive.")
+    * Type: str
+    * Example: "/path/to/model_checkpoint.ckpt"
 
-# Example usage
-scissorhands_evaluation_config = ScissorhandsEvaluationConfig()
-```
+
+**Dataset Directories**
+
+* raw_dataset_dir: Directory containing the raw dataset categorized by themes or classes.
+
+    * Type: str
+    * Example: "/path/to/raw_dataset"
+
+* processed_dataset_dir: Directory to save the processed dataset.
+
+    * Type: str
+    * Example: "/path/to/processed_dataset"
+
+* dataset_type: Specifies the dataset type for the training process. Use `generic` as type if you want to use your own dataset.
+
+    * Choices: ["unlearncanvas", "i2p", "generic"]
+    * Example: "unlearncanvas"
+
+* template: Type of template to use during training.
+
+    * Choices: ["object", "style", "i2p"]
+    * Example: "style"
+
+* template_name: Name of the specific concept or style to be erased.
+
+    * Choices: ["self-harm", "Abstractionism"]
+    * Example: "Abstractionism"
+
+
+**Output Configurations**
+
+* output_dir: Directory where the fine-tuned models and results will be saved.
+
+    * Type: str
+    * Example: "outputs/erase_diff/finetuned_models"
+
+**Sampling and Image Configurations**
+
+* sparsity: Threshold for mask.
+
+    * Type: float
+    * Example: 0.99
+
+* project: 
+    * Type: bool
+    * Example: false
+
+* memory_num: 
+    * Type: Int
+    * Example: 1
+
+* prune_num: 
+    * Type: Int
+    * Example: 1
+
+**Device Configuration**
+
+* devices: Specifies the CUDA devices to be used for training (comma-separated).
+
+    * Type: str (Comma separated)
+    * Example: "0, 1"
+
+
+**Additional Flags**
+
+* use_sample: Flag to indicate whether a sample dataset should be used for training.
+
+    * Type: bool
+    * Example: True
+
+
+

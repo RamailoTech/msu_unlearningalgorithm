@@ -1,38 +1,5 @@
 # Unlearn Diff
-
 Unlearn Diff is an open-source Python package designed to streamline the development of unlearning algorithms and establish a standardized evaluation pipeline for diffusion models. It provides researchers and practitioners with tools to implement, evaluate, and extend unlearning algorithms effectively.
-
-### [**Documentation**](https://ramailotech.github.io/msu_unlearningalgorithm/)
-You can find the full documentation for this project at the url given below.
-https://ramailotech.github.io/msu_unlearningalgorithm/
-## Features
-
-- **Comprehensive Algorithm Support**: Includes commonly used concept erasing and machine unlearning algorithms tailored for diffusion models. Each algorithm is encapsulated and standardized in terms of input-output formats.
-
-- **Automated Evaluation**: Supports automatic evaluation on datasets like UnlearnCanvas or IP2P. Performs standard and adversarial evaluations, outputting metrics as detailed in UnlearnCanvas and UnlearnDiffAtk.
-
-- **Extensibility**: Designed for easy integration of new unlearning algorithms, attack methods, defense mechanisms, and datasets with minimal modifications.
-
-
-### Supported Algorithms
-
-The initial version includes established methods benchmarked in UnlearnCanvas and defensive unlearning techniques:
-
-- **CA** (Concept Ablation)
-- **ED** (Erase Diff)
-- **ESD** (Efficient Substitution Distillation)
-- **FMN** (Forget Me Not)
-- **SU** (Saliency Unlearning)
-- **SH** (ScissorHands)
-- **SA** (Selective Amnesia)
-- **SPM** (Semi Permeable Membrane)
-- **UCE** (Unified Concept Editing)
-For detailed information on each algorithm, please refer to the respective `README.md` files located inside `mu/algorithms`.
-
-## Datasets
-
-We use the Quick Canvas benchmark dataset, available [here](https://huggingface.co/datasets/nebulaanish/quick-canvas-benchmark). Currently, the algorithms are trained using 5 images belonging to the themes of **Abstractionism** and **Architectures**.
-
 
 ## Usage
 This section contains the usage guide for the package.
@@ -140,6 +107,6 @@ After you install the package, you can use the following commands to download.
 
 3. **Download best.onnx model**
 
-  ```
-  download_best_onnx
-  ```
+    ```
+    download_best_onnx
+    ```

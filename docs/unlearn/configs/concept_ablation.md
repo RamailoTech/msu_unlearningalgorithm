@@ -155,62 +155,84 @@ lightning:
     max_steps: 2000
 ```
 
+## Configuration File description
 
-### Evaluation config
+### Training Parameters
+
+* **seed:** Random seed for reproducibility.
+    * Type: int
+    * Example: 23
+
+* **scale_lr:** Whether to scale the base learning rate.
+    * Type: bool
+    * Example: True
+
+* **caption_target:** Target style to remove.
+    * Type: str
+    * Example: "Abstractionism Style"
+
+* **regularization:** Adds regularization loss during training.
+    * Type: bool
+    * Example: True
+
+* **n_samples:** Number of batch sizes for image generation.
+    * Type: int
+    * Example: 10
+
+* **train_size:** Number of generated images for training.
+    * Type: int
+    * Example: 1000
+
+* **base_lr:** Learning rate for the optimizer.
+    * Type: float
+    * Example: 2.0e-06
+
+### Model Configuration
+
+* **model_config_path:** Path to the Stable Diffusion model configuration YAML file.
+    * Type: str
+    * Example: "/path/to/model_config.yaml"
+
+* **ckpt_path:** Path to the Stable Diffusion model checkpoint.
+    * Type: str
+    * Example: "/path/to/compvis.ckpt"
+
+### Dataset Directories
+
+* **raw_dataset_dir:** Directory containing the raw dataset categorized by themes or classes.
+    * Type: str
+    * Example: "/path/to/raw_dataset"
+
+* **processed_dataset_dir:** Directory to save the processed dataset.
+    * Type: str
+    * Example: "/path/to/processed_dataset"
+
+* **dataset_type:** Specifies the dataset type for training. Use `generic` as type if you want to use your own dataset.
+    * Choices: ["unlearncanvas", "i2p","generic"]
+    * Example: "unlearncanvas"
+
+* **template:** Type of template to use during training.
+    * Choices: ["object", "style", "i2p"]
+    * Example: "style"
+
+* **template_name:** Name of the concept or style to erase.
+    * Choices: ["self-harm", "Abstractionism"]
+    * Example: "Abstractionism"
+
+### Output Configurations
+
+* **output_dir:** Directory to save fine-tuned models and results.
+    * Type: str
+    * Example: "outputs/concept_ablation/finetuned_models"
+
+### Device Configuration
+
+* **devices:** CUDA devices for training (comma-separated).
+    * Type: str
+    * Example: "0"
 
 
-```python
-#mu/algorithms/concept_ablation/configs/evaluation_config.py
-
-import os
-from pathlib import Path
-
-from mu.core.base_config import BaseConfig
-
-current_dir = Path(__file__).parent
 
 
-class ConceptAblationEvaluationConfig(BaseConfig):
-
-    def __init__(self, **kwargs):
-        self.model_config_path = current_dir/"model_config.yaml"  # path to model config
-        self.ckpt_path = "outputs/concept_ablation/finetuned_models/erase_diff_Abstractionism_model.pth"  # path to finetuned model checkpoint
-        self.cfg_text = 9.0  # classifier-free guidance scale
-        self.devices = "0"  # GPU device ID
-        self.seed = 188  # random seed
-        self.ddim_steps = 100  # number of DDIM steps
-        self.image_height = 512  # height of the image
-        self.image_width = 512  # width of the image
-        self.ddim_eta = 0.0  # DDIM eta parameter
-        self.sampler_output_dir = "outputs/eval_results/mu_results/concept_ablation/"  # directory to save sampler outputs
-        self.use_sample = True #use sample dataset
-        self.dataset_type = "unlearncanvas"
-
-        # Override defaults with any provided kwargs
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-    def validate_config(self):
-        """
-        Perform basic validation on the config parameters.
-        """
-        if not os.path.exists(self.model_config_path):
-            raise FileNotFoundError(f"Model config file {self.model_config_path} does not exist.")
-        if not os.path.exists(self.ckpt_path):
-            raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
-        if not os.path.exists(self.sampler_output_dir):
-            os.makedirs(self.sampler_output_dir)
-        if self.dataset_type not in ["unlearncanvas", "i2p", "generic"]:
-            raise ValueError(f"Unknown dataset type: {self.dataset_type}")
-
-        if self.cfg_text <= 0:
-            raise ValueError("Classifier-free guidance scale (cfg_text) should be positive.")
-        if self.ddim_steps <= 0:
-            raise ValueError("DDIM steps should be a positive integer.")
-        if self.image_height <= 0 or self.image_width <= 0:
-            raise ValueError("Image height and width should be positive.")
 
 
-# Example usage
-concept_ablation_evaluation_config = ConceptAblationEvaluationConfig()
-```

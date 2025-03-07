@@ -313,7 +313,7 @@ algorithm = EraseDiffAlgorithm(
 algorithm.run()
 ```
 
-**Run on your won dataset**
+**Run on your own dataset**
 
 **Step-1: Generate your own dataset**
 

@@ -255,3 +255,99 @@ lightning:
     max_epochs: 50 # modify epochs here!
     check_val_every_n_epoch: 10
 ```
+
+## Configuration File description
+
+### Training Parameters
+
+* **seed:** Random seed for reproducibility.
+    * Type: int
+    * Example: 23
+
+* **scale_lr:** Whether to scale the base learning rate.
+    * Type: bool
+    * Example: True
+
+### Model Configuration
+
+* **model_config_path:** Path to the Stable Diffusion model configuration YAML file.
+    * Type: str
+    * Example: "/path/to/model_config.yaml"
+
+* **ckpt_path:** Path to the Stable Diffusion model checkpoint.
+    * Type: str
+    * Example: "/path/to/compvis.ckpt"
+
+* **full_fisher_dict_pkl_path:** Path to the full fisher dict pkl file
+    * Type: str
+    * Example: "full_fisher_dict.pkl"
+
+### Dataset Directories
+
+* **raw_dataset_dir:** Directory containing the raw dataset categorized by themes or classes.
+    * Type: str
+    * Example: "/path/to/raw_dataset"
+
+* **processed_dataset_dir:** Directory to save the processed dataset.
+    * Type: str
+    * Example: "/path/to/processed_dataset"
+
+* **dataset_type:** Specifies the dataset type for training. Use `generic` as type if you want to use your own dataset.
+    * Choices: ["unlearncanvas", "i2p", "generic"]
+    * Example: "unlearncanvas"
+
+* **template:** Type of template to use during training.
+    * Choices: ["object", "style", "i2p"]
+    * Example: "style"
+
+* **template_name:** Name of the concept or style to erase.
+    * Choices: ["self-harm", "Abstractionism"]
+    * Example: "Abstractionism"
+
+### Output Configurations
+
+* **output_dir:** Directory to save fine-tuned models and results.
+    * Type: str
+    * Example: "outputs/selective_amnesia/finetuned_models"
+
+### Device Configuration
+
+* **devices:** CUDA devices for training (comma-separated).
+    * Type: str
+    * Example: "0"
+
+### Data Parameters
+
+* **train_batch_size:** Batch size for training.
+    * Type: int
+    * Example: 4
+
+* **val_batch_size:** Batch size for validation.
+    * Type: int
+    * Example: 6
+
+* **num_workers:** Number of worker threads for data loading.
+    * Type: int
+    * Example: 4
+
+* **forget_prompt:** Prompt to specify the style or concept to forget.
+    * Type: str
+    * Example: "An image in Artist_Sketch style"
+
+### Lightning Configuration
+
+* **max_epochs:** Maximum number of epochs for training.
+    * Type: int
+    * Example: 50
+
+* **callbacks:**
+    * **batch_frequency:** Frequency for logging image batches.
+        * Type: int
+        * Example: 1
+
+    * **max_images:** Maximum number of images to log.
+        * Type: int
+        * Example: 999
+
+---
+
