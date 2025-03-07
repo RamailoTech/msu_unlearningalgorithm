@@ -18,14 +18,30 @@ from mu.algorithms.concept_ablation import ConceptAblationEvaluator
 from mu.algorithms.concept_ablation.configs import (
     concept_ablation_evaluation_config
 )
+from evaluation.metrics.accuracy import accuracy_score
+from evaluation.metrics.fid import fid_score
 
 evaluator = ConceptAblationEvaluator(
     concept_ablation_evaluation_config,
-    ckpt_path="outputs/concept_ablation/finetuned_models/checkpoints/last.ckpt",
-    classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
-    reference_dir= "msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+    ckpt_path="outputs/concept_ablation/checkpoints/last.ckpt",
 )
-evaluator.run()
+generated_images_path = evaluator.generate_images()
+
+reference_image_dir = "data/quick-canvas-dataset/sample"
+
+accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                          classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
+                          reference_dir=reference_image_dir,
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+print(accuracy['acc'])
+print(accuracy['loss'])
+
+fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=reference_image_dir )
+
+print(fid)
 ```
 
 **Running the Training Script in Offline Mode**
@@ -49,10 +65,6 @@ The `evaluation_config`  contains the necessary parameters for running the Conce
 ---
 
 ### **Model Configuration:**
-- model_config : Path to the YAML file specifying the model architecture and settings.  
-   - *Type:* `str`  
-   - *Example:* `"mu/algorithms/concept_ablation/configs/model_config.yaml"`
-
 - ckpt_path : Path to the finetuned Stable Diffusion checkpoint file to be evaluated.  
    - *Type:* `str`  
    - *Example:* `"outputs/concept_ablation/finetuned_models/concept_ablation_Abstractionism_model.pth"`
@@ -61,17 +73,10 @@ The `evaluation_config`  contains the necessary parameters for running the Conce
    - *Type:* `str`  
    - *Example:* `"vit_large_patch16_224"`
 
-- classifier_ckpt_path: Path to classifer checkpoint.
-   - *Type*: `str`
-   - *Example*: `models/classifier_ckpt_path/style50_cls.pth`
-
 ---
 
 ### **Training and Sampling Parameters:**
-- forget_theme : Concept or style intended for removal in the evaluation process.  
-   - *Type:* `str`  
-   - *Example:* `"Bricks"`
-   
+
 - devices : CUDA device IDs to be used for the evaluation process.  
    - *Type:* `str`  
    - *Example:* `"0"`  
@@ -107,29 +112,14 @@ The `evaluation_config`  contains the necessary parameters for running the Conce
    - *Type:* `str`  
    - *Example:* `"outputs/eval_results/mu_results/concept_ablation/"`
 
-- eval_output_dir : Directory where evaluation metrics and results will be stored.  
-   - *Type:* `str`  
-   - *Example:* `"outputs/eval_results/mu_results/concept_ablation/"`
-
-- reference_dir : Directory containing original images for comparison during evaluation.  
-   - *Type:* `str`  
-   - *Example:* `"data/quick-canvas-dataset/sample/"`
-
----
-
-### **Performance and Efficiency Parameters:**
-- multiprocessing : Enables multiprocessing for faster evaluation for FID score. Recommended for large datasets.  
+- use_sample: If you want to just run on sample dataset then set it as True. By default it is True.
    - *Type:* `bool`  
-   - *Example:* `False`  
+   - *Example:* `True`
 
-- batch_size : Batch size used during FID computation and evaluation.  
-   - *Type:* `int`  
-   - *Example:* `16`  
+- dataset_type: Type of dataset you are using:
+
+   - *Type:* `str`  
+   - *Example:* `unlearncanvas`
 
 ---
 
-### **Optimization Parameters:**
-
-- seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  
-   - *Type:* `list`  
-   - *Example:* `["188"]`

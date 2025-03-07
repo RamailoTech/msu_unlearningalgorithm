@@ -2,10 +2,8 @@
 
 This repository provides an implementation of the erase diff algorithm for machine unlearning in Stable Diffusion models. The Forget Me Not algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.
 
-### Installation
-```
-pip install unlearn_diff
-```
+## Installation
+
 ### Prerequisities
 Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
 
@@ -17,19 +15,62 @@ After installing `conda`, ensure it is available in your PATH by running. You ma
 ```bash
 conda --version
 ```
-### Create environment:
-```
-create_env <algorithm_name>
-```
-eg: ```create_env forget_me_not```
 
-### Activate environment:
-```
-conda activate <environment_name>
-```
-eg: ```conda activate forget_me_not```
+**Step-by-Step Setup:**
 
-The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
+Step 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:
+
+```bash
+conda create -n myenv python=3.8.5
+```
+
+Step 2. Activate the Environment Activate the environment to work within it:
+
+```bash
+conda activate myenv
+```
+
+Step 3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:
+
+```bash
+conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
+```
+
+Step 4. Install our unlearn_diff Package using pip:
+
+```bash
+pip install unlearn_diff
+```
+
+Step 5. Install Additional Git Dependencies:
+
+ After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:
+
+```bash
+pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
+```
+
+```bash
+pip install git+https://github.com/openai/CLIP.git@main#egg=clip
+```
+
+```bash
+pip install git+https://github.com/crowsonkb/k-diffusion.git
+```
+
+```bash
+pip install git+https://github.com/cocodataset/panopticapi.git
+```
+
+```bash
+pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
+```
+
+```bash
+pip install git+https://github.com/boomb0om/text2image-benchmark
+```
+
+
 
 ### Downloading data and models.
 After you install the package, you can use the following commands to download.
@@ -63,6 +104,11 @@ After you install the package, you can use the following commands to download.
     ```
     download_model diffuser
     ```
+3. Download best.onnx file
+
+    ```
+    download_best_onnx
+    ```
 
 **Verify the Downloaded Files**
 
@@ -76,7 +122,9 @@ ls -lh ./data/quick-canvas-dataset/sample/
 ## Run Train
 Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
-1. **Train a Text Inversion**
+1. **Train a Text Inversion using quick canvas dataset**
+
+Before finetuning the model you need to generate safetensors.
 
 ```python
 
@@ -87,16 +135,76 @@ from mu.algorithms.forget_me_not.configs import (
 
 algorithm = ForgetMeNotAlgorithm(
     forget_me_not_train_ti_mu,
-    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50",
+    ckpt_path="models/diffuser/style50",
     raw_dataset_dir=(
-        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+        "data/quick-canvas-dataset/sample"
     ), 
-    steps=10
+    steps=10,
+    template_name = "Abstractionism", #concept to erase
+    dataset_type = "unlearncanvas" ,
+    use_sample = True, #train on sample dataset
+    output_dir = "outputs/forget_me_not/finetuned_models" #output dir to save finetuned models
 )
 algorithm.run(train_type="train_ti")
 ```
 
 **Running the Script in Offlikne Mode**
+
+```bash
+WANDB_MODE=offline python my_trainer_ti.py
+```
+
+2. **Perform Unlearning using quick canvas dataset**
+
+Before running the `train_attn` script, update the `ti_weights_path` parameter in the configuration file to point to the output generated from the Text Inversion (train_ti.py) stage
+
+```python
+from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from mu.algorithms.forget_me_not.configs import (
+    forget_me_not_train_attn_mu,
+)
+
+algorithm = ForgetMeNotAlgorithm(
+    forget_me_not_train_attn_mu,
+    ckpt_path="models/diffuser/style50",
+    raw_dataset_dir=(
+        "data/quick-canvas-dataset/sample"
+    ),
+    steps=10,
+    ti_weights_path="outputs/forget_me_not/finetuned_models/Abstractionism/step_inv_10.safetensors",
+    template_name = "Abstractionism", #concept to erase
+    dataset_type = "unlearncanvas" ,
+    use_sample = True, #train on sample dataset
+    output_dir = "outputs/forget_me_not/finetuned_models" #output dir to save finetuned models
+)
+algorithm.run(train_type="train_attn")
+```
+
+1. **Train a Text Inversion using i2p dataset**
+
+Before finetuning the model you need to generate safetensors.
+
+```python
+
+from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from mu.algorithms.forget_me_not.configs import (
+    forget_me_not_train_ti_i2p,
+)
+
+algorithm = ForgetMeNotAlgorithm(
+    forget_me_not_train_ti_i2p,
+    ckpt_path="models/diffuser/style50",
+    raw_dataset_dir = "data/i2p-dataset/sample",
+    steps=10,
+    template_name = "self-harm", #concept to erase
+    dataset_type = "i2p" ,
+    use_sample = True, #train on sample dataset
+    output_dir = "outputs/forget_me_not/finetuned_models" #output dir to save finetuned models
+)
+algorithm.run(train_type="train_ti")
+```
+
+**Running the Script in Offline Mode**
 
 ```bash
 WANDB_MODE=offline python my_trainer_ti.py
@@ -114,15 +222,20 @@ from mu.algorithms.forget_me_not.configs import (
 
 algorithm = ForgetMeNotAlgorithm(
     forget_me_not_train_attn_mu,
-    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50",
+    ckpt_path="models/diffuser/style50",
     raw_dataset_dir=(
-        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+        "data/quick-canvas-dataset/sample"
     ),
     steps=10,
-    ti_weights_path="outputs/forget_me_not/finetuned_models/Abstractionism/step_inv_10.safetensors"
+    ti_weights_path="outputs/forget_me_not/finetuned_models/Abstractionism/step_inv_10.safetensors",
+    use_sample = True, #train on sample dataset
+    output_dir = "outputs/forget_me_not/finetuned_models" ,#output dir to save finetuned models
+    template_name = "self-harm", #concept to erase
+    dataset_type = "i2p" ,
 )
 algorithm.run(train_type="train_attn")
 ```
+
 
 **Running the Script in Offlikne Mode**
 
@@ -265,71 +378,82 @@ WANDB_MODE=offline python my_trainer_attn.py
 - **only-xa**: Boolean to enable additional configurations specific to the XA pipeline.
 
 
-
-#### Forget me not Evaluation Framework
+#### forget_me_not Evaluation Framework
 
 This section provides instructions for running the **evaluation framework** for the forget_me_not algorithm on Stable Diffusion models. The evaluation framework is used to assess the performance of models after applying machine unlearning.
 
 
 #### **Running the Evaluation Framework**
 
-Create a file, eg, `evaluate.py` and use examples and modify your configs to run the file.  
+You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/forget_me_not/scripts/` directory. Work within the same environment used to perform unlearning for evaluation as well.
 
-**Example Code**
+
+### **Basic Command to Run Evaluation:**
+
+**Before running evaluation, download the classifier ckpt from here:**
+
+https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61 
+
+Add the following code to `evaluate.py`
 
 ```python
 from mu.algorithms.forget_me_not import ForgetMeNotEvaluator
 from mu.algorithms.forget_me_not.configs import (
     forget_me_not_evaluation_config
 )
+from evaluation.metrics.accuracy import accuracy_score
+from evaluation.metrics.fid import fid_score
 
 evaluator = ForgetMeNotEvaluator(
     forget_me_not_evaluation_config,
-    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/forget_me_not/finetuned_models/Abstractionism",
-    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
-    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+    ckpt_path="outputs/forget_me_not/finetuned_models/Abstractionism",
 )
-evaluator.run()
+generated_images_path = evaluator.generate_images()
+
+reference_image_dir = "/home/ubuntu/Projects/Palistha/testing/data/quick-canvas-dataset/sample"
+
+accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                          classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
+                          reference_dir=reference_image_dir,
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+print(accuracy['acc'])
+print(accuracy['loss'])
+
+fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=reference_image_dir )
+print(fid)
+
 ```
 
-**Running the Training Script in Offline Mode**
+
+**Run the script**
 
 ```bash
-WANDB_MODE=offline python evaluate.py
+python evaluate.py
 ```
 
-**How It Works** 
-* Default Values: The script first loads default values from the evluation config file as in configs section.
 
-* Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
+#### **Description of parameters in evaluation_config.yaml**
 
-* Final Configuration: The script merges the configs and convert them into dictionary to proceed with the evaluation. 
-
-
-#### **Description of parameters in evaluation_config**
-
-The `evaluation_config` contains the necessary parameters for running the forget_me_not evaluation framework. Below is a detailed description of each parameter along with examples.
+The `evaluation_config.yaml` file contains the necessary parameters for running the forget_me_not evaluation framework. Below is a detailed description of each parameter along with examples.
 
 ---
 
 ### **Model Configuration:**
 - ckpt_path : Path to the finetuned Stable Diffusion checkpoint file to be evaluated.  
    - *Type:* `str`  
-   - *Example:* `"outputs/forget_me_not/finetuned_models/Abstractionism"`
+   - *Example:* `"outputs/forget_me_not/finetuned_models/forget_me_not_Abstractionism_model.pth"`
 
 - classification_model : Specifies the classification model used for evaluating the generated outputs.  
    - *Type:* `str`  
    - *Example:* `"vit_large_patch16_224"`
 
-- classifier_ckpt_path: Path to classifer checkpoint.
-   - *Type*: `str`
-   - *Example*: `models/classifier_ckpt_path/style50_cls.pth`
-
 ---
 
 ### **Training and Sampling Parameters:**
-
-- forget_theme : Concept or style intended for removal in the evaluation process.  
+- theme : Specifies the theme or concept being evaluated for removal from the model's outputs.  
    - *Type:* `str`  
    - *Example:* `"Bricks"`
 
@@ -368,32 +492,23 @@ The `evaluation_config` contains the necessary parameters for running the forget
    - *Type:* `str`  
    - *Example:* `"outputs/eval_results/mu_results/forget_me_not/"`
 
-- eval_output_dir : Directory where evaluation metrics and results will be stored.  
-   - *Type:* `str`  
-   - *Example:* `"outputs/eval_results/mu_results/forget_me_not/"`
-
-- reference_dir : Directory containing original images for comparison during evaluation.  
-   - *Type:* `str`  
-   - *Example:* `"data/quick-canvas-dataset/sample/"`
-
 ---
 
-### **Performance and Efficiency Parameters:**
-- multiprocessing : Enables multiprocessing for faster evaluation for FID score. Recommended for large datasets.  
-   - *Type:* `bool`  
-   - *Example:* `False`  
-
-- batch_size : Batch size used during FID computation and evaluation.  
-   - *Type:* `int`  
-   - *Example:* `16`  
-
----
 
 ### **Optimization Parameters:**
+- forget_theme : Concept or style intended for removal in the evaluation process.  
+   - *Type:* `str`  
+   - *Example:* `"Bricks"`
 
 - seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  
    - *Type:* `list`  
    - *Example:* `["188"]`
+
+- use_sample: If you want to just run on sample dataset then set it as True. By default it is True.
+   - *Type:* `bool`  
+   - *Example:* `True`
+
+
 
 
 

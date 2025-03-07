@@ -2,11 +2,8 @@
 
 This repository provides an implementation of the ESD algorithm for machine unlearning in Stable Diffusion models. The ESD algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.
 
-
 ### Installation
-```
-pip install unlearn_diff
-```
+
 ### Prerequisities
 Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
 
@@ -18,19 +15,61 @@ After installing `conda`, ensure it is available in your PATH by running. You ma
 ```bash
 conda --version
 ```
-### Create environment:
-```
-create_env <algorithm_name>
-```
-eg: ```create_env esd```
 
-### Activate environment:
-```
-conda activate <environment_name>
-```
-eg: ```conda activate esd```
+**Step-by-Step Setup:**
 
-The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
+Step 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:
+
+```bash
+conda create -n myenv python=3.8.5
+```
+
+Step 2. Activate the Environment Activate the environment to work within it:
+
+```bash
+conda activate myenv
+```
+
+Step 3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:
+
+```bash
+conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
+```
+
+Step 4. Install our unlearn_diff Package using pip:
+
+```bash
+pip install unlearn_diff
+```
+
+Step 5. Install Additional Git Dependencies:
+
+ After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:
+
+```bash
+pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
+```
+
+```bash
+pip install git+https://github.com/openai/CLIP.git@main#egg=clip
+```
+
+```bash
+pip install git+https://github.com/crowsonkb/k-diffusion.git
+```
+
+```bash
+pip install git+https://github.com/cocodataset/panopticapi.git
+```
+
+```bash
+pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
+```
+
+```bash
+pip install git+https://github.com/boomb0om/text2image-benchmark
+```
+
 
 ### Downloading data and models.
 After you install the package, you can use the following commands to download.
@@ -65,6 +104,11 @@ After you install the package, you can use the following commands to download.
     download_model diffuser
     ```
 
+3. **Download best.onnx model**
+
+    ```
+    download_best_onnx
+    ```
 **Verify the Downloaded Files**
 
 After downloading, verify that the datasets have been correctly extracted:
@@ -75,7 +119,8 @@ ls -lh ./data/quick-canvas-dataset/sample/
 ---
 
 
-## Run Train
+## Run Train using quick canvas dataset
+
 Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
 **Example Code**
@@ -87,10 +132,39 @@ from mu.algorithms.esd.configs import (
 
 algorithm = ESDAlgorithm(
     esd_train_mu,
-    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt",
+    ckpt_path="machine_unlearning/models/compvis/style50/compvis.ckpt",
     raw_dataset_dir=(
-        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+        "data/quick-canvas-dataset/sample"
     ),
+    template_name = "Abstractionism", #concept to erase
+    dataset_type = "unlearncanvas" ,
+    use_sample = True, #train on sample dataset
+    output_dir = "outputs/esd/finetuned_models" #output dir to save finetuned models
+    
+)
+algorithm.run()
+```
+
+## Run Train using i2p dataset
+
+Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
+
+**Example Code**
+```python
+from mu.algorithms.esd.algorithm import ESDAlgorithm
+from mu.algorithms.esd.configs import (
+    esd_train_i2p,
+)
+
+algorithm = ESDAlgorithm(
+    esd_train_i2p,
+    ckpt_path="models/compvis/style50/compvis.ckpt",
+    raw_dataset_dir = "data/i2p-dataset/sample",
+    template_name = "self-harm", #concept to erase
+    dataset_type = "i2p" ,
+    use_sample = True, #train on sample dataset
+    output_dir = "outputs/esd/finetuned_models" #output dir to save finetuned models
+    
 )
 algorithm.run()
 ```
@@ -119,9 +193,9 @@ WANDB_MODE=offline python my_trainer.py
 - `utils.py`: Utility functions used in the project.
 ---
 
-### Description of arguments being used in train_config.yaml
+### Description of arguments being used in train_config class
 
-The `config/train_config.yaml` file is a configuration file for training a Stable Diffusion model using the ESD (Erase Stable Diffusion) method. It defines various parameters related to training, model setup, dataset handling, and output configuration. Below is a detailed description of each section and parameter:
+These are the configuration used for training a Stable Diffusion model using the ESD (Erase Stable Diffusion) method. It defines various parameters related to training, model setup, dataset handling, and output configuration. Below is a detailed description of each section and parameter:
 
 **Training Parameters**
 
@@ -231,8 +305,6 @@ These parameters define the compute resources for training.
     * Example: True
 
 
-
-
 #### ESD Evaluation Framework
 
 This section provides instructions for running the **evaluation framework** for the ESD algorithm on Stable Diffusion models. The evaluation framework is used to assess the performance of models after applying machine unlearning.
@@ -240,50 +312,63 @@ This section provides instructions for running the **evaluation framework** for 
 
 #### **Running the Evaluation Framework**
 
-Create a file, eg, `evaluate.py` and use examples and modify your configs to run the file.  
+You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/esd/scripts/` directory. Work within the same environment used to perform unlearning for evaluation as well.
 
-**Example Code**
+
+### **Basic Command to Run Evaluation:**
+
+**Before running evaluation, download the classifier ckpt from here:**
+
+https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61 
+
+Add the following code to `evaluate.py`.
 
 ```python
-from mu.algorithms.esd import ESDEvaluator
+from mu.algorithms.esd import ESDAlgorithm
 from mu.algorithms.esd.configs import (
     esd_evaluation_config
 )
+from evaluation.metrics.accuracy import accuracy_score
+from evaluation.metrics.fid import fid_score
 
-evaluator = ESDEvaluator(
+
+evaluator = ESDAlgorithm(
     esd_evaluation_config,
-    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/esd/esd_Abstractionism_model.pth",
-    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
-    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+    ckpt_path="outputs/esd/finetuned_models/esd_Bricks_model.pth",
 )
-evaluator.run()
+generated_images_path = evaluator.generate_images()
+
+accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                        classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+print(accuracy['acc'])
+print(accuracy['loss'])
+
+reference_image_dir = "data/quick-canvas-dataset/sample"
+fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=reference_image_dir )
+
+print(fid)
 ```
 
-**Running the Training Script in Offline Mode**
+**Run the script**
 
 ```bash
-WANDB_MODE=offline python evaluate.py
+python evaluate.py
 ```
 
-**How It Works** 
-* Default Values: The script first loads default values from the evluation config file as in configs section.
-
-* Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
-
-* Final Configuration: The script merges the configs and convert them into dictionary to proceed with the evaluation. 
 
 
-#### **Description of parameters in evaluation_config**
 
-The `evaluation_config` file contains the necessary parameters for running the ESD evaluation framework. Below is a detailed description of each parameter along with examples.
+#### **Description of parameters in evaluation_config.yaml**
+
+The `evaluation_config.yaml` file contains the necessary parameters for running the ESD evaluation framework. Below is a detailed description of each parameter along with examples.
 
 ---
 
 ### **Model Configuration:**
-- model_config : Path to the YAML file specifying the model architecture and settings.  
-   - *Type:* `str`  
-   - *Example:* `"mu/algorithms/esd/configs/model_config.yaml"`
-
 - ckpt_path : Path to the finetuned Stable Diffusion checkpoint file to be evaluated.  
    - *Type:* `str`  
    - *Example:* `"outputs/esd/finetuned_models/esd_Abstractionism_model.pth"`
@@ -291,19 +376,10 @@ The `evaluation_config` file contains the necessary parameters for running the E
 - classification_model : Specifies the classification model used for evaluating the generated outputs.  
    - *Type:* `str`  
    - *Example:* `"vit_large_patch16_224"`
-   
-- classifier_ckpt_path: Path to classifer checkpoint.
-   - *Type*: `str`
-   - *Example*: `models/classifier_ckpt_path/style50_cls.pth`
 
 ---
 
 ### **Training and Sampling Parameters:**
-
-- forget_theme : Concept or style intended for removal in the evaluation process.  
-   - *Type:* `str`  
-   - *Example:* `"Bricks"`
-
 - devices : CUDA device IDs to be used for the evaluation process.  
    - *Type:* `str`  
    - *Example:* `"0"`  
@@ -338,30 +414,17 @@ The `evaluation_config` file contains the necessary parameters for running the E
 - sampler_output_dir : Directory where generated images will be saved during evaluation.  
    - *Type:* `str`  
    - *Example:* `"outputs/eval_results/mu_results/esd/"`
-
-- eval_output_dir : Directory where evaluation metrics and results will be stored.  
-   - *Type:* `str`  
-   - *Example:* `"outputs/eval_results/mu_results/esd/"`
-
-- reference_dir : Directory containing original images for comparison during evaluation.  
-   - *Type:* `str`  
-   - *Example:* `"/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
-
 ---
 
-### **Performance and Efficiency Parameters:**
-- multiprocessing : Enables multiprocessing for faster evaluation for FID score. Recommended for large datasets.  
-   - *Type:* `bool`  
-   - *Example:* `False`  
-
-- batch_size : Batch size used during FID computation and evaluation.  
-   - *Type:* `int`  
-   - *Example:* `16`  
-
----
 
 ### **Optimization Parameters:**
+- forget_theme : Concept or style intended for removal in the evaluation process.  
+   - *Type:* `str`  
+   - *Example:* `"Bricks"`
 
-- seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  
-   - *Type:* `list`  
-   - *Example:* `["188"]`
+- use_sample: If you want to just run on sample dataset then set it as True. By default it is True.
+   - *Type:* `bool`  
+   - *Example:* `True`
+
+
+

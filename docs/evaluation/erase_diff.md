@@ -19,18 +19,34 @@ Add the following code to `evaluate.py`.
 
 
 ```python
+
 from mu.algorithms.erase_diff import EraseDiffEvaluator
 from mu.algorithms.erase_diff.configs import (
     erase_diff_evaluation_config
 )
+from evaluation.metrics.accuracy import accuracy_score
+from evaluation.metrics.fid import fid_score
+
 
 evaluator = EraseDiffEvaluator(
     erase_diff_evaluation_config,
-    ckpt_path="outputs/erase_diff/erase_diff_Abstractionism_model.pth",
-    classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
-    reference_dir= "msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+    ckpt_path="outputs/erase_diff/finetuned_models/erase_diff_self-harm_model.pth",
 )
-evaluator.run()
+generated_images_path = evaluator.generate_images()
+
+accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                        classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+print(accuracy['acc'])
+print(accuracy['loss'])
+
+reference_image_dir = "/home/ubuntu/Projects/Palistha/testing/data/quick-canvas-dataset/sample"
+fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=reference_image_dir )
+
+print(fid)
 ```
 
 **Run the script**
@@ -47,10 +63,6 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 ---
 
 ### **Model Configuration:**
-- model_config : Path to the YAML file specifying the model architecture and settings.  
-   - *Type:* `str`  
-   - *Example:* `"mu/algorithms/erase_diff/configs/model_config.yaml"`
-
 - ckpt_path : Path to the finetuned Stable Diffusion checkpoint file to be evaluated.  
    - *Type:* `str`  
    - *Example:* `"outputs/erase_diff/finetuned_models/erase_diff_Abstractionism_model.pth"`
@@ -59,16 +71,9 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
    - *Type:* `str`  
    - *Example:* `"vit_large_patch16_224"`
 
-- model_ckpt_path: Path to pretrained Stable Diffusion model.
-   - *Type*: `str`
-   - *Example*: `models/compvis/style50/compvis.ckpt`
-
 ---
 
 ### **Training and Sampling Parameters:**
-- theme : Specifies the theme or concept being evaluated for removal from the model's outputs.  
-   - *Type:* `str`  
-   - *Example:* `"Bricks"`
 
 - devices : CUDA device IDs to be used for the evaluation process.  
    - *Type:* `str`  
@@ -104,27 +109,6 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 - sampler_output_dir : Directory where generated images will be saved during evaluation.  
    - *Type:* `str`  
    - *Example:* `"outputs/eval_results/mu_results/erase_diff/"`
-
-- eval_output_dir : Directory where evaluation metrics and results will be stored.  
-   - *Type:* `str`  
-   - *Example:* `"outputs/eval_results/mu_results/erase_diff/"`
-
-- reference_dir : Directory containing original images for comparison during evaluation.  
-   - *Type:* `str`  
-   - *Example:* `"msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
-
-
----
-
-### **Performance and Efficiency Parameters:**
-- multiprocessing : Enables multiprocessing for faster evaluation for FID score. Recommended for large datasets.  
-   - *Type:* `bool`  
-   - *Example:* `False`  
-
-- batch_size : Batch size used during FID computation and evaluation.  
-   - *Type:* `int`  
-   - *Example:* `16`  
-
 ---
 
 ### **Optimization Parameters:**
@@ -132,6 +116,8 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
    - *Type:* `str`  
    - *Example:* `"Bricks"`
 
-- seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  
-   - *Type:* `list`  
-   - *Example:* `["188"]`
+- use_sample: If you want to just run on sample dataset then set it as True. By default it is True.
+   - *Type:* `bool`  
+   - *Example:* `True`
+
+

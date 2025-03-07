@@ -64,47 +64,35 @@ pip install git+https://github.com/boomb0om/text2image-benchmark
 ```
 
 
-The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
-
-**Use mu_attack env (Optional)**
-```bash
-create_env mu_attack
-
-```
-
 #### **Running the Evaluation Framework**
 
-Create a file, eg, `evaluate.py` and use examples and modify your configs to run the file.  
+Create a file, eg, `evaluate.py` and use examples and modify your configs to run the evalautions.  
 
 **Example Code**
 
 ```python
-from mu_attack.configs.evaluation import attack_evaluation_config
-from mu_attack.execs.evaluator import MuAttackEvaluator
+from evaluation.metrics.asr import asr_score
+from evaluation.metrics.clip import clip_score
+from evaluation.metrics.fid import fid_score
 
-def main():
-    config = attack_evaluation_config
-    config = attack_evaluation_config
-    config.asr.root = "results/hard_prompt_esd_nudity_P4D_abstractionism/P4d"
-    config.asr.root_no_attack = "results/hard_prompt_esd_nudity_P4D_abstrc/NoAttackEsdNudity"
-    config.clip.devices = "0"
-    config.clip.image_path = "results/hard_prompt_esd_nudity_P4D_abstractionism/P4d/images"
-    config.clip.log_path = "results/hard_prompt_esd_nudity_P4D_abstractionism/P4d/log.json"
-    config.fid.ref_batch_path = "results/hard_prompt_esd_nudity_P4D_abstractionism/P4d/images"
-    config.fid.sample_batch_path = "data/i2p/nude"
 
-    # Common output path
-    config.output_path = "results/evaluation/results.json"
+root = "/home/ubuntu/Projects/Palistha/testing/results/hard_prompt_esd_nudity_P4D_erase_diff/P4d"
+root_no_attack ="/home/ubuntu/Projects/Palistha/testing/results/no_attack_esd_nudity_P4D_abstrctionism/NoAttackEsdNudity"
 
-    evaluator = MuAttackEvaluator(config)
-    
-    # Run the evaluation (this will run ASR, CLIP, and FID evaluators)
-    results = evaluator.run()
-    
-    print("Evaluation Results:",results)
+asr_val = asr_score(root, root_no_attack)
+print(asr_val)
 
-if __name__ == "__main__":
-    main()
+images = "/home/ubuntu/Projects/Palistha/testing/results/hard_prompt_esd_nudity_P4D_erase_diff_compvis_to_diffuser/P4d/images"
+prompt_path = "/home/ubuntu/Projects/Palistha/testing/results/hard_prompt_esd_nudity_P4D_erase_diff_compvis_to_diffuser/P4d/log.json"
+device = "0"
+clip_val = clip_score(images, prompt_path, device)
+
+print(clip_val)
+
+gen_path = "/home/ubuntu/Projects/Palistha/testing/results/hard_prompt_esd_nudity_P4D_erase_diff/P4d/images"
+ref_path = "data/i2p/nude"
+fid_val = fid_score(gen_path,ref_path)
+print(fid_val)
 ```
 
 **Running the Training Script in Offline Mode**
@@ -112,13 +100,6 @@ if __name__ == "__main__":
 ```bash
 WANDB_MODE=offline python evaluate.py
 ```
-
-**How It Works** 
-* Default Values: The script first loads default values from the evluation config file as in configs section.
-
-* Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
-
-* Final Configuration: The script merges the configs and convert them into dictionary to proceed with the evaluation. 
 
 
 **Evaluation Metrics:**

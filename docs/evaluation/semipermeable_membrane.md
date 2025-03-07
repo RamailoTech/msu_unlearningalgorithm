@@ -21,15 +21,31 @@ from mu.algorithms.semipermeable_membrane import SemipermeableMembraneEvaluator
 from mu.algorithms.semipermeable_membrane.configs import (
     semipermeable_membrane_eval_config
 )
+from evaluation.metrics.accuracy import accuracy_score
+from evaluation.metrics.fid import fid_score
+
 
 evaluator = SemipermeableMembraneEvaluator(
     semipermeable_membrane_eval_config,
-    ckpt_path="outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors",
-    spm_path = ["outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"],
-    classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
-    reference_dir= "data/quick-canvas-dataset/sample/"
+    spm_path = ["outputs/semipermiable/semipermeable_membrane_Abstractionism_last.safetensors"],
 )
-evaluator.run()
+generated_images_path = evaluator.generate_images()
+
+reference_image_dir = "/home/ubuntu/Projects/Palistha/testing/data/quick-canvas-dataset/sample"
+
+accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                          classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+                          reference_dir=reference_image_dir,
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+print(accuracy['acc'])
+print(accuracy['loss'])
+
+fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=reference_image_dir )
+
+print(fid)
 ```
 
 **Run the script**
@@ -50,9 +66,6 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
    - *Type:* `list`
    - *Example:* `outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors`
 
-- base_model : Path to the pre-trained base model used for image generation.  
-   - *Type:* `str`  
-   - *Example:* `"path/to/base/model.pth"`  
 
 - precision : Specifies the numerical precision for model computation.  
    - *Type:* `str`  
@@ -83,9 +96,6 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 ---
 
 ### **Sampling Parameters:**
-- theme : Specifies the theme for the evaluation process.  
-   - *Type:* `str`  
-   - *Example:* `"Bricks"`  
 
 - seed : Random seed for reproducibility of the evaluation process.  
    - *Type:* `int`  
@@ -107,11 +117,6 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
    - *Type:* `str`  
    - *Example:* `"outputs/eval_results/mu_results/semipermeable_membrane/"`  
 
-- eval_output_dir : Directory where evaluation metrics and results will be stored.  
-   - *Type:* `str`  
-   - *Example:* `"outputs/eval_results/mu_results/semipermeable_membrane/"`  
-
-
 ---
 
 ### **Dataset and Classification Parameters:**
@@ -130,10 +135,11 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 ---
 
 ### **Performance Parameters:**
-- multiprocessing : Enables multiprocessing for faster evaluation.  
-   - *Type:* `bool`  
-   - *Example:* `false`  
 
 - seed_list :  List of random seeds for multiple evaluation trials.  
    - *Type:* `list`  
    - *Example:* `["188"]`  
+
+- use_sample: If you want to just run on sample dataset then set it as True. By default it is True.
+   - *Type:* `bool`  
+   - *Example:* `True`

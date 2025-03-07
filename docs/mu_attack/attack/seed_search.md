@@ -87,7 +87,12 @@ generate_attack_dataset --prompts_path data/prompts/nudity_sample.csv --concept 
 
 Note: If you want to generate image using full prompt then use `data/prompts/nudity.csv` as prompts_path.
 
+### Downloading best.onnx model.
+After you install the package, you can use the following commands to download. If you have already downloaded then skip this step.
 
+    ```bash
+    download_best_onnx
+    ```
 
 ### Run Attack 
 

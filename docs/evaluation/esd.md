@@ -17,19 +17,33 @@ https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61
 Add the following code to `evaluate.py`.
 
 ```python
-from mu.algorithms.esd import ESDEvaluator
+from mu.algorithms.esd import ESDAlgorithm
 from mu.algorithms.esd.configs import (
     esd_evaluation_config
 )
+from evaluation.metrics.accuracy import accuracy_score
+from evaluation.metrics.fid import fid_score
 
-evaluator = ESDEvaluator(
+
+evaluator = ESDAlgorithm(
     esd_evaluation_config,
-    ckpt_path="outputs/esd/esd_Abstractionism_model.pth",
-    classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
-    reference_dir= "msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
+    ckpt_path="outputs/esd/finetuned_models/esd_Bricks_model.pth",
 )
-evaluator.run()
+generated_images_path = evaluator.generate_images()
 
+accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                        classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+print(accuracy['acc'])
+print(accuracy['loss'])
+
+reference_image_dir = "data/quick-canvas-dataset/sample"
+fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=reference_image_dir )
+
+print(fid)
 ```
 
 **Run the script**
@@ -48,10 +62,6 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 ---
 
 ### **Model Configuration:**
-- model_config : Path to the YAML file specifying the model architecture and settings.  
-   - *Type:* `str`  
-   - *Example:* `"mu/algorithms/esd/configs/model_config.yaml"`
-
 - ckpt_path : Path to the finetuned Stable Diffusion checkpoint file to be evaluated.  
    - *Type:* `str`  
    - *Example:* `"outputs/esd/finetuned_models/esd_Abstractionism_model.pth"`
@@ -59,18 +69,10 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 - classification_model : Specifies the classification model used for evaluating the generated outputs.  
    - *Type:* `str`  
    - *Example:* `"vit_large_patch16_224"`
-   
-- model_ckpt_path: Path to pretrained Stable Diffusion model.
-   - *Type*: `str`
-   - *Example*: `models/compvis/style50/compvis.ckpt`
 
 ---
 
 ### **Training and Sampling Parameters:**
-- theme : Specifies the theme or concept being evaluated for removal from the model's outputs.  
-   - *Type:* `str`  
-   - *Example:* `"Bricks"`
-
 - devices : CUDA device IDs to be used for the evaluation process.  
    - *Type:* `str`  
    - *Example:* `"0"`  
@@ -105,27 +107,8 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 - sampler_output_dir : Directory where generated images will be saved during evaluation.  
    - *Type:* `str`  
    - *Example:* `"outputs/eval_results/mu_results/esd/"`
-
-- eval_output_dir : Directory where evaluation metrics and results will be stored.  
-   - *Type:* `str`  
-   - *Example:* `"outputs/eval_results/mu_results/esd/"`
-
-- reference_dir : Directory containing original images for comparison during evaluation.  
-   - *Type:* `str`  
-   - *Example:* `"msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
-
 ---
 
-### **Performance and Efficiency Parameters:**
-- multiprocessing : Enables multiprocessing for faster evaluation for FID score. Recommended for large datasets.  
-   - *Type:* `bool`  
-   - *Example:* `False`  
-
-- batch_size : Batch size used during FID computation and evaluation.  
-   - *Type:* `int`  
-   - *Example:* `16`  
-
----
 
 ### **Optimization Parameters:**
 - forget_theme : Concept or style intended for removal in the evaluation process.  
@@ -135,3 +118,9 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 - seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  
    - *Type:* `list`  
    - *Example:* `["188"]`
+
+- use_sample: If you want to just run on sample dataset then set it as True. By default it is True.
+   - *Type:* `bool`  
+   - *Example:* `True`
+
+

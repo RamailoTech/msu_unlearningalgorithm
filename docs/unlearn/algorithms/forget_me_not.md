@@ -104,6 +104,11 @@ After you install the package, you can use the following commands to download.
     ```
     download_model diffuser
     ```
+3. Download best.onnx file
+
+    ```
+    download_best_onnx
+    ```
 
 **Verify the Downloaded Files**
 

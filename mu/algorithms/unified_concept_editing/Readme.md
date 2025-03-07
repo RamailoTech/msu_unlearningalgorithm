@@ -2,10 +2,8 @@
 
 This repository provides an implementation of the unified concept editing algorithm for machine unlearning in Stable Diffusion models. The unified concept editing algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.
 
-### Installation
-```
-pip install unlearn_diff
-```
+## Installation
+
 ### Prerequisities
 Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
 
@@ -17,19 +15,62 @@ After installing `conda`, ensure it is available in your PATH by running. You ma
 ```bash
 conda --version
 ```
-### Create environment:
-```
-create_env <algorithm_name>
-```
-eg: ```create_env unified_concept_editing```
 
-### Activate environment:
-```
-conda activate <environment_name>
-```
-eg: ```conda activate unified_concept_editing```
+**Step-by-Step Setup:**
 
-The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
+Step 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:
+
+```bash
+conda create -n myenv python=3.8.5
+```
+
+Step 2. Activate the Environment Activate the environment to work within it:
+
+```bash
+conda activate myenv
+```
+
+Step 3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:
+
+```bash
+conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
+```
+
+Step 4. Install our unlearn_diff Package using pip:
+
+```bash
+pip install unlearn_diff
+```
+
+Step 5. Install Additional Git Dependencies:
+
+ After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:
+
+```bash
+pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
+```
+
+```bash
+pip install git+https://github.com/openai/CLIP.git@main#egg=clip
+```
+
+```bash
+pip install git+https://github.com/crowsonkb/k-diffusion.git
+```
+
+```bash
+pip install git+https://github.com/cocodataset/panopticapi.git
+```
+
+```bash
+pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
+```
+
+```bash
+pip install git+https://github.com/boomb0om/text2image-benchmark
+```
+
+
 
 ### Downloading data and models.
 After you install the package, you can use the following commands to download.
@@ -63,6 +104,11 @@ After you install the package, you can use the following commands to download.
     ```
     download_model diffuser
     ```
+3. **Download best.onnx model**
+
+    ```
+    download_best_onnx
+    ```
 
 **Verify the Downloaded Files**
 
@@ -80,7 +126,8 @@ To train the Unified Concept Editing algorithm to unlearn a specific concept or 
 ## Run Train
 Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
-**Example Code**
+**Using quick canvas dataset**
+
 ```python
 from mu.algorithms.unified_concept_editing.algorithm import (
     UnifiedConceptEditingAlgorithm,
@@ -91,14 +138,39 @@ from mu.algorithms.unified_concept_editing.configs import (
 
 algorithm = UnifiedConceptEditingAlgorithm(
     unified_concept_editing_train_mu,
-    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50/",
+    ckpt_path="models/diffuser/style50/",
     raw_dataset_dir=(
-        "/home/ubuntu/Projects/balaram/packaging/data/quick-canvas-dataset/sample"
+        "data/quick-canvas-dataset/sample"
     ),
     output_dir="/opt/dlami/nvme/outputs",
 )
 algorithm.run()
 ```
+
+**Using i2p dataset**
+
+```python
+from mu.algorithms.unified_concept_editing.algorithm import (
+    UnifiedConceptEditingAlgorithm,
+)
+from mu.algorithms.unified_concept_editing.configs import (
+    unified_concept_editing_train_i2p,
+)
+
+algorithm = UnifiedConceptEditingAlgorithm(
+    unified_concept_editing_train_i2p,
+    ckpt_path="models/diffuser/style50/",
+    raw_dataset_dir=(
+        "data/quick-canvas-dataset/sample"
+    ),
+    output_dir="/opt/dlami/nvme/outputs",
+    use_sample = True # to run on sample dataset
+    dataset_type = "i2p",
+    template_name = "self-harm",
+)
+algorithm.run()
+```
+
 
 **Running the Training Script in Offline Mode**
 
@@ -215,61 +287,70 @@ WANDB_MODE=offline python my_trainer.py
     * Example: "0,1"
 
 
-
-#### Unified Concept Editing Evaluation Framework
+#### unified_concept_editing Evaluation Framework
 
 This section provides instructions for running the **evaluation framework** for the unified_concept_editing algorithm on Stable Diffusion models. The evaluation framework is used to assess the performance of models after applying machine unlearning.
 
 
 #### **Running the Evaluation Framework**
 
-Create a file, eg, `evaluate.py` and use examples and modify your configs to run the file.  
+You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/unified_concept_editing/scripts/` directory. Work within the same environment used to perform unlearning for evaluation as well.
 
-**Example Code**
+
+**Before running evaluation, download the classifier ckpt from here:**
+
+https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61 
+
+
+Then, Add the following code to `evaluate.py`
 
 ```python
 from mu.algorithms.unified_concept_editing import UnifiedConceptEditingEvaluator
 from mu.algorithms.unified_concept_editing.configs import (
     uce_evaluation_config
 )
+from evaluation.metrics.accuracy import accuracy_score
+from evaluation.metrics.fid import fid_score
 
+
+# reference_image_dir = "data/generic"
 evaluator = UnifiedConceptEditingEvaluator(
     uce_evaluation_config,
-    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/uce/finetuned_models/uce_Abstractionism_model",
-    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
-    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/",
-    pipeline_path = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/diffuser/style50"
+    ckpt_path="outputs/uce/uce_Abstractionism_model",
 )
-evaluator.run()
+# model = evaluator.load_model()
+generated_images_path = evaluator.generate_images()
 
+reference_image_dir = "/home/ubuntu/Projects/Palistha/testing/data/quick-canvas-dataset/sample"
+
+accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                          classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+                          reference_dir=reference_image_dir,
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+print(accuracy['acc'])
+print(accuracy['loss'])
+
+fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=reference_image_dir )
+
+print(fid)
 ```
 
-**Running the Training Script in Offline Mode**
+**Running in Offline Mode:**
 
 ```bash
 WANDB_MODE=offline python evaluate.py
 ```
 
-**How It Works** 
-* Default Values: The script first loads default values from the evluation config file as in configs section.
+#### **Description of parameters in evaluation_config.yaml**
 
-* Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
-
-* Final Configuration: The script merges the configs and convert them into dictionary to proceed with the evaluation. 
-
-#### **Description of parameters in evaluation_config**
-
-The `evaluation_config`  contains the necessary parameters for running the unified_concept_editing evaluation framework. Below is a detailed description of each parameter along with examples.
+The `evaluation_config.yaml` file contains the necessary parameters for running the unified_concept_editing evaluation framework. Below is a detailed description of each parameter along with examples.
 
 ---
 
 ### **Model Configuration:**
-
-- pipeline_path: path to pretrained diffuser pipeline.
-
-    - *Type* : `str`
-    - *Example* : `ckpts/sd_model/diffuser/style50/step19999/`
-
 - ckpt_path : Path to the finetuned Stable Diffusion checkpoint file to be evaluated.  
    - *Type:* `str`  
    - *Example:* `"outputs/unified_concept_editing/finetuned_models/unified_concept_editing_Abstractionism_model.pth"`
@@ -277,18 +358,12 @@ The `evaluation_config`  contains the necessary parameters for running the unifi
 - classification_model : Specifies the classification model used for evaluating the generated outputs.  
    - *Type:* `str`  
    - *Example:* `"vit_large_patch16_224"`
-
-- classifier_ckpt_path: Path to classifer checkpoint.
-   - *Type*: `str`
-   - *Example*: `models/classifier_ckpt_path/style50_cls.pth`
-
-- forget_theme : Concept or style intended for removal in the evaluation process.  
-   - *Type:* `str`  
-   - *Example:* `"Bricks"`
 ---
 
 ### **Training and Sampling Parameters:**
-
+- theme : Specifies the theme or concept being evaluated for removal from the model's outputs.  
+   - *Type:* `str`  
+   - *Example:* `"Bricks"`
 
 - devices : CUDA device IDs to be used for the evaluation process.  
    - *Type:* `str`  
@@ -324,31 +399,18 @@ The `evaluation_config`  contains the necessary parameters for running the unifi
 - sampler_output_dir : Directory where generated images will be saved during evaluation.  
    - *Type:* `str`  
    - *Example:* `"outputs/eval_results/mu_results/unified_concept_editing/"`
-
-- eval_output_dir : Directory where evaluation metrics and results will be stored.  
-   - *Type:* `str`  
-   - *Example:* `"outputs/eval_results/mu_results/unified_concept_editing/"`
-
-- reference_dir : Directory containing original images for comparison during evaluation.  
-   - *Type:* `str`  
-   - *Example:* `"data/quick-canvas-dataset/sample/"`
-
----
-
-### **Performance and Efficiency Parameters:**
-- multiprocessing : Enables multiprocessing for faster evaluation for FID score. Recommended for large datasets.  
-   - *Type:* `bool`  
-   - *Example:* `False`  
-
-- batch_size : Batch size used during FID computation and evaluation.  
-   - *Type:* `int`  
-   - *Example:* `16`  
-
 ---
 
 ### **Optimization Parameters:**
+- forget_theme : Concept or style intended for removal in the evaluation process.  
+   - *Type:* `str`  
+   - *Example:* `"Bricks"`
 
 - seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  
    - *Type:* `list`  
    - *Example:* `["188"]`
+
+- use_sample: If you want to just run on sample dataset then set it as True. By default it is True.
+   - *Type:* `bool`  
+   - *Example:* `True`
 

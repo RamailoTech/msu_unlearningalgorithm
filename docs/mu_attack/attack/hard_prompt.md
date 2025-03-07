@@ -75,7 +75,12 @@ pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
 pip install git+https://github.com/boomb0om/text2image-benchmark
 ```
 
+### Downloading best.onnx model.
+After you install the package, you can use the following commands to download. If you have already downloaded then skip this step.
 
+    ```bash
+    download_best_onnx
+    ```
 
 ### Generate Dataset
 

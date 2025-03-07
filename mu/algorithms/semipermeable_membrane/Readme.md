@@ -3,10 +3,8 @@
 This repository provides an implementation of the semipermeable membrane algorithm for machine unlearning in Stable Diffusion models. The semipermeable membrane algorithm allows you to remove specific concepts or styles from a pre-trained model without retraining it from scratch.
 
 
-### Installation
-```
-pip install unlearn_diff
-```
+## Installation
+
 ### Prerequisities
 Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
 
@@ -18,19 +16,63 @@ After installing `conda`, ensure it is available in your PATH by running. You ma
 ```bash
 conda --version
 ```
-### Create environment:
-```
-create_env <algorithm_name>
-```
-eg: ```create_env semipermeable_membrane```
 
-### Activate environment:
-```
-conda activate <environment_name>
-```
-eg: ```conda activate semipermeable_membrane```
 
-The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
+**Step-by-Step Setup:**
+
+Step 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:
+
+```bash
+conda create -n myenv python=3.8.5
+```
+
+Step 2. Activate the Environment Activate the environment to work within it:
+
+```bash
+conda activate myenv
+```
+
+Step 3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:
+
+```bash
+conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
+```
+
+Step 4. Install our unlearn_diff Package using pip:
+
+```bash
+pip install unlearn_diff
+```
+
+Step 5. Install Additional Git Dependencies:
+
+ After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:
+
+```bash
+pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
+```
+
+```bash
+pip install git+https://github.com/openai/CLIP.git@main#egg=clip
+```
+
+```bash
+pip install git+https://github.com/crowsonkb/k-diffusion.git
+```
+
+```bash
+pip install git+https://github.com/cocodataset/panopticapi.git
+```
+
+```bash
+pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
+```
+
+```bash
+pip install git+https://github.com/boomb0om/text2image-benchmark
+```
+
+
 
 ### Downloading data and models.
 After you install the package, you can use the following commands to download.
@@ -65,6 +107,12 @@ After you install the package, you can use the following commands to download.
     download_model diffuser
     ```
 
+3. **Download best.onnx model**
+
+    ```
+    download_best_onnx
+    ```
+    
 **Verify the Downloaded Files**
 
 After downloading, verify that the datasets have been correctly extracted:
@@ -81,6 +129,10 @@ To train the Semi Permeable Membrane algorithm to unlearn a specific concept or 
 Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
 **Example Code**
+
+**Using quick canvas dataset**
+
+
 ```python
 
 from mu.algorithms.semipermeable_membrane.algorithm import (
@@ -95,9 +147,38 @@ algorithm = SemipermeableMembraneAlgorithm(
     semipermiable_membrane_train_mu,
     output_dir="/opt/dlami/nvme/outputs",
     train={"iterations": 2},
+    use_sample = True # to run on sample dataset
+    
 )
 algorithm.run()
 ```
+
+**Using quick canvas dataset**
+
+
+```python
+
+from mu.algorithms.semipermeable_membrane.algorithm import (
+    SemipermeableMembraneAlgorithm,
+)
+from mu.algorithms.semipermeable_membrane.configs import (
+    semipermiable_membrane_train_i2p,
+    SemipermeableMembraneConfig,
+)
+
+algorithm = SemipermeableMembraneAlgorithm(
+    semipermiable_membrane_train_i2p,
+    output_dir="/opt/dlami/nvme/outputs",
+    train={"iterations": 2},
+    use_sample = True # to run on sample dataset
+    dataset_type = "i2p",
+    template_name = "self-harm",
+    
+)
+algorithm.run()
+```
+
+
 
 **Running the Training Script in Offline Mode**
 
@@ -243,65 +324,75 @@ WANDB_MODE=offline python my_trainer.py
 * Boolean flag for verbose logging during training.
 
 
+
 #### Semipermeable membrane Evaluation Framework
 
 This section provides instructions for running the **evaluation framework** for the Semipermeable membrane algorithm on Stable Diffusion models. The evaluation framework is used to assess the performance of models after applying machine unlearning.
 
+
 #### **Running the Evaluation Framework**
 
-Create a file, eg, `evaluate.py` and use examples and modify your configs to run the file.  
+You can run the evaluation framework using the `evaluate.py` script located in the `mu/algorithms/semipermeable_membrane/scripts/` directory. Work within the same environment used to perform unlearning for evaluation as well.
 
-**Example Code**
+
+### **Basic Command to Run Evaluation:**
+
+**Before running evaluation, download the classifier ckpt from here:**
+
+https://drive.google.com/drive/folders/1AoazlvDgWgc3bAyHDpqlafqltmn4vm61 
+
+Add the following code to `evaluate.py`
 
 ```python
 from mu.algorithms.semipermeable_membrane import SemipermeableMembraneEvaluator
 from mu.algorithms.semipermeable_membrane.configs import (
     semipermeable_membrane_eval_config
 )
+from evaluation.metrics.accuracy import accuracy_score
+from evaluation.metrics.fid import fid_score
+
 
 evaluator = SemipermeableMembraneEvaluator(
     semipermeable_membrane_eval_config,
-    ckpt_path="/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors",
-    spm_path = ["/home/ubuntu/Projects/dipesh/unlearn_diff/outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"],
-    classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
-    reference_dir= "/home/ubuntu/Projects/msu_unlearningalgorithm/data/quick-canvas-dataset/sample/",
-    model_config = "/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/mu_semipermeable_membrane_spm/configs"
+    spm_path = ["outputs/semipermiable/semipermeable_membrane_Abstractionism_last.safetensors"],
 )
-evaluator.run()
+generated_images_path = evaluator.generate_images()
+
+reference_image_dir = "/home/ubuntu/Projects/Palistha/testing/data/quick-canvas-dataset/sample"
+
+accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                          classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+                          reference_dir=reference_image_dir,
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+print(accuracy['acc'])
+print(accuracy['loss'])
+
+fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=reference_image_dir )
+
+print(fid)
 ```
 
-**Running the Training Script in Offline Mode**
+**Run the script**
 
 ```bash
-WANDB_MODE=offline python evaluate.py
+python evaluate.py
 ```
 
-**How It Works** 
-* Default Values: The script first loads default values from the evluation config file as in configs section.
 
-* Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
+#### **Description of parameters in evaluation_config.yaml**
 
-* Final Configuration: The script merges the configs and convert them into dictionary to proceed with the evaluation. 
-
-
-#### **Description of parameters in evaluation_config**
-
-The `evaluation_config` contains the necessary parameters for running the Semipermeable membrane evaluation framework. Below is a detailed description of each parameter along with examples.
+The `evaluation_config.yaml` file contains the necessary parameters for running the Semipermeable membrane evaluation framework. Below is a detailed description of each parameter along with examples.
 
 ---
 
 ### **Model Configuration Parameters:**
-- ckpt_path: paths to finetuned model checkpoint.
-   - *Type:* `str`
-   - *Example:* `outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors`
-
 - spm_path: paths to finetuned model checkpoint.
    - *Type:* `list`
-   - *Example:* `["outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors"]`
+   - *Example:* `outputs/semipermeable_membrane/finetuned_models/semipermeable_membrane_Abstractionism_last.safetensors`
 
-- base_model : Path to the pre-trained base model used for image generation.  
-   - *Type:* `str`  
-   - *Example:* `"path/to/base/model.pth"`  
 
 - precision : Specifies the numerical precision for model computation.  
    - *Type:* `str`  
@@ -325,20 +416,13 @@ The `evaluation_config` contains the necessary parameters for running the Semipe
    - *Type:* `str`  
    - *Example:* `"mu/algorithms/semipermeable_membrane/config"`  
 
-- classification_model : Specifies the classification model used for evaluating the generated outputs.  
-   - *Type:* `str`  
-   - *Example:* `"vit_large_patch16_224"`
-
-- classifier_ckpt_path: Path to classifer checkpoint.
+- model_ckpt_path: Path to pretrained Stable Diffusion model.
    - *Type*: `str`
-   - *Example*: `models/classifier_ckpt_path/style50_cls.pth`
+   - *Example*: `models/diffuser/style50`
 
 ---
 
 ### **Sampling Parameters:**
-- theme : Specifies the theme for the evaluation process.  
-   - *Type:* `str`  
-   - *Example:* `"Bricks"`  
 
 - seed : Random seed for reproducibility of the evaluation process.  
    - *Type:* `int`  
@@ -360,17 +444,16 @@ The `evaluation_config` contains the necessary parameters for running the Semipe
    - *Type:* `str`  
    - *Example:* `"outputs/eval_results/mu_results/semipermeable_membrane/"`  
 
-- eval_output_dir : Directory where evaluation metrics and results will be stored.  
-   - *Type:* `str`  
-   - *Example:* `"outputs/eval_results/mu_results/semipermeable_membrane/"`  
-
-
 ---
 
 ### **Dataset and Classification Parameters:**
 - reference_dir : Path to the reference dataset used for evaluation and comparison.  
    - *Type:* `str`  
-   - *Example:* `"data/quick-canvas-dataset/sample/"`  
+   - *Example:* `"msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`  
+
+- classification_model : Specifies the classification model used for the evaluation.  
+   - *Type:* `str`  
+   - *Example:* `"vit_large_patch16_224"`  
 
 - forget_theme : Specifies the theme to be forgotten during the unlearning process.  
    - *Type:* `str`  
@@ -379,10 +462,11 @@ The `evaluation_config` contains the necessary parameters for running the Semipe
 ---
 
 ### **Performance Parameters:**
-- multiprocessing : Enables multiprocessing for faster evaluation.  
-   - *Type:* `bool`  
-   - *Example:* `false`  
 
 - seed_list :  List of random seeds for multiple evaluation trials.  
    - *Type:* `list`  
    - *Example:* `["188"]`  
+
+- use_sample: If you want to just run on sample dataset then set it as True. By default it is True.
+   - *Type:* `bool`  
+   - *Example:* `True`

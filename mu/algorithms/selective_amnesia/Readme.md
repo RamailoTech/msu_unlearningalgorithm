@@ -4,10 +4,8 @@ This repository provides an implementation of the Selective Amnesia algorithm fo
 
 ---
 
-### Installation
-```
-pip install unlearn_diff
-```
+## Installation
+
 ### Prerequisities
 Ensure `conda` is installed on your system. You can install Miniconda or Anaconda:
 
@@ -19,19 +17,62 @@ After installing `conda`, ensure it is available in your PATH by running. You ma
 ```bash
 conda --version
 ```
-### Create environment:
-```
-create_env <algorithm_name>
-```
-eg: ```create_env selective_amnesia```
 
-### Activate environment:
-```
-conda activate <environment_name>
-```
-eg: ```conda activate selective_amnesia```
+**Step-by-Step Setup:**
 
-The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
+Step 1. Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:
+
+```bash
+conda create -n myenv python=3.8.5
+```
+
+Step 2. Activate the Environment Activate the environment to work within it:
+
+```bash
+conda activate myenv
+```
+
+Step 3. Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:
+
+```bash
+conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
+```
+
+Step 4. Install our unlearn_diff Package using pip:
+
+```bash
+pip install unlearn_diff
+```
+
+Step 5. Install Additional Git Dependencies:
+
+ After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:
+
+```bash
+pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
+```
+
+```bash
+pip install git+https://github.com/openai/CLIP.git@main#egg=clip
+```
+
+```bash
+pip install git+https://github.com/crowsonkb/k-diffusion.git
+```
+
+```bash
+pip install git+https://github.com/cocodataset/panopticapi.git
+```
+
+```bash
+pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
+```
+
+```bash
+pip install git+https://github.com/boomb0om/text2image-benchmark
+```
+
+
 
 ### Downloading data and models.
 After you install the package, you can use the following commands to download.
@@ -65,6 +106,11 @@ After you install the package, you can use the following commands to download.
     ```
     download_model diffuser
     ```
+3. **Download best.onnx model**
+
+    ```
+    download_best_onnx
+    ```
 
 **Verify the Downloaded Files**
 
@@ -79,67 +125,77 @@ ls -lh ./data/quick-canvas-dataset/sample/
 
 To train the Selective Amnesia algorithm to remove specific concepts or styles from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
 
-### Example Command
 
-1. First download the full_fisher_dict.pkl file.
+**First download the full_fisher_dict.pkl file.**
 ```
 wget https://huggingface.co/ajrheng/selective-amnesia/resolve/main/full_fisher_dict.pkl
 ```
 
-2. Run the script 
+
+### Run train
+
+Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
+
+**Using quick canvas dataset**
+
+
+```python
+from mu.algorithms.selective_amnesia.algorithm import SelectiveAmnesiaAlgorithm
+from mu.algorithms.selective_amnesia.configs import (
+    selective_amnesia_config_quick_canvas,
+)
+
+algorithm = SelectiveAmnesiaAlgorithm(
+    selective_amnesia_config_quick_canvas,
+    ckpt_path="models/compvis/style50/compvis.ckpt",
+    raw_dataset_dir=(
+        "data/quick-canvas-dataset/sample"
+    ),
+    dataset_type = "unlearncanvas",
+    template = "style",
+    template_name = "Abstractionism",
+    use_sample = True # to run on sample dataset
+
+)
+algorithm.run()
+
 ```
-python -m mu.algorithms.selective_amnesia.scripts.train --config_path mu/algorithms/selective_amnesia/configs/train_config.yaml --full_fisher_dict_pkl_path /path/full_fisher_dict.pkl
+
+
+**Using i2p dataset**
+
+
+```python
+from mu.algorithms.selective_amnesia.algorithm import SelectiveAmnesiaAlgorithm
+from mu.algorithms.selective_amnesia.configs import (
+    selective_amnesia_config_i2p,
+)
+
+algorithm = SelectiveAmnesiaAlgorithm(
+    selective_amnesia_config_i2p,
+    ckpt_path="models/compvis/style50/compvis.ckpt",
+    raw_dataset_dir=(
+        "data/i2p/sample"
+    ),
+    dataset_type = "i2p",
+    template_name = "self-harm",
+    use_sample = True # to run on sample dataset
+)
+algorithm.run()
+
 ```
 
-### Running the Training Script in Offline Mode
-
-```
-WANDB_MODE=offline python -m mu.algorithms.selective_amnesia.scripts.train --config_path mu/algorithms/selective_amnesia/configs/train_config.yaml --full_fisher_dict_pkl_path /path/full_fisher_dict.pkl
-```
-
-### Overriding Configuration via Command Line
-
-You can override configuration parameters by passing them directly as arguments during runtime.
-
-**Example Usage with Command-Line Arguments:**
 
 ```bash
-python -m mu.algorithms.selective_amnesia.scripts.train \
---config_path mu/algorithms/selective_amnesia/configs/train_config.yaml \
---train_batch_size 8 \
---max_epochs 100 \
---devices 0,1 \
---output_dir outputs/experiment_2
+WANDB_MODE=offline python my_trainer.py
 ```
 
-**Explanation:**
-* `--config_path`: Specifies the YAML configuration file.
-* `--train_batch_size`: Overrides the training batch size to 8.
-* `--max_epochs`: Updates the maximum number of training epochs to 100.
-* `--devices`: Specifies the GPUs (e.g., device 0 and 1).
-* `--output_dir`: Sets a custom output directory for the experiment.
+**How It Works** 
+* Default Values: The script first loads default values from the train config file as in configs section.
 
----
+* Parameter Overrides: Any parameters passed directly to the algorithm, overrides these configs.
 
-## Directory Structure
-
-- `algorithm.py`: Core implementation of the Selective Amnesia Algorithm.
-- `configs/`: Configuration files for training and generation.
-- `data_handler.py`: Data handling and preprocessing.
-- `scripts/train.py`: Script to train the Selective Amnesia Algorithm.
-- `callbacks/`: Custom callbacks for logging and monitoring training.
-- `utils.py`: Utility functions.
-
----
-
-## How It Works
-
-1. **Default Configuration:** Loads values from the specified YAML file (`--config_path`).
-2. **Command-Line Overrides:** Updates the configuration with values provided as command-line arguments.
-3. **Training Execution:** Initializes the `SelectiveAmnesiaAlgorithm` and trains the model using the provided dataset, model checkpoint, and configuration.
-4. **Output:** Saves the fine-tuned model and logs training metrics in the specified output directory.
-
----
+* Final Configuration: The script merges the configs and convert them into dictionary to proceed with the training. 
 
 ## Notes
 

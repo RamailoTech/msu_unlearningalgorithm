@@ -21,14 +21,30 @@ from mu.algorithms.forget_me_not import ForgetMeNotEvaluator
 from mu.algorithms.forget_me_not.configs import (
     forget_me_not_evaluation_config
 )
+from evaluation.metrics.accuracy import accuracy_score
+from evaluation.metrics.fid import fid_score
 
 evaluator = ForgetMeNotEvaluator(
     forget_me_not_evaluation_config,
     ckpt_path="outputs/forget_me_not/finetuned_models/Abstractionism",
-    classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
-    reference_dir= "msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
 )
-evaluator.run()
+generated_images_path = evaluator.generate_images()
+
+reference_image_dir = "/home/ubuntu/Projects/Palistha/testing/data/quick-canvas-dataset/sample"
+
+accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                          classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
+                          reference_dir=reference_image_dir,
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+print(accuracy['acc'])
+print(accuracy['loss'])
+
+fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=reference_image_dir )
+print(fid)
+
 ```
 
 
@@ -53,10 +69,6 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 - classification_model : Specifies the classification model used for evaluating the generated outputs.  
    - *Type:* `str`  
    - *Example:* `"vit_large_patch16_224"`
-
-- model_ckpt_path: Path to pretrained Stable Diffusion model.
-   - *Type*: `str`
-   - *Example*: `models/diffuser/style50`
 
 ---
 
@@ -100,26 +112,8 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
    - *Type:* `str`  
    - *Example:* `"outputs/eval_results/mu_results/forget_me_not/"`
 
-- eval_output_dir : Directory where evaluation metrics and results will be stored.  
-   - *Type:* `str`  
-   - *Example:* `"outputs/eval_results/mu_results/forget_me_not/"`
-
-- reference_dir : Directory containing original images for comparison during evaluation.  
-   - *Type:* `str`  
-   - *Example:* `"msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
-
 ---
 
-### **Performance and Efficiency Parameters:**
-- multiprocessing : Enables multiprocessing for faster evaluation for FID score. Recommended for large datasets.  
-   - *Type:* `bool`  
-   - *Example:* `False`  
-
-- batch_size : Batch size used during FID computation and evaluation.  
-   - *Type:* `int`  
-   - *Example:* `16`  
-
----
 
 ### **Optimization Parameters:**
 - forget_theme : Concept or style intended for removal in the evaluation process.  
@@ -129,6 +123,11 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 - seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  
    - *Type:* `list`  
    - *Example:* `["188"]`
+
+- use_sample: If you want to just run on sample dataset then set it as True. By default it is True.
+   - *Type:* `bool`  
+   - *Example:* `True`
+
 
 
 

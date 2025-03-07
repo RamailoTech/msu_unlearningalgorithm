@@ -105,6 +105,12 @@ After you install the package, you can use the following commands to download.
     download_model diffuser
     ```
 
+3. Download best.onnx model
+
+    ```
+    download_best_onnx
+    ```
+
 **Verify the Downloaded Files**
 
 After downloading, verify that the datasets have been correctly extracted:

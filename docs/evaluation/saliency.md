@@ -22,14 +22,30 @@ from mu.algorithms.saliency_unlearning import SaliencyUnlearningEvaluator
 from mu.algorithms.saliency_unlearning.configs import (
     saliency_unlearning_evaluation_config
 )
+from evaluation.metrics.accuracy import accuracy_score
+from evaluation.metrics.fid import fid_score
 
 evaluator = SaliencyUnlearningEvaluator(
     saliency_unlearning_evaluation_config,
     ckpt_path="outputs/saliency_unlearning/saliency_unlearning_Abstractionism_model.pth",
-    classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
-    reference_dir= "msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"
 )
-evaluator.run()
+generated_images_path = evaluator.generate_images()
+
+reference_image_dir = "data/quick-canvas-dataset/sample"
+
+accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                          classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth",
+                          reference_dir=reference_image_dir,
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+print(accuracy['acc'])
+print(accuracy['loss'])
+
+fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=reference_image_dir )
+
+print(fid)
 ```
 
 **Run the script**
@@ -47,10 +63,6 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 ---
 
 ### **Model Configuration:**
-- model_config : Path to the YAML file specifying the model architecture and settings.  
-   - *Type:* `str`  
-   - *Example:* `"mu/algorithms/saliency_unlearning/configs/model_config.yaml"`
-
 - ckpt_path : Path to the finetuned Stable Diffusion checkpoint file to be evaluated.  
    - *Type:* `str`  
    - *Example:* `"outputs/saliency_unlearning/finetuned_models/saliency_unlearning_Abstractionism_model.pth"`
@@ -59,14 +71,10 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
    - *Type:* `str`  
    - *Example:* `"vit_large_patch16_224"`
 
-- model_ckpt_path: Path to pretrained Stable Diffusion model.
-   - *Type*: `str`
-   - *Example*: `models/compvis/style50/compvis.ckpt`
-
 ---
 
 ### **Training and Sampling Parameters:**
-- theme : Specifies the theme or concept being evaluated for removal from the model's outputs.  
+- forget_theme : Specifies the theme or concept being evaluated for removal from the model's outputs.  
    - *Type:* `str`  
    - *Example:* `"Bricks"`
 
@@ -104,15 +112,6 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 - sampler_output_dir : Directory where generated images will be saved during evaluation.  
    - *Type:* `str`  
    - *Example:* `"outputs/eval_results/mu_results/saliency_unlearning/"`
-
-- eval_output_dir : Directory where evaluation metrics and results will be stored.  
-   - *Type:* `str`  
-   - *Example:* `"outputs/eval_results/mu_results/saliency_unlearning/"`
-
-- reference_dir : Directory containing original images for comparison during evaluation.  
-   - *Type:* `str`  
-   - *Example:* `"msu_unlearningalgorithm/data/quick-canvas-dataset/sample/"`
-
 ---
 
 ### **Performance and Efficiency Parameters:**
@@ -134,3 +133,10 @@ The `evaluation_config.yaml` file contains the necessary parameters for running 
 - seed_list : List of random seeds for performing multiple evaluations with different randomness levels.  
    - *Type:* `list`  
    - *Example:* `["188"]`
+
+- use_sample: If you want to just run on sample dataset then set it as True. By default it is True.
+   - *Type:* `bool`  
+   - *Example:* `True`
+
+
+

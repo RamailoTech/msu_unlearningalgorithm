@@ -106,6 +106,11 @@ After you install the package, you can use the following commands to download.
     ```
     download_model diffuser
     ```
+3. **Download best.onnx model**
+
+ ```
+ download_best_onnx
+ ```
 
 **Verify the Downloaded Files**
 
@@ -253,8 +258,8 @@ if __name__ == "__main__":
     * Type: str
     * Example: "/path/to/processed_dataset"
 
-* **dataset_type:** Specifies the dataset type for training.
-    * Choices: ["unlearncanvas", "i2p"]
+* **dataset_type:** Specifies the dataset type for training. Use `generic` as type if you want to use your own dataset.
+    * Choices: ["unlearncanvas", "i2p","generic"]
     * Example: "unlearncanvas"
 
 * **template:** Type of template to use during training.
