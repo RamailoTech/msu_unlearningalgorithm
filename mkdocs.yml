@@ -5,52 +5,52 @@ site_dir: docs_build
 nav:
   - Usage:
     - Installation: usage/installation.md
-    - How to use existing unlearning algorithms: usage/unlearn_algorithm_usage.md
-    - How to evaluate: usage/how_to_evaluate.md
+    - Usage of existing unlearn algorithms: usage/unlearn_algorithm_usage.md
+    - Evaluate existing unlearn algorithms: usage/how_to_evaluate.md
     
   - Unlearn Algorithms:
     - Concept Ablation: 
-      - Usage: unlearn/algorithms/concept_ablation.md
+      - Usage of existing unlearn algorithms: unlearn/algorithms/concept_ablation.md
       - Examples: unlearn/examples/concept_ablation.md
       - Configs: unlearn/configs/concept_ablation.md
 
     - Erase Diff: 
-      - Usage: unlearn/algorithms/erase_diff.md 
+      - Usage of existing unlearn algorithms: unlearn/algorithms/erase_diff.md 
       - Examples: unlearn/examples/erase_diff.md
       - Configs: unlearn/configs/erase_diff.md
 
     - ESD: 
-      - Usage: unlearn/algorithms/esd.md
+      - Usage of existing unlearn algorithms: unlearn/algorithms/esd.md
       - Examples: unlearn/examples/esd.md
       - Configs: unlearn/configs/esd.md
       
     - Forget Me Not: 
-      - Usage: unlearn/algorithms/forget_me_not.md
+      - Usage of existing unlearn algorithms: unlearn/algorithms/forget_me_not.md
       - Examples: unlearn/examples/forget_me_not.md
       - Configs: unlearn/configs/forget_me_not.md
 
     - Saliency Unlearning: 
-      - Usage: unlearn/algorithms/saliency.md
+      - Usage of existing unlearn algorithms: unlearn/algorithms/saliency.md
       - Examples: unlearn/examples/saliency.md
       - Configs: unlearn/configs/saliency.md
 
     - Scissor Hands: 
-      - Usage: unlearn/algorithms/scissorhands.md
+      - Usage of existing unlearn algorithms: unlearn/algorithms/scissorhands.md
       - Examples: unlearn/examples/scissorhands.md
       - Configs: unlearn/configs/scissorhands.md
 
     - Selective Amnesia: 
-      - Usage: unlearn/algorithms/selective_amnesia.md
+      - Usage of existing unlearn algorithms: unlearn/algorithms/selective_amnesia.md
       - Examples: unlearn/examples/selective_amnesia.md
       - Configs: unlearn/configs/selective_amnesia.md
 
     - Semi Permeable Membrane: 
-      - Usage: unlearn/algorithms/semipermeable_membrane.md
+      - Usage of existing unlearn algorithms: unlearn/algorithms/semipermeable_membrane.md
       - Examples: unlearn/examples/semipermeable_membrane.md
       - Configs: unlearn/configs/semipermeable_membrane.md
 
     - Unified Concept Editing: 
-      - Usage: unlearn/algorithms/uce.md
+      - Usage of existing unlearn algorithms: unlearn/algorithms/uce.md
       - Examples: unlearn/examples/uce.md
       - Configs: unlearn/configs/uce.md
 
@@ -83,31 +83,31 @@ nav:
   
     - Utility Eval:
       - Concept Ablation:
-        - Usage: evaluation/concept_ablation.md
+        - Evaluate existing unlearn algorithms: evaluation/concept_ablation.md
         - Config: evaluation/configs/concept_ablation.md
       - Erase Diff: 
-        - Usage: evaluation/erase_diff.md
+        - Evaluate existing unlearn algorithms: evaluation/erase_diff.md
         - Config: evaluation/configs/erase_diff.md
       - ESD: 
-        - Usage: evaluation/esd.md
+        - Evaluate existing unlearn algorithms: evaluation/esd.md
         - Config: evaluation/configs/esd.md
       - Forget Me Not: 
-        - Usage: evaluation/forget_me_not.md
+        - Evaluate existing unlearn algorithms: evaluation/forget_me_not.md
         - Config: evaluation/configs/forget_me_not.md
       - Saliency Unlearning: 
-        - Usage: evaluation/saliency.md
+        - Evaluate existing unlearn algorithms: evaluation/saliency.md
         - Config: evaluation/configs/saliency.md
       - Scissor Hands: 
-        - Usage: evaluation/scissorhands.md
+        - Evaluate existing unlearn algorithms: evaluation/scissorhands.md
         - Config: evaluation/configs/scissorhands.md
       - Semi Permeable Membrane: 
-        - Usage: evaluation/semipermeable_membrane.md
+        - Evaluate existing unlearn algorithms: evaluation/semipermeable_membrane.md
         - Config: evaluation/configs/semipermeable_membrane.md
       - Unified Concept Editing: 
-        - Usage: evaluation/uce.md
+        - Evaluate existing unlearn algorithms: evaluation/uce.md
         - Config: evaluation/configs/uce.md
-      - MU_Defense:
-        - Usage: evaluation/adv_unlearn_evaluation.md
+      - Adv Unlearn:
+        - Evaluate existing unlearn algorithms: evaluation/adv_unlearn_evaluation.md
         - Config: evaluation/configs/adv_unlearn_evaluation.md
 
   - Contributing:
