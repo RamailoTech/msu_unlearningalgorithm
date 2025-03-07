@@ -59,6 +59,7 @@ class UnifiedConceptEditingConfig(BaseConfig):
 # mu/algorithms/unified_concept_editing/configs/evaluation_config.py
 
 import os
+
 from pathlib import Path
 
 from mu.core.base_config import BaseConfig
@@ -69,9 +70,8 @@ current_dir = Path(__file__).parent
 class UceEvaluationConfig(BaseConfig):
 
     def __init__(self, **kwargs):
-        self.ckpt_path = "outputs/uce/finetuned_models/uce_Abstractionism_model.pth"  # path to finetuned model checkpoint
-        self.pipeline_path = "UnlearnCanvas/machine_unlearning/models/diffuser/style50"  # path to pretrained pipeline
-        self.classifier_ckpt_path = "models/classifier_ckpt_path/style50_cls.pth"  # path to classifier checkpoint
+        self.ckpt_path = "outputs/uce/finetuned_models/uce_Abstractionism_model"  # path to finetuned model checkpoint
+        # self.pipeline_path = "UnlearnCanvas/machine_unlearning/models/diffuser/style50"  # path to pretrained pipeline
         self.cfg_text = 9.0  # classifier-free guidance scale
         self.seed = 188  # random seed
         self.task = "class"  # task type
@@ -83,11 +83,8 @@ class UceEvaluationConfig(BaseConfig):
         self.sampler_output_dir = "outputs/eval_results/mu_results/uce"  # directory to save sampler outputs
         self.seed_list = ["188"]  # list of seeds for evaluation
         self.batch_size = 1  # batch size for evaluation
-        self.classification_model = "vit_large_patch16_224"  # classification model for evaluation
-        self.eval_output_dir = "outputs/eval_results/mu_results/uce"  # directory to save evaluation results
-        self.reference_dir = "data/quick-canvas-dataset/sample/"  # path to the original dataset
-        self.forget_theme = "Bricks"  # theme to forget
-        self.multiprocessing = False  # whether to use multiprocessing
+        self.dataset_type = "unlearncanvas"
+        self.use_sample = True
 
         # Override defaults with any provided kwargs
         for key, value in kwargs.items():
@@ -99,16 +96,10 @@ class UceEvaluationConfig(BaseConfig):
         """
         if not os.path.exists(self.ckpt_path):
             raise FileNotFoundError(f"Checkpoint file {self.ckpt_path} does not exist.")
-        if not os.path.exists(self.pipeline_path):
-            raise FileNotFoundError(f"Pipeline directory {self.pipeline_path} does not exist.")
-        if not os.path.exists(self.classifier_ckpt_path):
-            raise FileNotFoundError(f"Classifier checkpoint file {self.classifier_ckpt_path} does not exist.")
-        if not os.path.exists(self.reference_dir):
-            raise FileNotFoundError(f"Reference directory {self.reference_dir} does not exist.")
-        if not os.path.exists(self.eval_output_dir):
-            os.makedirs(self.eval_output_dir)
         if not os.path.exists(self.sampler_output_dir):
             os.makedirs(self.sampler_output_dir)
+        if self.dataset_type not in ["unlearncanvas", "i2p", "generic"]:
+            raise ValueError(f"Unknown dataset type: {self.dataset_type}")
 
         if self.cfg_text <= 0:
             raise ValueError("Classifier-free guidance scale (cfg_text) should be positive.")

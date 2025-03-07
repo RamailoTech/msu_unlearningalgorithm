@@ -419,3 +419,74 @@ This section defines the high-level configuration for the attack.
 
 
 
+#### **Running the Evaluation Framework**
+
+Create a file, eg, `evaluate.py` and use examples and modify your configs to run the evalautions.  
+
+**Example Code**
+
+```python
+from evaluation.metrics.asr import asr_score
+from evaluation.metrics.clip import clip_score
+from evaluation.metrics.fid import fid_score
+
+
+root = "results/hard_prompt_esd_nudity_P4D_erase_diff/P4d"
+root_no_attack ="results/no_attack_esd_nudity_P4D_abstrctionism/NoAttackEsdNudity"
+
+asr_val = asr_score(root, root_no_attack)
+print(asr_val)
+
+images = "results/hard_prompt_esd_nudity_P4D_erase_diff_compvis_to_diffuser/P4d/images"
+prompt_path = "results/hard_prompt_esd_nudity_P4D_erase_diff_compvis_to_diffuser/P4d/log.json"
+device = "0"
+clip_val = clip_score(images, prompt_path, device)
+
+print(clip_val)
+
+gen_path = "results/hard_prompt_esd_nudity_P4D_erase_diff/P4d/images"
+ref_path = "data/i2p/nude"
+fid_val = fid_score(gen_path,ref_path)
+print(fid_val)
+```
+
+**Running the Training Script in Offline Mode**
+
+```bash
+WANDB_MODE=offline python evaluate.py
+```
+
+
+**Evaluation Metrics:**
+
+* Attack Succes Rate (ASR)
+
+* Fréchet inception distance(FID): evaluate distributional quality of image generations, lower is better.
+
+* CLIP score : measure contextual alignment with prompt descriptions, higher is better.
+
+
+**Configuration File Structure for Evaluator**
+
+* ASR Evaluator Configuration
+
+    - root: Directory containing results with attack.
+    - root-no-attack: Directory containing results without attack.
+
+* Clip Evaluator Configuration
+
+    - image_path: Path to the directory containing generated images to evaluate.
+    - devices: Device ID(s) to use for evaluation. Example: "0" for the first GPU or "0,1" for multiple GPUs.
+    - log_path: Path to the log file containing prompt for the generated images.
+    - model_name_or_path: Path or model name for the pre-trained CLIP model. Default is "openai/clip-vit-base-patch32".
+
+* FID Evaluator Configuration
+
+    - ref_batch_path: Path to the directory containing reference images.
+    - sample_batch_path: Path to the directory containing generated/sample images.
+
+* Global Configuration
+
+    - output_path: Path to save the evaluation results as a JSON file.
+
+

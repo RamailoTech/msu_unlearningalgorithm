@@ -109,7 +109,7 @@ After you install the package, you can use the following commands to download.
     ```
     download_best_onnx
     ```
-    
+
 **Verify the Downloaded Files**
 
 After downloading, verify that the datasets have been correctly extracted:
@@ -217,11 +217,53 @@ algorithm = SaliencyUnlearningAlgorithm(
 algorithm.run()
 ```
 
+**Run on your won dataset**
+
+**Step-1: Generate your own dataset**
+
+```bash
+generate_images_for_prompts --model_path models/diffuser/style50 --csv_path data/prompts/generic_data.csv
+```
+
+Note:
+
+* generate_images_for_prompts: This command invokes the image generation script. It uses a diffusion model to generate images based on textual prompts.
+
+* --model_path: Specifies the path to the diffusion model to be used for image generation. In this example, the model is located at models/diffuser/style50.
+
+* --csv_path: Provides the path to a CSV file containing the prompts. Each prompt in this CSV will be used to generate an image, allowing you to build a dataset tailored to your needs.
+
+
+**Step-2: Train on your own dataset**
+
+```python
+from mu.algorithms.saliency_unlearning.algorithm import (
+    SaliencyUnlearnAlgorithm,
+)
+from mu.algorithms.saliency_unlearning.configs import (
+    saliency_unlearning_train_mu,
+)
+
+algorithm = SaliencyUnlearnAlgorithm(
+    saliency_unlearning_train_mu,
+    raw_dataset_dir=(
+        "data/generic" #replace with your own generated path
+    ),
+    ckpt_path="models/compvis/style50/compvis.ckpt",
+    output_dir="/opt/dlami/nvme/outputs",
+    dataset_type = "generic",
+    template_name = "self-harm"
+
+)
+algorithm.run()
+```
+
 **Running the Training Script in Offline Mode**
 
 ```bash
 WANDB_MODE=offline python my_trainer.py
 ```
+
 
 **How It Works** 
 * Default Values: The script first loads default values from the train config file as in configs section.
@@ -407,9 +449,9 @@ The following configs are used to fine-tune the Stable Diffusion model to perfor
     * Type: str
     * Example: 'path/processed_dataset_dir'
 
-* dataset_type: Specifies the type of dataset to use for training.
+* dataset_type: Specifies the type of dataset to use for training. Use `generic` as type if you want to use your own dataset.
 
-    * Choices: unlearncanvas, i2p
+    * Choices: unlearncanvas, i2p, generic
     * Type: str
     * Example: i2p
 

@@ -148,7 +148,7 @@ algorithm = ForgetMeNotAlgorithm(
 algorithm.run(train_type="train_ti")
 ```
 
-**Running the Script in Offlikne Mode**
+**Running the Script in Offline Mode**
 
 ```bash
 WANDB_MODE=offline python my_trainer_ti.py
@@ -237,7 +237,67 @@ algorithm.run(train_type="train_attn")
 ```
 
 
-**Running the Script in Offlikne Mode**
+**Run on your won dataset**
+
+**Step-1: Generate your own dataset**
+
+```bash
+generate_images_for_prompts --model_path models/diffuser/style50 --csv_path data/prompts/generic_data.csv
+```
+
+Note:
+
+* generate_images_for_prompts: This command invokes the image generation script. It uses a diffusion model to generate images based on textual prompts.
+
+* --model_path: Specifies the path to the diffusion model to be used for image generation. In this example, the model is located at models/diffuser/style50.
+
+* --csv_path: Provides the path to a CSV file containing the prompts. Each prompt in this CSV will be used to generate an image, allowing you to build a dataset tailored to your needs.
+
+
+**Step-2: Train  text inversion on your own dataset**
+
+```python
+from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from mu.algorithms.forget_me_not.configs import (
+    forget_me_not_train_ti_mu,
+)
+
+algorithm = ForgetMeNotAlgorithm(
+    forget_me_not_train_ti_mu,
+    ckpt_path="models/diffuser/style50",
+    raw_dataset_dir=(
+        "data/generic" #replace with your own generated path
+    ), 
+    steps=10,
+    template_name = "self-harm",
+    dataset_type = "generic"
+)
+algorithm.run(train_type="train_ti")
+```
+
+**Perform Unlearning on your own dataset**
+
+```python
+from mu.algorithms.forget_me_not.algorithm import ForgetMeNotAlgorithm
+from mu.algorithms.forget_me_not.configs import (
+    forget_me_not_train_attn_mu,
+)
+
+algorithm = ForgetMeNotAlgorithm(
+    forget_me_not_train_attn_mu,
+    ckpt_path="models/diffuser/style50",
+    raw_dataset_dir=(
+        "data/generic" #replace with your own generated path
+    ),
+    steps=10,
+    ti_weights_path="outputs/forget_me_not/ti_models/step_inv_10.safetensors",
+    template_name = "self-harm",
+    dataset_type = "generic"
+)
+algorithm.run(train_type="train_attn")
+```
+
+**Running the Script in Offline Mode**
 
 ```bash
 WANDB_MODE=offline python my_trainer_attn.py
@@ -280,7 +340,7 @@ WANDB_MODE=offline python my_trainer_attn.py
 
 - **raw_dataset_dir**: Directory containing the original dataset organized by themes and classes.
 - **processed_dataset_dir**: Directory where the processed datasets will be saved.
-- **dataset_type**: Type of dataset to use (e.g., `unlearncanvas`).
+- **dataset_type**: Type of dataset to use (e.g., `unlearncanvas`). Use `generic` as type if you want to use your own dataset. Valid choices are `unlearncanvas`, `i2p` and `generic`.
 - **template**: Type of template to use (e.g., `style`).
 - **template_name**: Name of the template, defining the style or theme (e.g., `Abstractionism`).
 - **use_sample**: Boolean indicating whether to use the sample dataset for training.

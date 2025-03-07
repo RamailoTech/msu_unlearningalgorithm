@@ -112,7 +112,7 @@ After you install the package, you can use the following commands to download.
     ```
     download_best_onnx
     ```
-    
+
 **Verify the Downloaded Files**
 
 After downloading, verify that the datasets have been correctly extracted:
@@ -271,11 +271,8 @@ WANDB_MODE=offline python my_trainer.py
 
 * Boolean to indicate whether to use the sample dataset for training.
 
-**dataset_type**
-
-* Type of dataset to use, options are unlearncanvas or i2p.
-
 **template**
+
 * Specifies the template type, choices are:
     * object: Focus on specific objects.
     * style: Focus on artistic styles.

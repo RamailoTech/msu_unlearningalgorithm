@@ -168,6 +168,40 @@ algorithm = EraseDiffAlgorithm(
 algorithm.run()
 ```
 
+**Use your own dataset for unlearning**
+
+**Step-1: Generate your own dataset**
+
+```bash
+generate_images_for_prompts --model_path models/diffuser/style50 --csv_path data/prompts/generic_data.csv
+```
+
+Note:
+
+* generate_images_for_prompts: This command invokes the image generation script. It uses a diffusion model to generate images based on textual prompts.
+
+* --model_path: Specifies the path to the diffusion model to be used for image generation. In this example, the model is located at models/diffuser/style50.
+
+* --csv_path: Provides the path to a CSV file containing the prompts. Each prompt in this CSV will be used to generate an image, allowing you to build a dataset tailored to your needs.
+
+
+**Step-2: Train on your own dataset**
+
+```python
+from mu.algorithms.erase_diff.algorithm import EraseDiffAlgorithm
+from mu.algorithms.erase_diff.configs import erase_diff_train_mu
+
+algorithm = EraseDiffAlgorithm(
+    erase_diff_train_mu,
+    ckpt_path="models/compvis/style50/compvis.ckpt",
+    raw_dataset_dir="data/generic", #replace with your own generated path
+    train_method="noxattn",
+    dataset_type="generic",
+    template_name = "self-harm"
+)
+algorithm.run()
+```
+
 **Running the Training Script in Offline Mode**
 
 ```bash
@@ -248,9 +282,9 @@ WANDB_MODE=offline python my_trainer.py
     * Type: str
     * Example: "/path/to/processed_dataset"
 
-* dataset_type: Specifies the dataset type for the training process.
+* dataset_type: Specifies the dataset type for the training process. Use `generic` as type if you want to use your own dataset.
 
-    * Choices: ["unlearncanvas", "i2p"]
+    * Choices: ["unlearncanvas", "i2p", "generic"]
     * Example: "unlearncanvas"
 
 * template: Type of template to use during training.

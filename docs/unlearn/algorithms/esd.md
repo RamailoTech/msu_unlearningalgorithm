@@ -169,6 +169,40 @@ algorithm = ESDAlgorithm(
 algorithm.run()
 ```
 
+**Run on your won dataset**
+
+**Step-1: Generate your own dataset**
+
+```bash
+generate_images_for_prompts --model_path models/diffuser/style50 --csv_path data/prompts/generic_data.csv
+```
+
+Note:
+
+* generate_images_for_prompts: This command invokes the image generation script. It uses a diffusion model to generate images based on textual prompts.
+
+* --model_path: Specifies the path to the diffusion model to be used for image generation. In this example, the model is located at models/diffuser/style50.
+
+* --csv_path: Provides the path to a CSV file containing the prompts. Each prompt in this CSV will be used to generate an image, allowing you to build a dataset tailored to your needs.
+
+
+**Step-2: Train on your own dataset**
+
+```python
+from mu.algorithms.esd.algorithm import ESDAlgorithm
+from mu.algorithms.esd.configs import esd_train_mu
+
+algorithm = ESDAlgorithm(
+    esd_train_mu,
+    ckpt_path="models/compvis/style50/compvis.ckpt",
+    raw_dataset_dir = "data/generic_data",
+    dataset_type = "generic",
+    train_method="noxattn",
+    devices = "0"
+)
+algorithm.run()
+```
+
 **Running the Training Script in Offline Mode**
 
 ```bash
@@ -257,10 +291,10 @@ These parameters specify the Stable Diffusion model checkpoint and configuration
 
 These parameters define the dataset type and template for training, specifying whether to focus on objects, styles, or inappropriate content.
 
-* dataset_type: Type of dataset used for training.
+* dataset_type: Type of dataset used for training. Use `generic` as type if you want to use your own dataset.
 
     * Type: str
-    * Choices: unlearncanvas, i2p
+    * Choices: unlearncanvas, i2p, generic
     * Example: unlearncanvas
 
 * template: Type of concept or style to erase during training.

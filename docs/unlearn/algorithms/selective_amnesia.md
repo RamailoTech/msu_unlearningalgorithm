@@ -185,6 +185,42 @@ algorithm.run()
 
 ```
 
+**Step-1: Generate your own dataset**
+
+```bash
+generate_images_for_prompts --model_path models/diffuser/style50 --csv_path data/prompts/generic_data.csv
+```
+
+Note:
+
+* generate_images_for_prompts: This command invokes the image generation script. It uses a diffusion model to generate images based on textual prompts.
+
+* --model_path: Specifies the path to the diffusion model to be used for image generation. In this example, the model is located at models/diffuser/style50.
+
+* --csv_path: Provides the path to a CSV file containing the prompts. Each prompt in this CSV will be used to generate an image, allowing you to build a dataset tailored to your needs.
+
+
+**Step-2: Train on your own dataset**
+
+```python
+    from mu.algorithms.selective_amnesia.algorithm import SelectiveAmnesiaAlgorithm
+    from mu.algorithms.selective_amnesia.configs import (
+        selective_amnesia_config_quick_canvas,
+    )
+
+    algorithm = SelectiveAmnesiaAlgorithm(
+        selective_amnesia_config_quick_canvas,
+        ckpt_path="models/compvis/style50/compvis.ckpt", 
+        raw_dataset_dir="data/generic", #use your own path
+        dataset_type = "generic",
+        template_name = "self-harm",
+        replay_prompt_path = "mu/algorithms/selective_amnesia/data/fim_prompts_sample.txt"
+    )
+    algorithm.run()
+```
+
+**Run the script**
+
 
 ```bash
 WANDB_MODE=offline python my_trainer.py
@@ -241,8 +277,8 @@ WANDB_MODE=offline python my_trainer.py
     * Type: str
     * Example: "/path/to/processed_dataset"
 
-* **dataset_type:** Specifies the dataset type for training.
-    * Choices: ["unlearncanvas", "i2p"]
+* **dataset_type:** Specifies the dataset type for training. Use `generic` as type if you want to use your own dataset.
+    * Choices: ["unlearncanvas", "i2p", "generic"]
     * Example: "unlearncanvas"
 
 * **template:** Type of template to use during training.
