@@ -108,7 +108,7 @@ install_deps = [
 
 setup(
     name="unlearn_diff",
-    version="2.0.2",  
+    version="2.0.3",  
     author="nebulaanish",
     author_email="nebulaanish@gmail.com",
     description="Unlearning Algorithms",
