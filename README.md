@@ -180,33 +180,11 @@ pip install unlearn_diff
 
  After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:
 
- ```bash
-pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
-```
-
 ```bash
-pip install git+https://github.com/openai/CLIP.git@main#egg=clip
+pip install git+https://github.com/CompVis/taming-transformers.git@master git+https://github.com/openai/CLIP.git@main git+https://github.com/crowsonkb/k-diffusion.git git+https://github.com/cocodataset/panopticapi.git git+https://github.com/Phoveran/fastargs.git@main git+https://github.com/boomb0om/text2image-benchmark
 ```
-
-```bash
-pip install git+https://github.com/crowsonkb/k-diffusion.git
-```
-
-```bash
-pip install git+https://github.com/cocodataset/panopticapi.git
-```
-
-```bash
-pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
-```
-
-```bash
-pip install git+https://github.com/boomb0om/text2image-benchmark
-```
-
 
 The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
-
 
 
 ### Downloading data and models.
