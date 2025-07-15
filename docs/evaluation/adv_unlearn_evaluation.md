@@ -24,6 +24,13 @@ evaluator = MUDefenseEvaluator(config=mu_defense_evaluation_config) #default con
 gen_image_path = evaluator.generate_images() #generate images for evaluation
 print(gen_image_path)  
 
+fid, _ = fid_score(generated_image_dir=gen_images_path) #Defaults to the COCO dataset if reference_image_dir is not provided."
+print(fid)
+
+clip_score = clip_score() #Defaults to the COCO dataset if image path is not provided."
+print(clip_score)
+
+#optionally provide your own dataset paths
 prompt_path = "data/prompts/sample_prompt.csv"
 ref_image_path = "coco_dataset/extracted_files/coco_sample"
 device = "0"

@@ -75,3 +75,9 @@ After you install the package, you can use the following commands to download.
     ```
     download_best_onnx
     ```
+
+4. **Download coco dataset**
+
+  ```
+  download_coco_dataset
+  ```
