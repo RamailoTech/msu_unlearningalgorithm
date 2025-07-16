@@ -65,10 +65,6 @@ nav:
         - Config: mu_attack/configs/no_attack.md
 
     - Robustness Eval UnlearnDiffAtk:
-      - Hard Prompt: 
-        - Usage: mu_attack/attack/hard_prompt.md
-        - Config: mu_attack/configs/hard_prompt.md
-
       - Random:
         - Usage: mu_attack/attack/random.md
         - Config: mu_attack/configs/random.md
@@ -77,9 +73,20 @@ nav:
         - Usage: mu_attack/attack/seed_search.md
         - Config: mu_attack/configs/seed_search.md
 
+      - Soft Prompt:
+        - Usage: mu_attack/attack/soft_prompt.md
+        - Config: mu_attack/configs/soft_prompt.md
+
+    - UnlearnDiffAtk:
+      - Hard Prompt: 
+        - Usage: mu_attack/attack/UnlearnDiffAttack/hard_prompt.md
+        - Config: mu_attack/configs/hard_prompt.md
+        
       - Text Grad:
-        - Usage: mu_attack/attack/text_grad.md
+        - Usage: mu_attack/attack/UnlearnDiffAttack/text_grad.md
         - Config: mu_attack/configs/text_grad.md
+
+
   
     - Utility Eval:
       - Concept Ablation:

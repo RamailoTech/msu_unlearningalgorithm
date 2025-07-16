@@ -1,3 +1,8 @@
+#### Text Grad attack
+
+A Text Grad attack is a type of white-box adversarial attack specifically adapted for text-based models. It operates by using the model's gradients—a measure of how the model's output changes with respect to its input—to craft adversarial text samples. Because text is discrete, the attack uses these gradients to pinpoint the most influential words or tokens in the input. These critical components are then strategically replaced with alternatives, such as synonyms, to mislead the model while appearing plausible to a human reader.
+
+
 ### Generate Dataset
 
 Before running attacks you need to generate dataset. Run the following command into the terminal.
@@ -91,6 +96,7 @@ def run_attack_for_nudity():
 
     }
 
+    # by default it takes text grad's config
     MUAttack(
         config=text_grad_esd_nudity_classifier_diffuser_config,
         **overridable_params

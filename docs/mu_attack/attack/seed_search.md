@@ -1,3 +1,7 @@
+#### Seed search Attack
+In the context of adversarial attacks, a seed search involves methods that aim to find an optimal starting point or "seed" for generating an attack. Instead of starting with a random input, the attacker searches for an initial value or prompt that is more likely to be successfully manipulated into an adversarial example that fools the model. This can make the attack generation process more efficient and effective.
+
+
 ### Generate Dataset
 
 Before running attacks you need to generate dataset. Run the following command into the terminal.

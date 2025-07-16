@@ -1,5 +1,5 @@
 
-## UnlearnDiffAttak
+## UnlearnDiffAttack
 
 This project implements a novel adversarial unlearning framework designed to perform soft prompt attacks on diffusion models. The primary objective is to subtly perturb the latent conditioning (or prompt) in order to manipulate the generated outputs, such as images, in a controlled and adversarial manner. 
 

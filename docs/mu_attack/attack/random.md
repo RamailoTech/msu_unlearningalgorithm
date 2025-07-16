@@ -1,3 +1,6 @@
+#### Random attack
+This describes a simple baseline attack method where random perturbations or noise are added to the input prompts. The goal is to test the model's robustness and see if random, unstructured changes can cause it to fail, produce errors, or behave in unexpected ways. It's often used as a benchmark to compare against more sophisticated, targeted attack methods.
+
 
 ### Generate Dataset
 

@@ -1,3 +1,6 @@
+#### No attack
+This term serves as a baseline or control condition in adversarial testing. It represents the model's standard behavior when it is not subjected to any specific attack method. This allows researchers to measure the effectiveness and impact of different attack algorithms by comparing the model's performance under attack to its normal, "no attack" operation.
+
 ### Generate Dataset
 
 Before running attacks you need to generate dataset. Run the following command in terminal.
