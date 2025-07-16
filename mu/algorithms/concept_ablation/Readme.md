@@ -87,14 +87,14 @@ After you install the package, you can use the following commands to download.
      ```
      download_data full i2p
      ```
-  - **quick_canvas**:
+  - **unlearn_canvas**:
     - **Sample**:
      ```
-     download_data sample quick_canvas
+     download_data sample unlearn_canvas
      ```
     - **Full**:
      ```
-     download_data full quick_canvas
+     download_data full unlearn_canvas
      ```
 
 2. **Model**:
@@ -121,7 +121,7 @@ ls -lh ./data/quick-canvas-dataset/sample/
 ```
 ---
 
-### Example usage for quick canvas dataset
+### Example usage for Unlearn Canvas dataset
 
 Add the following code snippet to a python script `trainer.py`. Run the script using `python trainer.py`.
 

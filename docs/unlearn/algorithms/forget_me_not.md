@@ -2,7 +2,7 @@
 **Run Train**
 Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
-**Train a Text Inversion using quick canvas dataset**
+**Train a Text Inversion using Unlearn Canvas dataset**
 
 Before finetuning the model you need to generate safetensors.
 
@@ -34,7 +34,7 @@ algorithm.run(train_type="train_ti")
 WANDB_MODE=offline python my_trainer_ti.py
 ```
 
-2. **Perform Unlearning using quick canvas dataset**
+2. **Perform Unlearning using Unlearn Canvas dataset**
 
 Before running the `train_attn` script, update the `ti_weights_path` parameter in the configuration file to point to the output generated from the Text Inversion (train_ti.py) stage
 

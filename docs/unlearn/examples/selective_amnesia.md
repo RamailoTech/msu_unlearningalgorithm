@@ -11,11 +11,11 @@ wget https://huggingface.co/ajrheng/selective-amnesia/resolve/main/full_fisher_d
 ```python
 from mu.algorithms.selective_amnesia.algorithm import SelectiveAmnesiaAlgorithm
 from mu.algorithms.selective_amnesia.configs import (
-    selective_amnesia_config_quick_canvas,
+    selective_amnesia_config_unlearn_canvas,
 )
 
 algorithm = SelectiveAmnesiaAlgorithm(
-    selective_amnesia_config_quick_canvas
+    selective_amnesia_config_unlearn_canvas
 )
 algorithm.run()
 
@@ -28,11 +28,11 @@ View the config docs to see a list of available parameters.
 ```python
 from mu.algorithms.selective_amnesia.algorithm import SelectiveAmnesiaAlgorithm
 from mu.algorithms.selective_amnesia.configs import (
-    selective_amnesia_config_quick_canvas,
+    selective_amnesia_config_unlearn_canvas,
 )
 
 algorithm = SelectiveAmnesiaAlgorithm(
-    selective_amnesia_config_quick_canvas,
+    selective_amnesia_config_unlearn_canvas,
     ckpt_path="models/compvis/style50/compvis.ckpt",
     raw_dataset_dir=(
         "data/quick-canvas-dataset/sample"

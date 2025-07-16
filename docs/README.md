@@ -33,107 +33,100 @@ For detailed information on each algorithm, please refer to the respective `READ
 
 The project is organized to facilitate scalability and maintainability.
 
-- **`data/`**: Stores data-related files.
-  - **`i2p-dataset/`**: contains i2p-dataset
-    - **`sample/`**: Sample dataset
-    - **`full/`**: Full dataset
+```
+.
+├── data/
+│   ├── i2p-dataset/
+│   │   ├── sample/
+│   │   └── full/
+│   └── unlearn-canvas-dataset/ # Renamed for clarity
+│       ├── sample/
+│       └── full/
+│
+├── docs/                 # Documentation, API references, user guides
+│
+├── models/               # Pre-trained model weights (e.g., Stable Diffusion, LORAs)
+│
+├── notebooks/            # Example notebooks and experimental code (merges 'examples/')
+│
+├── outputs/              # All generated outputs (images, artifacts) from runs
+│
+├── scripts/              # Standalone utility scripts
+│   ├── download_models.py
+│   └── prepare_datasets.py
+│
+├── src/                  # Centralized source code for the entire application
+│   │
+│   ├── mu/         # Core unlearning logic (previously 'mu/')
+│   │   ├── __init__.py
+│   │   ├── algorithms/
+│   │   │   ├── esd/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── algorithm.py      # Core ESD implementation
+│   │   │   │   ├── configs/          # ESD-specific configs
+│   │   │   │   ├── model.py          # ESD-specific model
+│   │   │   │   ├── trainer.py        # ESD-specific trainer
+│   │   │   │   └── utils.py          # ESD-specific utilities
+│   │   │   └── ca/
+│   │   │       └── ... # etc.
+│   │   ├── core/               # Base classes shared across unlearning algorithms
+│   │   │   ├── base_algorithm.py
+│   │   │   ├── base_trainer.py
+│   │   │   └── base_model.py
+│   │   └── datasets/               # Data handling and loading modules
+│   │       ├── __init__.py
+│   │       ├── base_handler.py
+│   │       └── unlearn_canvas.py
+│   │
+│   ├── attack/             # Attack logic (previously 'mu_attack/')
+│   │   ├── __init__.py
+│   │   ├── algorithms/         # Specific attack implementations (previously 'attackers/')
+│   │   ├── configs/
+│   │   │   ├── illegal/
+│   │   │   └── ...
+│   │   └── tasks/              # Attack tasks (nudity, violence, etc.)
+│   │
+│   ├── defense/            # Defense logic (previously 'mu_defense/')
+│   │   ├── __init__.py
+│   │   └── algorithms/
+│   │       └── adv_unlearn/
+│   │           ├── __init__.py
+│   │           ├── algorithm.py
+│   │           ├── configs/
+│   │           ├── model.py
+│   │           ├── trainer.py
+│   │           └── image_generator.py
+│   │
+│   ├── evaluation/         # Centralized evaluation framework
+│   │   ├── __init__.py
+│   │   ├── evaluator.py      # Main evaluator runner script
+│   │   ├── metrics/
+│   │   │   ├── accuracy.py
+│   │   │   ├── asr.py
+│   │   │   ├── clip.py
+│   │   │   └── fid.py
+│   │   └── utils/              # Evaluation-specific utilities (e.g., log parsers)
+│   │       └── parser.py
+│   │
+│   └── utils/                # Project-wide shared utilities
+│       ├── __init__.py
+│       ├── logger.py
+│       └── path_setup.py
+│
+├── tests/                # All tests for the source code
+│   ├── test_unlearning.py
+│   ├── test_attack.py
+│   └── test_evaluation.py
+│
+├── environment.yaml      # Project-wide environment dependencies
+├── main.py               # Main entry point to run training, evaluation, etc.
+└── README.md             # Project overview and setup instructions
+```
 
-  - **`quick-canvas-dataset/`**: contains quick canvas dataset
-    - **`sample/`**: Sample dataset
-    - **`full/`**: Full dataset
-
-- **`docs/`**: Documentation, including API references and user guides.
-
-- **`outputs/`**: Outputs of the trained algorithms.
-
-- **`examples/`**: Sample code and notebooks demonstrating usage.
-
-- **`logs/`**: Log files for debugging and auditing.
-
-- **`models/`**: Repository of lora_diffusion and stable_diffusion.
-
-- **`evaluation/`**: Contains metrics for evalaution.
-  - **`core/`**:Foundational classes.
-    - **`base_evaluator.py`**: Base class for evaluation.
-    - **`mu_defense_base_image_generator.py`**: Base class for image generation.
-  - **`helpers/`**: Utility functions and helpers.
-    - **`parser.py`**: Parse attack logs for evaluation.
-    - **`utils.py`**: Utility function.
-  - **`metrics/`**: Contains metrics for evalaution.
-    - **`accuracy.py`**
-    - **`asr.py`**
-    - **`clip.py`**
-    - **`fid.py`**
-
-- **`mu/`**: Core source code.
-  - **`algorithms/`**: Implementation of various algorithms. Each algorithm has its own subdirectory containing code and a `README.md` with detailed documentation.
-    - **`esd/`**: ESD algorithm components.
-      - `README.md`: Documentation specific to the ESD algorithm.
-      - `algorithm.py`: Core implementation of ESD.
-      - `configs/`: Configuration files for training and generation tasks.
-      - `constants/const.py`: Constant values used across the ESD algorithm.
-      - `environment.yaml`: Environment setup for ESD.
-      - `model.py`: Model architectures specific to ESD.
-      - `sampler.py`: Sampling methods used during training or inference.
-      - `scripts/train.py`: Training script for ESD.
-      - `evaluator.py`: Script that generates necessary outputs for evaluation.
-      - `trainer.py`: Training routines and optimization strategies.
-      - `utils.py`: Utility functions and helpers.
-    - **`ca/`**: Components for the CA algorithm.
-      - `README.md`: Documentation specific to the CA algorithm.
-      - *...and so on for other algorithms*
-  - **`core/`**: Foundational classes and utilities.
-    - `base_algorithm.py`: Abstract base class for algorithm implementations.
-    - `base_data_handler.py`: Base class for data handling.
-    - `base_model.py`: Base class for model definitions.
-    - `base_sampler.py`: Base class for sampling methods.
-    - `base_trainer.py`: Base class for training routines.
-  - **`datasets/`**: Dataset management and utilities.
-    - `__init__.py`: Initializes the dataset package.
-    - `dataset.py`: Dataset classes and methods.
-    - `helpers/`: Helper functions for data processing.
-    - `unlearning_canvas_dataset.py`: Specific dataset class for unlearning tasks.
-  - **`helpers/`**: Utility functions and helpers.
-    - `helper.py`: General-purpose helper functions.
-    - `logger.py`: Logging utilities to standardize logging practices.
-    - `path_setup.py`: Path configurations and environment setup.
-
-- **`tests/`**: Test suites for ensuring code reliability.
-- **`mu_attack/`**: Implementation of attack algorithms.
-  - **`attackers/`**: Contains different types of attackers.
-  - **`configs/`**: Configurations file.
-    - **`illegal/`**: config for illegal task.
-    - **`nudity/`**: config for nudity task.
-    - **`object/`**: config for object task.
-    - **`style/`**: config for style task.
-    - **`violence/`**: config for violence task.
-  - **`core/`**: Foundational classes.
-  - **`datasets/`**: script to generate dataset.
-  - **`exces/`**: Script to run attack
-  - **`tasks/`**: Implementation of tasks
-  - **`helpers/`**: Utility functions
-
-- **`mu_defense/`**: Implementation of Advunlearn algorithms.
-  - **`algorithms/`**: Implementation of various defense algorithms. Each algorithm has its own subdirectory containing code and a `README.md` with detailed documentation.
-    - **`adv_unlearn/`**: Adversial Unlearn algorithm components.
-      - `README.md`: Documentation specific to the advunlearn algorithm.
-      - `algorithm.py`: Core implementation of advunlearn.
-      - `configs/`: Configuration files for training and generation tasks.
-      - `model.py`: Model architectures specific to advunlearn.
-      - `image_generator.py`: Image generator methods for generating sample images for evaluation.
-      - `evaluator.py`: Script that generates necessary outputs for evaluation.
-      - `dataset_handler.py`: Dataset handler for advunlearn algorithm. 
-      - `compvis_trainer.py`: training loop for CompVis models.
-      - `diffuser_trainer.py`: training loop for diffuser models.
-      - `trainer.py`: Trainer class orchestrates the adversarial unlearning training process.
-      - `utils.py`: Utility functions and helpers.
-- **`scripts.py`**: Commands to generate datasets and download models.
-- **`notebooks/`**: Contains example implementation.
-- **`tests/`**: Contains pytests.
 
 ## Datasets
 
-We use the Quick Canvas benchmark dataset, available [here](https://huggingface.co/datasets/nebulaanish/quick-canvas-benchmark). Currently, the algorithms are trained using 5 images belonging to the themes of **Abstractionism** and **Architectures**.
+We use the Unlearn Canvas benchmark dataset, available [here](https://huggingface.co/datasets/nebulaanish/quick-canvas-benchmark). Currently, the algorithms are trained using 5 images belonging to the themes of **Abstractionism** and **Architectures**.
 
 
 ## Usage
@@ -220,14 +213,14 @@ After you install the package, you can use the following commands to download.
      ```
      download_data full i2p
      ```
-  - **quick_canvas**:
+  - **unlearn_canvas**:
     - **Sample**:
      ```
-     download_data sample quick_canvas
+     download_data sample unlearn_canvas
      ```
     - **Full**:
      ```
-     download_data full quick_canvas
+     download_data full unlearn_canvas
      ```
 
 2. **Model**:

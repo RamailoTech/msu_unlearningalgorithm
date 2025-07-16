@@ -9,17 +9,17 @@ wget https://huggingface.co/ajrheng/selective-amnesia/resolve/main/full_fisher_d
 
 Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
-**Using quick canvas dataset**
+**Using Unlearn Canvas dataset**
 
 
 ```python
 from mu.algorithms.selective_amnesia.algorithm import SelectiveAmnesiaAlgorithm
 from mu.algorithms.selective_amnesia.configs import (
-    selective_amnesia_config_quick_canvas,
+    selective_amnesia_config_unlearn_canvas,
 )
 
 algorithm = SelectiveAmnesiaAlgorithm(
-    selective_amnesia_config_quick_canvas,
+    selective_amnesia_config_unlearn_canvas,
     ckpt_path="models/compvis/style50/compvis.ckpt",
     raw_dataset_dir=(
         "data/quick-canvas-dataset/sample"

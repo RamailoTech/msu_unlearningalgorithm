@@ -70,14 +70,14 @@ pip install git+https://github.com/boomb0om/text2image-benchmark
 After you install the package, you can use the following commands to download.
 
 1. **Dataset**:
-  - **quick_canvas**:
+  - **unlearn_canvas**:
     - **Sample**:
      ```
-     download_data sample quick_canvas
+     download_data sample unlearn_canvas
      ```
     - **Full**:
      ```
-     download_data full quick_canvas
+     download_data full unlearn_canvas
      ```
 
 2. **Model**:

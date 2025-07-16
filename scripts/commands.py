@@ -21,16 +21,16 @@ def execute_script(script_path, *args):
 
 
 def download_data(dataset_type, dataset_name):
-    """Handles data download for i2p or quick_canvas."""
-    if dataset_name not in ["i2p", "quick_canvas"]:
-        sys.exit("Error: dataset_name must be 'i2p' or 'quick_canvas'.")
+    """Handles data download for i2p or unlearn_canvas."""
+    if dataset_name not in ["i2p", "unlearn_canvas"]:
+        sys.exit("Error: dataset_name must be 'i2p' or 'unlearn_canvas'.")
 
     if dataset_type not in ["full", "sample"]:
         sys.exit("Error: dataset_type must be 'full' or 'sample'.")
 
     script_map = {
         "i2p": os.path.join(BASE_DIR, "download_i2p_dataset.sh"),
-        "quick_canvas": os.path.join(BASE_DIR, "download_quick_canvas_dataset.sh"),
+        "unlearn_canvas": os.path.join(BASE_DIR, "download_unlearn_canvas_dataset.sh"),
     }
 
     script_path = script_map[dataset_name]
@@ -90,7 +90,7 @@ def download_data_cli():
     )
     parser.add_argument(
         "dataset_name",
-        choices=["i2p", "quick_canvas"],
+        choices=["i2p", "unlearn_canvas"],
         help="Name of the dataset to download.",
     )
     args = parser.parse_args()

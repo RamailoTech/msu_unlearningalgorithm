@@ -9,8 +9,8 @@ and execute it with `python my_trainer.py` or use `WANDB_MODE=offline python my_
 from mu.algorithms.semipermeable_membrane.algorithm import (
     SemipermeableMembraneAlgorithm,
 )
-from mu.algorithms.semipermeable_membrane.configs import semipermiable_membrane_train_config_quick_canvas
-algorithm = SemipermeableMembraneAlgorithm(semipermiable_membrane_train_config_quick_canvas)
+from mu.algorithms.semipermeable_membrane.configs import semipermiable_membrane_train_config_unlearn_canvas
+algorithm = SemipermeableMembraneAlgorithm(semipermiable_membrane_train_config_unlearn_canvas)
 algorithm.run()
 ```
 

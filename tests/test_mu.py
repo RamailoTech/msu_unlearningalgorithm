@@ -667,12 +667,12 @@ def test_run_semipermeable(setup_output_dir_semipermeable):
 def test_run_selective_anmesia(setup_output_dir_selective_amnesia):
     from mu.algorithms.selective_amnesia.algorithm import SelectiveAmnesiaAlgorithm
     from mu.algorithms.selective_amnesia.configs import (
-        selective_amnesia_config_quick_canvas,
+        selective_amnesia_config_unlearn_canvas,
     )
-    selective_amnesia_config_quick_canvas.lightning["trainer"]["max_epochs"] = 1
+    selective_amnesia_config_unlearn_canvas.lightning["trainer"]["max_epochs"] = 1
 
     algorithm = SelectiveAmnesiaAlgorithm(
-        selective_amnesia_config_quick_canvas,
+        selective_amnesia_config_unlearn_canvas,
         output_dir = config['selective_amnesia']['output_dir'],
         raw_dataset_dir = common_config_unlearn_canvas["unlearn_canvas_data_dir"],
         ckpt_path = common_config_unlearn_canvas["compvis_model_dir"],
