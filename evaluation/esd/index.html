@@ -165,14 +165,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Robustness Eval UnlearnDiffAtk</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
-    <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/attack/hard_prompt/">Usage</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/configs/hard_prompt/">Config</a>
-                </li>
-    </ul>
-                </li>
                 <li class="toctree-l2"><a class="reference internal" >Random</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/attack/random/">Usage</a>
@@ -189,9 +181,29 @@
                 </li>
     </ul>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" >Soft Prompt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/attack/soft_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="" href="../../mu_attack/configs/soft_prompt.md">Config</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >UnlearnDiffAtk</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/attack/UnlearnDiffAttack/hard_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/configs/hard_prompt/">Config</a>
+                </li>
+    </ul>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" >Text Grad</a>
     <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/attack/text_grad/">Usage</a>
+                <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/attack/UnlearnDiffAttack/text_grad/">Usage</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/configs/text_grad/">Config</a>
                 </li>
@@ -321,6 +333,7 @@ from mu.algorithms.esd.configs import (
     esd_evaluation_config
 )
 from evaluation.metrics.accuracy import accuracy_score
+from evaluation.metrics.clip import clip_score
 from evaluation.metrics.fid import fid_score
 
 
@@ -338,11 +351,54 @@ accuracy = accuracy_score(gen_image_dir=generated_images_path,
 print(accuracy['acc'])
 print(accuracy['loss'])
 
+fid, _ = fid_score(generated_image_dir=generated_images_path) #Defaults to the COCO dataset if reference_image_dir is not provided.&quot;
+print(fid)
+
+clip_score = clip_score() #Defaults to the COCO dataset if image path is not provided.&quot;
+print(clip_score)
+
+#optionally provide your own dataset path
 reference_image_dir = &quot;data/quick-canvas-dataset/sample&quot;
 fid, _ = fid_score(generated_image_dir=generated_images_path,
                 reference_image_dir=reference_image_dir )
 
 print(fid)
+</code></pre>
+<h4 id="classifiers-for-evaluation"><strong>Classifiers for evaluation</strong></h4>
+<p><strong>Nudenet classifier</strong></p>
+<p>Requirements for Testing:</p>
+<p>To test this function, the following directory structure and files must be present in the root directory:</p>
+<ul>
+<li>
+<p>imgs/ folder - Must be located inside the root directory (data/i2p/imgs/)</p>
+</li>
+<li>
+<p>prompts.csv file - Must be present in the root directory (data/i2p/prompts.csv)</p>
+</li>
+</ul>
+<pre><code class="language-python">from evaluation.metrics.nudenet import process_nudity_classification
+
+process_nudity_classification()
+
+#Optionally, to run with custom parameters
+process_nudity_classification(root='data/i2p', mode='check_none_nude', threshold=0.5)
+</code></pre>
+<p><strong>Q16 classifier</strong></p>
+<pre><code class="language-python">import torch
+
+from evaluation.metrics.q16 import q16_binary_classifier, harm_eval
+
+DEVICE = &quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;
+PROMPT_FILE = 'mu_attack/tasks/utils/metrics/q16/prompts.p' #replace with your own path
+IMAGE_TO_TEST = 'data/i2p/imgs/image_test.png' #replace with your own test image path
+
+clip_model, classifier = q16_binary_classifier(device=DEVICE, prompt_path=PROMPT_FILE)
+label, scores = harm_eval(clip_model, classifier, IMAGE_TO_TEST, DEVICE)
+label_text = &quot;Benign&quot; if label == 0 else &quot;Malicious&quot;
+print(f&quot;\nFinal Label: {label} ({label_text})&quot;)
+print(f&quot;Confidence Scores:&quot;)
+print(f&quot;  - Benign:    {scores[0].item():.4f}&quot;)
+print(f&quot;  - Malicious: {scores[1].item():.4f}&quot;)
 </code></pre>
 <p><strong>Run the script</strong></p>
 <pre><code class="language-bash">python evaluate.py

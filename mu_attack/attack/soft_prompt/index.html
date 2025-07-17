@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Soft prompt - Unlearn Diff</title>
+    <title>Usage - Unlearn Diff</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Soft prompt";
+        var mkdocs_page_name = "Usage";
         var mkdocs_page_input_path = "mu_attack/attack/soft_prompt.md";
         var mkdocs_page_url = null;
       </script>
@@ -150,7 +150,7 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Evaluation</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" >Non-Attack evalaution</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" >No attack</a>
@@ -163,16 +163,8 @@
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" >Robustness Eval UnlearnDiffAtk</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
-    <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../hard_prompt/">Usage</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../../configs/hard_prompt/">Config</a>
-                </li>
-    </ul>
-                </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Robustness Eval UnlearnDiffAtk</a>
+    <ul class="current">
                 <li class="toctree-l2"><a class="reference internal" >Random</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../random/">Usage</a>
@@ -189,9 +181,31 @@
                 </li>
     </ul>
                 </li>
+                <li class="toctree-l2 current"><a class="reference internal current" >Soft Prompt</a>
+    <ul class="current">
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">Usage</a>
+    <ul class="current">
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="" href="../../configs/soft_prompt.md">Config</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >UnlearnDiffAtk</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../UnlearnDiffAttack/hard_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../configs/hard_prompt/">Config</a>
+                </li>
+    </ul>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" >Text Grad</a>
     <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../text_grad/">Usage</a>
+                <li class="toctree-l3"><a class="reference internal" href="../UnlearnDiffAttack/text_grad/">Usage</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../../configs/text_grad/">Config</a>
                 </li>
@@ -295,7 +309,10 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Soft prompt</li>
+          <li class="breadcrumb-item">Evaluation</li>
+          <li class="breadcrumb-item">Robustness Eval UnlearnDiffAtk</li>
+          <li class="breadcrumb-item">Soft Prompt</li>
+      <li class="breadcrumb-item active">Usage</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -304,7 +321,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="unlearndiffattak">UnlearnDiffAttak</h2>
+                <h2 id="unlearndiffattack">UnlearnDiffAttack</h2>
 <p>This project implements a novel adversarial unlearning framework designed to perform soft prompt attacks on diffusion models. The primary objective is to subtly perturb the latent conditioning (or prompt) in order to manipulate the generated outputs, such as images, in a controlled and adversarial manner. </p>
 <h2 id="usage">Usage</h2>
 <p>This section contains the usage guide for the package.</p>
@@ -332,17 +349,7 @@
 </code></pre>
 <p>Step 5. Install Additional Git Dependencies:</p>
 <p>After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:</p>
-<pre><code class="language-bash">pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/openai/CLIP.git@main#egg=clip
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/crowsonkb/k-diffusion.git
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/cocodataset/panopticapi.git
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/boomb0om/text2image-benchmark
+<pre><code class="language-bash">pip install git+https://github.com/CompVis/taming-transformers.git@master git+https://github.com/openai/CLIP.git@main git+https://github.com/crowsonkb/k-diffusion.git git+https://github.com/cocodataset/panopticapi.git git+https://github.com/Phoveran/fastargs.git@main git+https://github.com/boomb0om/text2image-benchmark
 </code></pre>
 <h3 id="downloading-bestonnx-model">Downloading best.onnx model.</h3>
 <p>After you install the package, you can use the following commands to download. If you have already downloaded then skip this step.</p>
@@ -604,6 +611,10 @@ if __name__ == &quot;__main__&quot;:
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../configs/seed_search/" class="btn btn-neutral float-left" title="Config"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../UnlearnDiffAttack/hard_prompt/" class="btn btn-neutral float-right" title="Usage">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -625,6 +636,10 @@ if __name__ == &quot;__main__&quot;:
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
+      <span><a href="../../configs/seed_search/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../UnlearnDiffAttack/hard_prompt/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

@@ -167,14 +167,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Robustness Eval UnlearnDiffAtk</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
-    <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/hard_prompt/">Usage</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/configs/hard_prompt/">Config</a>
-                </li>
-    </ul>
-                </li>
                 <li class="toctree-l2"><a class="reference internal" >Random</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/random/">Usage</a>
@@ -191,9 +183,29 @@
                 </li>
     </ul>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" >Soft Prompt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/soft_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="" href="../../../mu_attack/configs/soft_prompt.md">Config</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >UnlearnDiffAtk</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/UnlearnDiffAttack/hard_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/configs/hard_prompt/">Config</a>
+                </li>
+    </ul>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" >Text Grad</a>
     <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/text_grad/">Usage</a>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/UnlearnDiffAttack/text_grad/">Usage</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/configs/text_grad/">Config</a>
                 </li>
@@ -313,14 +325,14 @@
 </code></pre>
 <h3 id="run-train">Run train</h3>
 <p>Create a file, eg, <code>my_trainer.py</code> and use examples and modify your configs to run the file.  </p>
-<p><strong>Using quick canvas dataset</strong></p>
+<p><strong>Using Unlearn Canvas dataset</strong></p>
 <pre><code class="language-python">from mu.algorithms.selective_amnesia.algorithm import SelectiveAmnesiaAlgorithm
 from mu.algorithms.selective_amnesia.configs import (
-    selective_amnesia_config_quick_canvas,
+    selective_amnesia_config_unlearn_canvas,
 )
 
 algorithm = SelectiveAmnesiaAlgorithm(
-    selective_amnesia_config_quick_canvas,
+    selective_amnesia_config_unlearn_canvas,
     ckpt_path=&quot;models/compvis/style50/compvis.ckpt&quot;,
     raw_dataset_dir=(
         &quot;data/quick-canvas-dataset/sample&quot;

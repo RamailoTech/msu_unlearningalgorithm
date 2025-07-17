@@ -165,14 +165,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Robustness Eval UnlearnDiffAtk</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
-    <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/hard_prompt/">Usage</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/configs/hard_prompt/">Config</a>
-                </li>
-    </ul>
-                </li>
                 <li class="toctree-l2"><a class="reference internal" >Random</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/random/">Usage</a>
@@ -189,9 +181,29 @@
                 </li>
     </ul>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" >Soft Prompt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/soft_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="" href="../../../mu_attack/configs/soft_prompt.md">Config</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >UnlearnDiffAtk</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/UnlearnDiffAttack/hard_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/configs/hard_prompt/">Config</a>
+                </li>
+    </ul>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" >Text Grad</a>
     <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/text_grad/">Usage</a>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/UnlearnDiffAttack/text_grad/">Usage</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/configs/text_grad/">Config</a>
                 </li>
@@ -306,7 +318,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <p><strong>Run Train using quick canvas dataset</strong></p>
+                <p><strong>Run Train using Unlearn Canvas dataset</strong></p>
 <p>Create a file, eg, <code>my_trainer.py</code> and use examples and modify your configs to run the file.  </p>
 <p><strong>Example Code</strong></p>
 <pre><code class="language-python">from mu.algorithms.esd.algorithm import ESDAlgorithm

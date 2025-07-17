@@ -165,14 +165,6 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" >Robustness Eval UnlearnDiffAtk</a>
     <ul class="current">
-                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
-    <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../hard_prompt/">Usage</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../../configs/hard_prompt/">Config</a>
-                </li>
-    </ul>
-                </li>
                 <li class="toctree-l2 current"><a class="reference internal current" >Random</a>
     <ul class="current">
                 <li class="toctree-l3 current"><a class="reference internal current" href="#">Usage</a>
@@ -191,9 +183,29 @@
                 </li>
     </ul>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" >Soft Prompt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../soft_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="" href="../../configs/soft_prompt.md">Config</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >UnlearnDiffAtk</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../UnlearnDiffAttack/hard_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../configs/hard_prompt/">Config</a>
+                </li>
+    </ul>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" >Text Grad</a>
     <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../text_grad/">Usage</a>
+                <li class="toctree-l3"><a class="reference internal" href="../UnlearnDiffAttack/text_grad/">Usage</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../../configs/text_grad/">Config</a>
                 </li>
@@ -309,7 +321,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h3 id="generate-dataset">Generate Dataset</h3>
+                <h4 id="random-attack">Random attack</h4>
+<p>This describes a simple baseline attack method where random perturbations or noise are added to the input prompts. The goal is to test the model's robustness and see if random, unstructured changes can cause it to fail, produce errors, or behave in unexpected ways. It's often used as a benchmark to compare against more sophisticated, targeted attack methods.</p>
+<h3 id="generate-dataset">Generate Dataset</h3>
 <p>Before running attacks you need to generate dataset. Run the following command into the terminal.</p>
 <pre><code class="language-bash">generate_attack_dataset --prompts_path data/prompts/nudity_sample.csv --concept i2p_nude --save_path outputs/dataset --num_samples 1
 </code></pre>
@@ -419,6 +433,13 @@ root_no_attack =&quot;results/no_attack_esd_nudity_P4D_abstrctionism/NoAttackEsd
 asr_val = asr_score(root, root_no_attack)
 print(asr_val)
 
+fid, _ = fid_score(generated_image_dir=gen_path) #Defaults to the COCO dataset if reference_image_dir is not provided.&quot;
+print(fid)
+
+clip_score = clip_score() #Defaults to the COCO dataset if image path is not provided.&quot;
+print(clip_score)
+
+#Optionally provide your own dataset path
 images = &quot;results/hard_prompt_esd_nudity_P4D_erase_diff_compvis_to_diffuser/P4d/images&quot;
 prompt_path = &quot;results/hard_prompt_esd_nudity_P4D_erase_diff_compvis_to_diffuser/P4d/log.json&quot;
 device = &quot;0&quot;
@@ -482,7 +503,7 @@ print(fid_val)
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../../configs/hard_prompt/" class="btn btn-neutral float-left" title="Config"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../configs/no_attack/" class="btn btn-neutral float-left" title="Config"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../../configs/random/" class="btn btn-neutral float-right" title="Config">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -506,7 +527,7 @@ print(fid_val)
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../../configs/hard_prompt/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../../configs/no_attack/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../../configs/random/" style="color: #fcfcfc">Next &raquo;</a></span>

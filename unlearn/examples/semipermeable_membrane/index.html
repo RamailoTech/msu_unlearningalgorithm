@@ -167,14 +167,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Robustness Eval UnlearnDiffAtk</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
-    <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/hard_prompt/">Usage</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/configs/hard_prompt/">Config</a>
-                </li>
-    </ul>
-                </li>
                 <li class="toctree-l2"><a class="reference internal" >Random</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/random/">Usage</a>
@@ -191,9 +183,29 @@
                 </li>
     </ul>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" >Soft Prompt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/soft_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="" href="../../../mu_attack/configs/soft_prompt.md">Config</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >UnlearnDiffAtk</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/UnlearnDiffAttack/hard_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/configs/hard_prompt/">Config</a>
+                </li>
+    </ul>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" >Text Grad</a>
     <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/text_grad/">Usage</a>
+                <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/attack/UnlearnDiffAttack/text_grad/">Usage</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../../../mu_attack/configs/text_grad/">Config</a>
                 </li>
@@ -316,8 +328,8 @@ and execute it with <code>python my_trainer.py</code> or use <code>WANDB_MODE=of
 <pre><code class="language-python">from mu.algorithms.semipermeable_membrane.algorithm import (
     SemipermeableMembraneAlgorithm,
 )
-from mu.algorithms.semipermeable_membrane.configs import semipermiable_membrane_train_config_quick_canvas
-algorithm = SemipermeableMembraneAlgorithm(semipermiable_membrane_train_config_quick_canvas)
+from mu.algorithms.semipermeable_membrane.configs import semipermiable_membrane_train_config_unlearn_canvas
+algorithm = SemipermeableMembraneAlgorithm(semipermiable_membrane_train_config_unlearn_canvas)
 algorithm.run()
 </code></pre>
 <h3 id="modify-some-parameters-in-pre-defined-config-class">Modify some parameters in pre defined config class</h3>

@@ -169,14 +169,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" >Robustness Eval UnlearnDiffAtk</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
-    <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/attack/hard_prompt/">Usage</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/configs/hard_prompt/">Config</a>
-                </li>
-    </ul>
-                </li>
                 <li class="toctree-l2"><a class="reference internal" >Random</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/attack/random/">Usage</a>
@@ -193,9 +185,29 @@
                 </li>
     </ul>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" >Soft Prompt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/attack/soft_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="" href="../../mu_attack/configs/soft_prompt.md">Config</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >UnlearnDiffAtk</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" >Hard Prompt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/attack/UnlearnDiffAttack/hard_prompt/">Usage</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/configs/hard_prompt/">Config</a>
+                </li>
+    </ul>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" >Text Grad</a>
     <ul>
-                <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/attack/text_grad/">Usage</a>
+                <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/attack/UnlearnDiffAttack/text_grad/">Usage</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="../../mu_attack/configs/text_grad/">Config</a>
                 </li>
@@ -333,29 +345,32 @@
 </code></pre>
 <p>Step 5: Install Additional Git Dependencies:</p>
 <p>After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:</p>
-<pre><code class="language-bash">pip install git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/openai/CLIP.git@main#egg=clip
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/crowsonkb/k-diffusion.git
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/cocodataset/panopticapi.git
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/Phoveran/fastargs.git@main#egg=fastargs
-</code></pre>
-<pre><code class="language-bash">pip install git+https://github.com/boomb0om/text2image-benchmark
+<pre><code class="language-bash">pip install git+https://github.com/CompVis/taming-transformers.git@master git+https://github.com/openai/CLIP.git@main git+https://github.com/crowsonkb/k-diffusion.git git+https://github.com/cocodataset/panopticapi.git git+https://github.com/Phoveran/fastargs.git@main git+https://github.com/boomb0om/text2image-benchmark
 </code></pre>
 <h3 id="downloading-data-and-models">Downloading data and models.</h3>
 <p>After you install the package, you can use the following commands to download.</p>
 <ol>
-<li><strong>Dataset</strong>:</li>
 <li>
-<p><strong>quick_canvas</strong>:</p>
+<p><strong>Dataset</strong>:</p>
+<ul>
+<li>
+<p><strong>unlearn_canvas</strong>:</p>
 <ul>
 <li><strong>Sample</strong>:
- <code>download_data sample quick_canvas</code></li>
+<code>download_data sample unlearn_canvas</code></li>
 <li><strong>Full</strong>:
- <code>download_data full quick_canvas</code></li>
+<code>download_data full unlearn_canvas</code></li>
+</ul>
+</li>
+<li>
+<p><strong>i2p</strong>:</p>
+<ul>
+<li><strong>Sample</strong>:
+<code>download_data sample i2p</code></li>
+<li><strong>Full</strong>:
+<code>download_data full i2p</code></li>
+</ul>
+</li>
 </ul>
 </li>
 <li>
@@ -371,7 +386,11 @@
 <p><strong>Download best.onnx model</strong></p>
 <p><code>download_best_onnx</code></p>
 </li>
+<li>
+<p><strong>Download coco dataset</strong></p>
+</li>
 </ol>
+<p><code>download_coco_dataset</code></p>
               
             </div>
           </div><footer>
