@@ -50,25 +50,35 @@ pip install git+https://github.com/CompVis/taming-transformers.git@master git+ht
 After you install the package, you can use the following commands to download.
 
 1. **Dataset**:
-  - **unlearn_canvas**:
-    - **Sample**:
-     ```
-     download_data sample unlearn_canvas
-     ```
-    - **Full**:
-     ```
-     download_data full unlearn_canvas
-     ```
+    - **unlearn_canvas**:
+        - **Sample**:
+        ```
+        download_data sample unlearn_canvas
+        ```
+        - **Full**:
+        ```
+        download_data full unlearn_canvas
+        ```
+
+    - **i2p**:
+        - **Sample**:
+        ```
+        download_data sample i2p
+        ```
+        - **Full**:
+        ```
+        download_data full i2p
+        ```
 
 2. **Model**:
-  - **compvis**:
-    ```
-    download_model compvis
-    ```
-  - **diffuser**:
-    ```
-    download_model diffuser
-    ```
+    - **compvis**:
+      ```
+      download_model compvis
+      ```
+    - **diffuser**:
+      ```
+      download_model diffuser
+      ```
 
 3. **Download best.onnx model**
 
@@ -78,6 +88,6 @@ After you install the package, you can use the following commands to download.
 
 4. **Download coco dataset**
 
-  ```
-  download_coco_dataset
-  ```
+    ```
+    download_coco_dataset
+    ```
