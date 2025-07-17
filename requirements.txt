@@ -46,3 +46,4 @@ xformers
 fire==0.7.0
 terminaltables==3.1.10
 pytest==8.3.4
+gdown

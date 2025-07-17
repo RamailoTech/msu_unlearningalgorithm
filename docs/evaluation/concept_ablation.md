@@ -17,6 +17,7 @@ from mu.algorithms.concept_ablation.configs import (
     concept_ablation_evaluation_config
 )
 from evaluation.metrics.accuracy import accuracy_score
+from evaluation.metrics.clip import clip_score
 from evaluation.metrics.fid import fid_score
 
 evaluator = ConceptAblationEvaluator(
@@ -36,6 +37,14 @@ accuracy = accuracy_score(gen_image_dir=generated_images_path,
 print(accuracy['acc'])
 print(accuracy['loss'])
 
+
+fid, _ = fid_score(generated_image_dir=generated_images_path) #Defaults to the COCO dataset if reference_image_dir is not provided."
+print(fid)
+
+clip_score = clip_score() #Defaults to the COCO dataset if image path is not provided."
+print(clip_score)
+
+#optionally provide your own dataset path
 fid, _ = fid_score(generated_image_dir=generated_images_path,
                 reference_image_dir=reference_image_dir )
 

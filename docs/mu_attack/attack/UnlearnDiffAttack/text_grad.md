@@ -131,6 +131,13 @@ root_no_attack ="results/no_attack_esd_nudity_P4D_abstrctionism/NoAttackEsdNudit
 asr_val = asr_score(root, root_no_attack)
 print(asr_val)
 
+fid, _ = fid_score(generated_image_dir=gen_path) #Defaults to the COCO dataset if reference_image_dir is not provided."
+print(fid)
+
+clip_score = clip_score() #Defaults to the COCO dataset if image path is not provided."
+print(clip_score)
+
+#Optionally provide your own dataset path
 images = "results/hard_prompt_esd_nudity_P4D_erase_diff_compvis_to_diffuser/P4d/images"
 prompt_path = "results/hard_prompt_esd_nudity_P4D_erase_diff_compvis_to_diffuser/P4d/log.json"
 device = "0"

@@ -23,6 +23,10 @@ accuracy = accuracy_score(gen_image_dir=generated_images_path,
 print(accuracy['acc'])
 print(accuracy['loss'])
 
+fid, _ = fid_score(generated_image_dir=gen_path) #Defaults to the COCO dataset if reference_image_dir is not provided."
+print(fid)
+
+#Optionally provide your own dataset path
 reference_image_dir = "data/quick-canvas-dataset/sample"
 fid, _ = fid_score(generated_image_dir=generated_images_path,
                 reference_image_dir=reference_image_dir )
