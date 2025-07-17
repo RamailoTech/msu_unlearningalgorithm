@@ -61,6 +61,14 @@ print(fid)
 
 **Nudenet classifier**
 
+Requirements for Testing:
+
+To test this function, the following directory structure and files must be present in the root directory:
+
+* imgs/ folder - Must be located inside the root directory (data/i2p/imgs/)
+
+* prompts.csv file - Must be present in the root directory (data/i2p/prompts.csv)
+
 ```python
 from evaluation.metrics.nudenet import process_nudity_classification
 
