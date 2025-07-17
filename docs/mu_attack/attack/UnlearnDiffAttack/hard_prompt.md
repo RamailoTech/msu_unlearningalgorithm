@@ -1,3 +1,8 @@
+#### Hard Prompt attack
+
+A hard prompt attack, also known as prompt injection, involves embedding instructions within a prompt to manipulate a language model's output. The goal is to force the model to ignore its original instructions and follow the injected, often malicious, commands. This can lead to the model revealing sensitive information, generating inappropriate content, or performing other unintended actions.
+
+
 ### Generate Dataset
 
 Before running attacks you need to generate dataset. Run the following command into the terminal.
@@ -90,6 +95,7 @@ def run_attack_for_nudity():
         "logger.json.root" :"results/hard_prompt_esd_nudity_P4D_abstractionism"
     }
 
+    # by default it takes text grad's config
     MUAttack(
         config=hard_prompt_esd_nudity_P4D_diffusers_config,
         **overridable_params

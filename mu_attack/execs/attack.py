@@ -12,6 +12,7 @@ import logging
 from pydantic import ValidationError,BaseModel
 
 from importlib import import_module
+from mu_attack.configs.nudity import text_grad_esd_nudity_classifier_diffuser_config
 
 
 class MUAttack:
@@ -25,11 +26,11 @@ class MUAttack:
       6) Runs the attack.
     """
 
-    def __init__(self, config,  quiet=False,**overridable_params):
+    def __init__(self, config=text_grad_esd_nudity_classifier_diffuser_config,  quiet=False,**overridable_params):
         """
-        :param config_path: Path to a JSON config file (optional).
-        :param config_dict: A dict containing the config (optional).
-        :param quiet: Whether to suppress printing config summary.
+        :param config: A configuration object (e.g., a Pydantic model) for the attack. Defaults to a predefined text grad's nudity classifier configuration 
+        :param quiet: If True, suppresses printing the config summary.
+        :param overridable_params: Keyword arguments to override specific settings in the config.
         """
         self.logger = logging.getLogger(__name__)
         self.config = None
