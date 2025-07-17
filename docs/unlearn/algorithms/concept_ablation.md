@@ -21,7 +21,7 @@ if __name__ == "__main__":
         config_path="mu/algorithms/concept_ablation/configs/train_config.yaml",
         ckpt_path="machine_unlearning/models/compvis/style50/compvis.ckpt",
         prompts="mu/algorithms/concept_ablation/data/anchor_prompts/finetune_prompts/sd_prompt_Architectures_sample.txt",
-        output_dir="/opt/dlami/nvme/outputs",
+        output_dir="outputs/concept_ablation/outputs",
         template_name = "Abstractionism", #concept to erase
         dataset_type = "unlearncanvas" ,
         use_sample = True, #train on sample dataset

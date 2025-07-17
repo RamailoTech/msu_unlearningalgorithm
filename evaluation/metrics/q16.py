@@ -1,11 +1,21 @@
 # evaluation/metrics/q16.py
 
+import os
 import torch
 from PIL import Image
 
 from mu_attack.tasks.utils.metrics.harm_eval import load_prompts, SimClassifier, compute_embeddings, ClipWrapper
 
-def q16_binary_classifier(device, prompt_path='mu_attack/tasks/utils/metrics/q16/prompts.p'):
+
+def q16_binary_classifier(device, prompt_path=None):
+    if not prompt_path:
+        current_file_dir = os.path.dirname(os.path.abspath(__file__))
+        prompt_path = os.path.join(
+            current_file_dir, 
+            '..', '..', 
+            'mu_attack', 'tasks', 'utils', 'metrics', 'q16', 'prompts.p'
+        )
+        prompt_path = os.path.abspath(prompt_path)
     trained_prompts = load_prompts(prompt_path, device=device)
     clip_model = ClipWrapper(device)
     classifier = SimClassifier(trained_prompts, device)
