@@ -4,7 +4,7 @@ Create a file, eg, `my_trainer.py` and use examples and modify your configs to r
 
 **Example Code**
 
-**Using quick canvas dataset**
+**Using Unlearn Canvas dataset**
 
 ```python
 from mu.algorithms.scissorhands.algorithm import ScissorHandsAlgorithm

@@ -26,7 +26,7 @@ if __name__ == "__main__":
 ```
 
 
-**Step 2: Unlearn Using  quick canvas dataset**
+**Step 2: Unlearn Using  Unlearn Canvas dataset**
 
 To train the saliency unlearning algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
 

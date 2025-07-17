@@ -85,14 +85,14 @@ After you install the package, you can use the following commands to download.
      ```
      download_data full i2p
      ```
-  - **quick_canvas**:
+  - **unlearn_canvas**:
     - **Sample**:
      ```
-     download_data sample quick_canvas
+     download_data sample unlearn_canvas
      ```
     - **Full**:
      ```
-     download_data full quick_canvas
+     download_data full unlearn_canvas
      ```
 
 2. **Model**:
@@ -126,7 +126,7 @@ To train the Unified Concept Editing algorithm to unlearn a specific concept or 
 ## Run Train
 Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
-**Using quick canvas dataset**
+**Using Unlearn Canvas dataset**
 
 ```python
 from mu.algorithms.unified_concept_editing.algorithm import (

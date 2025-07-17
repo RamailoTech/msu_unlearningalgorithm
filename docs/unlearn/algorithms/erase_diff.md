@@ -1,5 +1,5 @@
 
-**Run Train using quick canvas dataset**
+**Run Train using Unlearn Canvas dataset**
 Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
 **Example Code**

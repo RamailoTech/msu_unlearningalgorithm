@@ -43,7 +43,7 @@ The project is organized to facilitate scalability and maintainability.
 
 - **`data/`**: Stores data-related files.
 
-    - **`quick-canvas-dataset/`**: contains quick canvas dataset
+    - **`quick-canvas-dataset/`**: contains Unlearn Canvas dataset
         - **`sample/`**: Sample dataset
         - **`full/`**: Full dataset
 

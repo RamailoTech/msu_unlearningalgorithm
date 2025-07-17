@@ -157,9 +157,9 @@ class SelectiveAmnesiaConfig(BaseConfig):
             raise ValueError(f"max_epochs should be a positive integer.")
 
 
-selective_amnesia_config_quick_canvas = SelectiveAmnesiaConfig()
-selective_amnesia_config_quick_canvas.dataset_type = "unlearncanvas"
-selective_amnesia_config_quick_canvas.raw_dataset_dir = (
+selective_amnesia_config_unlearn_canvas = SelectiveAmnesiaConfig()
+selective_amnesia_config_unlearn_canvas.dataset_type = "unlearncanvas"
+selective_amnesia_config_unlearn_canvas.raw_dataset_dir = (
     "data/quick-canvas-dataset/sample"
 )
 

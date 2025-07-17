@@ -33,104 +33,100 @@ For detailed information on each algorithm, please refer to the respective `READ
 
 The project is organized to facilitate scalability and maintainability.
 
-- **`data/`**: Stores data-related files.
-  - **`quick-canvas-dataset/`**: contains quick canvas dataset
-    - **`sample/`**: Sample dataset
-    - **`full/`**: Full dataset
-
-- **`docs/`**: Documentation, including API references and user guides.
-
-- **`outputs/`**: Outputs of the trained algorithms.
-
-- **`examples/`**: Sample code and notebooks demonstrating usage.
-
-- **`logs/`**: Log files for debugging and auditing.
-
-- **`models/`**: Repository of lora_diffusion and stable_diffusion.
-
-- **`evaluation/`**: Contains metrics for evalaution.
-  - **`core/`**:Foundational classes.
-    - **`base_evaluator.py`**: Base class for evaluation.
-    - **`mu_defense_base_image_generator.py`**: Base class for image generation.
-  - **`helpers/`**: Utility functions and helpers.
-    - **`parser.py`**: Parse attack logs for evaluation.
-    - **`utils.py`**: Utility function.
-  - **`metrics/`**: Contains metrics for evalaution.
-    - **`accuracy.py`**
-    - **`asr.py`**
-    - **`clip.py`**
-    - **`fid.py`**
-
-- **`mu/`**: Core source code.
-  - **`algorithms/`**: Implementation of various algorithms. Each algorithm has its own subdirectory containing code and a `README.md` with detailed documentation.
-    - **`esd/`**: ESD algorithm components.
-      - `README.md`: Documentation specific to the ESD algorithm.
-      - `algorithm.py`: Core implementation of ESD.
-      - `configs/`: Configuration files for training and generation tasks.
-      - `constants/const.py`: Constant values used across the ESD algorithm.
-      - `environment.yaml`: Environment setup for ESD.
-      - `model.py`: Model architectures specific to ESD.
-      - `sampler.py`: Sampling methods used during training or inference.
-      - `scripts/train.py`: Training script for ESD.
-      - `evaluator.py`: Script that generates necessary outputs for evaluation.
-      - `trainer.py`: Training routines and optimization strategies.
-      - `utils.py`: Utility functions and helpers.
-    - **`ca/`**: Components for the CA algorithm.
-      - `README.md`: Documentation specific to the CA algorithm.
-      - *...and so on for other algorithms*
-  - **`core/`**: Foundational classes and utilities.
-    - `base_algorithm.py`: Abstract base class for algorithm implementations.
-    - `base_data_handler.py`: Base class for data handling.
-    - `base_model.py`: Base class for model definitions.
-    - `base_sampler.py`: Base class for sampling methods.
-    - `base_trainer.py`: Base class for training routines.
-  - **`datasets/`**: Dataset management and utilities.
-    - `__init__.py`: Initializes the dataset package.
-    - `dataset.py`: Dataset classes and methods.
-    - `helpers/`: Helper functions for data processing.
-    - `unlearning_canvas_dataset.py`: Specific dataset class for unlearning tasks.
-  - **`helpers/`**: Utility functions and helpers.
-    - `helper.py`: General-purpose helper functions.
-    - `logger.py`: Logging utilities to standardize logging practices.
-    - `path_setup.py`: Path configurations and environment setup.
-
-- **`tests/`**: Test suites for ensuring code reliability.
-- **`mu_attack/`**: Implementation of attack algorithms.
-  - **`attackers/`**: Contains different types of attackers.
-  - **`configs/`**: Configurations file.
-    - **`illegal/`**: config for illegal task.
-    - **`nudity/`**: config for nudity task.
-    - **`object/`**: config for object task.
-    - **`style/`**: config for style task.
-    - **`violence/`**: config for violence task.
-  - **`core/`**: Foundational classes.
-  - **`datasets/`**: script to generate dataset.
-  - **`exces/`**: Script to run attack
-  - **`tasks/`**: Implementation of tasks
-  - **`helpers/`**: Utility functions
-
-- **`mu_defense/`**: Implementation of Advunlearn algorithms.
-  - **`algorithms/`**: Implementation of various defense algorithms. Each algorithm has its own subdirectory containing code and a `README.md` with detailed documentation.
-    - **`adv_unlearn/`**: Adversial Unlearn algorithm components.
-      - `README.md`: Documentation specific to the advunlearn algorithm.
-      - `algorithm.py`: Core implementation of advunlearn.
-      - `configs/`: Configuration files for training and generation tasks.
-      - `model.py`: Model architectures specific to advunlearn.
-      - `image_generator.py`: Image generator methods for generating sample images for evaluation.
-      - `evaluator.py`: Script that generates necessary outputs for evaluation.
-      - `dataset_handler.py`: Dataset handler for advunlearn algorithm. 
-      - `compvis_trainer.py`: training loop for CompVis models.
-      - `diffuser_trainer.py`: training loop for diffuser models.
-      - `trainer.py`: Trainer class orchestrates the adversarial unlearning training process.
-      - `utils.py`: Utility functions and helpers.
-- **`scripts.py`**: Commands to generate datasets and download models.
-- **`notebooks/`**: Contains example implementation.
-- **`tests/`**: Contains pytests.
+```
+.
+├── data/
+│   ├── i2p-dataset/
+│   │   ├── sample/
+│   │   └── full/
+│   └── unlearn-canvas-dataset/ # Renamed for clarity
+│       ├── sample/
+│       └── full/
+│
+├── docs/                 # Documentation, API references, user guides
+│
+├── models/               # Pre-trained model weights (e.g., Stable Diffusion, LORAs)
+│
+├── notebooks/            # Example notebooks and experimental code (merges 'examples/')
+│
+├── outputs/              # All generated outputs (images, artifacts) from runs
+│
+├── scripts/              # Standalone utility scripts
+│   ├── download_models.py
+│   └── prepare_datasets.py
+│
+├── src/                  # Centralized source code for the entire application
+│   │
+│   ├── mu/         # Core unlearning logic (previously 'mu/')
+│   │   ├── __init__.py
+│   │   ├── algorithms/
+│   │   │   ├── esd/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── algorithm.py      # Core ESD implementation
+│   │   │   │   ├── configs/          # ESD-specific configs
+│   │   │   │   ├── model.py          # ESD-specific model
+│   │   │   │   ├── trainer.py        # ESD-specific trainer
+│   │   │   │   └── utils.py          # ESD-specific utilities
+│   │   │   └── ca/
+│   │   │       └── ... # etc.
+│   │   ├── core/               # Base classes shared across unlearning algorithms
+│   │   │   ├── base_algorithm.py
+│   │   │   ├── base_trainer.py
+│   │   │   └── base_model.py
+│   │   └── datasets/               # Data handling and loading modules
+│   │       ├── __init__.py
+│   │       ├── base_handler.py
+│   │       └── unlearn_canvas.py
+│   │
+│   ├── attack/             # Attack logic (previously 'mu_attack/')
+│   │   ├── __init__.py
+│   │   ├── algorithms/         # Specific attack implementations (previously 'attackers/')
+│   │   ├── configs/
+│   │   │   ├── illegal/
+│   │   │   └── ...
+│   │   └── tasks/              # Attack tasks (nudity, violence, etc.)
+│   │
+│   ├── defense/            # Defense logic (previously 'mu_defense/')
+│   │   ├── __init__.py
+│   │   └── algorithms/
+│   │       └── adv_unlearn/
+│   │           ├── __init__.py
+│   │           ├── algorithm.py
+│   │           ├── configs/
+│   │           ├── model.py
+│   │           ├── trainer.py
+│   │           └── image_generator.py
+│   │
+│   ├── evaluation/         # Centralized evaluation framework
+│   │   ├── __init__.py
+│   │   ├── evaluator.py      # Main evaluator runner script
+│   │   ├── metrics/
+│   │   │   ├── accuracy.py
+│   │   │   ├── asr.py
+│   │   │   ├── clip.py
+│   │   │   └── fid.py
+│   │   └── utils/              # Evaluation-specific utilities (e.g., log parsers)
+│   │       └── parser.py
+│   │
+│   └── utils/                # Project-wide shared utilities
+│       ├── __init__.py
+│       ├── logger.py
+│       └── path_setup.py
+│
+├── tests/                # All tests for the source code
+│   ├── test_unlearning.py
+│   ├── test_attack.py
+│   └── test_evaluation.py
+│
+├── environment.yaml      # Project-wide environment dependencies
+├── main.py               # Main entry point to run training, evaluation, etc.
+└── README.md             # Project overview and setup instructions
+```
 
 
 ## Datasets
 
-We use the Quick Canvas benchmark dataset, available [here](https://huggingface.co/datasets/nebulaanish/quick-canvas-benchmark). Currently, the algorithms are trained using 5 images belonging to the themes of **Abstractionism** and **Architectures**.
+We use the Unlearn Canvas benchmark dataset, available [here](https://huggingface.co/datasets/nebulaanish/quick-canvas-benchmark). Currently, the algorithms are trained using 5 images belonging to the themes of **Abstractionism** and **Architectures**.
 
 
 
@@ -213,14 +209,14 @@ The <algorithm_name> has to be one of the folders in the `mu/algorithms` folder.
 After you install the package, you can use the following commands to download.
 
 1. **Dataset**:
-  - **quick_canvas**:
+  - **unlearn_canvas**:
     - **Sample**:
      ```
-     download_data sample quick_canvas
+     download_data sample unlearn_canvas
      ```
     - **Full**:
      ```
-     download_data full quick_canvas
+     download_data full unlearn_canvas
      ```
 
 2. **Model**:
@@ -242,6 +238,154 @@ After you install the package, you can use the following commands to download.
 ### Run Train <br>
 
 Each algorithm has their own script to run the algorithm, Some also have different process all together. Follow usage section in readme for the algorithm you want to run with the help of the github repository. You will need to run the code snippet provided in usage section with necessary configuration passed. 
+
+
+**Example usage for erase_diff algorithm (CompVis model)**
+
+The default configuration for training is provided by erase_diff_train_mu. You can run the training with the default settings as follows:
+
+**Using the Default Configuration**
+
+```python
+from mu.algorithms.erase_diff.algorithm import EraseDiffAlgorithm
+from mu.algorithms.erase_diff.configs import erase_diff_train_mu
+
+algorithm = EraseDiffAlgorithm(
+    erase_diff_train_mu
+)
+algorithm.run()
+```
+
+<br> <br>
+
+**Overriding the Default Configuration**
+
+If you need to override the existing configuration settings, you can specify your custom parameters (such as ckpt_path and raw_dataset_dir) directly when initializing the algorithm. For example:
+
+```python
+from mu.algorithms.erase_diff.algorithm import EraseDiffAlgorithm
+from mu.algorithms.erase_diff.configs import erase_diff_train_mu
+
+algorithm = EraseDiffAlgorithm(
+    erase_diff_train_mu,
+    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt", #replace it with your ckpt path
+    raw_dataset_dir="data/quick-canvas-dataset/sample",
+    use_sample = True, #uses sample dataset
+    template_name = "Abstractionism",
+    dataset_type = "unlearncanvas",
+    devices = "0"
+)
+algorithm.run()
+```
+
+<span style="color: red;"><br>Note: When fine-tuning the model, if you want to use a sample dataset, set use_sample=True (default).Otherwise, set use_sample=False to use the full dataset.<br></span>
+
+
+**Machine unlearning with i2p dataset**
+
+```python
+from mu.algorithms.erase_diff.algorithm import EraseDiffAlgorithm
+from mu.algorithms.erase_diff.configs import erase_diff_train_i2p
+
+algorithm = EraseDiffAlgorithm(
+    erase_diff_train_i2p,
+    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt", #replace it with your ckpt path
+    raw_dataset_dir="data/i2p-dataset/sample",
+    num_samples = 1,
+    dataset_type = "i2p",
+    template = "i2p",
+    template_name = "self-harm",
+    use_sample = True, #uses sample dataset
+    devices = "0"
+    
+)
+algorithm.run()
+```
+
+**Run on your own dataset**
+
+**Step-1: Generate your own dataset**
+
+```bash
+generate_images_for_prompts --model_path models/diffuser/style50 --csv_path data/prompts/generic_data.csv
+```
+
+Note:
+
+* generate_images_for_prompts: This command invokes the image generation script. It uses a diffusion model to generate images based on textual prompts.
+
+* --model_path: Specifies the path to the diffusion model to be used for image generation. In this example, the model is located at models/diffuser/style50.
+
+* --csv_path: Provides the path to a CSV file containing the prompts. Each prompt in this CSV will be used to generate an image, allowing you to build a dataset tailored to your needs.
+
+
+**Step-2: Train on your own dataset**
+
+```python
+from mu.algorithms.erase_diff.algorithm import EraseDiffAlgorithm
+from mu.algorithms.erase_diff.configs import erase_diff_train_i2p
+
+algorithm = EraseDiffAlgorithm(
+    erase_diff_train_i2p,
+    ckpt_path="/home/ubuntu/Projects/UnlearnCanvas/UnlearnCanvas/machine_unlearning/models/compvis/style50/compvis.ckpt", #replace it with your ckpt path
+    raw_dataset_dir="data/generic_data",
+    num_samples = 1,
+    dataset_type = "generic", #add the dataset type as generic
+    template_name = "self-harm", #concept to erase
+    use_sample = True, #uses sample dataset
+    devices = "0"
+    
+)
+algorithm.run()
+```
+
+
+
+### Evaluation:
+
+1. **Evaluate using unlearn canvas dataset:**
+
+Note: Currently it supports evaluation for unlearn canvas dataset. I2p and generic dataset support needs to be added.
+
+```python
+from mu.algorithms.erase_diff import EraseDiffEvaluator
+from mu.algorithms.erase_diff.configs import (
+    erase_diff_evaluation_config
+)
+from evaluation.metrics.accuracy import accuracy_score
+from evaluation.metrics.clip import clip_score
+from evaluation.metrics.fid import fid_score
+
+
+evaluator = EraseDiffEvaluator(
+    erase_diff_evaluation_config,
+    ckpt_path="outputs/erase_diff/finetuned_models/erase_diff_self-harm_model.pth",
+)
+generated_images_path = evaluator.generate_images()
+
+accuracy = accuracy_score(gen_image_dir=generated_images_path,
+                          dataset_type = "unlearncanvas",
+                        classifier_ckpt_path = "/home/ubuntu/Projects/models/classifier_ckpt_path/style50_cls.pth",
+                          forget_theme="Bricks",
+                          seed_list = ["188"] )
+print(accuracy['acc'])
+print(accuracy['loss'])
+
+
+fid, _ = fid_score(generated_image_dir=generated_images_path) #Defaults to the COCO dataset if reference_image_dir is not provided."
+print(fid)
+
+clip_score = clip_score() #Defaults to the COCO dataset if image path is not provided."
+print(clip_score)
+
+#Optionally if you want to use your own dataset
+reference_image_dir = "data/quick-canvas-dataset/sample"
+fid, _ = fid_score(generated_image_dir=generated_images_path,
+                reference_image_dir=reference_image_dir)
+
+print(fid)
+```
+
 
 
 **Link to our example usage notebooks**

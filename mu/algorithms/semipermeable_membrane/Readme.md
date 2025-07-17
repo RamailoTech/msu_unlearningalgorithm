@@ -87,14 +87,14 @@ After you install the package, you can use the following commands to download.
      ```
      download_data full i2p
      ```
-  - **quick_canvas**:
+  - **unlearn_canvas**:
     - **Sample**:
      ```
-     download_data sample quick_canvas
+     download_data sample unlearn_canvas
      ```
     - **Full**:
      ```
-     download_data full quick_canvas
+     download_data full unlearn_canvas
      ```
 
 2. **Model**:
@@ -130,7 +130,7 @@ Create a file, eg, `my_trainer.py` and use examples and modify your configs to r
 
 **Example Code**
 
-**Using quick canvas dataset**
+**Using Unlearn Canvas dataset**
 
 
 ```python
@@ -153,7 +153,7 @@ algorithm = SemipermeableMembraneAlgorithm(
 algorithm.run()
 ```
 
-**Using quick canvas dataset**
+**Using Unlearn Canvas dataset**
 
 
 ```python

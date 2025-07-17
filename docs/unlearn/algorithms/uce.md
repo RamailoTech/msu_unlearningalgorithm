@@ -1,7 +1,7 @@
 ## Run Train
 Create a file, eg, `my_trainer.py` and use examples and modify your configs to run the file.  
 
-**Using quick canvas dataset**
+**Using Unlearn Canvas dataset**
 
 ```python
 from mu.algorithms.unified_concept_editing.algorithm import (

@@ -84,14 +84,14 @@ After you install the package, you can use the following commands to download.
      ```
      download_data full i2p
      ```
-  - **quick_canvas**:
+  - **unlearn_canvas**:
     - **Sample**:
      ```
-     download_data sample quick_canvas
+     download_data sample unlearn_canvas
      ```
     - **Full**:
      ```
-     download_data full quick_canvas
+     download_data full unlearn_canvas
      ```
 
 2. **Model**:
@@ -171,7 +171,7 @@ if __name__ == "__main__":
 
 ### Run Train
 
-**Using  quick canvas dataset**
+**Using  Unlearn Canvas dataset**
 
 To train the saliency unlearning algorithm to unlearn a specific concept or style from the Stable Diffusion model, use the `train.py` script located in the `scripts` directory.
 
