@@ -451,29 +451,19 @@ For detailed information on each algorithm, please refer to the respective <code
 <p>After installing <code>conda</code>, ensure it is available in your PATH by running. You may require to restart the terminal session:</p>
 <p>Before installing the unlearn_diff package, follow these steps to set up your environment correctly. These instructions ensure compatibility with the required dependencies, including Python, PyTorch, and ONNX Runtime.</p>
 <p><strong>Step-by-Step Setup:</strong></p>
-<ol>
-<li>Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:</li>
-</ol>
+<p>1-  Create a Conda Environment Create a new Conda environment named myenv with Python 3.8.5:</p>
 <pre><code class="language-bash">conda create -n myenv python=3.8.5
 </code></pre>
-<ol>
-<li>Activate the Environment Activate the environment to work within it:</li>
-</ol>
+<p>2-  Activate the Environment Activate the environment to work within it:</p>
 <pre><code class="language-bash">conda activate myenv
 </code></pre>
-<ol>
-<li>Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:</li>
-</ol>
+<p>3- Install Core Dependencies Install PyTorch, torchvision, CUDA Toolkit, and ONNX Runtime with specific versions:</p>
 <pre><code class="language-bash">conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 onnxruntime==1.16.3 -c pytorch -c conda-forge
 </code></pre>
-<ol>
-<li>Install our unlearn_diff Package using pip:</li>
-</ol>
+<p>4- Install our unlearn_diff Package using pip:</p>
 <pre><code class="language-bash">pip install unlearn_diff
 </code></pre>
-<ol>
-<li>Install Additional Git Dependencies:</li>
-</ol>
+<p>5- Install Additional Git Dependencies:</p>
 <p>After installing unlearn_diff, install the following Git-based dependencies in the same Conda environment to ensure full functionality:</p>
 <pre><code class="language-bash">pip install git+https://github.com/CompVis/taming-transformers.git@master git+https://github.com/openai/CLIP.git@main git+https://github.com/crowsonkb/k-diffusion.git git+https://github.com/cocodataset/panopticapi.git git+https://github.com/Phoveran/fastargs.git@main git+https://github.com/boomb0om/text2image-benchmark
 </code></pre>
@@ -685,5 +675,5 @@ print(clip_score)
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-07-17 07:15:20.368338+00:00
+Build Date UTC : 2025-07-17 10:05:16.318413+00:00
 -->
