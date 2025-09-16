@@ -1,5 +1,5 @@
 
-## UnlearnDiffAttak
+## UnlearnDiffAttack
 
 This repository contains the implementation of UnlearnDiffAtk, a framework for evaluating the robustness of safety-driven unlearned Diffusion Models using adversarial prompts.
 
