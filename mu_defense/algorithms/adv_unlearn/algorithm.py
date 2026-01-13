@@ -40,7 +40,7 @@ class AdvUnlearnAlgorithm(BaseAlgorithm):
         self.model = None
         self.trainer = None
         self.devices = self.config.get("devices")
-        self.devices = [f'cuda:{int(d.strip())}' for d in self.devices.split(',')]
+        self.devices = [f"cuda:{int(d.strip())}" for d in self.devices.split(",")]
         self.logger = logging.getLogger(__name__)
         self._setup_components()
 
